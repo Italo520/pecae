@@ -1,0 +1,53 @@
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Resend } from 'resend';
+
+@Injectable()
+export class MailService {
+  private resend: Resend;
+
+  constructor(private readonly configService: ConfigService) {
+    const apiKey = this.configService.get<string>('RESEND_API_KEY');
+    this.resend = new Resend(apiKey);
+  }
+
+  /**
+   * Envia um e-mail de verificação para o usuário.
+   * Por enquanto, envia um link fictício.
+   */
+  async sendVerificationEmail(email: string, name: string, token: string) {
+    const verificationUrl = `${this.configService.get<string>('FRONTEND_URL')}/verify-email?token=${token}`;
+    const from = this.configService.get<string>('MAIL_FROM') || 'PECAÊ <onboarding@resend.dev>';
+
+    try {
+      const { data, error } = await this.resend.emails.send({
+        from,
+        to: [email],
+        subject: 'Verifique sua conta no PECAÊ',
+        html: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+            <h1 style="color: #333;">Olá, ${name}!</h1>
+            <p>Obrigado por se cadastrar no <strong>PECAÊ</strong>. Para ativar sua conta, clique no botão abaixo:</p>
+            <div style="margin: 30px 0;">
+              <a href="${verificationUrl}" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Ativar minha conta</a>
+            </div>
+            <p>Se o botão não funcionar, copie e cole este link no seu navegador:</p>
+            <p style="color: #666; font-size: 14px;">${verificationUrl}</p>
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
+            <p style="color: #999; font-size: 12px;">Se você não solicitou este cadastro, ignore este e-mail.</p>
+          </div>
+        `,
+      });
+
+      if (error) {
+        console.error('Erro ao enviar e-mail via Resend:', error);
+        throw new InternalServerErrorException('Falha ao enviar e-mail de verificação.');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Exceção ao enviar e-mail:', error);
+      throw new InternalServerErrorException('Falha no serviço de e-mail.');
+    }
+  }
+}
