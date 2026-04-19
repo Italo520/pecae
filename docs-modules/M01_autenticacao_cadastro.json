@@ -4,8 +4,8 @@
     "name": "Autenticação e Cadastro",
     "slug": "autenticacao_cadastro",
     "version": "1.0.0",
-    "progress": 85,
-    "status": "in_progress",
+    "progress": 100,
+    "status": "completed",
     "priority": "P0",
     "epic_ref": "E01",
     "estimated_sprint": "Sprint 1",
@@ -98,7 +98,6 @@
       { "id": "RF01", "description": "O sistema deve permitir cadastro de usuário com tipo: comprador, vendedor ou ambos", "priority": "P0" },
       { "id": "RF02", "description": "O sistema deve permitir autenticação por e-mail e senha", "priority": "P0" },
       { "id": "RF03", "description": "O sistema deve permitir autenticação via Google (OAuth 2.0)", "priority": "P0" },
-      { "id": "RF04", "description": "O sistema deve permitir autenticação via Apple Sign-In", "priority": "P0" },
       { "id": "RF05", "description": "O sistema deve permitir autenticação via telefone com OTP por SMS", "priority": "P1" },
       { "id": "RF06", "description": "O sistema deve exigir verificação de e-mail antes de permitir publicação de anúncios", "priority": "P0" },
       { "id": "RF07", "description": "O sistema deve registrar aceite de Termos, Política de Privacidade e LGPD no cadastro", "priority": "P0" },
@@ -343,7 +342,7 @@
       {
         "id": "M01-T02",
         "title": "Implementar cadastro por e-mail/senha e verificação",
-        "status": "in_progress",
+        "status": "completed",
         "priority": "P0",
         "estimated_days": 3,
         "epic": "E01 — Gestão de Contas",
@@ -523,20 +522,19 @@
       },
       {
         "id": "M01-T03",
-        "title": "Implementar autenticação OAuth (Google e Apple) no Expo",
-        "status": "planned",
+        "title": "Implementar autenticação OAuth (Google) e Telefone (OTP)",
+        "status": "completed",
         "priority": "P0",
         "estimated_days": 3,
         "epic": "E01 — Gestão de Contas",
-        "description": "Integrar Google Sign-In e Apple Sign-In no app React Native via expo-auth-session e @invertase/react-native-google-signin. No NestJS, criar endpoints POST /auth/google e POST /auth/apple que validam os tokens OAuth, criam ou recuperam o usuário e emitem JWT + refresh token.",
+        "description": "Integrar Google Sign-In no app React Native via expo-auth-session. No NestJS, criar endpoint POST /auth/google que valida o idToken do Google, cria ou recupera o usuário (padrão BUYER) e emite JWT + refresh token.",
         "user_stories": [
           "Como comprador, quero entrar com minha conta Google para que o cadastro seja mais rápido e conveniente",
           "Como usuário iOS, quero entrar com Apple ID para que eu possa me autenticar com segurança sem revelar meu e-mail"
         ],
         "use_cases": ["UC01", "UC02"],
         "functional_requirements": [
-          { "id": "RF03", "description": "Autenticação via Google OAuth 2.0" },
-          { "id": "RF04", "description": "Autenticação via Apple Sign-In" }
+          { "id": "RF03", "description": "Autenticação via Google OAuth 2.0" }
         ],
         "business_rules": [
           { "id": "RN-M01-03", "description": "Contas OAuth criadas com status ACTIVE (e-mail já verificado pelo provider)" },
@@ -565,8 +563,7 @@
         ],
         "acceptance_criteria": [
           "Google Sign-In funciona em Android e iOS via expo-auth-session",
-          "Apple Sign-In funciona em iOS (obrigatório pela App Store) e exibido apenas em iOS",
-          "Usuários OAuth criados com emailVerified=true automaticamente",
+          "Usuários OAuth criados com emailVerified=true automaticamente e tipo padrão BUYER",
           "E-mail já usado por outros providers retorna mensagem de conflito adequada",
           "Tokens JWT emitidos seguem o mesmo padrão do cadastro por e-mail"
         ],
@@ -574,7 +571,7 @@
           {
             "id": "M01-T03-ST01",
             "title": "Configurar Google OAuth no Expo e NestJS",
-            "status": "planned",
+            "status": "completed",
             "priority": "P0",
             "estimated_hours": 5,
             "description": "Configurar expo-auth-session com Google provider no app React Native. No NestJS, implementar POST /auth/google que valida o idToken usando a lib google-auth-library e cria ou recupera o usuário no banco.",
@@ -609,43 +606,19 @@
           },
           {
             "id": "M01-T03-ST02",
-            "title": "Configurar Apple Sign-In no Expo e NestJS",
-            "status": "planned",
-            "priority": "P0",
-            "estimated_hours": 5,
-            "description": "Integrar expo-apple-authentication no app React Native. Exibir botão Apple Sign-In apenas em iOS. No NestJS, implementar POST /auth/apple que valida o identityToken (JWT emitido pela Apple) usando apple-signin-auth ou jsonwebtoken com chave pública da Apple.",
-            "user_story": "Como usuário iOS, quero entrar com Apple ID para autenticar de forma segura sem revelar meu e-mail pessoal",
-            "use_case": "UC01",
-            "functional_requirements": [
-              { "id": "RF04", "description": "Validação do identityToken Apple no backend" }
-            ],
-            "business_rules": [
-              { "id": "RN-M01-03", "description": "Conta Apple ativa imediatamente sem verificação adicional" }
-            ],
-            "bpmn_flow": [
-              "START EVENT: Usuário (iOS) toca 'Entrar com Apple'",
-              "TASK (App): AppleAuthentication.signInAsync() com scope email e fullName",
-              "TASK (Usuário): Face ID / Touch ID confirmação",
-              "TASK (App): Receber { identityToken, user, email, fullName }",
-              "TASK (App): POST /auth/apple { identityToken, fullName }",
-              "TASK (API): Validar identityToken com chaves públicas da Apple (JWK)",
-              "TASK (API): Extrair sub (Apple user ID) e email do payload",
-              "TASK (API): UserService.findOrCreate() por appleId/email",
-              "TASK (API): Emitir JWT + refresh token",
-              "END EVENT: Usuário autenticado"
-            ],
+            "title": "Removido: Apple Sign-In (Sem conta Developer)",
+            "status": "completed",
+            "priority": "P3",
+            "estimated_hours": 0,
+            "description": "Funcionalidade removida conforme decisão do usuário devido à ausência de conta Apple Developer.",
             "acceptance_criteria": [
-              "Botão Apple Sign-In visível apenas em Platform.OS === 'ios'",
-              "identityToken validado com chaves públicas JWKS da Apple",
-              "Suporte ao modo 'Hide my Email' da Apple (email relay @privaterelay.appleid.com)",
-              "fullName salvo apenas no primeiro login (Apple não o reenvia subsequentemente)"
-            ],
-            "tech_notes": "Instalar `expo-apple-authentication`. Configurar entitlement `com.apple.developer.applesignin` no app.json. No NestJS: instalar `apple-signin-auth` ou implementar validação JWKS manualmente com `jwks-rsa` + `jsonwebtoken`. Apple publica chaves em: https://appleid.apple.com/auth/keys. Criar campo `appleId String? @unique` no model User. Atenção: a Apple envia email e fullName apenas no primeiro sign-in; armazenar esses dados imediatamente."
+              "Nenhuma referência a Apple Sign-In no código final"
+            ]
           },
           {
             "id": "M01-T03-ST03",
             "title": "Implementar autenticação por telefone com OTP",
-            "status": "planned",
+            "status": "completed",
             "priority": "P1",
             "estimated_hours": 5,
             "description": "Criar fluxo de autenticação via número de telefone com OTP de 6 dígitos via SMS. Endpoints: POST /auth/phone/send-otp e POST /auth/phone/verify-otp. Usar Supabase Auth ou gateway SMS externo. Limitar tentativas de verificação (máx 3 por OtpCode).",
@@ -692,7 +665,7 @@
       {
         "id": "M01-T04",
         "title": "Implementar login, logout, refresh token e recuperação de senha",
-        "status": "planned",
+        "status": "completed",
         "priority": "P0",
         "estimated_days": 2,
         "epic": "E01 — Gestão de Contas",
@@ -819,7 +792,7 @@
           {
             "id": "M01-T04-ST03",
             "title": "Implementar recuperação e redefinição de senha",
-            "status": "planned",
+            "status": "completed",
             "priority": "P0",
             "estimated_hours": 4,
             "description": "Criar POST /auth/forgot-password (envia e-mail com link de redefinição) e POST /auth/reset-password (valida token e altera senha). O link de redefinição usa deep link do Expo com token de 1 hora. Após reset, todos os refresh tokens anteriores são invalidados.",

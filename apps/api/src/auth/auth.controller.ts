@@ -13,7 +13,10 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { GoogleAuthDto } from './dto/google-auth.dto';
-import { AppleAuthDto } from './dto/apple-auth.dto';
+import { SendOtpDto } from './dto/send-otp.dto';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { Request } from 'express';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
@@ -89,6 +92,8 @@ export class AuthController {
 
   // ─── OAuth ───────────────────────────────────────────────────
 
+  // ─── OAuth ───────────────────────────────────────────────────
+
   // 5 tentativas por minuto — OAuth é vetor de token stuffing
   @Throttle({ default: { ttl: 60000, limit: 5 } })
   @Post('google')
@@ -113,32 +118,43 @@ export class AuthController {
     return this.authService.loginWithGoogle(dto.idToken, ip, userAgent);
   }
 
-  // 5 tentativas por minuto — mesmo nível que Google
-  @Throttle({ default: { ttl: 60000, limit: 5 } })
-  @Post('apple')
+  // ─── Phone OTP ───────────────────────────────────────────────
+
+  @Throttle({ default: { ttl: 60000, limit: 3 } }) // 3 envios por minuto
+  @Post('phone/send-otp')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({
-    summary: 'Autenticar ou registrar via Apple Sign-In',
-    description:
-      'Recebe o identityToken da Apple. fullName só é enviado no primeiro login — persiste imediatamente.',
-  })
-  @ApiResponse({ status: 200, description: 'Autenticado com sucesso via Apple' })
-  @ApiResponse({ status: 401, description: 'Token Apple inválido' })
-  @ApiResponse({
-    status: 500,
-    description: 'APPLE_CLIENT_ID não configurado no servidor',
-  })
-  async appleLogin(
-    @Body() dto: AppleAuthDto,
+  @ApiOperation({ summary: 'Enviar código OTP via SMS para o telefone' })
+  async sendOtp(@Body() dto: SendOtpDto) {
+    return this.authService.sendOtp(dto.phone);
+  }
+
+  @Throttle({ default: { ttl: 60000, limit: 5 } }) // 5 tentativas por minuto
+  @Post('phone/verify-otp')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Validar código OTP e realizar login' })
+  async verifyOtp(
+    @Body() dto: VerifyOtpDto,
     @Ip() ip: string,
     @Req() req: Request,
   ) {
     const userAgent = req.headers['user-agent'] || 'unknown';
-    return this.authService.loginWithApple(
-      dto.identityToken,
-      dto.fullName,
-      ip,
-      userAgent,
-    );
+    return this.authService.verifyOtp(dto.phone, dto.code, ip, userAgent);
+  }
+
+  // ─── Password Recovery ───────────────────────────────────────
+
+  @Throttle({ default: { ttl: 60000, limit: 3 } })
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Solicitar link de recuperação de senha' })
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(dto.email);
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Redefinir senha usando token' })
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto.token, dto.newPassword);
   }
 }

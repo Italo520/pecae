@@ -12,10 +12,8 @@ import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
-import { UserStatus, UserType } from '@prisma/client';
 import { MailService } from '../mail/mail.service';
 import { OAuth2Client } from 'google-auth-library';
-import appleSignin from 'apple-signin-auth';
 
 @Injectable()
 export class AuthService {
@@ -80,31 +78,22 @@ export class AuthService {
     email: string;
     name: string;
     googleId?: string;
-    appleId?: string;
   }) {
-    const { email, name, googleId, appleId } = params;
+    const { email, name, googleId } = params;
 
     // 1. Try to find by provider ID first (most specific match)
     let user = await this.prisma.user.findFirst({
       where: {
-        OR: [
-          ...(googleId ? [{ googleId }] : []),
-          ...(appleId ? [{ appleId }] : []),
-          { email },
-        ],
+        OR: [...(googleId ? [{ googleId }] : []), { email }],
       },
     });
 
     if (user) {
       // 2. If found, patch missing provider IDs (account linking)
-      const updates: Record<string, string> = {};
-      if (googleId && !user.googleId) updates.googleId = googleId;
-      if (appleId && !user.appleId) updates.appleId = appleId;
-
-      if (Object.keys(updates).length > 0) {
+      if (googleId && !user.googleId) {
         user = await this.prisma.user.update({
           where: { id: user.id },
-          data: updates,
+          data: { googleId },
         });
       }
       return user;
@@ -117,7 +106,6 @@ export class AuthService {
         email,
         passwordHash: null,
         googleId: googleId ?? null,
-        appleId: appleId ?? null,
         type: UserType.BUYER,
         status: UserStatus.ACTIVE, // OAuth = already verified by provider
         emailVerified: true,
@@ -168,53 +156,154 @@ export class AuthService {
   }
 
   // ============================================================
-  // APPLE SIGN-IN
+  // PHONE OTP AUTH
   // ============================================================
 
-  async loginWithApple(
-    identityToken: string,
-    fullName: string | undefined,
-    ip: string,
-    userAgent: string,
-  ) {
-    const clientId = this.configService.get<string>('APPLE_CLIENT_ID');
+  async sendOtp(phone: string) {
+    // 1. Gerar código de 6 dígitos
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const codeHash = crypto.createHash('sha256').update(code).digest('hex');
 
-    if (!clientId) {
-      throw new InternalServerErrorException(
-        'Apple Sign-In não está configurado. Adicione APPLE_CLIENT_ID ao .env.',
-      );
-    }
+    // 2. Definir expiração (5 minutos)
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 5);
 
-    let applePayload: any;
-    try {
-      applePayload = await appleSignin.verifyIdToken(identityToken, {
-        audience: clientId,
-        ignoreExpiration: false,
-      });
-    } catch {
-      throw new UnauthorizedException('Token Apple inválido ou expirado.');
-    }
-
-    const { sub: appleId, email } = applePayload;
-
-    if (!email && !appleId) {
-      throw new UnauthorizedException(
-        'Não foi possível identificar o usuário Apple.',
-      );
-    }
-
-    // Apple may relay a private email — we store it as is
-    const resolvedEmail =
-      email ?? `${appleId}@privaterelay.appleid.com`;
-
-    const user = await this.findOrCreateOAuthUser({
-      email: resolvedEmail,
-      // Apple only sends fullName on first sign-in — fallback to email prefix
-      name: fullName?.trim() || resolvedEmail.split('@')[0],
-      appleId,
+    // 3. Salvar no banco
+    await this.prisma.otpCode.create({
+      data: {
+        phone,
+        codeHash,
+        expiresAt,
+      },
     });
 
+    // 4. "Enviar" via SMS
+    console.log(`[OTP] Enviado para ${phone}: ${code}`);
+
+    // TODO: Integrar com serviço de SMS (ex: Twilio, AWS SNS)
+    return {
+      message:
+        'Se este telefone estiver cadastrado, você receberá um código em instantes.',
+    };
+  }
+
+  async verifyOtp(phone: string, code: string, ip: string, userAgent: string) {
+    const codeHash = crypto.createHash('sha256').update(code).digest('hex');
+
+    // 1. Buscar OTP válido
+    const otpRecord = await this.prisma.otpCode.findFirst({
+      where: {
+        phone,
+        codeHash,
+        usedAt: null,
+        expiresAt: { gt: new Date() },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!otpRecord) {
+      throw new UnauthorizedException('Código inválido ou expirado.');
+    }
+
+    // 2. Marcar como usado
+    await this.prisma.otpCode.update({
+      where: { id: otpRecord.id },
+      data: { usedAt: new Date() },
+    });
+
+    // 3. Buscar usuário pelo telefone
+    const user = await this.prisma.user.findUnique({ where: { phone } });
+
+    if (!user) {
+      throw new UnauthorizedException(
+        'Telefone não vinculado a nenhuma conta ativa.',
+      );
+    }
+
+    // 4. Atualizar flag de verificação se necessário
+    if (!user.phoneVerified) {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { phoneVerified: true, phoneVerifiedAt: new Date() },
+      });
+    }
+
     return this.generateTokens(user, ip, userAgent);
+  }
+
+  // ============================================================
+  // PASSWORD RECOVERY
+  // ============================================================
+
+  async forgotPassword(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+
+    // Segurança: Não revelar se o usuário existe
+    if (!user) {
+      return {
+        message:
+          'Se o e-mail informado estiver em nossa base, você receberá instruções para redefinir sua senha.',
+      };
+    }
+
+    // 1. Gerar token de recuperação
+    const token = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1);
+
+    // 2. Salvar token
+    await this.prisma.passwordResetToken.create({
+      data: {
+        userId: user.id,
+        tokenHash,
+        expiresAt,
+      },
+    });
+
+    // 3. Enviar e-mail
+    await this.mailService
+      .sendPasswordResetEmail(user.email, user.name, token)
+      .catch((err) => console.error('Error sending reset email:', err));
+
+    return {
+      message: 'Instruções de recuperação enviadas para o e-mail informado.',
+    };
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
+    // 1. Validar token
+    const resetRecord = await this.prisma.passwordResetToken.findFirst({
+      where: {
+        tokenHash,
+        usedAt: null,
+        expiresAt: { gt: new Date() },
+      },
+      include: { user: true },
+    });
+
+    if (!resetRecord) {
+      throw new UnauthorizedException('Token de recuperação inválido ou expirado.');
+    }
+
+    // 2. Atualizar senha
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: resetRecord.userId },
+        data: { passwordHash },
+      }),
+      this.prisma.passwordResetToken.update({
+        where: { id: resetRecord.id },
+        data: { usedAt: new Date() },
+      }),
+    ]);
+
+    return { message: 'Senha redefinida com sucesso. Faça login novamente.' };
   }
 
   // ============================================================

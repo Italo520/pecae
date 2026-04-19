@@ -50,4 +50,44 @@ export class MailService {
       throw new InternalServerErrorException('Falha no serviço de e-mail.');
     }
   }
+
+  /**
+   * Envia um e-mail de recuperação de senha.
+   */
+  async sendPasswordResetEmail(email: string, name: string, token: string) {
+    const resetUrl = `${this.configService.get<string>('FRONTEND_URL')}/reset-password?token=${token}`;
+    const from = this.configService.get<string>('MAIL_FROM') || 'PECAÊ <onboarding@resend.dev>';
+
+    try {
+      const { data, error } = await this.resend.emails.send({
+        from,
+        to: [email],
+        subject: 'Recuperação de senha - PECAÊ',
+        html: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+            <h1 style="color: #333;">Olá, ${name}!</h1>
+            <p>Você solicitou a redefinição de sua senha no <strong>PECAÊ</strong>. Para prosseguir, clique no botão abaixo:</p>
+            <div style="margin: 30px 0;">
+              <a href="${resetUrl}" style="background-color: #dc3545; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Redefinir minha senha</a>
+            </div>
+            <p>Este link expira em 1 hora.</p>
+            <p>Se o botão não funcionar, copie e cole este link no seu navegador:</p>
+            <p style="color: #666; font-size: 14px;">${resetUrl}</p>
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
+            <p style="color: #999; font-size: 12px;">Se você não solicitou a redefinição, sua senha permanecerá a mesma e você pode ignorar este e-mail.</p>
+          </div>
+        `,
+      });
+
+      if (error) {
+        console.error('Erro ao enviar e-mail via Resend:', error);
+        throw new InternalServerErrorException('Falha ao enviar e-mail de recuperação.');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Exceção ao enviar e-mail:', error);
+      throw new InternalServerErrorException('Falha no serviço de e-mail.');
+    }
+  }
 }

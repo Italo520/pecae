@@ -23,7 +23,6 @@ import { useForgeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
 import { useAuthStore } from '../../src/store/auth-store';
 import { useGoogleAuth } from '../../src/hooks/useGoogleAuth';
-import { useAppleAuth } from '../../src/hooks/useAppleAuth';
 
 const loginSchema = z.object({
   email: z.string().email('Credencial inválida'),
@@ -67,15 +66,6 @@ export default function LoginScreen() {
     onError: (message) => Alert.alert('FALHA GOOGLE', message),
   });
 
-  // ─── Apple OAuth (iOS only) ──────────────────────────────────
-
-  const { signIn: signInWithApple, loading: appleLoading } = useAppleAuth({
-    onSuccess: async (data) => {
-      await setAuth(data.user, data.tokens.accessToken, data.tokens.refreshToken);
-      router.replace('/(tabs)');
-    },
-    onError: (message) => Alert.alert('FALHA APPLE', message),
-  });
 
   return (
     <ForgeBackground>
@@ -189,12 +179,7 @@ export default function LoginScreen() {
               />
 
               <TouchableOpacity
-                onPress={() =>
-                  Alert.alert(
-                    'RECUPERAÇÃO',
-                    'Protocolo de redefinição será enviado para seu e-mail.',
-                  )
-                }
+                onPress={() => router.push('/(auth)/forgot-password')}
                 style={styles.forgotPass}
               >
                 <Text
@@ -238,19 +223,16 @@ export default function LoginScreen() {
                 }
               />
 
-              {/* Apple Sign-In — iOS Only */}
-              {Platform.OS === 'ios' && (
-                <ForgeButton
-                  title="APPLE_AUTH"
-                  onPress={signInWithApple}
-                  loading={appleLoading}
-                  variant="secondary"
-                  style={styles.oauthButton}
-                  leftIcon={
-                    <Ionicons name="logo-apple" size={18} color={colors.textPrimary} />
-                  }
-                />
-              )}
+              {/* Phone OTP Login */}
+              <ForgeButton
+                title="LOGIN_VIA_SMS"
+                onPress={() => router.push('/(auth)/otp-login')}
+                variant="secondary"
+                style={styles.oauthButton}
+                leftIcon={
+                  <Ionicons name="phone-portrait-outline" size={18} color={colors.textPrimary} />
+                }
+              />
 
               <TouchableOpacity
                 onPress={() => router.push('/(auth)/register')}
