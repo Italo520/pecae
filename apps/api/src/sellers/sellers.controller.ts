@@ -36,4 +36,18 @@ export class SellersController {
   async getPublicProfile(@Param('id') id: string) {
     return this.sellersService.findPublicProfile(id);
   }
+
+  @Post('me/logo')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserType.SELLER, UserType.BOTH)
+  async generateLogoUrl(@Req() req: any, @Body('filename') filename: string) {
+    return this.sellersService.generateLogoUploadUrl(req.user.id, filename);
+  }
+
+  @Post('me/logo/confirm')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserType.SELLER, UserType.BOTH)
+  async confirmLogo(@Req() req: any, @Body('publicUrl') publicUrl: string) {
+    return this.sellersService.confirmLogoUpload(req.user.id, publicUrl);
+  }
 }

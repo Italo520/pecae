@@ -30,6 +30,7 @@
     "@nestjs/swagger": "^11.3.0",
     "@nestjs/throttler": "^6.5.0",
     "@prisma/client": "^5.14.0",
+    "@supabase/supabase-js": "^2.103.3",
     "apple-signin-auth": "^1.7.6",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",

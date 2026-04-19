@@ -1,11 +1,15 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { StorageService } from '../common/storage/storage.service';
 import { CreateSellerProfileDto } from './dto/create-seller-profile.dto';
 import { UpdateSellerProfileDto } from './dto/update-seller-profile.dto';
 
 @Injectable()
 export class SellersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly storageService: StorageService,
+  ) {}
 
   async create(userId: string, dto: CreateSellerProfileDto) {
     const existing = await this.prisma.sellerProfile.findUnique({
@@ -106,5 +110,44 @@ export class SellersService {
     }
 
     return profile.stats;
+  }
+
+  async generateLogoUploadUrl(userId: string, filename: string) {
+    const profile = await this.prisma.sellerProfile.findUnique({
+      where: { userId },
+    });
+
+    if (!profile) {
+      throw new NotFoundException('Seller profile not found');
+    }
+
+    const extension = filename.split('.').pop();
+    const path = `sellers/${userId}/logo-${Date.now()}.${extension}`;
+    
+    const data = await this.storageService.createSignedUploadUrl('seller-logos', path);
+
+    return {
+      uploadUrl: data.uploadUrl,
+      token: data.token,
+      path: data.path,
+      publicUrl: data.publicUrl,
+    };
+  }
+
+  async confirmLogoUpload(userId: string, publicUrl: string) {
+    const profile = await this.prisma.sellerProfile.findUnique({
+      where: { userId },
+    });
+
+    if (!profile) {
+      throw new NotFoundException('Seller profile not found');
+    }
+
+    // Optional: add logic to delete old logo file if needed
+
+    return this.prisma.sellerProfile.update({
+      where: { userId },
+      data: { logo: publicUrl },
+    });
   }
 }

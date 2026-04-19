@@ -1,0 +1,80 @@
+import { Tabs } from 'expo-router';
+import { BlurView } from 'expo-blur';
+import { Platform, StyleSheet, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+
+export default function SellerTabsLayout() {
+  return (
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: styles.tabBar,
+        tabBarBackground: () => (
+          Platform.OS === 'ios' ? (
+            <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} />
+          ) : (
+            <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(27, 32, 40, 0.85)' }]} />
+          )
+        ),
+        tabBarActiveTintColor: '#3fff8b', // Vibrant Electric
+        tabBarInactiveTintColor: '#A8ABB3', // Text Muted
+        tabBarShowLabel: true,
+        tabBarLabelStyle: {
+          fontFamily: 'SpaceGrotesk_500Medium',
+          fontSize: 10,
+          marginBottom: 8,
+        },
+        tabBarIconStyle: {
+          marginTop: 8,
+        },
+      }}
+    >
+      <Tabs.Screen
+        name="perfil"
+        options={{
+          title: 'Início',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="grid-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="inventory"
+        options={{
+          title: 'Anúncios',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="list-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="sales"
+        options={{
+          title: 'Vendas',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="cart-outline" size={size} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
+  );
+}
+
+const styles = StyleSheet.create({
+  tabBar: {
+    position: 'absolute',
+    bottom: Platform.OS === 'ios' ? 30 : 20,
+    left: 20,
+    right: 20,
+    height: 64,
+    borderRadius: 32,
+    borderTopWidth: 0,
+    elevation: 8,
+    backgroundColor: Platform.OS === 'ios' ? 'transparent' : 'rgba(27, 32, 40, 0.95)',
+    overflow: 'hidden',
+    shadowColor: '#3fff8b',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+  },
+});

@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { MailModule } from './mail/mail.module';
 import { SellersModule } from './sellers/sellers.module';
 import { VerificationsModule } from './verifications/verifications.module';
+import { StorageModule } from './common/storage/storage.module';
 import { BullModule } from '@nestjs/bullmq';
 import { ConfigService } from '@nestjs/config';
 
@@ -54,6 +55,7 @@ import { ConfigService } from '@nestjs/config';
     MailModule,
     SellersModule,
     VerificationsModule,
+    StorageModule,
   ],
   providers: [
     // Register ThrottlerGuard globally so @Throttle() decorators are enforced
