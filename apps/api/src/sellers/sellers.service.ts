@@ -146,11 +146,81 @@ export class SellersService {
       throw new NotFoundException('Seller profile not found');
     }
 
-    // Optional: add logic to delete old logo file if needed
-
     return this.prisma.sellerProfile.update({
       where: { userId },
       data: { logo: publicUrl },
     });
+  }
+
+  async requestVerification(userId: string) {
+    const profile = await this.prisma.sellerProfile.findUnique({
+      where: { userId },
+      include: { verifications: { where: { status: 'PENDING' } } },
+    });
+
+    if (!profile) {
+      throw new NotFoundException('Seller profile not found');
+    }
+
+    if (profile.verifications.length > 0) {
+      throw new ConflictException('A verification request is already pending');
+    }
+
+    if (profile.isVerified) {
+      throw new ConflictException('Seller is already verified');
+    }
+
+    // Geramos 5 slots de upload para o processo de verificação
+    const signedUrls = await Promise.all(
+      Array.from({ length: 5 }, async (_, i) => {
+        const path = `verifications/${profile.id}/doc_${Date.now()}_${i}`;
+        const data = await this.storageService.createSignedUploadUrl('verification-docs', path);
+        return {
+          id: `doc_${i}`,
+          ...data,
+        };
+      }),
+    );
+
+    return signedUrls;
+  }
+
+  async confirmVerificationRequest(userId: string, documentUrls: string[]) {
+    const profile = await this.prisma.sellerProfile.findUnique({
+      where: { userId },
+    });
+
+    if (!profile) {
+      throw new NotFoundException('Seller profile not found');
+    }
+
+    return this.prisma.sellerVerification.create({
+      data: {
+        sellerProfileId: profile.id,
+        documentUrls,
+        status: 'PENDING',
+      },
+    });
+  }
+
+  async getVerificationStatus(userId: string) {
+    const profile = await this.prisma.sellerProfile.findUnique({
+      where: { userId },
+      include: {
+        verifications: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+        },
+      },
+    });
+
+    if (!profile) {
+      throw new NotFoundException('Seller profile not found');
+    }
+
+    return {
+      isVerified: profile.isVerified,
+      latestVerification: profile.verifications[0] || null,
+    };
   }
 }

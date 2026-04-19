@@ -23,10 +23,7 @@ export default function SellerProfileScreen() {
   });
 
   const handleVerificationRequest = () => {
-    Alert.alert(
-      'Solicitação de Verificação', 
-      'Sua solicitação foi enviada para análise da nossa equipe técnica. Entraremos em contato em breve.'
-    );
+    router.push('/(seller)/solicitar-verificacao');
   };
 
   const menuItems = [

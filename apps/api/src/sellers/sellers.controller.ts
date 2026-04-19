@@ -6,6 +6,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserType } from '@prisma/client';
+import { VerificationRequestDto } from './dto/verification-request.dto';
 
 @Controller('sellers')
 export class SellersController {
@@ -55,5 +56,26 @@ export class SellersController {
   @Roles(UserType.SELLER, UserType.BOTH)
   async confirmLogo(@Req() req: any, @Body('publicUrl') publicUrl: string) {
     return this.sellersService.confirmLogoUpload(req.user.id, publicUrl);
+  }
+
+  @Get('verification/status')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserType.SELLER, UserType.BOTH)
+  async getVerificationStatus(@Req() req: any) {
+    return this.sellersService.getVerificationStatus(req.user.id);
+  }
+
+  @Post('verification/request')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserType.SELLER, UserType.BOTH)
+  async requestVerification(@Req() req: any) {
+    return this.sellersService.requestVerification(req.user.id);
+  }
+
+  @Post('verification/confirm')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserType.SELLER, UserType.BOTH)
+  async confirmVerification(@Req() req: any, @Body() dto: VerificationRequestDto) {
+    return this.sellersService.confirmVerificationRequest(req.user.id, dto.documentUrls);
   }
 }
