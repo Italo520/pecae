@@ -1,4 +1,4 @@
-import { IsString, IsEnum, IsOptional, IsObject, Matches, MinLength, ValidateIf } from 'class-validator';
+import { IsString, IsEnum, IsOptional, IsObject, Matches, MinLength, ValidateIf, IsBoolean } from 'class-validator';
 import { SellerType } from '@prisma/client';
 
 export class CreateSellerProfileDto {
@@ -34,6 +34,10 @@ export class CreateSellerProfileDto {
   @IsOptional()
   @IsString()
   phone?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  showWhatsapp?: boolean;
 
   @IsOptional()
   @IsObject()

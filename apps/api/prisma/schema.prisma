@@ -232,6 +232,7 @@ model SellerProfile {
   description String?    @db.Text
 
   isVerified       Boolean @default(false) @map("is_verified")
+  showWhatsapp     Boolean @default(false) @map("show_whatsapp")
   responseTimeAvg Int?    @map("response_time_avg")
 
   createdAt DateTime @default(now()) @map("created_at")

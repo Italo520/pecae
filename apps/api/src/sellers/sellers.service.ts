@@ -86,14 +86,17 @@ export class SellersService {
     }
 
     // Omit sensitive data
-    const { userId, cnpj, phone, whatsapp, ...publicProfile } = profile;
-
-    // Mask CNPJ if present
-    const maskedCnpj = cnpj ? `${cnpj.substring(0, 3)}...${cnpj.substring(cnpj.length - 2)}` : null;
+    // We only expose city/state, not the full address or exact coordinates
+    const { userId, cnpj, address, lat, lng, whatsapp, phone, ...publicData } = profile;
 
     return {
-      ...publicProfile,
-      cnpj: maskedCnpj,
+      ...publicData,
+      whatsapp: profile.showWhatsapp ? whatsapp : undefined,
+      phone: profile.showWhatsapp ? phone : undefined,
+      stats: profile.stats ? {
+        activeListings: profile.stats.activeListings,
+        avgResponseTimeMinutes: profile.stats.avgResponseTimeMinutes,
+      } : undefined,
     };
   }
 

@@ -37,6 +37,12 @@ export class SellersController {
     return this.sellersService.findPublicProfile(id);
   }
 
+  @Get(':id/listings')
+  async getSellerListings(@Param('id') id: string) {
+    // TODO: Implement after M04/M05 (Listings Module)
+    return [];
+  }
+
   @Post('me/logo')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserType.SELLER, UserType.BOTH)
