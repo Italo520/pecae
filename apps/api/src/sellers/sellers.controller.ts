@@ -33,6 +33,13 @@ export class SellersController {
     return this.sellersService.findByUserId(req.user.id);
   }
 
+  @Get('me/stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserType.SELLER, UserType.BOTH)
+  async getMyStats(@Req() req: any) {
+    return this.sellersService.getStats(req.user.id);
+  }
+
   @Get(':id')
   async getPublicProfile(@Param('id') id: string) {
     return this.sellersService.findPublicProfile(id);
@@ -40,8 +47,7 @@ export class SellersController {
 
   @Get(':id/listings')
   async getSellerListings(@Param('id') id: string) {
-    // TODO: Implement after M04/M05 (Listings Module)
-    return [];
+    return this.sellersService.getSellerListings(id);
   }
 
   @Post('me/logo')

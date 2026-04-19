@@ -3,12 +3,15 @@ import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../common/storage/storage.service';
 import { CreateSellerProfileDto } from './dto/create-seller-profile.dto';
 import { UpdateSellerProfileDto } from './dto/update-seller-profile.dto';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 
 @Injectable()
 export class SellersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly storageService: StorageService,
+    @InjectQueue('seller-stats') private readonly statsQueue: Queue,
   ) {}
 
   async create(userId: string, dto: CreateSellerProfileDto) {
@@ -78,19 +81,28 @@ export class SellersService {
       where: { id },
       include: {
         stats: true,
+        user: {
+          select: {
+            status: true,
+          },
+        },
       },
     });
 
-    if (!profile) {
-      throw new NotFoundException('Seller profile not found');
+    if (!profile || profile.user.status === 'SUSPENDED' || profile.user.status === 'BANNED') {
+      throw new NotFoundException('Seller profile not found or unavailable');
     }
 
     // Omit sensitive data
     // We only expose city/state, not the full address or exact coordinates
-    const { userId, cnpj, address, lat, lng, whatsapp, phone, ...publicData } = profile;
+    const { userId, cnpj, address, lat, lng, whatsapp, phone, user, ...publicData } = profile;
+    
+    // Mask CNPJ: XX.XXX.XXX/0001-XX
+    const maskedCnpj = cnpj ? `${cnpj.slice(0, 2)}.***.***/${cnpj.slice(8, 12)}-**` : undefined;
 
     return {
       ...publicData,
+      cnpj: maskedCnpj,
       whatsapp: profile.showWhatsapp ? whatsapp : undefined,
       phone: profile.showWhatsapp ? phone : undefined,
       stats: profile.stats ? {
@@ -113,6 +125,34 @@ export class SellersService {
     }
 
     return profile.stats;
+  }
+
+  async getSellerListings(sellerProfileId: string) {
+    const profile = await this.prisma.sellerProfile.findUnique({
+      where: { id: sellerProfileId },
+      include: {
+        user: { select: { status: true } }
+      }
+    });
+
+    if (!profile || profile.user.status === 'SUSPENDED' || profile.user.status === 'BANNED') {
+      throw new NotFoundException('Seller profile not found or unavailable');
+    }
+
+    // Note: Assuming `Listing` model is now available in schema
+    return this.prisma.listing.findMany({
+      where: {
+        sellerProfileId,
+        status: 'PUBLISHED',
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  async requestStatsUpdate(sellerProfileId: string) {
+    await this.statsQueue.add('update-seller-stats', { sellerProfileId });
   }
 
   async generateLogoUploadUrl(userId: string, filename: string) {

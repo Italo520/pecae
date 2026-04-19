@@ -42,35 +42,6 @@ export class VerificationsService {
     });
   }
 
-  async requestVerification(userId: string, dto: RequestVerificationDto) {
-    const profile = await this.prisma.sellerProfile.findUnique({
-      where: { userId },
-    });
-
-    if (!profile) {
-      throw new NotFoundException('Seller profile not found');
-    }
-
-    const pendingVerification = await this.prisma.sellerVerification.findFirst({
-      where: {
-        sellerProfileId: profile.id,
-        status: VerificationStatus.PENDING,
-      },
-    });
-
-    if (pendingVerification) {
-      throw new ConflictException('A verification request is already pending');
-    }
-
-    return this.prisma.sellerVerification.create({
-      data: {
-        sellerProfileId: profile.id,
-        documentUrls: JSON.stringify(dto.documentUrls),
-        status: VerificationStatus.PENDING,
-      },
-    });
-  }
-
   async resolveVerification(verificationId: string, moderatorId: string, dto: ResolveVerificationDto) {
     const verification = await this.prisma.sellerVerification.findUnique({
       where: { id: verificationId },
@@ -108,6 +79,20 @@ export class VerificationsService {
           data: { isVerified: true },
         });
       }
+
+      await tx.auditLog.create({
+        data: {
+          action: 'RESOLVE_VERIFICATION',
+          entity: 'SellerVerification',
+          entityId: verificationId,
+          actorId: moderatorId,
+          details: JSON.stringify({
+            status: dto.status,
+            notes: dto.notes,
+            sellerProfileId: verification.sellerProfileId,
+          }),
+        },
+      });
 
       return resolved;
     });

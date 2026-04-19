@@ -32,6 +32,7 @@ enum UserStatus {
   ACTIVE
   SUSPENDED
   BANNED
+  DELETED
 }
 
 // ============================================================
@@ -65,9 +66,11 @@ model User {
   // --- Profile ---
   avatar String? @db.Text
 
-  // --- Timestamps ---
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  // --- Timestamps & LGPD ---
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+  originalEmail String?   @map("original_email")
 
   // --- Relations ---
   refreshTokens            RefreshToken[]
@@ -77,6 +80,10 @@ model User {
   termsAcceptances         TermsAcceptance[]
   sellerProfile            SellerProfile?
   sellerVerifications      SellerVerification[]
+  buyerProfile             BuyerProfile?
+  notificationPreferences  NotificationPreferences?
+  favorites                Favorite[]
+  savedSearches            SavedSearch[]
 
   @@index([email])
   @@index([status])
@@ -241,6 +248,7 @@ model SellerProfile {
   user          User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   stats         SellerStats?
   verifications SellerVerification[]
+  listings      Listing[]
 
   @@index([city, state])
   @@map("seller_profiles")
@@ -278,4 +286,112 @@ model SellerVerification {
 
   @@index([sellerProfileId])
   @@map("seller_verifications")
+}
+
+// ============================================================
+// M08 - Audit Log
+// ============================================================
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  action      String   @db.VarChar(100)
+  entity      String   @db.VarChar(100)
+  entityId    String   @map("entity_id")
+  actorId     String?  @map("actor_id")
+  details     Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([entity, entityId])
+  @@index([actorId])
+  @@map("audit_logs")
+}
+
+// ============================================================
+// M04/M05 - Listings (Stub)
+// ============================================================
+
+enum ListingStatus {
+  DRAFT
+  PUBLISHED
+  SOLD
+  EXPIRED
+  REJECTED
+}
+
+model Listing {
+  id              String        @id @default(uuid())
+  sellerProfileId String        @map("seller_profile_id")
+  title           String        @db.VarChar(255)
+  status          ListingStatus @default(DRAFT)
+  price           Float?
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  sellerProfile   SellerProfile @relation(fields: [sellerProfileId], references: [id], onDelete: Cascade)
+  favorites       Favorite[]
+
+  @@index([sellerProfileId, status])
+  @@map("listings")
+}
+
+// ============================================================
+// M02 - Buyer Profile Entities
+// ============================================================
+
+model BuyerProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique @map("user_id")
+  name      String
+  avatar    String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("buyer_profile")
+}
+
+model NotificationPreferences {
+  id           String   @id @default(uuid())
+  userId       String   @unique @map("user_id")
+  pushEnabled  Boolean  @default(true) @map("push_enabled")
+  emailEnabled Boolean  @default(true) @map("email_enabled")
+  inAppEnabled Boolean  @default(true) @map("in_app_enabled")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_preferences")
+}
+
+/// Representa a "curtida" ou "favorito" de um comprador em um anúncio
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  listingId String   @map("listing_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listingId])
+  @@index([userId])
+  @@map("favorites")
+}
+
+/// Representa uma busca salva pelo comprador, com suporte a alertas
+model SavedSearch {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  query       String?  @db.VarChar(255)
+  filters     Json     @default("{}")
+  alertActive Boolean  @default(false) @map("alert_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("saved_searches")
 }

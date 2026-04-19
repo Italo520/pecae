@@ -18,12 +18,6 @@ export class VerificationsController {
     return this.verificationsService.getPendingVerifications();
   }
 
-  @Post('request')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserType.SELLER, UserType.BOTH)
-  async requestVerification(@Req() req: any, @Body() dto: RequestVerificationDto) {
-    return this.verificationsService.requestVerification(req.user.id, dto);
-  }
 
   @Put(':id/resolve')
   @UseGuards(JwtAuthGuard, RolesGuard)

@@ -1,0 +1,30 @@
+import { Controller, Post, Get, Delete, Patch, Param, Body, UseGuards, Request } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { SavedSearchesService } from './saved-searches.service';
+import { CreateSavedSearchDto } from './dto/create-saved-search.dto';
+
+@UseGuards(JwtAuthGuard)
+@Controller('buyers/saved-searches')
+export class SavedSearchesController {
+  constructor(private readonly savedSearchesService: SavedSearchesService) {}
+
+  @Post()
+  create(@Request() req, @Body() data: CreateSavedSearchDto) {
+    return this.savedSearchesService.createSavedSearch(req.user.id, data);
+  }
+
+  @Get()
+  findAll(@Request() req) {
+    return this.savedSearchesService.getSavedSearches(req.user.id);
+  }
+
+  @Delete(':id')
+  remove(@Request() req, @Param('id') id: string) {
+    return this.savedSearchesService.deleteSavedSearch(req.user.id, id);
+  }
+
+  @Patch(':id/alert')
+  toggleAlert(@Request() req, @Param('id') id: string, @Body('alertActive') alertActive: boolean) {
+    return this.savedSearchesService.toggleAlert(req.user.id, id, alertActive);
+  }
+}

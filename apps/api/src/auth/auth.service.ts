@@ -110,17 +110,34 @@ export class AuthService {
     }
 
     // 3. Create brand-new OAuth user (no password, already verified)
-    return this.prisma.user.create({
-      data: {
-        name,
-        email,
-        passwordHash: null,
-        googleId: googleId ?? null,
-        type: UserType.BUYER,
-        status: UserStatus.ACTIVE, // OAuth = already verified by provider
-        emailVerified: true,
-        emailVerifiedAt: new Date(),
-      },
+    return this.prisma.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
+        data: {
+          name,
+          email,
+          passwordHash: null,
+          googleId: googleId ?? null,
+          type: UserType.BUYER,
+          status: UserStatus.ACTIVE, // OAuth = already verified by provider
+          emailVerified: true,
+          emailVerifiedAt: new Date(),
+        },
+      });
+
+      await tx.buyerProfile.create({
+        data: {
+          userId: newUser.id,
+          name: newUser.name,
+        },
+      });
+
+      await tx.notificationPreferences.create({
+        data: {
+          userId: newUser.id,
+        },
+      });
+
+      return newUser;
     });
   }
 
@@ -377,6 +394,20 @@ export class AuthService {
               userAgent,
             },
           });
+
+          if (type === UserType.BUYER || type === UserType.BOTH) {
+            await tx.buyerProfile.create({
+              data: {
+                userId: newUser.id,
+                name: newUser.name,
+              },
+            });
+            await tx.notificationPreferences.create({
+              data: {
+                userId: newUser.id,
+              },
+            });
+          }
 
           const rawToken = crypto.randomBytes(32).toString('hex');
           const tokenHash = crypto
