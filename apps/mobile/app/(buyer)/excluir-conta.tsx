@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
-import { useAuth } from '../../contexts/AuthContext';
-import { api } from '../../lib/api';
+import { useAuthStore } from '../../src/store/auth-store';
+import { api } from '../../src/services/api';
 
 export default function ExcluirContaScreen() {
   const [password, setPassword] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
-  const { signOut } = useAuth();
+  const { clearAuth: signOut } = useAuthStore();
 
   const handleDelete = () => {
     if (!password || password.trim() === '') {

@@ -2,12 +2,12 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Linking, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { ForgeBackground } from '@/src/components/ForgeUI/ForgeBackground';
-import { ForgeGlassCard } from '@/src/components/ForgeUI/ForgeGlassCard';
-import { ForgeButton } from '@/src/components/ForgeUI/ForgeButton';
-import { StatWidget } from '@/src/components/ForgeUI/StatWidget';
+import { ForgeBackground } from '../../src/components/ForgeUI/ForgeBackground';
+import { ForgeGlassCard } from '../../src/components/ForgeUI/ForgeGlassCard';
+import { ForgeButton } from '../../src/components/ForgeUI/ForgeButton';
+import { StatWidget } from '../../src/components/ForgeUI/StatWidget';
 import { useQuery } from '@tanstack/react-query';
-import { api } from '@/src/services/api';
+import { api } from '../../src/services/api';
 import { BlurView } from 'expo-blur';
 
 export default function PublicProfileScreen() {
