@@ -1,17 +1,17 @@
 import { useColorScheme } from 'react-native';
-import { ForgeTokens } from './forge-tokens';
+import { PecaeTokens } from './pecae-tokens';
 
-export const useForgeTheme = () => {
+export const usePecaeTheme = () => {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
-  const colors = isDark ? ForgeTokens.colors.dark : ForgeTokens.colors.light;
+  const colors = isDark ? PecaeTokens.colors.dark : PecaeTokens.colors.light;
 
   return {
     isDark,
     colors,
-    typography: ForgeTokens.typography,
-    effects: ForgeTokens.effects,
+    typography: PecaeTokens.typography,
+    effects: PecaeTokens.effects,
   };
 };
 
-export type ForgeTheme = ReturnType<typeof useForgeTheme>;
+export type PecaeTheme = ReturnType<typeof usePecaeTheme>;

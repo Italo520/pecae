@@ -2,10 +2,10 @@ import React from 'react';
 import { Stack, useRouter } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useForgeTheme } from '../../src/theme';
+import { usePecaeTheme } from '../../src/theme';
 
 export default function BuyerLayout() {
-  const { colors, typography } = useForgeTheme();
+  const { colors, typography } = usePecaeTheme();
   const router = useRouter();
 
   return (

@@ -14,12 +14,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Ionicons } from '@expo/vector-icons';
 import {
-  ForgeBackground,
-  ForgeGlassCard,
-  ForgeInput,
-  ForgeButton,
-} from '../../src/components/ForgeUI';
-import { useForgeTheme } from '../../src/theme';
+  PecaeBackground,
+  PecaeGlassCard,
+  PecaeInput,
+  PecaeButton,
+  PecaeScreenContainer,
+} from '../../src/components/PecaeUI';
+import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
 import { useAuthStore } from '../../src/store/auth-store';
 import { useGoogleAuth } from '../../src/hooks/useGoogleAuth';
@@ -33,7 +34,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { colors, typography } = useForgeTheme();
+  const { colors, typography } = usePecaeTheme();
   const { setAuth } = useAuthStore();
 
   const {
@@ -88,17 +89,16 @@ export default function LoginScreen() {
 
 
   return (
-    <ForgeBackground>
+    <PecaeBackground>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
       >
-        <View style={styles.content}>
-          {/* Status Tag */}
+        <PecaeScreenContainer scrollable>
           <View
             style={[
               styles.statusTag,
-              { backgroundColor: colors.surface + '80', borderColor: colors.brand + '40' },
+              { backgroundColor: colors.surface, borderColor: colors.border },
             ]}
           >
             <View style={[styles.statusDot, { backgroundColor: colors.brand }]} />
@@ -108,11 +108,10 @@ export default function LoginScreen() {
                 { color: colors.textPrimary, fontFamily: typography.display },
               ]}
             >
-              CORE_AUTH_SERVICE // V1.0
+              PLATAFORMA_OFICIAL // V1.2
             </Text>
           </View>
 
-          {/* Header */}
           <View style={styles.header}>
             <Text
               style={[
@@ -120,7 +119,7 @@ export default function LoginScreen() {
                 { color: colors.textPrimary, fontFamily: typography.display },
               ]}
             >
-              PECAÊ
+              PEÇAÊ
             </Text>
             <View style={[styles.titleUnderline, { backgroundColor: colors.brand }]} />
             <Text
@@ -129,169 +128,167 @@ export default function LoginScreen() {
                 { color: colors.textMuted, fontFamily: typography.body },
               ]}
             >
-              Acesso ao Terminal de Operações Industriais.
+              O maior ecossistema de peças e sucatas.
             </Text>
           </View>
 
-          {/* Glass Card */}
-          <ForgeGlassCard intensity={20} style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Text
-                style={[
-                  styles.cardTitle,
-                  { color: colors.textPrimary, fontFamily: typography.display },
-                ]}
-              >
-                SYSTEM_ACCESS
-              </Text>
-              <Text
-                style={[
-                  styles.cardSubtitle,
-                  { color: colors.textMuted, fontFamily: typography.body },
-                ]}
-              >
-                Insira suas credenciais cadastradas.
-              </Text>
-            </View>
-
-            <View style={styles.form}>
-              <Controller
-                control={control}
-                name="email"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <ForgeInput
-                    label="CREDENCIAL (E-MAIL)"
-                    placeholder="tecnico@pecae.com.br"
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                    error={errors.email?.message}
-                    leftIcon={
-                      <Ionicons name="mail-outline" size={20} color={colors.textMuted} />
-                    }
-                  />
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="password"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <ForgeInput
-                    label="CHAVE DE ACESSO"
-                    placeholder="Sua senha"
-                    secureTextEntry
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                    error={errors.password?.message}
-                    leftIcon={
-                      <Ionicons
-                        name="lock-closed-outline"
-                        size={20}
-                        color={colors.textMuted}
-                      />
-                    }
-                  />
-                )}
-              />
-
-              <TouchableOpacity
-                onPress={() => router.push('/(auth)/forgot-password')}
-                style={styles.forgotPass}
-              >
+          <View style={styles.webWrapper}>
+            <PecaeGlassCard intensity={20} style={styles.card}>
+              <View style={styles.cardHeader}>
                 <Text
                   style={[
-                    styles.forgotPassText,
-                    { color: colors.brand, fontFamily: typography.display },
+                    styles.cardTitle,
+                    { color: colors.textPrimary, fontFamily: typography.display },
                   ]}
                 >
-                  // ESQUECEU A CHAVE?
+                  IDENTIFICAÇÃO
                 </Text>
-              </TouchableOpacity>
-
-              <ForgeButton
-                title="AUTENTICAR"
-                onPress={handleSubmit(onSubmit)}
-                loading={isSubmitting}
-                variant="primary"
-                style={styles.loginButton}
-              />
-
-              {/* Divider */}
-              <View style={styles.dividerRow}>
-                <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-                <Text
-                  style={[styles.dividerText, { color: colors.textMuted, fontFamily: typography.body }]}
-                >
-                  ou acesso rápido
-                </Text>
-                <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-              </View>
-
-              {/* Google Sign-In */}
-              <ForgeButton
-                title="GOOGLE_AUTH"
-                onPress={signInWithGoogle}
-                loading={googleLoading}
-                variant="secondary"
-                style={styles.oauthButton}
-                leftIcon={
-                  <Ionicons name="logo-google" size={18} color={colors.textPrimary} />
-                }
-              />
-
-              {/* Phone OTP Login */}
-              <ForgeButton
-                title="LOGIN_VIA_SMS"
-                onPress={() => router.push('/(auth)/otp-login')}
-                variant="secondary"
-                style={styles.oauthButton}
-                leftIcon={
-                  <Ionicons name="phone-portrait-outline" size={18} color={colors.textPrimary} />
-                }
-              />
-
-              <TouchableOpacity
-                onPress={() => router.push('/(auth)/register')}
-                style={styles.registerLink}
-              >
                 <Text
                   style={[
-                    styles.registerText,
+                    styles.cardSubtitle,
                     { color: colors.textMuted, fontFamily: typography.body },
                   ]}
                 >
-                  Não possui acesso?{' '}
-                  <Text style={{ color: colors.brand, fontFamily: typography.display }}>
-                    INICIAR_FORJA
-                  </Text>
+                  Bem-vindo de volta! Entre com seus dados.
                 </Text>
-              </TouchableOpacity>
-            </View>
-          </ForgeGlassCard>
+              </View>
+
+              <View style={styles.form}>
+                <Controller
+                  control={control}
+                  name="email"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <PecaeInput
+                      label="E-MAIL"
+                      placeholder="seu@email.com.br"
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                      error={errors.email?.message}
+                      leftIcon={
+                        <Ionicons name="mail-outline" size={20} color={colors.textMuted} />
+                      }
+                    />
+                  )}
+                />
+
+                <Controller
+                  control={control}
+                  name="password"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <PecaeInput
+                      label="SENHA"
+                      placeholder="Digite sua senha"
+                      secureTextEntry
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                      error={errors.password?.message}
+                      leftIcon={
+                        <Ionicons
+                          name="lock-closed-outline"
+                          size={20}
+                          color={colors.textMuted}
+                        />
+                      }
+                    />
+                  )}
+                />
+
+                <TouchableOpacity
+                  onPress={() => router.push('/(auth)/forgot-password')}
+                  style={styles.forgotPass}
+                >
+                  <Text
+                    style={[
+                      styles.forgotPassText,
+                      { color: colors.brand, fontFamily: typography.display },
+                    ]}
+                  >
+                    // ESQUECEU A SENHA?
+                  </Text>
+                </TouchableOpacity>
+
+                <PecaeButton
+                  title="ENTRAR"
+                  onPress={handleSubmit(onSubmit)}
+                  loading={isSubmitting}
+                  variant="primary"
+                  style={styles.loginButton}
+                />
+
+                <View style={styles.dividerRow}>
+                  <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
+                  <Text
+                    style={[styles.dividerText, { color: colors.textMuted, fontFamily: typography.body }]}
+                  >
+                    ou continue com
+                  </Text>
+                  <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
+                </View>
+
+                <PecaeButton
+                  title="GOOGLE"
+                  onPress={signInWithGoogle}
+                  loading={googleLoading}
+                  variant="secondary"
+                  style={styles.oauthButton}
+                  leftIcon={
+                    <Ionicons name="logo-google" size={18} color={colors.textPrimary} />
+                  }
+                />
+
+                <TouchableOpacity
+                  onPress={() => router.push('/(auth)/register')}
+                  style={styles.registerLink}
+                >
+                  <Text
+                    style={[
+                      styles.registerText,
+                      { color: colors.textMuted, fontFamily: typography.body },
+                    ]}
+                  >
+                    Ainda não tem conta?{' '}
+                    <Text style={{ color: colors.brand, fontFamily: typography.display }}>
+                      CRIAR CONTA
+                    </Text>
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </PecaeGlassCard>
+          </View>
 
           <View style={styles.footer}>
             <Text
               style={[
                 styles.footerText,
-                { color: colors.textMuted + '60', fontFamily: typography.body },
+                { color: colors.textMuted, opacity: 0.5, fontFamily: typography.body },
               ]}
             >
-              ESTA É UMA ÁREA RESTRITA E MONITORADA.
+              © 2026 PEÇAÊ - MARKETPLACE DE PEÇAS USADAS.
             </Text>
           </View>
-        </View>
+        </PecaeScreenContainer>
       </KeyboardAvoidingView>
-    </ForgeBackground>
+    </PecaeBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { flex: 1, padding: 24, justifyContent: 'center' },
+  content: { 
+    flex: 1, 
+    padding: 24, 
+    justifyContent: 'center',
+    width: '100%',
+    maxWidth: Platform.OS === 'web' ? 500 : '100%',
+    alignSelf: 'center',
+  },
+  webWrapper: {
+    width: '100%',
+  },
   statusTag: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -328,5 +325,5 @@ const styles = StyleSheet.create({
   registerLink: { marginTop: 24, alignItems: 'center' },
   registerText: { fontSize: 12, letterSpacing: 0.5 },
   footer: { marginTop: 40, alignItems: 'center' },
-  footerText: { fontSize: 9, letterSpacing: 2, textAlign: 'center' },
+  footerText: { fontSize: 10, letterSpacing: 1, textAlign: 'center' },
 });

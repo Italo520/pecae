@@ -14,13 +14,15 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { 
-  ForgeBackground, 
-  ForgeGlassCard, 
-  ForgeInput, 
-  ForgeButton 
-} from '../../src/components/ForgeUI';
-import { useForgeTheme } from '../../src/theme';
+  PecaeBackground, 
+  PecaeGlassCard, 
+  PecaeInput, 
+  PecaeButton,
+  PecaeScreenContainer,
+} from '../../src/components/PecaeUI';
+import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
+import { Ionicons } from '@expo/vector-icons';
 
 const registerSchema = z.object({
   name: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
@@ -34,7 +36,7 @@ const registerSchema = z.object({
 
 type RegisterFormData = z.infer<typeof registerSchema>;export default function RegisterScreen() {
   const router = useRouter();
-  const { colors, typography, effects } = useForgeTheme();
+  const { colors, typography, effects } = usePecaeTheme();
   
   const {
     control,
@@ -66,42 +68,40 @@ type RegisterFormData = z.infer<typeof registerSchema>;export default function R
   };
 
   return (
-    <ForgeBackground>
+    <PecaeBackground>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
       >
-        <ScrollView 
-          contentContainerStyle={styles.scrollContent} 
-          showsVerticalScrollIndicator={false}
-        >
+        <PecaeScreenContainer scrollable>
           <View style={styles.header}>
             <View style={styles.tag}>
               <Text style={[styles.tagText, { color: colors.brand, fontFamily: typography.mono }]}>
-                SYSTEM_ACCESS: v1.0.4
+                PLATAFORMA_OFICIAL: v1.2
               </Text>
             </View>
             <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.display }]}>
-              FORJA DIGITAL
+              NOVO CADASTRO
             </Text>
             <Text style={[styles.subtitle, { color: colors.textMuted, fontFamily: typography.body }]}>
-              Crie sua conta para entrar no ecossistema industrial de peças originais.
+              Crie sua conta para entrar no ecossistema de peças e sucatas do PEÇAÊ.
             </Text>
           </View>
 
-          <ForgeGlassCard intensity={30}>
+          <PecaeGlassCard intensity={30}>
             <View style={styles.formSection}>
               <Controller
                 control={control}
                 name="name"
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <ForgeInput
-                    label="Credencial (Nome)"
-                    placeholder="Ex: João da Silva"
+                  <PecaeInput
+                    label="NOME COMPLETO"
+                    placeholder="Seu nome"
                     onBlur={onBlur}
                     onChangeText={onChange}
                     value={value}
                     error={errors.name?.message}
+                    leftIcon={<Ionicons name="person-outline" size={20} color={colors.textMuted} />}
                   />
                 )}
               />
@@ -110,15 +110,16 @@ type RegisterFormData = z.infer<typeof registerSchema>;export default function R
                 control={control}
                 name="email"
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <ForgeInput
-                    label="Canal de Comunicação (E-mail)"
-                    placeholder="exemplo@email.com"
+                  <PecaeInput
+                    label="E-MAIL"
+                    placeholder="seu@email.com"
                     keyboardType="email-address"
                     autoCapitalize="none"
                     onBlur={onBlur}
                     onChangeText={onChange}
                     value={value}
                     error={errors.email?.message}
+                    leftIcon={<Ionicons name="mail-outline" size={20} color={colors.textMuted} />}
                   />
                 )}
               />
@@ -127,93 +128,67 @@ type RegisterFormData = z.infer<typeof registerSchema>;export default function R
                 control={control}
                 name="password"
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <ForgeInput
-                    label="Chave de Segurança (Senha)"
-                    placeholder="Mínimo 8 caracteres"
+                  <PecaeInput
+                    label="SENHA"
+                    placeholder="Sua senha secreta"
                     secureTextEntry
                     onBlur={onBlur}
                     onChangeText={onChange}
                     value={value}
                     error={errors.password?.message}
+                    leftIcon={<Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} />}
                   />
                 )}
               />
 
               <View style={styles.typeSection}>
-                <Text style={[styles.sectionLabel, { color: colors.textMuted, fontFamily: typography.display }]}>
-                  CONFIGURAÇÃO DE PERFIL
-                </Text>
-                
-                <View style={[styles.typeContainer, { backgroundColor: 'rgba(0,0,0,0.1)', borderRadius: effects.radius.md }]}>
-                  <TouchableOpacity
-                    style={[
-                      styles.typeButton,
-                      selectedType === 'BUYER' && { 
-                        backgroundColor: colors.surface,
-                        borderColor: colors.brand,
-                        borderWidth: 1,
-                      }
-                    ]}
+                <Text style={[styles.sectionLabel, { color: colors.textMuted, fontFamily: typography.display }]}>TIPO DE CONTA</Text>
+                <View style={[styles.typeContainer, { backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12 }]}>
+                  <TouchableOpacity 
+                    style={[styles.typeButton, selectedType === 'BUYER' && { backgroundColor: colors.brand }]} 
                     onPress={() => setValue('type', 'BUYER')}
                   >
-                    <Text style={[
-                       styles.typeButtonText, 
-                       { color: selectedType === 'BUYER' ? colors.brand : colors.textMuted, fontFamily: typography.medium }
-                    ]}>COMPRADOR</Text>
+                    <Text style={[styles.typeButtonText, { color: selectedType === 'BUYER' ? '#000' : colors.textPrimary, fontFamily: typography.display }]}>COMPRADOR</Text>
                   </TouchableOpacity>
-                  
-                  <TouchableOpacity
-                    style={[
-                      styles.typeButton,
-                      selectedType === 'SELLER' && { 
-                        backgroundColor: colors.surface,
-                        borderColor: colors.brand,
-                        borderWidth: 1,
-                      }
-                    ]}
+                  <TouchableOpacity 
+                    style={[styles.typeButton, selectedType === 'SELLER' && { backgroundColor: colors.brand }]} 
                     onPress={() => setValue('type', 'SELLER')}
                   >
-                    <Text style={[
-                      styles.typeButtonText, 
-                      { color: selectedType === 'SELLER' ? colors.brand : colors.textMuted, fontFamily: typography.medium }
-                    ]}>VENDEDOR</Text>
+                    <Text style={[styles.typeButtonText, { color: selectedType === 'SELLER' ? '#000' : colors.textPrimary, fontFamily: typography.display }]}>VENDEDOR</Text>
                   </TouchableOpacity>
                 </View>
               </View>
 
-              <TouchableOpacity 
-                style={styles.termsWrapper} 
-                onPress={() => setValue('termsAccepted', !termsAccepted)}
-                activeOpacity={0.7}
-              >
-                <View style={[
-                  styles.checkbox, 
-                  { borderColor: colors.border },
-                  termsAccepted && { backgroundColor: colors.brand, borderColor: colors.brand }
-                ]} />
+              <View style={styles.termsWrapper}>
+                <TouchableOpacity 
+                  style={[styles.checkbox, { borderColor: colors.brand, backgroundColor: watch('termsAccepted') ? colors.brand : 'transparent' }]} 
+                  onPress={() => setValue('termsAccepted', !watch('termsAccepted'))}
+                >
+                  {watch('termsAccepted') && <Ionicons name="checkmark" size={16} color="#000" />}
+                </TouchableOpacity>
                 <Text style={[styles.termsText, { color: colors.textMuted, fontFamily: typography.body }]}>
-                  Declaro que li e concordo com os termos de operação.
+                  Li e concordo com os <Text style={{ color: colors.brand }}>Termos de Uso</Text> e <Text style={{ color: colors.brand }}>Privacidade</Text>.
                 </Text>
-              </TouchableOpacity>
-              {errors.termsAccepted && <Text style={[styles.errorText, { color: colors.error }]}>{errors.termsAccepted.message}</Text>}
+              </View>
+              {errors.termsAccepted && <Text style={[styles.errorText, { color: colors.error, fontFamily: typography.mono }]}>{errors.termsAccepted.message}</Text>}
 
-              <ForgeButton
-                title="Sincronizar Dados"
-                onPress={handleSubmit(onSubmit)}
-                loading={isSubmitting}
+              <PecaeButton 
+                title="CRIAR MINHA CONTA" 
+                onPress={handleSubmit(onSubmit)} 
+                loading={isSubmitting} 
                 style={styles.submitBtn}
               />
-              
+
               <TouchableOpacity onPress={() => router.push('/(auth)/login')} style={styles.loginNavigation}>
                 <Text style={[styles.loginNavText, { color: colors.textMuted, fontFamily: typography.body }]}>
-                  RECONHECER ACESSO? <Text style={{ color: colors.brand, fontFamily: typography.display }}>ENTRAR</Text>
+                  Já tem uma conta? <Text style={{ color: colors.brand, fontFamily: typography.display }}>ENTRAR</Text>
                 </Text>
               </TouchableOpacity>
             </View>
-          </ForgeGlassCard>
-        </ScrollView>
+          </PecaeGlassCard>
+        </PecaeScreenContainer>
       </KeyboardAvoidingView>
-    </ForgeBackground>
+    </PecaeBackground>
   );
 }
 
@@ -224,15 +199,24 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 24,
     paddingTop: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexGrow: 1,
+  },
+  webWrapper: {
+    width: '100%',
+    maxWidth: Platform.OS === 'web' ? 500 : '100%',
+    alignSelf: 'center',
   },
   header: {
     marginBottom: 32,
+    width: '100%',
   },
   tag: {
     alignSelf: 'flex-start',
     paddingHorizontal: 8,
     paddingVertical: 2,
-    backgroundColor: 'rgba(63, 255, 139, 0.1)',
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
     borderRadius: 4,
     marginBottom: 8,
   },

@@ -13,12 +13,13 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { 
-  ForgeBackground, 
-  ForgeGlassCard, 
-  ForgeButton, 
-  ForgeInput 
-} from '../../src/components/ForgeUI';
-import { useForgeTheme } from '../../src/theme';
+  PecaeBackground, 
+  PecaeGlassCard, 
+  PecaeButton, 
+  PecaeInput,
+  PecaeScreenContainer,
+} from '../../src/components/PecaeUI';
+import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -39,7 +40,7 @@ type SellerFormData = z.infer<typeof sellerSchema>;
 
 export default function SellerOnboardingScreen() {
   const router = useRouter();
-  const { colors, typography, effects } = useForgeTheme();
+  const { colors, typography, effects } = usePecaeTheme();
   
   const {
     control,
@@ -59,27 +60,24 @@ export default function SellerOnboardingScreen() {
   const onSubmit = async (data: SellerFormData) => {
     try {
       await api.post('/sellers', data);
-      Alert.alert('FORJA CONCLUÍDA', 'Seu perfil de vendedor foi ativado. Bem-vindo à rede.', [
+      Alert.alert('PERFIL CONCLUÍDO', 'Seu perfil de vendedor foi ativado. Bem-vindo à rede.', [
         { text: 'ACESSAR DASHBOARD', onPress: () => router.replace('/(seller)/(tabs)') },
       ]);
     } catch (error: any) {
       const message = error.response?.data?.message || 'Erro ao criar perfil de vendedor';
-      Alert.alert('ERRO NA FORJA', message);
+      Alert.alert('ERRO NO PERFIL', message);
     }
   };
 
   return (
-    <ForgeBackground>
+    <PecaeBackground>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
       >
-        <ScrollView 
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
+        <PecaeScreenContainer scrollable>
           <View style={styles.header}>
-            <View style={styles.statusTag}>
+            <View style={[styles.statusTag, { backgroundColor: colors.surface }]}>
               <View style={[styles.statusDot, { backgroundColor: colors.brand }]} />
               <Text style={[styles.statusText, { color: colors.brand, fontFamily: typography.mono }]}>
                 SELLER_ONBOARDING_V1
@@ -93,7 +91,7 @@ export default function SellerOnboardingScreen() {
             </Text>
           </View>
 
-          <ForgeGlassCard intensity={30} style={styles.card}>
+          <PecaeGlassCard intensity={30} style={styles.card}>
             <View style={styles.form}>
               <View style={styles.typeSelectorContainer}>
                 <Text style={[styles.sectionLabel, { color: colors.textMuted, fontFamily: typography.display }]}>
@@ -126,7 +124,7 @@ export default function SellerOnboardingScreen() {
                   control={control}
                   name="cnpj"
                   render={({ field: { onChange, onBlur, value } }) => (
-                    <ForgeInput
+                    <PecaeInput
                       label="CNPJ DA OPERAÇÃO"
                       placeholder="00.000.000/0000-00"
                       keyboardType="numeric"
@@ -144,7 +142,7 @@ export default function SellerOnboardingScreen() {
                 control={control}
                 name="storeName"
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <ForgeInput
+                  <PecaeInput
                     label="NOME DA LOJA / DESMONTE"
                     placeholder="Ex: Ferro Velho do Juca"
                     onBlur={onBlur}
@@ -160,7 +158,7 @@ export default function SellerOnboardingScreen() {
                 control={control}
                 name="description"
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <ForgeInput
+                  <PecaeInput
                     label="DESCRIÇÃO DA OPERAÇÃO"
                     placeholder="Conte sobre suas especialidades..."
                     multiline
@@ -180,7 +178,7 @@ export default function SellerOnboardingScreen() {
                     control={control}
                     name="phone"
                     render={({ field: { onChange, onBlur, value } }) => (
-                      <ForgeInput
+                      <PecaeInput
                         label="TELEFONE"
                         placeholder="(00) 0000-0000"
                         keyboardType="phone-pad"
@@ -197,7 +195,7 @@ export default function SellerOnboardingScreen() {
                     control={control}
                     name="whatsapp"
                     render={({ field: { onChange, onBlur, value } }) => (
-                      <ForgeInput
+                      <PecaeInput
                         label="WHATSAPP"
                         placeholder="(00) 90000-0000"
                         keyboardType="phone-pad"
@@ -215,7 +213,7 @@ export default function SellerOnboardingScreen() {
                 control={control}
                 name="address"
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <ForgeInput
+                  <PecaeInput
                     label="ENDEREÇO COMPLETO"
                     placeholder="Rua, número, bairro..."
                     onBlur={onBlur}
@@ -233,7 +231,7 @@ export default function SellerOnboardingScreen() {
                     control={control}
                     name="city"
                     render={({ field: { onChange, onBlur, value } }) => (
-                      <ForgeInput
+                      <PecaeInput
                         label="CIDADE"
                         placeholder="Ex: São Paulo"
                         onBlur={onBlur}
@@ -249,7 +247,7 @@ export default function SellerOnboardingScreen() {
                     control={control}
                     name="state"
                     render={({ field: { onChange, onBlur, value } }) => (
-                      <ForgeInput
+                      <PecaeInput
                         label="UF"
                         placeholder="SP"
                         autoCapitalize="characters"
@@ -268,7 +266,7 @@ export default function SellerOnboardingScreen() {
                 control={control}
                 name="openHours"
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <ForgeInput
+                  <PecaeInput
                     label="HORÁRIO DE ATENDIMENTO (OPCIONAL)"
                     placeholder="Ex: Seg-Sex: 08:00 - 18:00"
                     onBlur={onBlur}
@@ -280,17 +278,17 @@ export default function SellerOnboardingScreen() {
                 )}
               />
 
-              <ForgeButton
+              <PecaeButton
                 title="FINALIZAR CADASTRO"
                 onPress={handleSubmit(onSubmit)}
                 loading={isSubmitting}
                 style={styles.submitBtn}
               />
             </View>
-          </ForgeGlassCard>
-        </ScrollView>
+          </PecaeGlassCard>
+        </PecaeScreenContainer>
       </KeyboardAvoidingView>
-    </ForgeBackground>
+    </PecaeBackground>
   );
 }
 

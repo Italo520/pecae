@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Switch, ActivityIndicator, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Notifications from 'expo-notifications';
-import { useForgeTheme } from '../../src/theme';
+import { usePecaeTheme } from '../../src/theme';
 import { useBuyerProfile, useUpdateNotificationPreferences } from '../../src/hooks/useBuyer';
 
 export default function Configuracoes() {
-  const { colors, typography, glassmorphism } = useForgeTheme();
+  const { colors, typography, glassmorphism } = usePecaeTheme();
   
   const { data: profile, isLoading } = useBuyerProfile();
   const updatePrefsMutation = useUpdateNotificationPreferences();

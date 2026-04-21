@@ -14,11 +14,11 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { 
-  ForgeBackground, 
-  ForgeGlassCard, 
-  ForgeButton 
-} from '../../src/components/ForgeUI';
-import { useForgeTheme } from '../../src/theme';
+  PecaeBackground, 
+  PecaeGlassCard, 
+  PecaeButton 
+} from '../../src/components/PecaeUI';
+import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
 
 const verifySchema = z.object({
@@ -29,7 +29,7 @@ type VerifyFormData = z.infer<typeof verifySchema>;
 
 export default function VerifyEmailScreen() {
   const router = useRouter();
-  const { colors, typography, effects } = useForgeTheme();
+  const { colors, typography, effects } = usePecaeTheme();
   
   const {
     control,
@@ -61,7 +61,7 @@ export default function VerifyEmailScreen() {
   };
 
   return (
-    <ForgeBackground>
+    <PecaeBackground>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
@@ -91,7 +91,7 @@ export default function VerifyEmailScreen() {
           </Text>
         </View>
 
-        <ForgeGlassCard intensity={40} style={styles.card}>
+        <PecaeGlassCard intensity={40} style={styles.card}>
           <View style={styles.form}>
             <Text style={[styles.inputLabel, { color: colors.textMuted, fontFamily: typography.display }]}>
               CÓDIGO DE SINCRONIZAÇÃO
@@ -129,7 +129,7 @@ export default function VerifyEmailScreen() {
               </Text>
             )}
 
-            <ForgeButton
+            <PecaeButton
               title="Sincronizar Agora"
               onPress={handleSubmit(onSubmit)}
               loading={isSubmitting}
@@ -142,9 +142,9 @@ export default function VerifyEmailScreen() {
               </Text>
             </TouchableOpacity>
           </View>
-        </ForgeGlassCard>
+        </PecaeGlassCard>
       </KeyboardAvoidingView>
-    </ForgeBackground>
+    </PecaeBackground>
   );
 }
 

@@ -1,17 +1,17 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import { ForgeBackground } from '../../../src/components/ForgeUI';
-import { useForgeTheme } from '../../../src/theme';
+import { PecaeBackground } from '../../../src/components/PecaeUI';
+import { usePecaeTheme } from '../../../src/theme';
 
 export default function InventoryScreen() {
-  const { colors } = useForgeTheme();
+  const { colors } = usePecaeTheme();
   return (
-    <ForgeBackground>
+    <PecaeBackground>
       <View style={styles.container}>
         <Text style={{ color: colors.textPrimary }}>Gerenciamento de Anúncios</Text>
         <Text style={{ color: colors.textMuted }}>Em breve...</Text>
       </View>
-    </ForgeBackground>
+    </PecaeBackground>
   );
 }
 

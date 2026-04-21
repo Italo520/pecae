@@ -7,21 +7,21 @@ import {
   TextInputProps,
   ViewStyle,
 } from 'react-native';
-import { useForgeTheme } from '../../theme';
+import { usePecaeTheme } from '../../theme';
 
-interface ForgeInputProps extends TextInputProps {
+interface PecaeInputProps extends TextInputProps {
   label?: string;
   error?: string;
   containerStyle?: ViewStyle;
 }
 
-export const ForgeInput: React.FC<ForgeInputProps> = ({
+export const PecaeInput: React.FC<PecaeInputProps> = ({
   label,
   error,
   containerStyle,
   ...props
 }) => {
-  const { colors, typography, effects, isDark } = useForgeTheme();
+  const { colors, typography, effects, isDark } = usePecaeTheme();
   const [isFocused, setIsFocused] = useState(false);
 
   return (

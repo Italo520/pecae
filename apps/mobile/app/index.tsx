@@ -9,5 +9,5 @@ export default function Index() {
     return <Redirect href="/(tabs)" />;
   }
 
-  return <Redirect href="/(auth)/register" />;
+  return <Redirect href="/(auth)/login" />;
 }

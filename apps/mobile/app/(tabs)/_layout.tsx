@@ -1,17 +1,17 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useForgeTheme } from '../../src/theme';
+import { usePecaeTheme } from '../../src/theme';
 
 export default function TabLayout() {
-  const { colors, typography } = useForgeTheme();
+  const { colors, typography } = usePecaeTheme();
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#050505',
+          backgroundColor: colors.surface,
           borderTopColor: colors.border,
           height: 65,
           paddingBottom: 10,

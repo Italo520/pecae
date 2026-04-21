@@ -1,20 +1,20 @@
 import React from 'react';
 import { StyleSheet, View, ViewStyle, Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { useForgeTheme } from '../../theme';
+import { usePecaeTheme } from '../../theme';
 
-interface ForgeGlassCardProps {
+interface PecaeGlassCardProps {
   children: React.ReactNode;
   style?: ViewStyle;
   intensity?: number;
 }
 
-export const ForgeGlassCard: React.FC<ForgeGlassCardProps> = ({
+export const PecaeGlassCard: React.FC<PecaeGlassCardProps> = ({
   children,
   style,
   intensity = 20,
 }) => {
-  const { colors, effects, isDark } = useForgeTheme();
+  const { colors, effects, isDark } = usePecaeTheme();
 
   return (
     <View style={[styles.container, { borderRadius: effects.radius.md }, style]}>

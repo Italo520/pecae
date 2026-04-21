@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { View } from 'react-native';
 import {
   useFonts,
   SpaceGrotesk_700Bold,
@@ -35,8 +36,14 @@ export default function RootLayout() {
     }
   }, [fontsLoaded, fontError, isAuthLoading]);
 
-  if ((!fontsLoaded && !fontError) || isAuthLoading) {
-    return null;
+  console.log('RootLayout Render:', { fontsLoaded, fontError, isAuthLoading });
+
+  // Se ainda estiver carregando a autenticação, mostramos uma view vazia segura
+  // Em vez de retornar null que pode travar em algumas versões do Expo
+  if (isAuthLoading) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#0D0D0D' }} />
+    );
   }
 
   return (

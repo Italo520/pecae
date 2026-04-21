@@ -2,10 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Linking, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { ForgeBackground } from '../../src/components/ForgeUI/ForgeBackground';
-import { ForgeGlassCard } from '../../src/components/ForgeUI/ForgeGlassCard';
-import { ForgeButton } from '../../src/components/ForgeUI/ForgeButton';
-import { StatWidget } from '../../src/components/ForgeUI/StatWidget';
+import { PecaeBackground } from '../../src/components/PecaeUI/PecaeBackground';
+import { PecaeGlassCard } from '../../src/components/PecaeUI/PecaeGlassCard';
+import { PecaeButton } from '../../src/components/PecaeUI/PecaeButton';
+import { StatWidget } from '../../src/components/PecaeUI/StatWidget';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../src/services/api';
 import { BlurView } from 'expo-blur';
@@ -33,11 +33,11 @@ export default function PublicProfileScreen() {
 
   if (isLoading) {
     return (
-      <ForgeBackground>
+      <PecaeBackground>
         <View style={styles.center}>
-          <Text style={styles.loadingText}>Sincronizando com a forja...</Text>
+          <Text style={styles.loadingText}>Sincronizando com PEÇAÊ...</Text>
         </View>
-      </ForgeBackground>
+      </PecaeBackground>
     );
   }
 
@@ -54,7 +54,7 @@ export default function PublicProfileScreen() {
   };
 
   return (
-    <ForgeBackground>
+    <PecaeBackground>
       <Stack.Screen 
         options={{
           headerShown: false,
@@ -124,7 +124,7 @@ export default function PublicProfileScreen() {
 
         {/* Action Buttons */}
         <View style={styles.actionsContainer}>
-          <ForgeButton 
+          <PecaeButton 
             title="Iniciar Chat Seguro" 
             onPress={handleStartChat}
             variant="primary"
@@ -144,9 +144,9 @@ export default function PublicProfileScreen() {
         {seller?.description && (
           <View style={styles.section}>
             <Text style={styles.sectionHeader}>Sobre o Vendedor</Text>
-            <ForgeGlassCard style={styles.descriptionCard}>
+            <PecaeGlassCard style={styles.descriptionCard}>
               <Text style={styles.descriptionText}>{seller.description}</Text>
-            </ForgeGlassCard>
+            </PecaeGlassCard>
           </View>
         )}
 
@@ -164,7 +164,7 @@ export default function PublicProfileScreen() {
               {/* Maps listings here */}
             </View>
           ) : (
-            <ForgeGlassCard style={styles.emptyCard}>
+            <PecaeGlassCard style={styles.emptyCard}>
               <View style={styles.emptyIconContainer}>
                 <Ionicons name="car-outline" size={48} color="rgba(148, 163, 184, 0.3)" />
               </View>
@@ -172,13 +172,13 @@ export default function PublicProfileScreen() {
               <Text style={styles.emptySubtitle}>
                 Este vendedor ainda não publicou anúncios ou está atualizando seu estoque.
               </Text>
-            </ForgeGlassCard>
+            </PecaeGlassCard>
           )}
         </View>
       </ScrollView>
 
       {/* Floating Bottom Contact Pill (Optional UI Polish) */}
-    </ForgeBackground>
+    </PecaeBackground>
   );
 }
 

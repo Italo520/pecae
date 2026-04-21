@@ -14,12 +14,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Ionicons } from '@expo/vector-icons';
 import {
-  ForgeBackground,
-  ForgeGlassCard,
-  ForgeInput,
-  ForgeButton,
-} from '../../src/components/ForgeUI';
-import { useForgeTheme } from '../../src/theme';
+  PecaeBackground,
+  PecaeGlassCard,
+  PecaeInput,
+  PecaeButton,
+} from '../../src/components/PecaeUI';
+import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
 import { useAuthStore } from '../../src/store/auth-store';
 
@@ -36,7 +36,7 @@ type CodeFormData = z.infer<typeof codeSchema>;
 
 export default function OtpLoginScreen() {
   const router = useRouter();
-  const { colors, typography } = useForgeTheme();
+  const { colors, typography } = usePecaeTheme();
   const { setAuth } = useAuthStore();
   
   const [step, setStep] = useState<'phone' | 'code'>('phone');
@@ -72,7 +72,7 @@ export default function OtpLoginScreen() {
   };
 
   return (
-    <ForgeBackground>
+    <PecaeBackground>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
@@ -97,14 +97,14 @@ export default function OtpLoginScreen() {
             </Text>
           </View>
 
-          <ForgeGlassCard intensity={20} style={styles.card}>
+          <PecaeGlassCard intensity={20} style={styles.card}>
             {step === 'phone' ? (
               <View style={styles.form}>
                 <Controller
                   control={phoneForm.control}
                   name="phone"
                   render={({ field: { onChange, onBlur, value } }) => (
-                    <ForgeInput
+                    <PecaeInput
                       label="TELEFONE"
                       placeholder="+55 11 99999-9999"
                       keyboardType="phone-pad"
@@ -116,7 +116,7 @@ export default function OtpLoginScreen() {
                     />
                   )}
                 />
-                <ForgeButton
+                <PecaeButton
                   title="SOLICITAR CÓDIGO"
                   onPress={phoneForm.handleSubmit(onSendOtp)}
                   loading={phoneForm.formState.isSubmitting}
@@ -129,7 +129,7 @@ export default function OtpLoginScreen() {
                   control={codeForm.control}
                   name="code"
                   render={({ field: { onChange, onBlur, value } }) => (
-                    <ForgeInput
+                    <PecaeInput
                       label="CÓDIGO DE 6 DÍGITOS"
                       placeholder="000000"
                       keyboardType="number-pad"
@@ -142,7 +142,7 @@ export default function OtpLoginScreen() {
                     />
                   )}
                 />
-                <ForgeButton
+                <PecaeButton
                   title="VERIFICAR E ENTRAR"
                   onPress={codeForm.handleSubmit(onVerifyOtp)}
                   loading={codeForm.formState.isSubmitting}
@@ -158,10 +158,10 @@ export default function OtpLoginScreen() {
                 </TouchableOpacity>
               </View>
             )}
-          </ForgeGlassCard>
+          </PecaeGlassCard>
         </View>
       </KeyboardAvoidingView>
-    </ForgeBackground>
+    </PecaeBackground>
   );
 }
 

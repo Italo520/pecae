@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import * as SecureStore from 'expo-secure-store';
-import { api } from '../services/api';
+import { Platform } from 'react-native';
 
 interface User {
   id: string;
@@ -35,12 +35,15 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   setAuth: async (user, accessToken, refreshToken) => {
     try {
-      await SecureStore.setItemAsync(TOKEN_KEY, accessToken);
-      await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken);
-      await SecureStore.setItemAsync(USER_KEY, JSON.stringify(user));
-      
-      // Update global API headers for future requests
-      api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      if (Platform.OS !== 'web') {
+        await SecureStore.setItemAsync(TOKEN_KEY, accessToken);
+        await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken);
+        await SecureStore.setItemAsync(USER_KEY, JSON.stringify(user));
+      } else {
+        localStorage.setItem(TOKEN_KEY, accessToken);
+        localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+        localStorage.setItem(USER_KEY, JSON.stringify(user));
+      }
       
       set({ user, token: accessToken, refreshToken, isAuthenticated: true, isLoading: false });
     } catch (error) {
@@ -50,10 +53,13 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   updateToken: async (accessToken, refreshToken) => {
     try {
-      await SecureStore.setItemAsync(TOKEN_KEY, accessToken);
-      await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken);
-      
-      api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      if (Platform.OS !== 'web') {
+        await SecureStore.setItemAsync(TOKEN_KEY, accessToken);
+        await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken);
+      } else {
+        localStorage.setItem(TOKEN_KEY, accessToken);
+        localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+      }
       
       set({ token: accessToken, refreshToken });
     } catch (error) {
@@ -63,11 +69,15 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   clearAuth: async () => {
     try {
-      await SecureStore.deleteItemAsync(TOKEN_KEY);
-      await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
-      await SecureStore.deleteItemAsync(USER_KEY);
-      
-      delete api.defaults.headers.common['Authorization'];
+      if (Platform.OS !== 'web') {
+        await SecureStore.deleteItemAsync(TOKEN_KEY);
+        await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
+        await SecureStore.deleteItemAsync(USER_KEY);
+      } else {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(REFRESH_TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
+      }
       
       set({ user: null, token: null, refreshToken: null, isAuthenticated: false, isLoading: false });
     } catch (error) {
@@ -76,13 +86,23 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   initializeAuth: async () => {
+    console.log('initializeAuth called!');
     try {
-      const token = await SecureStore.getItemAsync(TOKEN_KEY);
-      const refreshToken = await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
-      const userData = await SecureStore.getItemAsync(USER_KEY);
+      let token = null;
+      let refreshToken = null;
+      let userData = null;
+
+      if (Platform.OS !== 'web') {
+        token = await SecureStore.getItemAsync(TOKEN_KEY);
+        refreshToken = await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
+        userData = await SecureStore.getItemAsync(USER_KEY);
+      } else if (typeof window !== 'undefined') {
+        token = localStorage.getItem(TOKEN_KEY);
+        refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+        userData = localStorage.getItem(USER_KEY);
+      }
 
       if (token && userData) {
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         set({ 
           user: JSON.parse(userData), 
           token, 
@@ -99,3 +119,4 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 }));
+

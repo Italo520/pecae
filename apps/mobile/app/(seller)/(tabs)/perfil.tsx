@@ -3,15 +3,15 @@ import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Alert, Platform }
 import { useQuery } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { ForgeBackground, ForgeGlassCard, StatWidget, ForgeButton } from '../../../src/components/ForgeUI';
-import { useForgeTheme } from '../../../src/theme';
+import { PecaeBackground, PecaeGlassCard, StatWidget, PecaeButton } from '../../../src/components/PecaeUI';
+import { usePecaeTheme } from '../../../src/theme';
 import { api } from '../../../src/services/api';
 import { Image } from 'react-native';
 import { useAuthStore } from '../../../src/store/auth-store';
 
 export default function SellerProfileScreen() {
-  const { colors, effects } = useForgeTheme();
-  const ForgeTokens = require('../../../src/theme/forge-tokens').ForgeTokens;
+  const { colors, effects } = usePecaeTheme();
+  const PecaeTokens = require('../../../src/theme/pecae-tokens').PecaeTokens;
   const user = useAuthStore((state) => state.user);
 
   const { data: seller, isLoading } = useQuery({
@@ -41,7 +41,7 @@ export default function SellerProfileScreen() {
   ];
 
   return (
-    <ForgeBackground>
+    <PecaeBackground>
       <ScrollView 
         style={styles.container} 
         contentContainerStyle={styles.content}
@@ -56,28 +56,28 @@ export default function SellerProfileScreen() {
             {seller?.logo ? (
               <Image source={{ uri: seller.logo }} style={styles.avatarImage} />
             ) : (
-              <Text style={[styles.avatarText, { color: colors.brand, fontFamily: ForgeTokens.typography.display }]}>
+              <Text style={[styles.avatarText, { color: colors.brand, fontFamily: PecaeTokens.typography.display }]}>
                 {seller?.storeName?.charAt(0) || user?.name?.charAt(0) || 'V'}
               </Text>
             )}
           </TouchableOpacity>
           <View style={styles.headerInfo}>
             <View style={styles.nameContainer}>
-              <Text style={[styles.storeName, { color: colors.textPrimary, fontFamily: ForgeTokens.typography.heading }]}>
+              <Text style={[styles.storeName, { color: colors.textPrimary, fontFamily: PecaeTokens.typography.heading }]}>
                 {seller?.storeName || 'Loja sem nome'}
               </Text>
               {seller?.isVerified && (
                 <Ionicons name="checkmark-circle" size={18} color={colors.brand} style={styles.verifiedIcon} />
               )}
             </View>
-            <Text style={[styles.userName, { color: colors.textMuted, fontFamily: ForgeTokens.typography.body }]}>
+            <Text style={[styles.userName, { color: colors.textMuted, fontFamily: PecaeTokens.typography.body }]}>
               {user?.name || user?.email}
             </Text>
           </View>
         </View>
 
         {/* Stats Section */}
-        <ForgeGlassCard style={styles.statsCard}>
+        <PecaeGlassCard style={styles.statsCard}>
           <View style={styles.statsGrid}>
             <StatWidget 
               icon="layers-outline" 
@@ -97,27 +97,27 @@ export default function SellerProfileScreen() {
               label="Resposta" 
             />
           </View>
-        </ForgeGlassCard>
+        </PecaeGlassCard>
 
         {/* Verification Banner */}
         {!seller?.isVerified && (
           <TouchableOpacity onPress={handleVerificationRequest}>
-            <ForgeGlassCard style={styles.verificationBanner} intensity={40}>
+            <PecaeGlassCard style={styles.verificationBanner} intensity={40}>
               <View style={styles.bannerContent}>
                 <View style={[styles.bannerIcon, { backgroundColor: colors.brand }]}>
                   <Ionicons name="shield-checkmark" size={24} color={colors.dark} />
                 </View>
                 <View style={styles.bannerTextContainer}>
-                  <Text style={[styles.bannerTitle, { color: colors.textPrimary, fontFamily: ForgeTokens.typography.heading }]}>
+                  <Text style={[styles.bannerTitle, { color: colors.textPrimary, fontFamily: PecaeTokens.typography.heading }]}>
                     Solicitar Verificação
                   </Text>
-                  <Text style={[styles.bannerSub, { color: colors.textMuted, fontFamily: ForgeTokens.typography.body }]}>
+                  <Text style={[styles.bannerSub, { color: colors.textMuted, fontFamily: PecaeTokens.typography.body }]}>
                     Aumente sua credibilidade e vendas
                   </Text>
                 </View>
                 <Ionicons name="chevron-forward" size={20} color={colors.brand} />
               </View>
-            </ForgeGlassCard>
+            </PecaeGlassCard>
           </TouchableOpacity>
         )}
 
@@ -125,18 +125,18 @@ export default function SellerProfileScreen() {
         <View style={styles.quickActionsGrid}>
           {quickActions.map((action, index) => (
             <TouchableOpacity key={index} style={styles.quickActionItem}>
-              <ForgeGlassCard style={styles.quickActionCard}>
+              <PecaeGlassCard style={styles.quickActionCard}>
                 <Ionicons name={action.icon as any} size={28} color={action.color} />
-                <Text style={[styles.quickActionLabel, { color: colors.textPrimary, fontFamily: ForgeTokens.typography.medium }]}>
+                <Text style={[styles.quickActionLabel, { color: colors.textPrimary, fontFamily: PecaeTokens.typography.medium }]}>
                   {action.label}
                 </Text>
-              </ForgeGlassCard>
+              </PecaeGlassCard>
             </TouchableOpacity>
           ))}
         </View>
 
         {/* Menu Section */}
-        <ForgeGlassCard style={styles.menuCard}>
+        <PecaeGlassCard style={styles.menuCard}>
           {menuItems.map((item, index) => (
             <TouchableOpacity 
               key={index} 
@@ -148,16 +148,16 @@ export default function SellerProfileScreen() {
             >
               <View style={styles.menuItemLeft}>
                 <Ionicons name={item.icon as any} size={22} color={colors.brand} />
-                <Text style={[styles.menuItemLabel, { color: colors.textPrimary, fontFamily: ForgeTokens.typography.medium }]}>
+                <Text style={[styles.menuItemLabel, { color: colors.textPrimary, fontFamily: PecaeTokens.typography.medium }]}>
                   {item.label}
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
             </TouchableOpacity>
           ))}
-        </ForgeGlassCard>
+        </PecaeGlassCard>
 
-        <ForgeButton 
+        <PecaeButton 
           title="Sair da Conta" 
           variant="outline" 
           onPress={() => useAuthStore.getState().clearAuth()}
@@ -166,7 +166,7 @@ export default function SellerProfileScreen() {
         
         <View style={{ height: 100 }} />
       </ScrollView>
-    </ForgeBackground>
+    </PecaeBackground>
   );
 }
 

@@ -8,8 +8,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { ForgeBackground, ForgeGlassCard, ForgeInput, ForgeButton } from '../../src/components/ForgeUI';
-import { useForgeTheme } from '../../src/theme';
+import { PecaeBackground, PecaeGlassCard, PecaeInput, PecaeButton } from '../../src/components/PecaeUI';
+import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
 
 const updateSellerSchema = z.object({
@@ -25,8 +25,8 @@ const updateSellerSchema = z.object({
 type UpdateSellerForm = z.infer<typeof updateSellerSchema>;
 
 export default function EditProfileScreen() {
-  const { colors } = useForgeTheme();
-  const ForgeTokens = require('../../src/theme/forge-tokens').ForgeTokens;
+  const { colors } = usePecaeTheme();
+  const PecaeTokens = require('../../src/theme/pecae-tokens').PecaeTokens;
   const queryClient = useQueryClient();
   const [uploading, setUploading] = useState(false);
 
@@ -135,27 +135,27 @@ export default function EditProfileScreen() {
 
   if (isLoading) {
     return (
-      <ForgeBackground>
+      <PecaeBackground>
         <View style={styles.loading}>
           <ActivityIndicator size="large" color={colors.brand} />
         </View>
-      </ForgeBackground>
+      </PecaeBackground>
     );
   }
 
   return (
-    <ForgeBackground>
+    <PecaeBackground>
       <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
           </TouchableOpacity>
-          <Text style={[styles.title, { color: colors.textPrimary, fontFamily: ForgeTokens.typography.display }]}>
+          <Text style={[styles.title, { color: colors.textPrimary, fontFamily: PecaeTokens.typography.display }]}>
             Editar Perfil
           </Text>
         </View>
 
-        <ForgeGlassCard style={styles.logoCard}>
+        <PecaeGlassCard style={styles.logoCard}>
           <TouchableOpacity onPress={pickImage} style={styles.logoPicker} disabled={uploading}>
             {uploading ? (
               <ActivityIndicator color={colors.brand} />
@@ -164,7 +164,7 @@ export default function EditProfileScreen() {
             ) : (
               <View style={[styles.logoPlaceholder, { backgroundColor: colors.surface }]}>
                 <Ionicons name="camera" size={32} color={colors.brand} />
-                <Text style={[styles.logoPlaceholderText, { color: colors.textMuted, fontFamily: ForgeTokens.typography.body }]}>Adicionar Logo</Text>
+                <Text style={[styles.logoPlaceholderText, { color: colors.textMuted, fontFamily: PecaeTokens.typography.body }]}>Adicionar Logo</Text>
               </View>
             )}
             {!uploading && (
@@ -173,14 +173,14 @@ export default function EditProfileScreen() {
               </View>
             )}
           </TouchableOpacity>
-        </ForgeGlassCard>
+        </PecaeGlassCard>
 
         <View style={styles.form}>
           <Controller
             control={control}
             name="storeName"
             render={({ field: { onChange, onBlur, value } }) => (
-              <ForgeInput
+              <PecaeInput
                 label="Nome da Loja"
                 onBlur={onBlur}
                 onChangeText={onChange}
@@ -195,7 +195,7 @@ export default function EditProfileScreen() {
             control={control}
             name="description"
             render={({ field: { onChange, onBlur, value } }) => (
-              <ForgeInput
+              <PecaeInput
                 label="Descrição / Bio"
                 onBlur={onBlur}
                 onChangeText={onChange}
@@ -215,7 +215,7 @@ export default function EditProfileScreen() {
                 control={control}
                 name="whatsapp"
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <ForgeInput
+                  <PecaeInput
                     label="WhatsApp"
                     onBlur={onBlur}
                     onChangeText={onChange}
@@ -232,7 +232,7 @@ export default function EditProfileScreen() {
                 control={control}
                 name="phone"
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <ForgeInput
+                  <PecaeInput
                     label="Telefone (Opcional)"
                     onBlur={onBlur}
                     onChangeText={onChange}
@@ -250,7 +250,7 @@ export default function EditProfileScreen() {
             control={control}
             name="address"
             render={({ field: { onChange, onBlur, value } }) => (
-              <ForgeInput
+              <PecaeInput
                 label="Endereço"
                 onBlur={onBlur}
                 onChangeText={onChange}
@@ -267,7 +267,7 @@ export default function EditProfileScreen() {
                 control={control}
                 name="city"
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <ForgeInput
+                  <PecaeInput
                     label="Cidade"
                     onBlur={onBlur}
                     onChangeText={onChange}
@@ -283,7 +283,7 @@ export default function EditProfileScreen() {
                 control={control}
                 name="state"
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <ForgeInput
+                  <PecaeInput
                     label="UF"
                     onBlur={onBlur}
                     onChangeText={onChange}
@@ -298,7 +298,7 @@ export default function EditProfileScreen() {
             </View>
           </View>
 
-          <ForgeButton
+          <PecaeButton
             title="Salvar Alterações"
             onPress={handleSubmit((data) => updateMutation.mutate(data))}
             loading={updateMutation.isPending}
@@ -309,7 +309,7 @@ export default function EditProfileScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
-    </ForgeBackground>
+    </PecaeBackground>
   );
 }
 

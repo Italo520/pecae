@@ -1,16 +1,16 @@
 import React from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useForgeTheme } from '../../theme';
+import { usePecaeTheme } from '../../theme';
 
 const { width, height } = Dimensions.get('window');
 
-interface ForgeBackgroundProps {
+interface PecaeBackgroundProps {
   children: React.ReactNode;
 }
 
-export const ForgeBackground: React.FC<ForgeBackgroundProps> = ({ children }) => {
-  const { colors, isDark } = useForgeTheme();
+export const PecaeBackground: React.FC<PecaeBackgroundProps> = ({ children }) => {
+  const { colors, isDark } = usePecaeTheme();
 
   return (
     <View style={styles.container}>

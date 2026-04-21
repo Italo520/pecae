@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import * as ImagePicker from 'expo-image-picker';
-import { useForgeTheme } from '../../src/theme';
+import { usePecaeTheme } from '../../src/theme';
 import { useBuyerProfile, useUpdateBuyerProfile } from '../../src/hooks/useBuyer';
 
 interface FormData {
@@ -13,7 +13,7 @@ interface FormData {
 }
 
 export default function PerfilEditar() {
-  const { colors, typography, spacing, glassmorphism } = useForgeTheme();
+  const { colors, typography, spacing, glassmorphism } = usePecaeTheme();
   const router = useRouter();
   
   const { data: profile, isLoading: isLoadingProfile } = useBuyerProfile();
@@ -218,12 +218,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
     elevation: 5,
+    boxShadow: '0px 2px 3px rgba(0, 0, 0, 0.3)',
   },
+
   avatarHint: {
     marginTop: 12,
     fontSize: 12,

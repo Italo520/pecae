@@ -14,12 +14,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Ionicons } from '@expo/vector-icons';
 import {
-  ForgeBackground,
-  ForgeGlassCard,
-  ForgeInput,
-  ForgeButton,
-} from '../../src/components/ForgeUI';
-import { useForgeTheme } from '../../src/theme';
+  PecaeBackground,
+  PecaeGlassCard,
+  PecaeInput,
+  PecaeButton,
+} from '../../src/components/PecaeUI';
+import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
 
 const resetPasswordSchema = z.object({
@@ -35,7 +35,7 @@ type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 export default function ResetPasswordScreen() {
   const router = useRouter();
   const { token } = useLocalSearchParams<{ token: string }>();
-  const { colors, typography } = useForgeTheme();
+  const { colors, typography } = usePecaeTheme();
 
   const {
     control,
@@ -68,7 +68,7 @@ export default function ResetPasswordScreen() {
   };
 
   return (
-    <ForgeBackground>
+    <PecaeBackground>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
@@ -88,13 +88,13 @@ export default function ResetPasswordScreen() {
             </Text>
           </View>
 
-          <ForgeGlassCard intensity={20} style={styles.card}>
+          <PecaeGlassCard intensity={20} style={styles.card}>
             <View style={styles.form}>
               <Controller
                 control={control}
                 name="newPassword"
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <ForgeInput
+                  <PecaeInput
                     label="NOVA CHAVE"
                     placeholder="Mínimo 8 caracteres"
                     secureTextEntry
@@ -111,7 +111,7 @@ export default function ResetPasswordScreen() {
                 control={control}
                 name="confirmPassword"
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <ForgeInput
+                  <PecaeInput
                     label="CONFIRMAR CHAVE"
                     placeholder="Repita a nova chave"
                     secureTextEntry
@@ -124,7 +124,7 @@ export default function ResetPasswordScreen() {
                 )}
               />
 
-              <ForgeButton
+              <PecaeButton
                 title="REDEFINIR CHAVE"
                 onPress={handleSubmit(onSubmit)}
                 loading={isSubmitting}
@@ -132,10 +132,10 @@ export default function ResetPasswordScreen() {
                 style={styles.button}
               />
             </View>
-          </ForgeGlassCard>
+          </PecaeGlassCard>
         </View>
       </KeyboardAvoidingView>
-    </ForgeBackground>
+    </PecaeBackground>
   );
 }
 

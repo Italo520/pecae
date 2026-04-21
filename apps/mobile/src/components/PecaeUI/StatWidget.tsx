@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useForgeTheme } from '../../theme';
+import { usePecaeTheme } from '../../theme';
 
 interface StatWidgetProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -10,17 +10,17 @@ interface StatWidgetProps {
 }
 
 export const StatWidget: React.FC<StatWidgetProps> = ({ icon, value, label }) => {
-  const { colors, ForgeTokens } = { ...useForgeTheme(), ForgeTokens: require('../../theme/forge-tokens').ForgeTokens };
+  const { colors, PecaeTokens } = { ...usePecaeTheme(), PecaeTokens: require('../../theme/pecae-tokens').PecaeTokens };
 
   return (
     <View style={styles.container}>
       <View style={[styles.iconContainer, { backgroundColor: `${colors.brand}20` }]}>
         <Ionicons name={icon} size={20} color={colors.brand} />
       </View>
-      <Text style={[styles.value, { color: colors.textPrimary, fontFamily: ForgeTokens.typography.display }]}>
+      <Text style={[styles.value, { color: colors.textPrimary, fontFamily: PecaeTokens.typography.display }]}>
         {value}
       </Text>
-      <Text style={[styles.label, { color: colors.textMuted, fontFamily: ForgeTokens.typography.body }]}>
+      <Text style={[styles.label, { color: colors.textMuted, fontFamily: PecaeTokens.typography.body }]}>
         {label}
       </Text>
     </View>

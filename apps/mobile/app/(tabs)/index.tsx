@@ -1,13 +1,13 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView } from 'react-native';
-import { ForgeBackground, ForgeGlassCard } from '../../src/components/ForgeUI';
-import { useForgeTheme } from '../../src/theme';
+import { PecaeBackground, PecaeGlassCard } from '../../src/components/PecaeUI';
+import { usePecaeTheme } from '../../src/theme';
 
 export default function BuyerHomeScreen() {
-  const { colors, typography } = useForgeTheme();
+  const { colors, typography } = usePecaeTheme();
 
   return (
-    <ForgeBackground>
+    <PecaeBackground>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
           <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.display }]}>
@@ -18,18 +18,18 @@ export default function BuyerHomeScreen() {
           </Text>
         </View>
 
-        <ForgeGlassCard intensity={20} style={styles.card}>
+        <PecaeGlassCard intensity={20} style={styles.card}>
           <Text style={[styles.cardTitle, { color: colors.brand, fontFamily: typography.display }]}>
             SISTEMA OPERACIONAL
           </Text>
           <Text style={[styles.cardText, { color: colors.textPrimary, fontFamily: typography.body }]}>
             Bem-vindo ao terminal de busca. Encontre componentes e veículos com procedência verificada.
           </Text>
-        </ForgeGlassCard>
+        </PecaeGlassCard>
 
         <View style={styles.placeholderGrid}>
           {[1, 2, 3, 4].map((i) => (
-            <ForgeGlassCard key={i} intensity={10} style={styles.gridItem}>
+            <PecaeGlassCard key={i} intensity={10} style={styles.gridItem}>
               <View style={[styles.placeholderImage, { backgroundColor: 'rgba(255,255,255,0.05)' }]} />
               <Text style={[styles.itemTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>
                 ITEM_00{i}
@@ -37,11 +37,11 @@ export default function BuyerHomeScreen() {
               <Text style={[styles.itemPrice, { color: colors.brand, fontFamily: typography.mono }]}>
                 R$ 0,00
               </Text>
-            </ForgeGlassCard>
+            </PecaeGlassCard>
           ))}
         </View>
       </ScrollView>
-    </ForgeBackground>
+    </PecaeBackground>
   );
 }
 

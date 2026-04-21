@@ -11,6 +11,18 @@ export const api = axios.create({
   },
 });
 
+// Interceptor para injetar o token em cada requisição
+api.interceptors.request.use(
+  async (config) => {
+    const token = useAuthStore.getState().token;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 // Interceptor para renovação automática de token
 api.interceptors.response.use(
   (response) => response,

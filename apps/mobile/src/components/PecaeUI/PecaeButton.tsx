@@ -8,9 +8,9 @@ import {
   TextStyle,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useForgeTheme } from '../../theme';
+import { usePecaeTheme } from '../../theme';
 
-interface ForgeButtonProps {
+interface PecaeButtonProps {
   title: string;
   onPress: () => void;
   loading?: boolean;
@@ -20,7 +20,7 @@ interface ForgeButtonProps {
   variant?: 'primary' | 'secondary' | 'outline';
 }
 
-export const ForgeButton: React.FC<ForgeButtonProps> = ({
+export const PecaeButton: React.FC<PecaeButtonProps> = ({
   title,
   onPress,
   loading = false,
@@ -29,7 +29,7 @@ export const ForgeButton: React.FC<ForgeButtonProps> = ({
   textStyle,
   variant = 'primary',
 }) => {
-  const { colors, typography, effects } = useForgeTheme();
+  const { colors, typography, effects } = usePecaeTheme();
 
   const isPrimary = variant === 'primary';
 

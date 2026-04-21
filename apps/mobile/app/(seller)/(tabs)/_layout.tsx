@@ -2,25 +2,28 @@ import { Tabs } from 'expo-router';
 import { BlurView } from 'expo-blur';
 import { Platform, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { usePecaeTheme } from '../../../src/theme';
 
 export default function SellerTabsLayout() {
+  const { colors, typography } = usePecaeTheme();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: styles.tabBar,
+        tabBarStyle: [styles.tabBar, { backgroundColor: colors.surface }],
         tabBarBackground: () => (
           Platform.OS === 'ios' ? (
             <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} />
           ) : (
-            <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(27, 32, 40, 0.85)' }]} />
+            <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.surface, opacity: 0.95 }]} />
           )
         ),
-        tabBarActiveTintColor: '#3fff8b', // Vibrant Electric
-        tabBarInactiveTintColor: '#A8ABB3', // Text Muted
+        tabBarActiveTintColor: colors.brand,
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarShowLabel: true,
         tabBarLabelStyle: {
-          fontFamily: 'SpaceGrotesk_500Medium',
+          fontFamily: typography.medium,
           fontSize: 10,
           marginBottom: 8,
         },
@@ -72,9 +75,9 @@ const styles = StyleSheet.create({
     elevation: 8,
     backgroundColor: Platform.OS === 'ios' ? 'transparent' : 'rgba(27, 32, 40, 0.95)',
     overflow: 'hidden',
-    shadowColor: '#3fff8b',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
+    // shadowColor: '#3fff8b',
+    // shadowOffset: { width: 0, height: 4 },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 12,
   },
 });

@@ -14,12 +14,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Ionicons } from '@expo/vector-icons';
 import {
-  ForgeBackground,
-  ForgeGlassCard,
-  ForgeInput,
-  ForgeButton,
-} from '../../src/components/ForgeUI';
-import { useForgeTheme } from '../../src/theme';
+  PecaeBackground,
+  PecaeGlassCard,
+  PecaeInput,
+  PecaeButton,
+} from '../../src/components/PecaeUI';
+import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
 
 const forgotPasswordSchema = z.object({
@@ -30,7 +30,7 @@ type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
-  const { colors, typography } = useForgeTheme();
+  const { colors, typography } = usePecaeTheme();
 
   const {
     control,
@@ -55,7 +55,7 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <ForgeBackground>
+    <PecaeBackground>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
@@ -75,13 +75,13 @@ export default function ForgotPasswordScreen() {
             </Text>
           </View>
 
-          <ForgeGlassCard intensity={20} style={styles.card}>
+          <PecaeGlassCard intensity={20} style={styles.card}>
             <View style={styles.form}>
               <Controller
                 control={control}
                 name="email"
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <ForgeInput
+                  <PecaeInput
                     label="E-MAIL DE CADASTRO"
                     placeholder="tecnico@pecae.com.br"
                     keyboardType="email-address"
@@ -95,7 +95,7 @@ export default function ForgotPasswordScreen() {
                 )}
               />
 
-              <ForgeButton
+              <PecaeButton
                 title="SOLICITAR RESET"
                 onPress={handleSubmit(onSubmit)}
                 loading={isSubmitting}
@@ -103,10 +103,10 @@ export default function ForgotPasswordScreen() {
                 style={styles.button}
               />
             </View>
-          </ForgeGlassCard>
+          </PecaeGlassCard>
         </View>
       </KeyboardAvoidingView>
-    </ForgeBackground>
+    </PecaeBackground>
   );
 }
 

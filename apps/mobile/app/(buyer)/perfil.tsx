@@ -3,12 +3,12 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useForgeTheme } from '../../src/theme';
+import { usePecaeTheme } from '../../src/theme';
 import { useBuyerProfile } from '../../src/hooks/useBuyer';
 import { useAuthStore } from '../../src/store/auth-store';
 
 export default function PerfilComprador() {
-  const { colors, typography, spacing, glassmorphism } = useForgeTheme();
+  const { colors, typography, spacing, glassmorphism } = usePecaeTheme();
   const router = useRouter();
   const { data: profile, isLoading, error } = useBuyerProfile();
   const { clearAuth } = useAuthStore();
