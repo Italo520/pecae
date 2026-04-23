@@ -189,9 +189,35 @@ model TermsAcceptance {
 }
 
 // ============================================================
-// M05 REFERENCE — Part Categories (seed-only entity)
-// Listed here because seed runs in M01-T01-ST03
+// M04 — Automotive Catalog Entities
 // ============================================================
+
+enum VehicleSegment {
+  HATCH
+  SEDAN
+  SUV
+  PICKUP
+  VAN
+  TRUCK
+  MOTORCYCLE
+  OTHER
+}
+
+enum FuelType {
+  GASOLINE
+  ETHANOL
+  FLEX
+  DIESEL
+  ELECTRIC
+  HYBRID
+}
+
+enum TransmissionType {
+  MANUAL
+  AUTOMATIC
+  CVT
+  AUTOMATED
+}
 
 /// Fixed list of spare part categories available in a salvage vehicle.
 model PartCategory {
@@ -204,6 +230,72 @@ model PartCategory {
 
   @@index([slug])
   @@map("part_categories")
+}
+
+model VehicleBrand {
+  id      String  @id @default(uuid())
+  name    String  @unique @db.VarChar(100)
+  country String? @db.VarChar(100)
+  logo    String? @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  models VehicleModel[]
+
+  @@map("vehicle_brands")
+}
+
+model VehicleModel {
+  id      String         @id @default(uuid())
+  brandId String         @map("brand_id")
+  name    String         @db.VarChar(100)
+  segment VehicleSegment
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  brand    VehicleBrand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  versions VehicleVersion[]
+
+  @@unique([brandId, name])
+  @@index([brandId])
+  @@map("vehicle_models")
+}
+
+model VehicleVersion {
+  id           String           @id @default(uuid())
+  modelId      String           @map("model_id")
+  name         String           @db.VarChar(100)
+  engineCode   String?          @map("engine_code") @db.VarChar(50)
+  displacement Decimal?         @db.Decimal(3, 1)
+  fuel         FuelType
+  transmission TransmissionType
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  model VehicleModel  @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  years VehicleYear[]
+  vehicles Vehicle[]
+
+  @@index([modelId])
+  @@map("vehicle_versions")
+}
+
+model VehicleYear {
+  id        String @id @default(uuid())
+  versionId String @map("version_id")
+  yearFab   Int    @map("year_fab")
+  yearModel Int    @map("year_model")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  version VehicleVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  vehicles Vehicle[]
+
+  @@index([versionId])
+  @@map("vehicle_years")
 }
 
 // ============================================================
@@ -251,6 +343,7 @@ model SellerProfile {
   stats         SellerStats?
   verifications SellerVerification[]
   listings      Listing[]
+  vehicles      Vehicle[]
 
   @@index([city, state])
   @@map("seller_profiles")
@@ -313,26 +406,108 @@ model AuditLog {
 // ============================================================
 
 enum ListingStatus {
-  DRAFT
+  PENDING
   PUBLISHED
   SOLD
   EXPIRED
   REJECTED
+  DRAFT
+}
+
+enum VehicleStatus {
+  DRAFT
+  PENDING
+  ACTIVE
+  INACTIVE
+  SOLD
+}
+
+enum PhotoType {
+  EXTERIOR
+  INTERIOR
+  ENGINE
+  DAMAGE
+  OTHER
+}
+
+model Vehicle {
+  id              String        @id @default(uuid())
+  sellerId        String        @map("seller_id")
+  versionId       String        @map("version_id")
+  yearFabId       String        @map("year_fab_id")
+  
+  // RN03: Complete vehicle data
+  availableParts  Json          @default("[]") @map("available_parts")
+  plate           String?       @db.VarChar(20)
+  color           String        @db.VarChar(50)
+  city            String        @db.VarChar(100)
+  state           String        @db.VarChar(2)
+  lat             Float?
+  lng             Float?
+  observations    String?       @db.Text
+  status          VehicleStatus @default(DRAFT)
+
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  seller          SellerProfile  @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  version         VehicleVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  yearFab         VehicleYear    @relation(fields: [yearFabId], references: [id], onDelete: Cascade)
+  photos          VehiclePhoto[]
+  listing         Listing?
+
+  @@index([sellerId, status])
+  @@index([city, state])
+  @@index([versionId])
+  @@map("vehicles")
+}
+
+model VehiclePhoto {
+  id        String    @id @default(uuid())
+  vehicleId String    @map("vehicle_id")
+  url       String    @db.Text
+  order     Int       @default(0)
+  type      PhotoType @default(EXTERIOR)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  vehicle   Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@map("vehicle_photos")
 }
 
 model Listing {
   id              String        @id @default(uuid())
   sellerProfileId String        @map("seller_profile_id")
+  vehicleId       String        @unique @map("vehicle_id")
+  
   title           String        @db.VarChar(255)
-  status          ListingStatus @default(DRAFT)
-  price           Float?
+  description     String?       @db.Text
+  status          ListingStatus @default(PENDING) // RN14: Default PENDING
+  
+  // Metrics
+  views           Int           @default(0)
+  favoritesCount  Int           @default(0) @map("favorites_count")
+  
+  // Quality & Duplicity (RN10)
+  isDuplicate     Boolean       @default(false) @map("is_duplicate")
+  duplicateOfId   String?       @map("duplicate_of_id")
+
+  // Lifecycle
+  publishedAt     DateTime?     @map("published_at")
+  expiresAt       DateTime?     @map("expires_at")
+  soldAt          DateTime?     @map("sold_at")
+  
   createdAt       DateTime      @default(now()) @map("created_at")
   updatedAt       DateTime      @updatedAt @map("updated_at")
 
   sellerProfile   SellerProfile @relation(fields: [sellerProfileId], references: [id], onDelete: Cascade)
+  vehicle         Vehicle       @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
   favorites       Favorite[]
 
   @@index([sellerProfileId, status])
+  @@index([status])
   @@map("listings")
 }
 

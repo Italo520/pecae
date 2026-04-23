@@ -10,8 +10,11 @@ import { SellersModule } from './sellers/sellers.module';
 import { BuyersModule } from './buyers/buyers.module';
 import { VerificationsModule } from './verifications/verifications.module';
 import { StorageModule } from './common/storage/storage.module';
+import { CatalogModule } from './catalog/catalog.module';
+import { RedisModule } from './common/redis/redis.module';
 import { BullModule } from '@nestjs/bullmq';
 import { ConfigService } from '@nestjs/config';
+import { VehiclesModule } from './vehicles/vehicles.module';
 
 @Module({
   imports: [
@@ -58,6 +61,9 @@ import { ConfigService } from '@nestjs/config';
     BuyersModule,
     VerificationsModule,
     StorageModule,
+    CatalogModule,
+    RedisModule,
+    VehiclesModule,
   ],
   providers: [
     // Register ThrottlerGuard globally so @Throttle() decorators are enforced

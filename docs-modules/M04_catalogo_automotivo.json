@@ -17,7 +17,7 @@
     },
     "description": "Módulo responsável pelo catálogo de veículos da plataforma: marcas, modelos, versões, anos e categorias fixas de peças (PartCategory). É infraestrutura base para os módulos M05 (Cadastro de Sucata) e M07 (Busca e Descoberta). Dados gerenciados exclusivamente pelo administrador.",
     "goals": [
-      "Prover catálogo hierárquico de veículos: Marca → Modelo → Versão → Ano",
+      "Prover catálogo hierárquico de veículos: Marca → Ano → Modelo → Versão",
       "Manter lista fixa de PartCategory disponível para seleção no cadastro de sucatas",
       "Expor endpoints eficientes com cache agressivo (dados raramente mudam)",
       "Permitir CRUD completo via painel administrativo"
@@ -29,16 +29,43 @@
       "Sistema (seed inicial de marcas/modelos brasileiros)"
     ],
     "dependencies": {
-      "modules": ["M01"],
-      "external_services": ["Redis via Upstash (cache)"]
+      "modules": [
+        "M01"
+      ],
+      "external_services": [
+        "Redis via Upstash (cache)"
+      ]
     },
     "module_flow": {
       "description": "Fluxo de consulta do catálogo automotivo em cascata — usado no formulário de cadastro de sucata e na tela de busca",
       "pools": [
-        { "name": "Usuário", "lanes": ["Comprador / Vendedor"] },
-        { "name": "App Mobile", "lanes": ["Expo Router / Telas React Native"] },
-        { "name": "API NestJS", "lanes": ["CatalogController", "CatalogService", "CacheService"] },
-        { "name": "Infraestrutura", "lanes": ["Redis (Upstash)", "Supabase PostgreSQL"] }
+        {
+          "name": "Usuário",
+          "lanes": [
+            "Comprador / Vendedor"
+          ]
+        },
+        {
+          "name": "App Mobile",
+          "lanes": [
+            "Expo Router / Telas React Native"
+          ]
+        },
+        {
+          "name": "API NestJS",
+          "lanes": [
+            "CatalogController",
+            "CatalogService",
+            "CacheService"
+          ]
+        },
+        {
+          "name": "Infraestrutura",
+          "lanes": [
+            "Redis (Upstash)",
+            "Supabase PostgreSQL"
+          ]
+        }
       ],
       "bpmn_text": [
         "START EVENT: Usuário inicia seleção de veículo (busca ou cadastro de sucata)",
@@ -71,25 +98,67 @@
       ]
     },
     "functional_requirements": [
-      { "id": "RF20", "description": "Sistema deve listar marcas de veículos ordenadas alfabeticamente", "priority": "P0" },
-      { "id": "RF21", "description": "Sistema deve listar modelos filtrados por marca selecionada", "priority": "P0" },
-      { "id": "RF22", "description": "Sistema deve listar versões filtradas por modelo selecionado", "priority": "P0" },
-      { "id": "RF23", "description": "Sistema deve listar anos disponíveis filtrados por versão selecionada", "priority": "P0" },
-      { "id": "RF24", "description": "Sistema deve expor lista fixa de PartCategory para seleção no cadastro de sucata", "priority": "P0" },
-      { "id": "RF25", "description": "Administrador deve poder adicionar, editar e remover marcas, modelos e versões via painel web", "priority": "P1" },
-      { "id": "RF26", "description": "Sistema deve suportar autocomplete de marca e modelo com debounce de 300ms no app", "priority": "P1" }
+      {
+        "id": "RF20",
+        "description": "Sistema deve listar marcas de veículos ordenadas alfabeticamente",
+        "priority": "P0"
+      },
+      {
+        "id": "RF21",
+        "description": "Sistema deve listar modelos filtrados por marca selecionada",
+        "priority": "P0"
+      },
+      {
+        "id": "RF22",
+        "description": "Sistema deve listar versões filtradas por modelo selecionado",
+        "priority": "P0"
+      },
+      {
+        "id": "RF23",
+        "description": "Sistema deve listar anos disponíveis filtrados por versão selecionada",
+        "priority": "P0"
+      },
+      {
+        "id": "RF24",
+        "description": "Sistema deve expor lista fixa de PartCategory para seleção no cadastro de sucata",
+        "priority": "P0"
+      },
+      {
+        "id": "RF25",
+        "description": "Administrador deve poder adicionar, editar e remover marcas, modelos e versões via painel web",
+        "priority": "P1"
+      },
+      {
+        "id": "RF26",
+        "description": "Sistema deve suportar autocomplete de marca e modelo com debounce de 300ms no app",
+        "priority": "P1"
+      }
     ],
     "business_rules": [
-      { "id": "RN03", "description": "PartCategory é lista fixa gerenciada apenas por administradores — vendedores apenas selecionam" },
-      { "id": "RN-M04-01", "description": "Dados do catálogo são cacheados por 24h no Redis; invalidação manual pelo admin ao editar" },
-      { "id": "RN-M04-02", "description": "Seed inicial obrigatório com marcas mais comuns no Brasil: Fiat, VW, GM, Ford, Toyota, Honda, Hyundai, Renault, Chevrolet, Nissan, Jeep" }
+      {
+        "id": "RN03",
+        "description": "PartCategory é lista fixa gerenciada apenas por administradores — vendedores apenas selecionam"
+      },
+      {
+        "id": "RN-M04-01",
+        "description": "Dados do catálogo são cacheados por 24h no Redis; invalidação manual pelo admin ao editar"
+      },
+      {
+        "id": "RN-M04-02",
+        "description": "Seed inicial obrigatório com marcas mais comuns no Brasil: Fiat, VW, GM, Ford, Toyota, Honda, Hyundai, Renault, Chevrolet, Nissan, Jeep"
+      }
     ],
     "use_cases": [
       {
         "id": "UC10",
         "name": "Consultar catálogo em cascata",
-        "actors": ["Comprador", "Vendedor"],
-        "preconditions": ["Catálogo populado com seed inicial"],
+        "actors": [
+          "Comprador",
+          "Vendedor"
+        ],
+        "preconditions": [
+          "Catálogo populado com seed inicial"
+        ],
         "main_flow": [
           "1. Usuário inicia seleção de marca",
           "2. Sistema retorna lista de marcas (cache ou banco)",
@@ -103,13 +172,19 @@
           "A1. Marca sem modelos cadastrados: exibir mensagem 'Nenhum modelo disponível'",
           "A2. Cache Redis indisponível: fallback para banco com degradação elegante"
         ],
-        "postconditions": ["Veículo identificado por versionId + yearFabId"]
+        "postconditions": [
+          "Veículo identificado por versionId + yearFabId"
+        ]
       },
       {
         "id": "UC11",
         "name": "Gerenciar catálogo (Admin)",
-        "actors": ["Administrador"],
-        "preconditions": ["Admin autenticado com role ADMIN"],
+        "actors": [
+          "Administrador"
+        ],
+        "preconditions": [
+          "Admin autenticado com role ADMIN"
+        ],
         "main_flow": [
           "1. Admin acessa painel de gestão do catálogo",
           "2. Cria, edita ou remove marcas, modelos e versões",
@@ -117,7 +192,9 @@
           "4. Novas entradas ficam disponíveis imediatamente"
         ],
         "alternative_flows": [],
-        "postconditions": ["Catálogo atualizado e cache invalidado"]
+        "postconditions": [
+          "Catálogo atualizado e cache invalidado"
+        ]
       }
     ],
     "tasks": [
@@ -133,15 +210,32 @@
           "Como desenvolvedor, quero schema Prisma bem estruturado para o catálogo automotivo para que as consultas em cascata sejam eficientes",
           "Como sistema, quero PartCategory como tabela fixagoverned no banco para garantir consistência das categorias de peças"
         ],
-        "use_cases": ["UC10"],
+        "use_cases": [
+          "UC10"
+        ],
         "functional_requirements": [
-          { "id": "RF20", "description": "Entidade VehicleBrand com campos: id, name, country, logo" },
-          { "id": "RF21", "description": "Entidade VehicleModel com brandId FK e segment enum" },
-          { "id": "RF22", "description": "Entidade VehicleVersion com modelId FK e campos técnicos" },
-          { "id": "RF23", "description": "Entidade VehicleYear com versionId FK e ano de fabricação/modelo" }
+          {
+            "id": "RF20",
+            "description": "Entidade VehicleBrand com campos: id, name, country, logo"
+          },
+          {
+            "id": "RF21",
+            "description": "Entidade VehicleModel com brandId FK e segment enum"
+          },
+          {
+            "id": "RF22",
+            "description": "Entidade VehicleVersion com modelId FK e campos técnicos"
+          },
+          {
+            "id": "RF23",
+            "description": "Entidade VehicleYear com versionId FK e ano de fabricação/modelo"
+          }
         ],
         "business_rules": [
-          { "id": "RN-M04-01", "description": "Índices em brandId, modelId e versionId para queries em cascata" }
+          {
+            "id": "RN-M04-01",
+            "description": "Índices em brandId, modelId e versionId para queries em cascata"
+          }
         ],
         "bpmn_flow": [
           "START EVENT: Início do schema do catálogo automotivo",
@@ -175,11 +269,20 @@
             "user_story": "Como desenvolvedor, quero hierarquia de veículos bem definida no Prisma para que a seleção em cascata seja type-safe e eficiente",
             "use_case": "UC10",
             "functional_requirements": [
-              { "id": "RF20", "description": "VehicleBrand com id, name, country, logo" },
-              { "id": "RF22", "description": "VehicleVersion com dados técnicos do motor" }
+              {
+                "id": "RF20",
+                "description": "VehicleBrand com id, name, country, logo"
+              },
+              {
+                "id": "RF22",
+                "description": "VehicleVersion com dados técnicos do motor"
+              }
             ],
             "business_rules": [
-              { "id": "RN-M04-01", "description": "Índices em todas as FKs" }
+              {
+                "id": "RN-M04-01",
+                "description": "Índices em todas as FKs"
+              }
             ],
             "bpmn_flow": [
               "START EVENT: Adição das entidades de veículos ao schema",
@@ -209,10 +312,16 @@
             "user_story": "Como sistema, quero PartCategory bem definida no banco para que a lista fixa de categorias de peças seja consistente em toda a plataforma",
             "use_case": "UC10",
             "functional_requirements": [
-              { "id": "RF24", "description": "PartCategory com id, name, slug e icon" }
+              {
+                "id": "RF24",
+                "description": "PartCategory com id, name, slug e icon"
+              }
             ],
             "business_rules": [
-              { "id": "RN03", "description": "Lista gerenciada apenas por admins; slug único para upsert" }
+              {
+                "id": "RN03",
+                "description": "Lista gerenciada apenas por admins; slug único para upsert"
+              }
             ],
             "bpmn_flow": [
               "START EVENT: Adição do model PartCategory",
@@ -238,11 +347,20 @@
             "user_story": "Como vendedor, quero encontrar minha marca e modelo de carro no sistema para que eu possa cadastrar minha sucata sem dificuldade",
             "use_case": "UC10",
             "functional_requirements": [
-              { "id": "RF20", "description": "Marcas populares no Brasil disponíveis para seleção" },
-              { "id": "RF21", "description": "Modelos mais vendidos disponíveis por marca" }
+              {
+                "id": "RF20",
+                "description": "Marcas populares no Brasil disponíveis para seleção"
+              },
+              {
+                "id": "RF21",
+                "description": "Modelos mais vendidos disponíveis por marca"
+              }
             ],
             "business_rules": [
-              { "id": "RN-M04-02", "description": "Seed obrigatório com marcas BR" }
+              {
+                "id": "RN-M04-02",
+                "description": "Seed obrigatório com marcas BR"
+              }
             ],
             "bpmn_flow": [
               "START EVENT: Executar seed de catálogo",
@@ -279,16 +397,36 @@
           "Como comprador, quero ver a lista de marcas rapidamente no app para que a seleção de veículo seja ágil",
           "Como sistema, quero cachear o catálogo no Redis para que não haja queries desnecessárias ao banco em cada acesso"
         ],
-        "use_cases": ["UC10"],
+        "use_cases": [
+          "UC10"
+        ],
         "functional_requirements": [
-          { "id": "RF20", "description": "GET /catalog/brands retorna lista de marcas ordenadas" },
-          { "id": "RF21", "description": "GET /catalog/brands/:id/models retorna modelos da marca" },
-          { "id": "RF22", "description": "GET /catalog/models/:id/versions retorna versões do modelo" },
-          { "id": "RF23", "description": "GET /catalog/versions/:id/years retorna anos da versão" },
-          { "id": "RF24", "description": "GET /catalog/part-categories retorna lista fixa de categorias" }
+          {
+            "id": "RF20",
+            "description": "GET /catalog/brands retorna lista de marcas ordenadas"
+          },
+          {
+            "id": "RF21",
+            "description": "GET /catalog/brands/:id/models retorna modelos da marca"
+          },
+          {
+            "id": "RF22",
+            "description": "GET /catalog/models/:id/versions retorna versões do modelo"
+          },
+          {
+            "id": "RF23",
+            "description": "GET /catalog/versions/:id/years retorna anos da versão"
+          },
+          {
+            "id": "RF24",
+            "description": "GET /catalog/part-categories retorna lista fixa de categorias"
+          }
         ],
         "business_rules": [
-          { "id": "RN-M04-01", "description": "Cache Redis com TTL 24h; invalidação ao editar via admin" }
+          {
+            "id": "RN-M04-01",
+            "description": "Cache Redis com TTL 24h; invalidação ao editar via admin"
+          }
         ],
         "bpmn_flow": [
           "START EVENT: Requisição GET /catalog/*",
@@ -319,11 +457,20 @@
             "user_story": "Como app mobile, quero endpoints de catálogo eficientes para popular as seleções em cascata de veículo",
             "use_case": "UC10",
             "functional_requirements": [
-              { "id": "RF20", "description": "GET /catalog/brands" },
-              { "id": "RF24", "description": "GET /catalog/part-categories" }
+              {
+                "id": "RF20",
+                "description": "GET /catalog/brands"
+              },
+              {
+                "id": "RF24",
+                "description": "GET /catalog/part-categories"
+              }
             ],
             "business_rules": [
-              { "id": "RN-M04-01", "description": "Endpoints públicos, sem autenticação" }
+              {
+                "id": "RN-M04-01",
+                "description": "Endpoints públicos, sem autenticação"
+              }
             ],
             "bpmn_flow": [
               "START EVENT: Módulo CatalogModule criado",
@@ -352,10 +499,16 @@
             "user_story": "Como sistema, quero um cache Redis centralizado para que o catálogo automotivo seja servido com altíssima performance sem pressionar o banco",
             "use_case": "UC10",
             "functional_requirements": [
-              { "id": "RF26", "description": "Tempo de resposta < 100ms com cache ativo" }
+              {
+                "id": "RF26",
+                "description": "Tempo de resposta < 100ms com cache ativo"
+              }
             ],
             "business_rules": [
-              { "id": "RN-M04-01", "description": "TTL 24h para dados do catálogo" }
+              {
+                "id": "RN-M04-01",
+                "description": "TTL 24h para dados do catálogo"
+              }
             ],
             "bpmn_flow": [
               "START EVENT: Configurar cache Redis",
@@ -384,10 +537,16 @@
             "user_story": "Como comprador, quero digitar o nome do carro e ver sugestões automáticas para que eu possa encontrar rapidamente o veículo que preciso",
             "use_case": "UC10",
             "functional_requirements": [
-              { "id": "RF26", "description": "Autocomplete de marca e modelo no campo de busca" }
+              {
+                "id": "RF26",
+                "description": "Autocomplete de marca e modelo no campo de busca"
+              }
             ],
             "business_rules": [
-              { "id": "RN-M04-01", "description": "Resultados de autocomplete cacheados por 1h" }
+              {
+                "id": "RN-M04-01",
+                "description": "Resultados de autocomplete cacheados por 1h"
+              }
             ],
             "bpmn_flow": [
               "START EVENT: Usuário digita no campo de busca do app",
@@ -421,14 +580,28 @@
         "user_stories": [
           "Como comprador ou vendedor, quero selecionar meu veículo em cascata (marca → modelo → ano) de forma intuitiva para que a busca ou cadastro seja preciso"
         ],
-        "use_cases": ["UC10"],
+        "use_cases": [
+          "UC10"
+        ],
         "functional_requirements": [
-          { "id": "RF20", "description": "Exibir marcas como lista/grid no primeiro passo" },
-          { "id": "RF21", "description": "Filtrar modelos dinamicamente após seleção de marca" },
-          { "id": "RF22", "description": "Filtrar versões após seleção de modelo" }
+          {
+            "id": "RF20",
+            "description": "Exibir marcas como lista/grid no primeiro passo"
+          },
+          {
+            "id": "RF21",
+            "description": "Filtrar modelos dinamicamente após seleção de marca"
+          },
+          {
+            "id": "RF22",
+            "description": "Filtrar versões após seleção de modelo"
+          }
         ],
         "business_rules": [
-          { "id": "RN-M04-01", "description": "Dados em cache local via TanStack Query (staleTime 24h)" }
+          {
+            "id": "RN-M04-01",
+            "description": "Dados em cache local via TanStack Query (staleTime 24h)"
+          }
         ],
         "bpmn_flow": [
           "START EVENT: Componente VehicleSelector montado",
@@ -463,10 +636,16 @@
             "user_story": "Como desenvolvedor, quero hooks de catálogo reutilizáveis para que qualquer tela do app possa usar dados de veículos sem duplicação de lógica",
             "use_case": "UC10",
             "functional_requirements": [
-              { "id": "RF20", "description": "Hook useBrands() com TanStack Query" }
+              {
+                "id": "RF20",
+                "description": "Hook useBrands() com TanStack Query"
+              }
             ],
             "business_rules": [
-              { "id": "RN-M04-01", "description": "staleTime = 3600s (1h) nos hooks" }
+              {
+                "id": "RN-M04-01",
+                "description": "staleTime = 3600s (1h) nos hooks"
+              }
             ],
             "bpmn_flow": [
               "START EVENT: Hooks de catálogo criados",
@@ -496,11 +675,20 @@
             "user_story": "Como usuário, quero selecionar meu veículo em um fluxo de passos claro e responsivo para que a experiência seja fluida e sem erros",
             "use_case": "UC10",
             "functional_requirements": [
-              { "id": "RF20", "description": "Lista de marcas com logo renderizada eficientemente" },
-              { "id": "RF21", "description": "Modelos filtrados dinamicamente após seleção de marca" }
+              {
+                "id": "RF20",
+                "description": "Lista de marcas com logo renderizada eficientemente"
+              },
+              {
+                "id": "RF21",
+                "description": "Modelos filtrados dinamicamente após seleção de marca"
+              }
             ],
             "business_rules": [
-              { "id": "RN-M04-01", "description": "UI não bloqueia durante carregamento — skeleton screen" }
+              {
+                "id": "RN-M04-01",
+                "description": "UI não bloqueia durante carregamento — skeleton screen"
+              }
             ],
             "bpmn_flow": [
               "START EVENT: VehicleSelector renderizado",
@@ -534,10 +722,16 @@
             "user_story": "Como administrador, quero gerenciar o catálogo automotivo para que novos modelos e marcas sejam adicionados conforme necessário",
             "use_case": "UC11",
             "functional_requirements": [
-              { "id": "RF25", "description": "CRUD de marcas e modelos pelo admin" }
+              {
+                "id": "RF25",
+                "description": "CRUD de marcas e modelos pelo admin"
+              }
             ],
             "business_rules": [
-              { "id": "RN-M04-01", "description": "Invalidar cache Redis após mutação admin" }
+              {
+                "id": "RN-M04-01",
+                "description": "Invalidar cache Redis após mutação admin"
+              }
             ],
             "bpmn_flow": [
               "START EVENT: Admin cria/edita entidade do catálogo",
@@ -569,13 +763,24 @@
         "user_stories": [
           "Como desenvolvedor, quero testes que garantam o funcionamento correto das queries do catálogo para que refatorações futuras não quebrem a funcionalidade"
         ],
-        "use_cases": ["UC10"],
+        "use_cases": [
+          "UC10"
+        ],
         "functional_requirements": [
-          { "id": "RF20", "description": "Endpoint de brands coberto por testes" },
-          { "id": "RF24", "description": "Endpoint de part-categories coberto por testes" }
+          {
+            "id": "RF20",
+            "description": "Endpoint de brands coberto por testes"
+          },
+          {
+            "id": "RF24",
+            "description": "Endpoint de part-categories coberto por testes"
+          }
         ],
         "business_rules": [
-          { "id": "RN-M04-01", "description": "Testar comportamento de cache hit e cache miss" }
+          {
+            "id": "RN-M04-01",
+            "description": "Testar comportamento de cache hit e cache miss"
+          }
         ],
         "bpmn_flow": [
           "START EVENT: Início dos testes do catálogo",
@@ -603,10 +808,16 @@
             "user_story": "Como desenvolvedor, quero testes unitários do CatalogService para garantir que a lógica de cache e queries funciona corretamente",
             "use_case": "UC10",
             "functional_requirements": [
-              { "id": "RF20", "description": "getBrands() testado com e sem cache" }
+              {
+                "id": "RF20",
+                "description": "getBrands() testado com e sem cache"
+              }
             ],
             "business_rules": [
-              { "id": "RN-M04-01", "description": "Cache mock verifica chamadas a set() no cache miss" }
+              {
+                "id": "RN-M04-01",
+                "description": "Cache mock verifica chamadas a set() no cache miss"
+              }
             ],
             "bpmn_flow": [
               "START EVENT: npm run test catalog.service.spec.ts",
@@ -634,7 +845,10 @@
             "user_story": "Como desenvolvedor frontend, quero documentação Swagger completa do catálogo para integrar rapidamente sem precisar ler o código fonte",
             "use_case": "UC10",
             "functional_requirements": [
-              { "id": "RF20", "description": "Endpoints documentados com Swagger" }
+              {
+                "id": "RF20",
+                "description": "Endpoints documentados com Swagger"
+              }
             ],
             "business_rules": [],
             "bpmn_flow": [
@@ -663,11 +877,20 @@
             "user_story": "Como desenvolvedor, quero testes de integração que validem os endpoints com dados reais para garantir que a API funciona de ponta a ponta",
             "use_case": "UC10",
             "functional_requirements": [
-              { "id": "RF20", "description": "GET /catalog/brands retorna 200 com array de brands" },
-              { "id": "RF24", "description": "GET /catalog/part-categories retorna 200 com categorias" }
+              {
+                "id": "RF20",
+                "description": "GET /catalog/brands retorna 200 com array de brands"
+              },
+              {
+                "id": "RF24",
+                "description": "GET /catalog/part-categories retorna 200 com categorias"
+              }
             ],
             "business_rules": [
-              { "id": "RN-M04-01", "description": "Endpoints públicos retornam 200 sem token JWT" }
+              {
+                "id": "RN-M04-01",
+                "description": "Endpoints públicos retornam 200 sem token JWT"
+              }
             ],
             "bpmn_flow": [
               "START EVENT: Executar npm run test:e2e -- catalog",

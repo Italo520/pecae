@@ -1,12 +1,130 @@
-import { PrismaClient, UserType, UserStatus } from '@prisma/client';
+import {
+  PrismaClient,
+  UserType,
+  UserStatus,
+  VehicleSegment,
+} from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 
 const prisma = new PrismaClient();
 
 // ============================================================
-// PART CATEGORIES — Fixed list (M05 reference)
+// VEHICLE CATALOG DATA — Top 10 BR Brands (M04-T01-ST03)
 // ============================================================
+const VEHICLE_CATALOG = [
+  {
+    name: 'Fiat',
+    country: 'Italy',
+    models: [
+      { name: 'Uno', segment: VehicleSegment.HATCH },
+      { name: 'Palio', segment: VehicleSegment.HATCH },
+      { name: 'Strada', segment: VehicleSegment.PICKUP },
+      { name: 'Toro', segment: VehicleSegment.PICKUP },
+      { name: 'Mobi', segment: VehicleSegment.HATCH },
+    ],
+  },
+  {
+    name: 'Volkswagen',
+    country: 'Germany',
+    models: [
+      { name: 'Gol', segment: VehicleSegment.HATCH },
+      { name: 'Polo', segment: VehicleSegment.HATCH },
+      { name: 'Saveiro', segment: VehicleSegment.PICKUP },
+      { name: 'T-Cross', segment: VehicleSegment.SUV },
+      { name: 'Voyage', segment: VehicleSegment.SEDAN },
+    ],
+  },
+  {
+    name: 'Chevrolet',
+    country: 'USA',
+    models: [
+      { name: 'Onix', segment: VehicleSegment.HATCH },
+      { name: 'Tracker', segment: VehicleSegment.SUV },
+      { name: 'S10', segment: VehicleSegment.PICKUP },
+      { name: 'Prisma', segment: VehicleSegment.SEDAN },
+      { name: 'Spin', segment: VehicleSegment.VAN },
+    ],
+  },
+  {
+    name: 'Toyota',
+    country: 'Japan',
+    models: [
+      { name: 'Corolla', segment: VehicleSegment.SEDAN },
+      { name: 'Hilux', segment: VehicleSegment.PICKUP },
+      { name: 'Etios', segment: VehicleSegment.HATCH },
+      { name: 'Yaris', segment: VehicleSegment.HATCH },
+      { name: 'SW4', segment: VehicleSegment.SUV },
+    ],
+  },
+  {
+    name: 'Hyundai',
+    country: 'South Korea',
+    models: [
+      { name: 'HB20', segment: VehicleSegment.HATCH },
+      { name: 'Creta', segment: VehicleSegment.SUV },
+      { name: 'HB20S', segment: VehicleSegment.SEDAN },
+      { name: 'Tucson', segment: VehicleSegment.SUV },
+      { name: 'Santa Fe', segment: VehicleSegment.SUV },
+    ],
+  },
+  {
+    name: 'Jeep',
+    country: 'USA',
+    models: [
+      { name: 'Renegade', segment: VehicleSegment.SUV },
+      { name: 'Compass', segment: VehicleSegment.SUV },
+      { name: 'Commander', segment: VehicleSegment.SUV },
+      { name: 'Grand Cherokee', segment: VehicleSegment.SUV },
+      { name: 'Wrangler', segment: VehicleSegment.SUV },
+    ],
+  },
+  {
+    name: 'Renault',
+    country: 'France',
+    models: [
+      { name: 'Kwid', segment: VehicleSegment.HATCH },
+      { name: 'Sandero', segment: VehicleSegment.HATCH },
+      { name: 'Logan', segment: VehicleSegment.SEDAN },
+      { name: 'Duster', segment: VehicleSegment.SUV },
+      { name: 'Oroch', segment: VehicleSegment.PICKUP },
+    ],
+  },
+  {
+    name: 'Honda',
+    country: 'Japan',
+    models: [
+      { name: 'Civic', segment: VehicleSegment.SEDAN },
+      { name: 'HR-V', segment: VehicleSegment.SUV },
+      { name: 'Fit', segment: VehicleSegment.HATCH },
+      { name: 'City', segment: VehicleSegment.SEDAN },
+      { name: 'WR-V', segment: VehicleSegment.SUV },
+    ],
+  },
+  {
+    name: 'Nissan',
+    country: 'Japan',
+    models: [
+      { name: 'Kicks', segment: VehicleSegment.SUV },
+      { name: 'Versa', segment: VehicleSegment.SEDAN },
+      { name: 'Frontier', segment: VehicleSegment.PICKUP },
+      { name: 'Sentra', segment: VehicleSegment.SEDAN },
+      { name: 'March', segment: VehicleSegment.HATCH },
+    ],
+  },
+  {
+    name: 'Ford',
+    country: 'USA',
+    models: [
+      { name: 'Ka', segment: VehicleSegment.HATCH },
+      { name: 'EcoSport', segment: VehicleSegment.SUV },
+      { name: 'Ranger', segment: VehicleSegment.PICKUP },
+      { name: 'Fiesta', segment: VehicleSegment.HATCH },
+      { name: 'Focus', segment: VehicleSegment.HATCH },
+    ],
+  },
+];
+
 const PART_CATEGORIES = [
   { name: 'Motor', slug: 'motor', icon: 'engine' },
   { name: 'Câmbio', slug: 'cambio', icon: 'gearbox' },
@@ -25,9 +143,39 @@ const PART_CATEGORIES = [
   { name: 'Capô e Para-choque', slug: 'capo-para-choque', icon: 'hood' },
 ];
 
-// ============================================================
-// ADMIN USER — Development seed only
-// ============================================================
+async function seedVehicleCatalog() {
+  for (const brandData of VEHICLE_CATALOG) {
+    const brand = await prisma.vehicleBrand.upsert({
+      where: { name: brandData.name },
+      update: {},
+      create: {
+        id: crypto.randomUUID(),
+        name: brandData.name,
+        country: brandData.country,
+      },
+    });
+
+    for (const modelData of brandData.models) {
+      await prisma.vehicleModel.upsert({
+        where: {
+          brandId_name: {
+            brandId: brand.id,
+            name: modelData.name,
+          },
+        },
+        update: {},
+        create: {
+          id: crypto.randomUUID(),
+          brandId: brand.id,
+          name: modelData.name,
+          segment: modelData.segment,
+        },
+      });
+    }
+  }
+  console.log(`✅ ${VEHICLE_CATALOG.length} vehicle brands and their models seeded.`);
+}
+
 async function seedAdminUser() {
   const adminEmail = process.env.ADMIN_SEED_EMAIL ?? 'admin@pecae.com.br';
   const adminPassword = process.env.ADMIN_SEED_PASSWORD;
@@ -60,9 +208,6 @@ async function seedAdminUser() {
   console.log(`✅ Admin user seeded: ${adminEmail}`);
 }
 
-// ============================================================
-// PART CATEGORIES SEED — Idempotent upsert
-// ============================================================
 async function seedPartCategories() {
   for (const category of PART_CATEGORIES) {
     await prisma.partCategory.upsert({
@@ -79,14 +224,12 @@ async function seedPartCategories() {
   console.log(`✅ ${PART_CATEGORIES.length} part categories seeded.`);
 }
 
-// ============================================================
-// MAIN
-// ============================================================
 async function main() {
   console.log('🌱 Starting PECAÊ database seed...');
 
   await seedPartCategories();
   await seedAdminUser();
+  await seedVehicleCatalog();
 
   console.log('🎉 Seed completed successfully!');
 }
