@@ -72,7 +72,7 @@ export class CatalogService {
 
     const years = await this.prisma.vehicleYear.findMany({
       where: { versionId },
-      orderBy: { year: 'desc' },
+      orderBy: { yearFab: 'desc' },
     });
 
     await this.redis.set(cacheKey, years, this.CACHE_TTL);

@@ -44,6 +44,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="catalog"
+        options={{
+          title: 'CATÁLOGO',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="car-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: 'PERFIL',

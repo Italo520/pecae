@@ -1,8 +1,10 @@
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 import { UpdateAvailablePartsDto } from './dto/update-available-parts.dto';
 import { ListingStatus, VehicleStatus, PhotoType } from '@prisma/client';
 import { StorageService } from '../common/storage/storage.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class VehiclesService {
