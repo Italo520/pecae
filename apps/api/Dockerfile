@@ -6,6 +6,8 @@ FROM base AS pruner
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 RUN npm install -g turbo
+# Cache breaker para forçar cópia de novos arquivos
+# Timestamp: 2026-04-25T18:25
 COPY . .
 RUN turbo prune @pecae/api --docker
 

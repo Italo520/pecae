@@ -68,10 +68,11 @@ services:
     build:
       context: .
       dockerfile: apps/mobile/Dockerfile
+      args:
+        # CRITICO: passado como ARG de build-time para ser embutido no bundle JS pelo Expo
+        EXPO_PUBLIC_API_URL: http://localhost:3000/api/v1
     container_name: pecae-mobile-web
     restart: always
-    environment:
-      - EXPO_PUBLIC_API_URL=http://localhost:3000/api/v1
     ports:
       - "8080:80"
     depends_on:

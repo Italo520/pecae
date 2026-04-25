@@ -13,9 +13,20 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { useAuthStore } from '../src/store/auth-store';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
+
+// QueryClient singleton — deve estar fora do componente para não ser recriado
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 2,
+      staleTime: 1000 * 60, // 1 minuto
+    },
+  },
+});
 
 export default function RootLayout() {
   const { initializeAuth, isLoading: isAuthLoading } = useAuthStore();
@@ -36,10 +47,6 @@ export default function RootLayout() {
     }
   }, [fontsLoaded, fontError, isAuthLoading]);
 
-  console.log('RootLayout Render:', { fontsLoaded, fontError, isAuthLoading });
-
-  // Se ainda estiver carregando a autenticação, mostramos uma view vazia segura
-  // Em vez de retornar null que pode travar em algumas versões do Expo
   if (isAuthLoading) {
     return (
       <View style={{ flex: 1, backgroundColor: '#0D0D0D' }} />
@@ -47,12 +54,12 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <StatusBar style="auto" />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack>
-    </>
+    </QueryClientProvider>
   );
 }
