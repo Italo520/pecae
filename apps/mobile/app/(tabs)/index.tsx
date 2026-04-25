@@ -1,10 +1,12 @@
 import React from 'react';
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { PecaeBackground, PecaeGlassCard } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
+import { useListings } from '../../src/hooks/useVehicles';
 
 export default function BuyerHomeScreen() {
   const { colors, typography } = usePecaeTheme();
+  const { data: listings, isLoading } = useListings();
 
   return (
     <PecaeBackground>
@@ -27,19 +29,42 @@ export default function BuyerHomeScreen() {
           </Text>
         </PecaeGlassCard>
 
-        <View style={styles.placeholderGrid}>
-          {[1, 2, 3, 4].map((i) => (
-            <PecaeGlassCard key={i} intensity={10} style={styles.gridItem}>
-              <View style={[styles.placeholderImage, { backgroundColor: 'rgba(255,255,255,0.05)' }]} />
-              <Text style={[styles.itemTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>
-                ITEM_00{i}
+        {isLoading ? (
+          <ActivityIndicator size="large" color={colors.brand} style={{ marginTop: 20 }} />
+        ) : (
+          <View style={styles.placeholderGrid}>
+            {listings && listings.length > 0 ? (
+              listings.map((vehicle: any) => (
+                <PecaeGlassCard key={vehicle.id} intensity={10} style={styles.gridItem}>
+                  {vehicle.photos && vehicle.photos.length > 0 ? (
+                    <Image 
+                      source={{ uri: vehicle.photos[0].url }} 
+                      style={styles.placeholderImage} 
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <View style={[styles.placeholderImage, { backgroundColor: 'rgba(255,255,255,0.05)', justifyContent: 'center', alignItems: 'center' }]}>
+                      <Text style={{ color: colors.textMuted, fontSize: 10 }}>SEM FOTO</Text>
+                    </View>
+                  )}
+                  <Text 
+                    style={[styles.itemTitle, { color: colors.textPrimary, fontFamily: typography.display }]}
+                    numberOfLines={2}
+                  >
+                    {vehicle.listing?.title || `${vehicle.version?.model?.brand?.name} ${vehicle.version?.model?.name}`}
+                  </Text>
+                  <Text style={[styles.itemPrice, { color: colors.brand, fontFamily: typography.mono }]}>
+                    {vehicle.city} - {vehicle.state}
+                  </Text>
+                </PecaeGlassCard>
+              ))
+            ) : (
+              <Text style={[styles.cardText, { color: colors.textMuted, fontFamily: typography.body, width: '100%', textAlign: 'center', marginTop: 20 }]}>
+                Nenhum veículo disponível no momento.
               </Text>
-              <Text style={[styles.itemPrice, { color: colors.brand, fontFamily: typography.mono }]}>
-                R$ 0,00
-              </Text>
-            </PecaeGlassCard>
-          ))}
-        </View>
+            )}
+          </View>
+        )}
       </ScrollView>
     </PecaeBackground>
   );

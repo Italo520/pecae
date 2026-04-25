@@ -23,6 +23,16 @@ export const useVehicles = () => {
   });
 };
 
+export const useListings = (filters?: { city?: string; state?: string }) => {
+  return useQuery({
+    queryKey: ['listings', filters],
+    queryFn: async () => {
+      const { data } = await api.get('/listings', { params: filters });
+      return data;
+    },
+  });
+};
+
 export const useVehicleActions = () => {
   const queryClient = useQueryClient();
 

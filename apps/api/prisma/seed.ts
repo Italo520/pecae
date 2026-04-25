@@ -3,6 +3,11 @@ import {
   UserType,
   UserStatus,
   VehicleSegment,
+  SellerType,
+  ListingStatus,
+  VehicleStatus,
+  FuelType,
+  TransmissionType,
 } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
@@ -224,12 +229,141 @@ async function seedPartCategories() {
   console.log(`✅ ${PART_CATEGORIES.length} part categories seeded.`);
 }
 
+async function seedTestVehicles() {
+  console.log('📦 Seeding Test Vehicles...');
+  
+  const passwordHash = await bcrypt.hash('Pecae@123', 12);
+
+  // 1. Create Seller User
+  const sellerUser = await prisma.user.upsert({
+    where: { email: 'vendedor@pecae.com.br' },
+    update: {},
+    create: {
+      id: crypto.randomUUID(),
+      name: 'Vendedor de Teste',
+      email: 'vendedor@pecae.com.br',
+      passwordHash,
+      type: UserType.SELLER,
+      status: UserStatus.ACTIVE,
+      emailVerified: true,
+      phoneVerified: true,
+    },
+  });
+
+  const sellerProfile = await prisma.sellerProfile.upsert({
+    where: { userId: sellerUser.id },
+    update: {},
+    create: {
+      id: crypto.randomUUID(),
+      userId: sellerUser.id,
+      storeName: 'Sucatão do Italo',
+      type: SellerType.PF,
+      address: 'Rua das Sucatas, 123',
+      city: 'São Paulo',
+      state: 'SP',
+      zipCode: '01001-000',
+      whatsapp: '11999999999',
+      isVerified: true,
+      showWhatsapp: true,
+    },
+  });
+
+  // 2. Check if vehicles already exist
+  const existingVehiclesCount = await prisma.vehicle.count();
+  if (existingVehiclesCount > 0) {
+    console.log(`ℹ️ ${existingVehiclesCount} vehicles already exist. Skipping vehicle seed.`);
+    return;
+  }
+
+  // 3. Get Catalog Data
+  const models = await prisma.vehicleModel.findMany({ include: { brand: true } });
+  if (models.length === 0) {
+    console.warn('⚠️ No models found. Cannot seed vehicles.');
+    return;
+  }
+
+  const categories = await prisma.partCategory.findMany();
+
+  // URLs de fotos reais de carros do Unsplash
+  const carImages = [
+    'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=800&q=80', // Chevy
+    'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=800&q=80', // Ford
+    'https://images.unsplash.com/photo-1542282088-fe8426682b8f?auto=format&fit=crop&w=800&q=80', // Audi
+    'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80', // Porsche
+    'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=800&q=80', // Supercar
+    'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=800&q=80', // Ferrari
+    'https://images.unsplash.com/photo-1555353540-64580b51c258?auto=format&fit=crop&w=800&q=80', // Classic
+  ];
+
+  console.log('🚀 Creating Vehicles and Listings...');
+  
+  // Criar 5 veículos de teste
+  for (let i = 0; i < 5; i++) {
+    const model = models[i % models.length];
+    
+    // Create version
+    const version = await prisma.vehicleVersion.create({
+      data: {
+        id: crypto.randomUUID(),
+        modelId: model.id,
+        name: ['1.0 Flex Manual', '1.6 MSI Automático', '2.0 Turbo AWD', '1.3 Turbo Flex'][i % 4],
+        fuel: [FuelType.FLEX, FuelType.GASOLINE, FuelType.ETHANOL][i % 3],
+        transmission: [TransmissionType.MANUAL, TransmissionType.AUTOMATIC][i % 2],
+        displacement: [1.0, 1.6, 2.0, 1.3][i % 4],
+      },
+    });
+
+    // Create year
+    const year = await prisma.vehicleYear.create({
+      data: {
+        id: crypto.randomUUID(),
+        versionId: version.id,
+        yearFab: 2018 + i,
+        yearModel: 2019 + i,
+      },
+    });
+
+    // Create Vehicle
+    await prisma.vehicle.create({
+      data: {
+        sellerId: sellerProfile.id,
+        versionId: version.id,
+        yearFabId: year.id,
+        color: ['Prata', 'Preto', 'Branco', 'Vermelho', 'Azul'][i % 5],
+        plate: `ABC-${1000 + i}`,
+        status: VehicleStatus.ACTIVE,
+        city: 'São Paulo',
+        state: 'SP',
+        availableParts: categories.slice(0, 3 + i).map(c => c.id),
+        photos: {
+          create: [
+            { url: carImages[i % carImages.length], order: 0 },
+            { url: carImages[(i + 1) % carImages.length], order: 1 },
+          ],
+        },
+        listing: {
+          create: {
+            sellerProfileId: sellerProfile.id,
+            title: `${model.brand.name} ${model.name} - Estado de Novo`,
+            description: `Veículo em ótimo estado para retirada de peças. Pouco rodado.`,
+            status: ListingStatus.PUBLISHED,
+            publishedAt: new Date(),
+          },
+        },
+      },
+    });
+  }
+
+  console.log('✅ 5 Test vehicles and listings seeded.');
+}
+
 async function main() {
   console.log('🌱 Starting PECAÊ database seed...');
 
   await seedPartCategories();
   await seedAdminUser();
   await seedVehicleCatalog();
+  await seedTestVehicles();
 
   console.log('🎉 Seed completed successfully!');
 }

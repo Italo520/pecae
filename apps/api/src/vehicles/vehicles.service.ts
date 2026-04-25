@@ -179,6 +179,32 @@ export class VehiclesService {
   }
 
   /**
+   * Returns all active listings for buyers.
+   */
+  async findAllPublished(filters: { city?: string; state?: string }) {
+    const whereClause: any = {
+      status: VehicleStatus.ACTIVE,
+      listing: {
+        status: ListingStatus.PUBLISHED,
+      },
+    };
+
+    if (filters.city) whereClause.city = filters.city;
+    if (filters.state) whereClause.state = filters.state;
+
+    return this.prisma.vehicle.findMany({
+      where: whereClause,
+      include: {
+        listing: true,
+        photos: { orderBy: { order: 'asc' } },
+        version: { include: { model: { include: { brand: true } } } },
+        yearFab: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  /**
    * Generates upload URLs for vehicle photos.
    */
   async generateUploadUrls(id: string, sellerId: string, count: number) {
