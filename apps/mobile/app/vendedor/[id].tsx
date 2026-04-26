@@ -31,6 +31,15 @@ export default function PublicProfileScreen() {
     enabled: !!seller,
   });
 
+  const { data: reviewsResponse } = useQuery({
+    queryKey: ['seller-reviews', id],
+    queryFn: async () => {
+      const response = await api.get(`/sellers/${id}/reviews`, { params: { limit: 5 } });
+      return response.data;
+    },
+    enabled: !!id,
+  });
+
   if (isLoading) {
     return (
       <PecaeBackground>
@@ -95,6 +104,14 @@ export default function PublicProfileScreen() {
           <Text style={styles.storeName}>{seller?.storeName}</Text>
           
           <View style={styles.infoPills}>
+            {seller?.stats?.rating !== undefined && seller?.stats?.rating !== null && (
+              <View style={[styles.pill, { borderColor: 'rgba(245, 158, 11, 0.3)' }]}>
+                <Ionicons name="star" size={14} color="#F59E0B" />
+                <Text style={[styles.pillText, { color: '#F59E0B' }]}>
+                  {seller.stats.rating.toFixed(1)} ({seller.stats.totalReviews})
+                </Text>
+              </View>
+            )}
             <View style={styles.pill}>
               <Ionicons name="location-sharp" size={14} color="#3B82F6" />
               <Text style={styles.pillText}>{seller?.city}, {seller?.state}</Text>
@@ -129,6 +146,12 @@ export default function PublicProfileScreen() {
             onPress={handleStartChat}
             variant="primary"
           />
+          <PecaeButton 
+            title="Avaliar Vendedor (Teste M06)" 
+            onPress={() => router.push(`/chat/test-room/avaliar?sellerId=${id}&storeName=${encodeURIComponent(seller?.storeName || '')}`)}
+            variant="outline"
+            style={{ marginTop: 8 }}
+          />
           {seller?.showWhatsapp && (
             <TouchableOpacity 
               onPress={handleWhatsApp}
@@ -149,6 +172,50 @@ export default function PublicProfileScreen() {
             </PecaeGlassCard>
           </View>
         )}
+
+        {/* Avaliações Section */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionHeader}>Avaliações</Text>
+            {reviewsResponse?.data?.length > 0 && (
+              <TouchableOpacity onPress={() => router.push(`/vendedor/avaliacoes?sellerId=${id}`)}>
+                <Text style={styles.seeAllText}>Ver todas</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {reviewsResponse?.data?.length > 0 ? (
+            reviewsResponse.data.map((review: any) => (
+              <PecaeGlassCard key={review.id} style={styles.reviewCard}>
+                <View style={styles.reviewHeader}>
+                  <Text style={styles.buyerName}>{review.buyerName}</Text>
+                  <View style={styles.ratingRow}>
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Ionicons
+                        key={i}
+                        name={i < review.rating ? 'star' : 'star-outline'}
+                        size={14}
+                        color={i < review.rating ? '#F59E0B' : '#94A3B8'}
+                      />
+                    ))}
+                  </View>
+                </View>
+                {review.comment && (
+                  <Text style={styles.reviewComment}>{review.comment}</Text>
+                )}
+                <Text style={styles.reviewDate}>
+                  {new Date(review.createdAt).toLocaleDateString('pt-BR')}
+                </Text>
+              </PecaeGlassCard>
+            ))
+          ) : (
+            <PecaeGlassCard style={styles.emptyReviewCard}>
+              <Text style={styles.emptyReviewText}>
+                Nenhuma avaliação disponível para este vendedor ainda.
+              </Text>
+            </PecaeGlassCard>
+          )}
+        </View>
 
         {/* Listings Section */}
         <View style={[styles.section, { marginBottom: 100 }]}>
@@ -375,5 +442,46 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     lineHeight: 20,
+  },
+  reviewCard: {
+    padding: 16,
+    marginBottom: 12,
+    borderRadius: 16,
+  },
+  reviewHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  buyerName: {
+    color: '#F8FAFC',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  ratingRow: {
+    flexDirection: 'row',
+    gap: 2,
+  },
+  reviewComment: {
+    color: '#94A3B8',
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 8,
+  },
+  reviewDate: {
+    color: '#64748B',
+    fontSize: 12,
+    textAlign: 'right',
+  },
+  emptyReviewCard: {
+    padding: 24,
+    alignItems: 'center',
+    borderRadius: 16,
+  },
+  emptyReviewText: {
+    color: '#64748B',
+    fontSize: 14,
+    textAlign: 'center',
   }
 });

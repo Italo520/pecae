@@ -11,6 +11,38 @@ export class SellerStatsProcessor extends WorkerHost {
   async process(job: Job<{ sellerProfileId: string }>): Promise<any> {
     const { sellerProfileId } = job.data;
 
+    if (job.name === 'recalc-seller-rating') {
+      // Calculate rating average and total reviews
+      const aggregate = await this.prisma.review.aggregate({
+        where: {
+          sellerProfileId,
+          isRemoved: false,
+        },
+        _avg: {
+          rating: true,
+        },
+        _count: {
+          id: true,
+        },
+      });
+
+      await this.prisma.sellerStats.update({
+        where: { sellerProfileId },
+        data: {
+          rating: aggregate._avg.rating || null,
+          totalReviews: aggregate._count.id || 0,
+        },
+      });
+
+      return {
+        sellerProfileId,
+        rating: aggregate._avg.rating || null,
+        totalReviews: aggregate._count.id || 0,
+        status: 'rating_recalculated',
+      };
+    }
+
+    // Default to 'update-seller-stats' logic
     // 1. Calculate active listings (PUBLISHED)
     const activeListings = await this.prisma.listing.count({
       where: {
@@ -52,5 +84,6 @@ export class SellerStatsProcessor extends WorkerHost {
       status: 'updated',
     };
   }
+
 }
 

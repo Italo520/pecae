@@ -108,7 +108,10 @@ export class SellersService {
       stats: profile.stats ? {
         activeListings: profile.stats.activeListings,
         avgResponseTimeMinutes: profile.stats.avgResponseTimeMinutes,
+        rating: profile.stats.rating,
+        totalReviews: profile.stats.totalReviews,
       } : undefined,
+
     };
   }
 

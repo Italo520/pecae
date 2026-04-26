@@ -1,46 +1,76 @@
-# Plano de Trabalho: Remodelação dos Cards de Veículos (Web & Mobile)
+# Plano de Trabalho: M06 — Avaliações e Reputação
 
-Este documento define o plano detalhado para remodelar o layout do catálogo de veículos do PECAÊ, adotando um visual premium no estilo **Itamatay Veículos**, respeitando as decisões de negócio e o sistema de design existente.
-
----
-
-## 🎯 Objetivos do Projeto
-
-1. **Grid Responsivo na Web:** Expandir o layout para preencher a tela com 3 a 4 colunas (dependendo da largura do dispositivo), evitando áreas vazias.
-2. **Layout Mobile Aperfeiçoado:** Manter adaptabilidade em 1 a 2 colunas no mobile.
-3. **Estado de Visualização Persistente:** Alternância dinâmica entre Modo Grid e Modo Lista com estado salvo localmente.
-4. **Fidelidade Visual:** Utilizar as fotos reais geradas via Unsplash e omitir elementos com dados ausentes (como Cor ou Views).
-5. **Navegação:** Clicar no card redireciona para a página de detalhes correspondente.
-6. **Ajuste de Cores (Paleta Verde):** Substituir esquemas de cores anteriores pela identidade oficial do PECAÊ baseada em tons de verde (`#2D8C4E`, `#4ADE80`).
+Este documento define o plano detalhado para a implementação do módulo M06, permitindo que compradores avaliem vendedores após negociações.
 
 ---
 
-## 📋 Arquivos Afetados
-
-- **Componente do Catálogo Principal:** `apps/mobile/app/(tabs)/index.tsx`
-- **Componente de Card Individual:** (A refatorar ou criar dentro do projeto web/mobile)
-- **Store de Estado:** `apps/mobile/src/store/ui-store.ts`
-
----
-
-## 🛠️ Fases de Implementação (Fase 2)
-
-### Fase 2.1: Estrutura & Grid (Frontend & Mobile)
-- Refatorar o container principal da página para usar Flexbox/Grid responsivo (Tailwind/React Native Web adaptativo).
-- Implementar a alternância entre Grid e Lista.
-
-### Fase 2.2: Dados & Lógica de Exibição
-- Ajustar os campos do veículo: Cidade, Estado, Título, Cor, Views.
-- Implementar a omissão condicional de metadados vazios.
-- Inserir as etiquetas de "Destaque" e "Verificado".
-
-### Fase 2.3: Estilização com a Paleta Verde
-- Implementar os tokens de design do `pecae-tokens.ts` (Verde PECAÊ, Vidro transparente com desfoque).
+## 🎯 Objetivos & Critérios de Sucesso
+1. **Integridade dos Dados:** Constraint de unicidade por `chatRoomId` e validação de rating (1-5) no banco e na API.
+2. **Segurança & LGPD:** Anonimização dos nomes dos compradores tanto no Backend quanto no Frontend.
+3. **Regra de Negócio:** Avaliação disponível apenas se houver interação no chat.
 
 ---
 
-## 🔍 Critérios de Aceitação & Verificação
+## 💻 Tipo de Projeto & Tech Stack
+- **Tipo:** Full Stack (API NestJS + App Expo)
+- **Tech Stack:**
+  - Backend: NestJS + Prisma ORM + PostgreSQL
+  - Mobile: React Native (Expo) + Expo Router
+  - Queue: BullMQ
 
-1. Verificação visual em resoluções de desktop (1920px) e mobile (375px).
-2. Sem exibição de preços ou placeholders estranhos.
-3. Teste de persistência de estado para Light/Dark mode e visualização Grid/Lista.
+---
+
+## 📁 Arquivos Afetados
+- `apps/api/prisma/schema.prisma`
+- `apps/api/src/modules/review/...` (A ser criado)
+- `apps/mobile/app/chat/[roomId]/avaliar.tsx` (A ser criado)
+- `apps/mobile/app/seller/[id].tsx` (Atualizar perfil)
+
+---
+
+## 🛠️ Task Breakdown (Execução Individual)
+
+### Fase 1: Backend & Banco de Dados (P0)
+
+#### [x] M06-T01-ST01: Schema Prisma — Review & SellerStats
+- **Agente:** `database-architect`
+- **Ação:** Criar model `Review` e atualizar `SellerStats`. Adicionar CHECK constraint via SQL raw.
+- **INPUT:** `apps/api/prisma/schema.prisma`
+- **OUTPUT:** Migration aplicada e schema atualizado.
+- **VERIFY:** `npx prisma migrate dev` executa sem erros.
+
+#### [x] M06-T01-ST02: API — CRUD de Avaliações
+- **Agente:** `backend-specialist`
+- **Ação:** Implementar endpoints POST /reviews e GET /sellers/:id/reviews. Validar interação e anonimização.
+- **INPUT:** Prisma Service.
+- **OUTPUT:** Endpoints funcionais.
+- **VERIFY:** Testes manuais/unitários.
+
+#### [x] M06-T01-ST03: Worker BullMQ
+- **Agente:** `backend-specialist`
+- **Ação:** Criar worker para recálculo assíncrono do rating médio.
+- **INPUT:** BullMQ config.
+- **OUTPUT:** Job processor ativo.
+- **VERIFY:** `SellerStats` atualizado após nova review.
+
+### Fase 2: Mobile (P2)
+
+#### [ ] M06-T02-ST01: Tela/Modal de Avaliação
+- **Agente:** `mobile-developer`
+- **Ação:** Componente `StarRatingPicker` e lógica no chat.
+- **INPUT:** Chat screen.
+- **OUTPUT:** UI interativa.
+- **VERIFY:** Visualização no Expo.
+
+#### [ ] M06-T02-ST02: Exibição no Perfil do Vendedor
+- **Agente:** `mobile-developer`
+- **Ação:** Renderizar reviews anonimizadas no perfil.
+- **INPUT:** Perfil do vendedor.
+- **OUTPUT:** UI atualizada.
+- **VERIFY:** Visualização no Expo.
+
+---
+
+## 🔍 Phase X: Verificação Final
+- [ ] Lint & Type Check: `npm run lint`
+- [ ] Testes de Integração

@@ -15,6 +15,8 @@ import { RedisModule } from './common/redis/redis.module';
 import { BullModule } from '@nestjs/bullmq';
 import { ConfigService } from '@nestjs/config';
 import { VehiclesModule } from './vehicles/vehicles.module';
+import { ReviewsModule } from './reviews/reviews.module';
+
 
 @Module({
   imports: [
@@ -64,6 +66,8 @@ import { VehiclesModule } from './vehicles/vehicles.module';
     CatalogModule,
     RedisModule,
     VehiclesModule,
+    ReviewsModule,
+
   ],
   providers: [
     // Register ThrottlerGuard globally so @Throttle() decorators are enforced

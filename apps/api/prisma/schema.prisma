@@ -85,6 +85,7 @@ model User {
   notificationPreferences  NotificationPreferences?
   favorites                Favorite[]
   savedSearches            SavedSearch[]
+  reviews                  Review[]
 
   @@index([email])
   @@index([status])
@@ -344,6 +345,7 @@ model SellerProfile {
   verifications SellerVerification[]
   listings      Listing[]
   vehicles      Vehicle[]
+  reviews       Review[]
 
   @@index([city, state])
   @@map("seller_profiles")
@@ -357,6 +359,8 @@ model SellerStats {
   totalListings          Int  @default(0) @map("total_listings")
   totalSold              Int  @default(0) @map("total_sold")
   avgResponseTimeMinutes Int? @map("avg_response_time_minutes")
+  rating                 Float?
+  totalReviews           Int  @default(0) @map("total_reviews")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -364,6 +368,24 @@ model SellerStats {
   sellerProfile SellerProfile @relation(fields: [sellerProfileId], references: [id], onDelete: Cascade)
 
   @@map("seller_stats")
+}
+
+model Review {
+  id              String   @id @default(uuid())
+  sellerProfileId String   @map("seller_profile_id")
+  buyerId         String   @map("buyer_id")
+  chatRoomId      String   @unique @map("chat_room_id")
+  rating          Int      @db.SmallInt
+  comment         String?  @db.Text
+  isRemoved       Boolean  @default(false) @map("is_removed")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  sellerProfile SellerProfile @relation(fields: [sellerProfileId], references: [id], onDelete: Cascade)
+  buyer         User          @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+
+  @@index([sellerProfileId])
+  @@map("reviews")
 }
 
 model SellerVerification {
