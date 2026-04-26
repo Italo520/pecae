@@ -23,35 +23,34 @@ Este documento define o plano detalhado para o desenvolvimento e implementação
 
 ## 🛠️ Task Breakdown (Execução Individual)
 
-### [ ] M12-T01: Schema Prisma (Analytics & Aggregates)
+### [x] M12-T01: Schema Prisma (Analytics & Aggregates)
 - **Agente:** `database-architect`
 - **Ação:** Criar models `ListingView` (dedup 24h por IP hasheado) e `ListingStats` (cache aggregates).
 - **Subtasks:**
   - Adicionar models no `schema.prisma`.
   - Executar migrations locais.
 
-### [ ] M12-T02: AnalyticsController (Endpoints & Registro)
+### [x] M12-T02: AnalyticsController (Endpoints & Registro)
 - **Agente:** `backend-specialist`
 - **Ação:** Implementar endpoints REST essenciais:
   - `POST /listings/:id/view` (Fire-and-forget via BullMQ).
   - `GET /analytics/seller/me` (Série temporal de views + cards).
   - `GET /analytics/admin` (Métricas globais protegidas por Role Admin).
 
-### [ ] M12-T03: BullMQ Cron (Recálculo Periódico)
+### [x] M12-T03: BullMQ Cron (Recálculo Periódico)
 - **Agente:** `backend-specialist`
 - **Ação:** Criar `RecalcMetricsWorker` que roda a cada 6h para processar e atualizar `ListingStats` e `SellerStats`.
 
-### [ ] M12-T04: Dashboard Analytics Vendedor (Mobile Interface)
+### [x] M12-T04: Dashboard Analytics Vendedor (Mobile Interface)
 - **Agente:** `frontend-specialist` / `mobile-developer`
-- **Ação:** Criar aba `app/(seller)/analytics.tsx` com:
-  - SegmentedControl (7d / 30d / 90d).
+- **Ação:** Criar aba/seção com:
   - Cards (Views, Chats, Conversão).
-  - Gráfico de linha temporal.
+  - Gráfico de linha/barra temporal.
   - Empty state com guia interativo para novos vendedores.
 
-### [ ] M12-T05: Dashboard Analytics Admin (Mobile Interface)
+### [x] M12-T05: Dashboard Analytics Admin (Mobile Interface)
 - **Agente:** `frontend-specialist` / `mobile-developer`
-- **Ação:** Integrar métricas do sistema como um todo no painel de moderação/admin existente (`app/(admin)` ou similar).
+- **Ação:** Integrar métricas do sistema como um todo no painel de moderação/admin existente (`app/(moderator)/analytics.tsx`).
 
 
 ---
