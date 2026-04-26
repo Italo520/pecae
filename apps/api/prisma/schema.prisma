@@ -66,6 +66,7 @@ model User {
 
   // --- Profile ---
   avatar String? @db.Text
+  lastActiveAt DateTime? @map("last_active_at")
 
   // --- Timestamps & LGPD ---
   createdAt     DateTime  @default(now()) @map("created_at")
@@ -366,6 +367,7 @@ model SellerStats {
   avgResponseTimeMinutes Int? @map("avg_response_time_minutes")
   rating                 Float?
   totalReviews           Int  @default(0) @map("total_reviews")
+  totalChatsInitiated    Int  @default(0) @map("total_chats_initiated")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -534,6 +536,8 @@ model Listing {
   vehicle         Vehicle       @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
   favorites       Favorite[]
   chatRooms       ChatRoom[]
+  viewsLogs       ListingView[]
+  listingStats    ListingStats?
 
   @@index([sellerProfileId, status])
   @@index([status])
@@ -716,5 +720,33 @@ model NotificationLog {
   notification   Notification        @relation(fields: [notificationId], references: [id], onDelete: Cascade)
 
   @@map("notification_logs")
+}
+
+model ListingView {
+  id        String   @id @default(uuid())
+  listingId String   @map("listing_id")
+  ipHash    String   @map("ip_hash") @db.Char(64)
+  viewedAt  DateTime @default(now()) @map("viewed_at")
+
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([listingId, viewedAt])
+  @@index([listingId, ipHash])
+  @@map("listing_views")
+}
+
+model ListingStats {
+  id                String   @id @default(uuid())
+  listingId         String   @unique @map("listing_id")
+  views7d           Int      @default(0) @map("views_7d")
+  views30d          Int      @default(0) @map("views_30d")
+  views90d          Int      @default(0) @map("views_90d")
+  chatsInitiated30d Int      @default(0) @map("chats_initiated_30d")
+  conversionRate    Float    @default(0.0) @map("conversion_rate")
+  calculatedAt      DateTime @default(now()) @map("calculated_at")
+
+  listing           Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@map("listing_stats")
 }
 

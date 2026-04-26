@@ -1,13 +1,14 @@
-# Plano de Trabalho: M11 — Notificações
+# Plano de Trabalho: M12 — Analytics e Dashboard
 
-Este documento define o plano detalhado para o desenvolvimento e implementação do módulo M11, que centraliza o envio de notificações (Push, E-mail e In-App) da plataforma PECAÊ.
+Este documento define o plano detalhado para o desenvolvimento e implementação do módulo M12, responsável pela coleta e exibição de métricas de anúncios e plataforma para vendedores e administradores.
 
 ---
 
 ## 🎯 Objetivos & Critérios de Sucesso
-1. **Multi-Canal Best-Effort**: Suportar entrega via Expo Push, Resend API e Supabase Realtime sem bloquear a experiência do usuário.
-2. **Conformidade de Preferências**: Respeitar estritamente as flags de canal configuradas pelo usuário.
-3. **Persistência Completa**: Salvar logs em formato atômico para manter rastreabilidade histórica.
+1. **Coleta Eficiente e LGPD**: Registrar visualizações (views) de anúncios de forma assíncrona com anonimização via hash SHA-256 de IPs usando salt estático em `.env` (`ANALYTICS_HASH_SALT`).
+2. **Aggregates Pré-calculados**: Utilizar BullMQ cron para processar métricas pesadas a cada 6h sem degradar performance em tempo real.
+3. **UX com Gráficos Fluidos**: Renderizar painéis interativos no app mobile.
+4. **Fallback Contas Novas**: Exibir guia incentivando o cadastro de anúncios quando as métricas forem zeradas.
 
 ---
 
@@ -15,45 +16,45 @@ Este documento define o plano detalhado para o desenvolvimento e implementação
 - **Tipo:** Full Stack (NestJS API + Workers + App Expo Mobile)
 - **Tech Stack:** 
   - NestJS + Prisma
-  - BullMQ (Fila de Tarefas)
-  - Expo Notifications + Resend
+  - BullMQ (Fila e Cron agendado)
+  - Mobile: Victory Native (Gráficos) ou similar compatível
 
 ---
 
 ## 🛠️ Task Breakdown (Execução Individual)
 
-### [x] M11-T01: Schema Prisma (Notification & Logs)
+### [ ] M12-T01: Schema Prisma (Analytics & Aggregates)
 - **Agente:** `database-architect`
-- **Ação:** Criar enums de tipo/canal e persistência indexada.
+- **Ação:** Criar models `ListingView` (dedup 24h por IP hasheado) e `ListingStats` (cache aggregates).
+- **Subtasks:**
+  - Adicionar models no `schema.prisma`.
+  - Executar migrations locais.
 
-
-### [x] M11-T02: NotificationService (BullMQ Dispatchers)
+### [ ] M12-T02: AnalyticsController (Endpoints & Registro)
 - **Agente:** `backend-specialist`
-- **Ação:** Enfileiramento em segundo plano sem travar rotas principais.
+- **Ação:** Implementar endpoints REST essenciais:
+  - `POST /listings/:id/view` (Fire-and-forget via BullMQ).
+  - `GET /analytics/seller/me` (Série temporal de views + cards).
+  - `GET /analytics/admin` (Métricas globais protegidas por Role Admin).
 
-
-### [x] M11-T03: Central de Notificações (Full Stack)
-
-#### Backend (Endpoints API)
+### [ ] M12-T03: BullMQ Cron (Recálculo Periódico)
 - **Agente:** `backend-specialist`
-- **Ação:** Implementar endpoints em `NotificationController`:
-  - `GET /notifications` (Listagem paginada por cursor, ordem desc)
-  - `GET /notifications/unread-count` (Contagem de não lidas)
-  - `PUT /notifications/:id/read` (Marcar como lida com validação de ownership)
-  - `PUT /notifications/read-all` (Marcar todas do usuário como lidas)
+- **Ação:** Criar `RecalcMetricsWorker` que roda a cada 6h para processar e atualizar `ListingStats` e `SellerStats`.
 
-#### Mobile (Interface & UX)
-- **Agente:** `mobile-developer`
-- **Ação:** Criar aba `app/(tabs)/notificacoes.tsx`:
-  - `FlatList` otimizada (`useCallback`, `React.memo`, touch target >= 48px).
-  - Estratégia de paridade com o banco: Refetch no foco da tela (`useFocusEffect`) e validação via query client (devido ao uso de Postgres local sem Supabase Realtime).
-  - UX Premium: Gestos (*Swipe*) para ações rápidas, atualizações otimistas e rollback silencioso.
+### [ ] M12-T04: Dashboard Analytics Vendedor (Mobile Interface)
+- **Agente:** `frontend-specialist` / `mobile-developer`
+- **Ação:** Criar aba `app/(seller)/analytics.tsx` com:
+  - SegmentedControl (7d / 30d / 90d).
+  - Cards (Views, Chats, Conversão).
+  - Gráfico de linha temporal.
+  - Empty state com guia interativo para novos vendedores.
 
-#### Verificação
-- **Agente:** `test-engineer`
-- **Ação:** Validar integração ponta a ponta e executar scripts de segurança/lint.
+### [ ] M12-T05: Dashboard Analytics Admin (Mobile Interface)
+- **Agente:** `frontend-specialist` / `mobile-developer`
+- **Ação:** Integrar métricas do sistema como um todo no painel de moderação/admin existente (`app/(admin)` ou similar).
+
 
 ---
 
 ## 🏁 Critérios de Saída
-Aprovação do fluxo unificado e validação via scripts de teste.
+Validação via scripts e aprovação dos painéis.

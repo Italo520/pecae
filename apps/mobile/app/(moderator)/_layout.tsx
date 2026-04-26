@@ -57,6 +57,15 @@ export default function ModeratorLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="analytics"
+        options={{
+          title: 'MÉTRICAS',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="stats-chart-outline" size={size} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

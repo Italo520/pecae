@@ -21,6 +21,8 @@ import { ListingsModule } from './listings/listings.module';
 import { ChatModule } from './chat/chat.module';
 import { ModerationModule } from './moderation/moderation.module';
 import { NotificationModule } from './notifications/notification.module';
+import { AnalyticsModule } from './analytics/analytics.module';
+
 
 
 
@@ -78,6 +80,7 @@ import { NotificationModule } from './notifications/notification.module';
     ChatModule,
     ModerationModule,
     NotificationModule,
+    AnalyticsModule,
   ],
   providers: [
     // Register ThrottlerGuard globally so @Throttle() decorators are enforced

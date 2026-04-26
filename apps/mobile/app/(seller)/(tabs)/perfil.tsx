@@ -14,10 +14,18 @@ export default function SellerProfileScreen() {
   const PecaeTokens = require('../../../src/theme/pecae-tokens').PecaeTokens;
   const user = useAuthStore((state) => state.user);
 
-  const { data: seller, isLoading } = useQuery({
+  const { data: seller, isLoading: isLoadingSeller } = useQuery({
     queryKey: ['seller-me'],
     queryFn: async () => {
       const response = await api.get('/sellers/me');
+      return response.data;
+    },
+  });
+
+  const { data: analytics, isLoading: isLoadingAnalytics } = useQuery({
+    queryKey: ['seller-analytics'],
+    queryFn: async () => {
+      const response = await api.get('/analytics/seller/me?periodDays=30');
       return response.data;
     },
   });
@@ -120,6 +128,72 @@ export default function SellerProfileScreen() {
             </PecaeGlassCard>
           </TouchableOpacity>
         )}
+
+        {/* Analytics & Performance Section */}
+        <PecaeGlassCard style={styles.analyticsCard}>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary, fontFamily: PecaeTokens.typography.heading }]}>
+            Desempenho da Loja
+          </Text>
+          
+          <View style={styles.metricRow}>
+            <View style={styles.metricItem}>
+              <Text style={[styles.metricValue, { color: colors.brand, fontFamily: PecaeTokens.typography.display }]}>
+                {analytics?.summary?.totalViews || 0}
+              </Text>
+              <Text style={[styles.metricLabel, { color: colors.textMuted, fontFamily: PecaeTokens.typography.body }]}>
+                Visualizações
+              </Text>
+            </View>
+            <View style={[styles.divider, { backgroundColor: colors.border }]} />
+            <View style={styles.metricItem}>
+              <Text style={[styles.metricValue, { color: colors.vibrant, fontFamily: PecaeTokens.typography.display }]}>
+                {analytics?.summary?.totalChats || 0}
+              </Text>
+              <Text style={[styles.metricLabel, { color: colors.textMuted, fontFamily: PecaeTokens.typography.body }]}>
+                Chats Iniciados
+              </Text>
+            </View>
+          </View>
+
+          {analytics?.viewsTimeline && analytics.viewsTimeline.length > 0 && analytics.summary.totalViews > 0 ? (
+            <View style={styles.chartContainer}>
+              <Text style={[styles.chartSubtitle, { color: colors.textSecondary, fontFamily: PecaeTokens.typography.medium }]}>
+                Visualizações nos últimos 7 dias
+              </Text>
+              <View style={styles.barsRow}>
+                {analytics.viewsTimeline.slice(-7).map((point: any, idx: number) => {
+                  const maxCount = Math.max(...analytics.viewsTimeline.map((p: any) => p.count), 1);
+                  const barHeight = (point.count / maxCount) * 100;
+                  return (
+                    <View key={idx} style={styles.barWrapper}>
+                      <View style={styles.barBackground}>
+                        <View 
+                          style={[
+                            styles.bar, 
+                            { 
+                              height: `${Math.max(barHeight, 6)}%`, 
+                              backgroundColor: colors.brand 
+                            }
+                          ]} 
+                        />
+                      </View>
+                      <Text style={[styles.barLabel, { color: colors.textMuted, fontFamily: PecaeTokens.typography.body }]}>
+                        {point.date.split('-')[2]}
+                      </Text>
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+          ) : (
+            <View style={styles.emptyStateContainer}>
+              <Ionicons name="stats-chart" size={32} color={colors.textMuted} style={{ marginBottom: 8 }} />
+              <Text style={[styles.emptyStateText, { color: colors.textMuted, fontFamily: PecaeTokens.typography.body }]}>
+                Seu histórico de visualizações aparecerá aqui. Cadastre peças para incentivar o engajamento!
+              </Text>
+            </View>
+          )}
+        </PecaeGlassCard>
 
         {/* Quick Actions */}
         <View style={styles.quickActionsGrid}>
@@ -296,5 +370,86 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     marginTop: 8,
+  },
+  analyticsCard: {
+    padding: 16,
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    marginBottom: 16,
+  },
+  metricRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  metricItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  metricValue: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  metricLabel: {
+    fontSize: 11,
+    marginTop: 4,
+    textTransform: 'uppercase',
+  },
+  chartContainer: {
+    marginTop: 10,
+    paddingTop: 15,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  chartSubtitle: {
+    fontSize: 12,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  barsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    height: 100,
+    paddingHorizontal: 10,
+  },
+  barWrapper: {
+    alignItems: 'center',
+    width: '12%',
+    height: '100%',
+    justifyContent: 'flex-end',
+  },
+  barBackground: {
+    width: 12,
+    height: 80,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 6,
+    justifyContent: 'flex-end',
+    overflow: 'hidden',
+    marginBottom: 6,
+  },
+  bar: {
+    width: '100%',
+    borderRadius: 6,
+  },
+  barLabel: {
+    fontSize: 10,
+  },
+  emptyStateContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 20,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    marginTop: 10,
+  },
+  emptyStateText: {
+    fontSize: 12,
+    textAlign: 'center',
+    paddingHorizontal: 20,
+    lineHeight: 18,
   },
 });
