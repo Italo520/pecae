@@ -3,9 +3,10 @@ import { SearchService } from './search.service';
 import { SearchController } from './search.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 import { RedisModule } from '../common/redis/redis.module';
+import { AdsModule } from '../ads/ads.module';
 
 @Module({
-  imports: [PrismaModule, RedisModule],
+  imports: [PrismaModule, RedisModule, AdsModule],
   controllers: [SearchController],
   providers: [SearchService],
   exports: [SearchService],

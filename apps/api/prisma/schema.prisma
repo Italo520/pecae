@@ -524,6 +524,10 @@ model Listing {
   isDuplicate     Boolean       @default(false) @map("is_duplicate")
   duplicateOfId   String?       @map("duplicate_of_id")
 
+  // M13 — Anúncios
+  isSponsoredActive Boolean     @default(false) @map("is_sponsored_active")
+  adCampaigns       AdCampaign[]
+
   // Lifecycle
   publishedAt     DateTime?     @map("published_at")
   expiresAt       DateTime?     @map("expires_at")
@@ -541,6 +545,7 @@ model Listing {
 
   @@index([sellerProfileId, status])
   @@index([status])
+  @@index([isSponsoredActive, status])
   @@map("listings")
 }
 
@@ -748,5 +753,69 @@ model ListingStats {
   listing           Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
 
   @@map("listing_stats")
+}
+
+// ============================================================
+// M13 — Anúncios e Publicidade In-App
+// ============================================================
+
+enum AdCampaignStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+model AdCampaign {
+  id        String           @id @default(uuid())
+  listingId String           @map("listing_id")
+  status    AdCampaignStatus @default(ACTIVE)
+  budget    Decimal          @db.Decimal(10, 2)
+  spent     Decimal          @db.Decimal(10, 2) @default(0.00)
+  
+  impressions Int            @default(0)
+  clicks      Int            @default(0)
+  
+  startDate DateTime         @map("start_date")
+  endDate   DateTime?        @map("end_date")
+  
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+
+  listing     Listing        @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  impressionsLogs AdImpression[]
+  clicksLogs      AdClick[]
+
+  @@index([status])
+  @@index([listingId])
+  @@map("ad_campaigns")
+}
+
+model AdImpression {
+  id         String   @id @default(uuid())
+  campaignId String   @map("campaign_id")
+  listingId  String   @map("listing_id")
+  ipHash     String?  @map("ip_hash") @db.VarChar(64)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  campaign   AdCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([listingId])
+  @@map("ad_impressions")
+}
+
+model AdClick {
+  id         String   @id @default(uuid())
+  campaignId String   @map("campaign_id")
+  listingId  String   @map("listing_id")
+  ipHash     String?  @map("ip_hash") @db.VarChar(64)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  campaign   AdCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([listingId])
+  @@map("ad_clicks")
 }
 

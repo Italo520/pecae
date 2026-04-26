@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { SearchFiltersDto } from './dto/search-filters.dto';
 import { RedisService } from '../common/redis/redis.service';
+import { AdsService } from '../ads/ads.service';
 import * as crypto from 'crypto';
 
 @Injectable()
@@ -9,6 +10,7 @@ export class SearchService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly redis: RedisService,
+    private readonly adsService: AdsService,
   ) {}
 
   async search(filters: SearchFiltersDto) {
@@ -125,6 +127,50 @@ export class SearchService {
     const dataItems = hasMore ? listings.slice(0, limit) : listings;
     const nextCursor = hasMore ? dataItems[dataItems.length - 1].id : null;
 
+    let sponsoredData: any[] = [];
+    if (!cursor) {
+      try {
+        const sponsoredListings = await this.adsService.getSponsoredListings(2);
+        sponsoredData = sponsoredListings.map((item: any) => {
+          const partsIds = Array.isArray(item.vehicle?.availableParts)
+            ? (item.vehicle.availableParts as string[])
+            : [];
+          
+          const partNames = partsIds
+            .map((id) => partCategoryMap.get(id))
+            .filter(Boolean) as string[];
+
+          return {
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            publishedAt: item.publishedAt,
+            views: item.views,
+            favoritesCount: item.favoritesCount,
+            sellerId: item.sellerProfileId,
+            seller: item.sellerProfile,
+            isSponsored: true,
+            campaignId: item.campaignId,
+            vehicle: item.vehicle ? {
+              id: item.vehicle.id,
+              color: item.vehicle.color,
+              city: item.vehicle.city,
+              state: item.vehicle.state,
+              observations: item.vehicle.observations,
+              brand: item.vehicle.version?.model?.brand?.name || '',
+              model: item.vehicle.version?.model?.name || '',
+              version: item.vehicle.version?.name || '',
+              yearFab: item.vehicle.yearFab?.yearFab || 0,
+              thumbnail: item.vehicle.photos?.[0]?.url || null,
+              availableParts: partNames,
+            } : null,
+          };
+        });
+      } catch (error) {
+        console.error('Failed to fetch sponsored listings:', error);
+      }
+    }
+
     // Map output according to criteria
     const data = dataItems.map((item) => {
       const partsIds = Array.isArray(item.vehicle.availableParts)
@@ -144,6 +190,8 @@ export class SearchService {
         favoritesCount: item.favoritesCount,
         sellerId: item.sellerProfileId,
         seller: item.sellerProfile,
+        isSponsored: false,
+        campaignId: null,
         vehicle: {
           id: item.vehicle.id,
           color: item.vehicle.color,
@@ -161,7 +209,7 @@ export class SearchService {
     });
 
     const result = {
-      data,
+      data: [...sponsoredData, ...data],
       nextCursor,
       hasMore,
     };

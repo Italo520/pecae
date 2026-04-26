@@ -42,9 +42,18 @@ export default function ModeratorLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'ANÚNCIOS',
+          title: 'MODERAÇÃO',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="car-sport-outline" size={size} color={color} />
+            <Ionicons name="shield-checkmark-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="campanhas"
+        options={{
+          title: 'CAMPANHAS',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="megaphone-outline" size={size} color={color} />
           ),
         }}
       />
@@ -67,5 +76,6 @@ export default function ModeratorLayout() {
         }}
       />
     </Tabs>
+
   );
 }

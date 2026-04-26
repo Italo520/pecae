@@ -1,59 +1,72 @@
-# Plano de Trabalho: M12 — Analytics e Dashboard
+# Plano de Trabalho: M13 — Anúncios e Publicidade In-App
 
-Este documento define o plano detalhado para o desenvolvimento e implementação do módulo M12, responsável pela coleta e exibição de métricas de anúncios e plataforma para vendedores e administradores.
+Este documento define o plano detalhado para o desenvolvimento e implementação do módulo M13, responsável pela monetização via anúncios programáticos (AdMob) e anúncios diretos (Sponsored Listings).
 
 ---
 
 ## 🎯 Objetivos & Critérios de Sucesso
-1. **Coleta Eficiente e LGPD**: Registrar visualizações (views) de anúncios de forma assíncrona com anonimização via hash SHA-256 de IPs usando salt estático em `.env` (`ANALYTICS_HASH_SALT`).
-2. **Aggregates Pré-calculados**: Utilizar BullMQ cron para processar métricas pesadas a cada 6h sem degradar performance em tempo real.
-3. **UX com Gráficos Fluidos**: Renderizar painéis interativos no app mobile.
-4. **Fallback Contas Novas**: Exibir guia incentivando o cadastro de anúncios quando as métricas forem zeradas.
+1. **Monetização Sustentável**: Integrar AdMob para banners e intersticiais sem degradar a UX.
+2. **Anúncios Diretos (Sponsored)**: Permitir que vendedores destaquem veículos no topo da busca.
+3. **Tracking Confiável**: Registrar impressões e cliques de forma assíncrona (BullMQ).
+4. **LGPD Compliance**: Solicitar consentimento via CMP antes de carregar anúncios.
 
 ---
 
-## 💻 Tipo de Projeto & Tech Stack
-- **Tipo:** Full Stack (NestJS API + Workers + App Expo Mobile)
-- **Tech Stack:** 
-  - NestJS + Prisma
-  - BullMQ (Fila e Cron agendado)
-  - Mobile: Victory Native (Gráficos) ou similar compatível
+## 💻 Decisões de Arquitetura (Socratic Gate)
+- **IDs do AdMob:** Opção A (Test IDs fixos em ambiente de dev/homologação).
+- **Persistência do Capping:** Opção B (Multiplataforma — Armazenado no Backend/Redis para consistência).
+- **Distribuição de Sponsored:** Opção A (Distribuição Justa — Ordenação por `impressions ASC` para pacing uniforme).
 
 ---
 
-## 🛠️ Task Breakdown (Execução Individual)
+## 🛠️ Task Breakdown (Fase de Planejamento)
 
-### [x] M12-T01: Schema Prisma (Analytics & Aggregates)
+### [x] M13-T01: Schema Prisma (Modelagem de Campanhas e Tracking)
 - **Agente:** `database-architect`
-- **Ação:** Criar models `ListingView` (dedup 24h por IP hasheado) e `ListingStats` (cache aggregates).
-- **Subtasks:**
-  - Adicionar models no `schema.prisma`.
-  - Executar migrations locais.
+- **Ação:** Criar models `AdCampaign`, `AdImpression`, `AdClick` e adicionar a flag `isSponsoredActive` no model `Listing`.
+- **INPUT:** `M13_anuncios_inapp.json` + Decisões de Arquitetura.
+- **OUTPUT:** `schema.prisma` atualizado + Migrations.
+- **VERIFY:** `npx prisma migrate dev --create-only` e validação do schema.
 
-### [x] M12-T02: AnalyticsController (Endpoints & Registro)
+### [x] M13-T02: Backend Core — Serviços e Validações de Campanha
 - **Agente:** `backend-specialist`
-- **Ação:** Implementar endpoints REST essenciais:
-  - `POST /listings/:id/view` (Fire-and-forget via BullMQ).
-  - `GET /analytics/seller/me` (Série temporal de views + cards).
-  - `GET /analytics/admin` (Métricas globais protegidas por Role Admin).
+- **Ação:** Implementar `AdCampaignService` com validações (ex: apenas listings `PUBLISHED` podem ser patrocinados) e job BullMQ para expiração automática.
+- **INPUT:** Models do Prisma.
+- **OUTPUT:** `AdCampaignService.ts`.
+- **VERIFY:** Testes unitários de validação de regras de negócio.
 
-### [x] M12-T03: BullMQ Cron (Recálculo Periódico)
+### [x] M13-T03: Endpoints Admin & Tracking Público
 - **Agente:** `backend-specialist`
-- **Ação:** Criar `RecalcMetricsWorker` que roda a cada 6h para processar e atualizar `ListingStats` e `SellerStats`.
+- **Ação:** Criar endpoints CRUD para Admin gerenciar campanhas e endpoints públicos `POST /ads/track/*` (fire-and-forget via BullMQ).
+- **INPUT:** `AdCampaignService`.
+- **OUTPUT:** `AdController.ts`.
+- **VERIFY:** Requisições via Postman/cURL verificando tempo de resposta < 10ms para tracking.
 
-### [x] M12-T04: Dashboard Analytics Vendedor (Mobile Interface)
-- **Agente:** `frontend-specialist` / `mobile-developer`
-- **Ação:** Criar aba/seção com:
-  - Cards (Views, Chats, Conversão).
-  - Gráfico de linha/barra temporal.
-  - Empty state com guia interativo para novos vendedores.
+### [x] M13-T04: Integração com M07 (Injeção de Sponsored na Busca)
+- **Agente:** `backend-specialist`
+- **Ação:** Modificar `SearchService` para injetar até 2 Sponsored Listings no topo dos resultados, respeitando o targeting e removendo duplicatas.
+- **INPUT:** `SearchService` (M07) + `AdCampaignService`.
+- **OUTPUT:** `SearchService.ts` modificado.
+- **VERIFY:** Busca retornando anúncios patrocinados marcados com `isSponsored: true`.
 
-### [x] M12-T05: Dashboard Analytics Admin (Mobile Interface)
-- **Agente:** `frontend-specialist` / `mobile-developer`
-- **Ação:** Integrar métricas do sistema como um todo no painel de moderação/admin existente (`app/(moderator)/analytics.tsx`).
+### [x] M13-T05: Integração Mobile (Google AdMob SDK + CMP)
+- **Agente:** `mobile-developer`
+- **Ação:** Instalar `react-native-google-mobile-ads`, configurar `app.json`, implementar diálogo CMP (UMP) e os componentes `AdBanner` e `AdInterstitial`.
+- **INPUT:** Configurações AdMob.
+- **OUTPUT:** Componentes mobile e hooks de anúncios.
+- **VERIFY:** Exibição de anúncios de teste no app sem layout shift.
+
+### [x] M13-T06: Interface Admin (Gestão de Campanhas)
+- **Agente:** `frontend-specialist`
+- **Ação:** Criar telas no painel admin para criação, pausa, cancelamento de campanhas e visualização de métricas (CTR).
+- **INPUT:** Endpoints do `AdController`.
+- **OUTPUT:** Telas de Admin.
+- **VERIFY:** Fluxo completo de criação de campanha no painel.
 
 
 ---
 
-## 🏁 Critérios de Saída
-Validação via scripts e aprovação dos painéis.
+## 🏁 Phase X: Verificação Final
+- [ ] Executar `python .agent/skills/vulnerability-scanner/scripts/security_scan.py .`
+- [ ] Executar `python .agent/skills/lint-and-validate/scripts/lint_runner.py .`
+- [ ] Validar build: `npm run build`
