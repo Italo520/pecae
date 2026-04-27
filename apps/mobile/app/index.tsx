@@ -2,11 +2,13 @@ import { Redirect } from 'expo-router';
 import { useAuthStore } from '../src/store/auth-store';
 
 export default function Index() {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
 
   if (isAuthenticated) {
-    // Quando as tabs forem criadas, este será o destino principal
-    return <Redirect href="/(tabs)" />;
+    if (user?.type === 'SELLER' || user?.type === 'BOTH') {
+      return <Redirect href="/(seller)/(tabs)" />;
+    }
+    return <Redirect href="/(tabs)/" />;
   }
 
   return <Redirect href="/(auth)/login" />;

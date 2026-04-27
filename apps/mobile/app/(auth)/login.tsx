@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useNavigation } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -35,6 +35,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
   const { colors, typography } = usePecaeTheme();
   const { setAuth } = useAuthStore();
   const { isMobile, isDesktop, pick } = useResponsive();
@@ -61,7 +62,20 @@ export default function LoginScreen() {
           router.replace('/(seller)/(tabs)');
         }
       } else {
-        router.replace('/(tabs)');
+        // Força o redirecionamento limpo para as tabs do comprador, limpando histórico anterior
+        try {
+          (navigation as any).reset({
+            index: 0,
+            routes: [{
+              name: '(tabs)',
+              state: {
+                routes: [{ name: 'index' }]
+              }
+            }],
+          });
+        } catch (e) {
+          router.replace('/(tabs)/');
+        }
       }
     } catch (error: any) {
       const message = error.response?.data?.message || 'E-mail ou senha incorretos';
@@ -83,7 +97,19 @@ export default function LoginScreen() {
           router.replace('/(seller)/(tabs)');
         }
       } else {
-        router.replace('/(tabs)');
+        try {
+          (navigation as any).reset({
+            index: 0,
+            routes: [{
+              name: '(tabs)',
+              state: {
+                routes: [{ name: 'index' }]
+              }
+            }],
+          });
+        } catch (e) {
+          router.replace('/(tabs)/');
+        }
       }
     },
     onError: (message) => Alert.alert('FALHA GOOGLE', message),

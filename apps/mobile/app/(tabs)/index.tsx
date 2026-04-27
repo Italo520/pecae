@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { StyleSheet, View, Text, ScrollView, Image, ActivityIndicator, TouchableOpacity, useWindowDimensions, TextInput, Modal, Animated } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, Image, ActivityIndicator, TouchableOpacity, useWindowDimensions, TextInput, Modal, Animated, Alert } from 'react-native';
 import { PecaeBackground, PecaeGlassCard } from '../../src/components/PecaeUI';
 import { VehicleSelector } from '../../src/components/Catalog';
 import { usePecaeTheme } from '../../src/theme';
 import { useListings } from '../../src/hooks/useVehicles';
 import { useUIStore } from '../../src/store/ui-store';
+import { useAuthStore } from '../../src/store/auth-store';
 import { getVehicleImage } from '../../src/utils/vehicleImages';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -15,6 +16,25 @@ export default function BuyerHomeScreen() {
   const { data: listings, isLoading } = useListings();
   const { width } = useWindowDimensions();
   const router = useRouter();
+
+  const handleProfilePress = () => {
+    Alert.alert(
+      "Perfil",
+      "O que você deseja fazer?",
+      [
+        { text: "Ver Perfil", onPress: () => router.push('/(buyer)/perfil') },
+        { 
+          text: "Sair da Conta", 
+          onPress: async () => {
+            await useAuthStore.getState().clearAuth();
+            router.replace('/(auth)/login');
+          }, 
+          style: 'destructive' 
+        },
+        { text: "Cancelar", style: 'cancel' }
+      ]
+    );
+  };
 
   const [searchText, setSearchText] = useState('');
   const [appliedFilter, setAppliedFilter] = useState<any>(null);
@@ -118,6 +138,17 @@ export default function BuyerHomeScreen() {
               >
                 <Ionicons 
                   name={viewMode === 'grid' ? 'list' : 'grid'} 
+                  size={20} 
+                  color={colors.brand} 
+                />
+              </TouchableOpacity>
+              <TouchableOpacity 
+                onPress={handleProfilePress} 
+                style={[styles.iconButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                accessibilityLabel="Perfil e Logout"
+              >
+                <Ionicons 
+                  name="person-outline" 
                   size={20} 
                   color={colors.brand} 
                 />

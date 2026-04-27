@@ -237,7 +237,10 @@ async function seedTestVehicles() {
   // 1. Create Buyer User
   await prisma.user.upsert({
     where: { email: 'comprador@pecae.com.br' },
-    update: {},
+    update: {
+      type: UserType.BUYER,
+      passwordHash,
+    },
     create: {
       id: crypto.randomUUID(),
       name: 'Comprador de Teste',
@@ -254,7 +257,10 @@ async function seedTestVehicles() {
   // 2. Create Seller User
   const sellerUser = await prisma.user.upsert({
     where: { email: 'vendedor@pecae.com.br' },
-    update: {},
+    update: {
+      type: UserType.SELLER,
+      passwordHash,
+    },
     create: {
       id: crypto.randomUUID(),
       name: 'Vendedor de Teste',

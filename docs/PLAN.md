@@ -1,69 +1,27 @@
-# README Documentation Plan (PECAÊ Monorepo) - V2
+# Plano de Correção: Redirecionamento Pós-Login do Comprador
 
-## Objetivo
-Criar o **Manual Técnico Definitivo do Desenvolvedor** para o PECAÊ. Este `README.md` não será apenas um resumo, mas um guia operacional profundo que mapeia fluxos de dados, arquitetura de sistemas, persistência, cache, mensageria e fornece rotas claras de troubleshooting para manutenção e resolução de problemas futuros.
+## 🎯 Objetivo
+Garantir que, ao realizar o login como Comprador (`BUYER`), o usuário seja direcionado diretamente para a listagem de veículos disponíveis para venda (`/(tabs)/index.tsx`), em vez de cair na aba de Perfil.
 
-## Estrutura do Manual Técnico Super Detalhado
+## 🔍 Análise Atual
+1. **Ponto de Login:** `apps/mobile/app/(auth)/login.tsx` direciona usuários `BUYER` usando `router.replace('/(tabs)')`.
+2. **Layout de Tabs:** `apps/mobile/app/(tabs)/_layout.tsx` define a tab `index` como a primeira da lista (Início) e `profile` como a última.
+3. **Causa Provável:** 
+   - A rota `/(tabs)` sem o sufixo `/index` pode estar resolvendo para a última aba visitada pelo estado de navegação em cache do Expo Router, ou caindo na aba de perfil devido a um redirecionamento implícito.
+   - Alternativamente, o cache do bundler ou estado persistido localmente do aplicativo está mantendo o usuário na rota de perfil anterior.
 
-### 1. Visão Geral e Topologia do Sistema
-- **Contexto de Negócio:** O que é o PECAÊ e seus objetivos ("The Digital Forge").
-- **Topologia (Turborepo):** Visão geral da comunicação entre `apps/mobile` (Expo/React Native) e `apps/api` (NestJS).
-- **Ambiente de Desenvolvimento vs Produção:** Uso do Docker e configuração de portas.
+## 🛠️ Plano de Ação
 
-### 2. Infraestrutura e Persistência de Dados
-- **PostgreSQL (Prisma ORM):** 
-  - Mapa dos domínios principais (Sellers, Catalog, Ads, Moderation).
-  - Como as migrações e seeds são gerenciados (script `db:migrate` e `entrypoint.sh`).
-- **Redis (Camada de Cache):**
-  - Estratégias de invalidação e TTL.
-  - Como o `SearchService` gera cache determinístico (SHA256) baseado em filtros.
-- **BullMQ (Gerenciamento de Filas e Processamento Assíncrono):**
-  - Filas existentes (`listings`, `ads`).
-  - Fluxo de retry e fallback em caso de falha de conexão com Redis.
-- **Armazenamento de Arquivos:** Fluxo de upload seguro de imagens (Supabase/S3).
+### Fase 1: Correção do Roteamento do Login
+- Alterar as chamadas `router.replace('/(tabs)')` em `apps/mobile/app/(auth)/login.tsx` para usar o caminho explícito e canônico: `router.replace('/(tabs)/')` ou `router.replace('/(tabs)/index')`.
+- Ajustar tanto o login por E-mail/Senha quanto o login via Google.
 
-### 3. Anatomia dos Módulos (Deep Dive Técnico)
-*Cada módulo incluirá:* Funcionalidade principal, tabelas impactadas, fluxo de ponta a ponta (Mobile -> API -> DB), dependências e pontos de falha.
-- **M03 (Sellers & KYC):**
-  - Transição de estados do perfil (`PENDING`, `VERIFIED`, `REJECTED`).
-  - Regras de CASL para moderadores verificando documentos.
-- **M04/M05 (Catálogo, Veículos e Anúncios):**
-  - Lifecycle de um veículo (Draft -> Publicado -> Vendido).
-  - Tracking assíncrono de visualizações (Fila `listings` no BullMQ).
-- **M13 (Publicidade e Monetização):**
-  - Processadores `AdsProcessor` (impressões e cliques).
-  - Cálculo de deduplicação (IP hash) para evitar fraude de cliques.
-  - Atualização do balanço e limites de campanha.
-- **Autenticação, Sessões e Segurança:**
-  - Fluxos Multi-Provider (JWT, Google OAuth, OTP).
-  - CASL `AbilityFactory` (Separação estrita de BUYER, SELLER, ADMIN, MODERATOR).
-  - Segurança de API (Helmet, CORS, Rate Limiting).
+### Fase 2: Correção do Roteamento Inicial
+- Atualizar `apps/mobile/app/index.tsx` para redirecionar explicitamente para `/(tabs)/` em vez de `/(tabs)`.
 
-### 4. Arquitetura Mobile (Apps/Mobile)
-- **Gerenciamento de Estado (Zustand):**
-  - Anatomia da `auth-store` e rotação silenciosa de JWT (Interceptors Axios).
-  - Anatomia da `vehicle-wizard-store` (processo em múltiplas etapas de criação de anúncio).
-- **Design System:** Diretrizes "The Digital Forge" (Glassmorphism, Nativewind).
-- **Build & Nginx Proxy:** Como o Dockerfile converte o web-build para ser servido por Nginx.
+### Fase 3: Verificação e Validação
+- Limpar cache de navegação local e validar o fluxo de login de comprador e vendedor.
 
-### 5. Guia de Troubleshooting Avançado (Resolução de Problemas)
-- **Cenário A: Dessincronização de Métricas/Cache (Search)**
-  - Causa raiz e passo a passo de limpeza (uso de `/analytics/trigger-recalc`).
-- **Cenário B: Jobs Travados ou Falhando no BullMQ (Ads/Views)**
-  - Diagnóstico via logs e inspeção no Redis.
-- **Cenário C: Mobile Preso na Tela Branca ou Sem Conexão (Network/Auth)**
-  - Verificação de interceptors, loop infinito de refresh e `EXPO_PUBLIC_API_URL`.
-- **Cenário D: Violação de Permissões (CASL)**
-  - Como debugar testes de `Ability` falhando para moderadores ou sellers tentando modificar recursos de outros.
-
-### 6. Contratos de Configuração (Environment Variables)
-- Dicionário exaustivo de cada variável no `.env`, valores padrão esperados e seus impactos no código.
-
-## Próximos Passos (Fase 2 de Orquestração)
-Se aprovado, os agentes abaixo iniciarão a documentação técnica pesada:
-1. **`backend-specialist`**: Modelagem de Dados, Filas, Redis, Segurança e Módulos Backend.
-2. **`mobile-developer`**: Zustand, Mobile Arquitetura e Fluxos.
-3. **`documentation-writer`**: Formatação profunda, Troubleshooting Guide e diagramação macro.
-
----
-*Aguardando sua aprovação (Y/N) para executar o manual nesta profundidade tática e técnica.*
+## 🧪 Critérios de Aceite
+- Ao logar com `comprador@pecae.com.br`, a tela inicial apresentada deve ser o **Terminal de Veículos/Peças** (`apps/mobile/app/(tabs)/index.tsx`).
+- O fluxo do vendedor não deve ser afetado negativamente.

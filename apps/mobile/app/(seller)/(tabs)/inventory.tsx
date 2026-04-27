@@ -1,9 +1,10 @@
 import React from 'react';
-import { StyleSheet, View, Text, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity, Alert } from 'react-native';
 import { PecaeBackground, PecaeButton } from '../../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../../src/theme';
 import { useRouter } from 'expo-router';
 import { useVehicles } from '../../../src/hooks/useVehicles';
+import { useAuthStore } from '../../../src/store/auth-store';
 import { VehicleInventoryCard } from '../../../src/components/VehicleWizard/VehicleInventoryCard';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -11,6 +12,25 @@ export default function InventoryScreen() {
   const { colors, typography } = usePecaeTheme();
   const router = useRouter();
   const { data: vehicles, isLoading, refetch } = useVehicles();
+
+  const handleProfilePress = () => {
+    Alert.alert(
+      "Perfil",
+      "O que você deseja fazer?",
+      [
+        { text: "Ver Perfil", onPress: () => router.push('/(seller)/(tabs)/perfil') },
+        { 
+          text: "Sair da Conta", 
+          onPress: async () => {
+            await useAuthStore.getState().clearAuth();
+            router.replace('/(auth)/login');
+          }, 
+          style: 'destructive' 
+        },
+        { text: "Cancelar", style: 'cancel' }
+      ]
+    );
+  };
 
   return (
     <PecaeBackground>
@@ -21,9 +41,9 @@ export default function InventoryScreen() {
               Meu Inventário
             </Text>
             <TouchableOpacity 
-              onPress={() => router.push('/(seller)/(tabs)/perfil')}
+              onPress={handleProfilePress}
               style={[styles.profileButton, { borderColor: colors.border, backgroundColor: colors.surface }]}
-              accessibilityLabel="Ir para o perfil"
+              accessibilityLabel="Perfil e Logout"
             >
               <Ionicons name="person-outline" size={24} color={colors.textPrimary} />
             </TouchableOpacity>
