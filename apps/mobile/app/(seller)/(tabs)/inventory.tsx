@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
+import { StyleSheet, View, Text, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity } from 'react-native';
 import { PecaeBackground, PecaeButton } from '../../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../../src/theme';
 import { useRouter } from 'expo-router';
 import { useVehicles } from '../../../src/hooks/useVehicles';
 import { VehicleInventoryCard } from '../../../src/components/VehicleWizard/VehicleInventoryCard';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function InventoryScreen() {
   const { colors, typography } = usePecaeTheme();
@@ -15,9 +16,18 @@ export default function InventoryScreen() {
     <PecaeBackground>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.heading }]}>
-            Meu Inventário
-          </Text>
+          <View style={styles.titleRow}>
+            <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.heading }]}>
+              Meu Inventário
+            </Text>
+            <TouchableOpacity 
+              onPress={() => router.push('/(seller)/(tabs)/perfil')}
+              style={[styles.profileButton, { borderColor: colors.border, backgroundColor: colors.surface }]}
+              accessibilityLabel="Ir para o perfil"
+            >
+              <Ionicons name="person-outline" size={24} color={colors.textPrimary} />
+            </TouchableOpacity>
+          </View>
           <PecaeButton 
             title="Cadastrar Sucata" 
             onPress={() => router.push('/(seller)/cadastrar-sucata')}
@@ -61,9 +71,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 20,
   },
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
   title: {
     fontSize: 28,
-    marginBottom: 15,
+    marginBottom: 0,
+  },
+  profileButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
   },
   addButton: {
     width: '100%',

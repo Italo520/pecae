@@ -7,9 +7,9 @@ echo "Starting PECAE API..."
 echo "Running prisma migrate deploy..."
 npx prisma migrate deploy --schema=./apps/api/prisma/schema.prisma
 
-# Rodar seed do banco de dados (Garante veículos de teste)
+# Rodar seed do banco de dados (nao-critico: falha nao derruba o servidor)
 echo "Running prisma db seed..."
-cd apps/api && npx prisma db seed && cd ../..
+cd apps/api && npx prisma db seed || echo "⚠️ Seed skipped (may already be seeded)" && cd ../..
 
 # Iniciar a aplicacao
 echo "Starting NestJS server..."

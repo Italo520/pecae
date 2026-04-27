@@ -234,7 +234,24 @@ async function seedTestVehicles() {
   
   const passwordHash = await bcrypt.hash('Pecae@123', 12);
 
-  // 1. Create Seller User
+  // 1. Create Buyer User
+  await prisma.user.upsert({
+    where: { email: 'comprador@pecae.com.br' },
+    update: {},
+    create: {
+      id: crypto.randomUUID(),
+      name: 'Comprador de Teste',
+      email: 'comprador@pecae.com.br',
+      passwordHash,
+      type: UserType.BUYER,
+      status: UserStatus.ACTIVE,
+      emailVerified: true,
+      phoneVerified: false,
+    },
+  });
+  console.log('✅ Buyer test user seeded: comprador@pecae.com.br');
+
+  // 2. Create Seller User
   const sellerUser = await prisma.user.upsert({
     where: { email: 'vendedor@pecae.com.br' },
     update: {},
@@ -268,14 +285,14 @@ async function seedTestVehicles() {
     },
   });
 
-  // 2. Check if vehicles already exist
+  // 3. Check if vehicles already exist
   const existingVehiclesCount = await prisma.vehicle.count();
   if (existingVehiclesCount > 0) {
     console.log(`ℹ️ ${existingVehiclesCount} vehicles already exist. Skipping vehicle seed.`);
     return;
   }
 
-  // 3. Get Catalog Data
+  // 4. Get Catalog Data
   const models = await prisma.vehicleModel.findMany({ include: { brand: true } });
   if (models.length === 0) {
     console.warn('⚠️ No models found. Cannot seed vehicles.');

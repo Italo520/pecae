@@ -34,7 +34,7 @@ WORKDIR /app
 COPY --from=pruner /app/out/full/ .
 COPY --from=installer /app/ .
 RUN npx prisma generate --schema=apps/api/prisma/schema.prisma
-RUN npx turbo run build --filter=@pecae/api
+RUN npx turbo run build --filter=@pecae/api --force
 
 # --- Estagio 4: Producao ---
 FROM base AS runner
