@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, FlatList } from 'react-native';
+import { StyleSheet, View, Text, TextInput, FlatList, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { 
   PecaeBackground, 
@@ -11,13 +11,20 @@ import { usePecaeTheme } from '../../src/theme';
 export default function SearchScreen() {
   const { colors, typography } = usePecaeTheme();
   const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState('relevancia');
+
+  const sortOptions = [
+    { id: 'relevancia', label: 'Relevância' },
+    { id: 'preco_asc', label: 'Menor Preço' },
+    { id: 'preco_desc', label: 'Maior Preço' },
+  ];
 
   return (
     <PecaeBackground>
       <PecaeScreenContainer>
         <View style={styles.header}>
           <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.display }]}>
-            BUSCAR // COMPONENTES
+            EXPLORAR // PEÇAS & VEÍCULOS
           </Text>
           
           <View style={[styles.searchBar, { backgroundColor: colors.surface, borderColor: colors.border }]}>
@@ -30,12 +37,44 @@ export default function SearchScreen() {
               onChangeText={setSearch}
             />
           </View>
+
+          {/* Filtros de Ordenação */}
+          <View style={styles.sortContainer}>
+            {sortOptions.map((option) => {
+              const isSelected = sortBy === option.id;
+              return (
+                <TouchableOpacity
+                  key={option.id}
+                  style={[
+                    styles.sortBtn, 
+                    { 
+                      backgroundColor: isSelected ? colors.brand : colors.surface,
+                      borderColor: isSelected ? colors.brand : colors.border
+                    }
+                  ]}
+                  onPress={() => setSortBy(option.id)}
+                >
+                  <Text 
+                    style={[
+                      styles.sortBtnText, 
+                      { 
+                        color: isSelected ? '#000000' : colors.textPrimary,
+                        fontFamily: typography.medium
+                      }
+                    ]}
+                  >
+                    {option.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
 
         <View style={styles.content}>
           <Ionicons name="construct-outline" size={48} color={colors.border} style={{ marginBottom: 16 }} />
           <Text style={[styles.emptyText, { color: colors.textMuted, fontFamily: typography.body }]}>
-            Digite algo para iniciar a busca no inventário.
+            {search ? `Exibindo resultados ordenados por ${sortOptions.find(o => o.id === sortBy)?.label}...` : 'Digite algo para iniciar a busca no inventário.'}
           </Text>
         </View>
       </PecaeScreenContainer>
@@ -49,8 +88,9 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     letterSpacing: 2,
+    fontWeight: '700',
     marginBottom: 20,
   },
   searchBar: {
@@ -66,6 +106,21 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     fontSize: 14,
   },
+  sortContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 16,
+  },
+  sortBtn: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  sortBtnText: {
+    fontSize: 11,
+    letterSpacing: 1,
+  },
   content: {
     flex: 1,
     justifyContent: 'center',
@@ -74,7 +129,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: 'center',
-    fontSize: 14,
+    fontSize: 13,
     opacity: 0.6,
   },
 });

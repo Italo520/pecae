@@ -34,17 +34,34 @@ export default function TabLayout() {
         options={{
           title: 'INÍCIO',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="grid-outline" size={size} color={color} />
+            <Ionicons name="home-outline" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="search"
         options={{
-          href: null,
-          title: 'BUSCAR',
+          title: 'EXPLORAR',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="search-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="mensagens"
+        options={{
+          title: 'CHAT',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbubble-ellipses-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'MENU',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="menu-outline" size={size} color={color} />
           ),
         }}
       />
@@ -52,45 +69,15 @@ export default function TabLayout() {
         name="catalog"
         options={{
           href: null,
-          title: 'CATÁLOGO',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="car-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="mensagens"
-        options={{
-          title: 'MENSAGENS',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="chatbubbles-outline" size={size} color={color} />
-          ),
         }}
       />
       <Tabs.Screen
         name="notificacoes"
         options={{
-          title: 'NOTIFICAÇÕES',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="notifications-outline" size={size} color={color} />
-          ),
-          tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
-          tabBarBadgeStyle: {
-            backgroundColor: colors.brand,
-            color: '#FFFFFF',
-            fontSize: 10,
-          },
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'PERFIL',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
-          ),
+          href: null,
         }}
       />
     </Tabs>
   );
 }
+

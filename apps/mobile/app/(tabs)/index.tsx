@@ -143,6 +143,20 @@ export default function BuyerHomeScreen() {
                 />
               </TouchableOpacity>
               <TouchableOpacity 
+                onPress={() => router.push('/(tabs)/notificacoes')} 
+                style={[styles.iconButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                accessibilityLabel="Notificações"
+              >
+                <View style={{ position: 'relative' }}>
+                  <Ionicons 
+                    name="notifications-outline" 
+                    size={20} 
+                    color={colors.brand} 
+                  />
+                  {/* Se houver notificações não lidas, podemos colocar um badge discreto aqui */}
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity 
                 onPress={handleProfilePress} 
                 style={[styles.iconButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
                 accessibilityLabel="Perfil e Logout"

@@ -4,9 +4,11 @@ import { Stack, useRouter } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
 import { useFavorites } from '../../src/hooks/useFavorites';
+import { usePecaeTheme } from '../../src/theme';
 
 export default function FavoritosScreen() {
   const router = useRouter();
+  const { colors, typography } = usePecaeTheme();
   const { getFavorites, toggleFavorite } = useFavorites();
 
   const handleToggleFavorite = (listingId: string) => {
@@ -16,12 +18,14 @@ export default function FavoritosScreen() {
   const renderItem = ({ item }: { item: any }) => {
     return (
       <TouchableOpacity 
-        style={styles.card} 
-        onPress={() => console.log('Navigate to listing', item.listing.id)}
+        style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]} 
+        onPress={() => router.push(`/(tabs)/vehicle/${item.listing.id}`)}
       >
         <View style={styles.cardInfo}>
-          <Text style={styles.cardTitle}>{item.listing?.title || 'Anúncio sem título'}</Text>
-          <Text style={styles.cardPrice}>
+          <Text style={[styles.cardTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>
+            {item.listing?.title || 'Anúncio sem título'}
+          </Text>
+          <Text style={[styles.cardPrice, { color: colors.brand, fontFamily: typography.mono }]}>
             {item.listing?.price ? `R$ ${item.listing.price}` : 'Preço sob consulta'}
           </Text>
         </View>
@@ -29,36 +33,38 @@ export default function FavoritosScreen() {
           style={styles.favoriteButton}
           onPress={() => handleToggleFavorite(item.listing.id)}
         >
-          <Ionicons name="heart" size={24} color="#ef4444" />
+          <Ionicons name="heart" size={24} color={colors.danger} />
         </TouchableOpacity>
       </TouchableOpacity>
     );
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen 
         options={{
           title: 'Favoritos',
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()} style={{ marginLeft: 16 }}>
-              <Ionicons name="arrow-back" size={24} color="#f8fafc" />
+              <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
             </TouchableOpacity>
           ),
           headerStyle: {
-            backgroundColor: '#0f172a',
+            backgroundColor: colors.background,
           },
-          headerTintColor: '#f8fafc',
+          headerTintColor: colors.textPrimary,
         }}
       />
 
       {getFavorites.isLoading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color="#3b82f6" />
+          <ActivityIndicator size="large" color={colors.brand} />
         </View>
       ) : getFavorites.isError ? (
         <View style={styles.center}>
-          <Text style={styles.errorText}>Erro ao carregar favoritos.</Text>
+          <Text style={[styles.errorText, { color: colors.danger, fontFamily: typography.primary }]}>
+            Erro ao carregar favoritos.
+          </Text>
         </View>
       ) : (
         <FlashList
@@ -68,9 +74,11 @@ export default function FavoritosScreen() {
           contentContainerStyle={styles.listContent}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Ionicons name="heart-outline" size={64} color="#475569" />
-              <Text style={styles.emptyTitle}>Nenhum favorito ainda</Text>
-              <Text style={styles.emptySubtitle}>
+              <Ionicons name="heart-outline" size={64} color={colors.textMuted} />
+              <Text style={[styles.emptyTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>
+                Nenhum favorito ainda
+              </Text>
+              <Text style={[styles.emptySubtitle, { color: colors.textMuted, fontFamily: typography.body }]}>
                 Os anúncios que você curtir aparecerão aqui.
               </Text>
             </View>
@@ -86,7 +94,6 @@ export default function FavoritosScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f172a',
   },
   center: {
     flex: 1,
@@ -97,33 +104,29 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   card: {
-    backgroundColor: '#1e293b',
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#334155',
   },
   cardInfo: {
     flex: 1,
   },
   cardTitle: {
-    color: '#f8fafc',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: 'bold',
     marginBottom: 4,
   },
   cardPrice: {
-    color: '#94a3b8',
     fontSize: 14,
+    fontWeight: '700',
   },
   favoriteButton: {
     padding: 8,
   },
   errorText: {
-    color: '#ef4444',
     fontSize: 16,
   },
   emptyContainer: {
@@ -132,15 +135,14 @@ const styles = StyleSheet.create({
     paddingVertical: 64,
   },
   emptyTitle: {
-    color: '#f8fafc',
     fontSize: 18,
     fontWeight: 'bold',
     marginTop: 16,
     marginBottom: 8,
   },
   emptySubtitle: {
-    color: '#94a3b8',
     fontSize: 14,
     textAlign: 'center',
+    paddingHorizontal: 32,
   },
 });

@@ -50,6 +50,27 @@ export default function BuyerLayout() {
           title: 'Configurações' 
         }} 
       />
+      <Stack.Screen 
+        name="compras" 
+        options={{ 
+          title: 'Minhas Compras',
+          headerShown: false
+        }} 
+      />
+      <Stack.Screen 
+        name="seguranca" 
+        options={{ 
+          title: 'Central de Segurança',
+          headerShown: false
+        }} 
+      />
+      <Stack.Screen 
+        name="ajuda" 
+        options={{ 
+          title: 'Ajuda',
+          headerShown: false
+        }} 
+      />
     </Stack>
   );
 }

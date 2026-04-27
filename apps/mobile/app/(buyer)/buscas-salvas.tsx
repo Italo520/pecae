@@ -4,9 +4,11 @@ import { Stack, useRouter } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
 import { useSavedSearches } from '../../src/hooks/useSavedSearches';
+import { usePecaeTheme } from '../../src/theme';
 
 export default function BuscasSalvasScreen() {
   const router = useRouter();
+  const { colors, typography } = usePecaeTheme();
   const { getSavedSearches, toggleAlert, deleteSavedSearch, createSavedSearch } = useSavedSearches();
   
   const [newSearch, setNewSearch] = useState('');
@@ -33,28 +35,32 @@ export default function BuscasSalvasScreen() {
 
   const renderItem = ({ item }: { item: any }) => {
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         <View style={styles.cardInfo}>
-          <Text style={styles.cardTitle}>{item.query || 'Busca sem termo'}</Text>
-          <Text style={styles.cardDate}>
+          <Text style={[styles.cardTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>
+            {item.query || 'Busca sem termo'}
+          </Text>
+          <Text style={[styles.cardDate, { color: colors.textMuted, fontFamily: typography.mono }]}>
             Salva em: {new Date(item.createdAt).toLocaleDateString('pt-BR')}
           </Text>
         </View>
-        <View style={styles.cardActions}>
+        <View style={[styles.cardActions, { borderTopColor: colors.border }]}>
           <View style={styles.toggleContainer}>
-            <Text style={styles.toggleLabel}>Alertas</Text>
+            <Text style={[styles.toggleLabel, { color: colors.textPrimary, fontFamily: typography.body }]}>
+              Alertas
+            </Text>
             <Switch
               value={item.alertActive}
               onValueChange={() => handleToggleAlert(item.id, item.alertActive)}
-              trackColor={{ false: '#334155', true: '#3b82f6' }}
-              thumbColor={'#f8fafc'}
+              trackColor={{ false: colors.border, true: colors.brand }}
+              thumbColor={'#ffffff'}
             />
           </View>
           <TouchableOpacity 
             style={styles.deleteButton}
             onPress={() => handleRemoveSearch(item.id)}
           >
-            <Ionicons name="trash-outline" size={20} color="#ef4444" />
+            <Ionicons name="trash-outline" size={20} color={colors.danger} />
           </TouchableOpacity>
         </View>
       </View>
@@ -62,56 +68,62 @@ export default function BuscasSalvasScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen 
         options={{
           title: 'Buscas Salvas',
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()} style={{ marginLeft: 16 }}>
-              <Ionicons name="arrow-back" size={24} color="#f8fafc" />
+              <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
             </TouchableOpacity>
           ),
           headerStyle: {
-            backgroundColor: '#0f172a',
+            backgroundColor: colors.background,
           },
-          headerTintColor: '#f8fafc',
+          headerTintColor: colors.textPrimary,
         }}
       />
 
-      <View style={styles.addSection}>
+      <View style={[styles.addSection, { borderBottomColor: colors.border, backgroundColor: colors.background }]}>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary, fontFamily: typography.body }]}
           placeholder="Salvar nova busca..."
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor={colors.textMuted}
           value={newSearch}
           onChangeText={setNewSearch}
         />
         <TouchableOpacity 
-          style={[styles.addButton, !newSearch.trim() && styles.addButtonDisabled]} 
+          style={[
+            styles.addButton, 
+            { backgroundColor: newSearch.trim() ? colors.brand : colors.surface },
+            !newSearch.trim() && styles.addButtonDisabled
+          ]} 
           onPress={handleAddSearch}
           disabled={!newSearch.trim() || createSavedSearch.isPending}
         >
           {createSavedSearch.isPending ? (
-            <ActivityIndicator size="small" color="#fff" />
+            <ActivityIndicator size="small" color="#000" />
           ) : (
-            <Ionicons name="add" size={24} color="#fff" />
+            <Ionicons name="add" size={24} color="#000" />
           )}
         </TouchableOpacity>
       </View>
 
       <View style={styles.limitInfo}>
-        <Text style={styles.limitText}>
+        <Text style={[styles.limitText, { color: colors.textMuted, fontFamily: typography.mono }]}>
           {getSavedSearches.data?.length || 0} / 10 buscas salvas
         </Text>
       </View>
 
       {getSavedSearches.isLoading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color="#3b82f6" />
+          <ActivityIndicator size="large" color={colors.brand} />
         </View>
       ) : getSavedSearches.isError ? (
         <View style={styles.center}>
-          <Text style={styles.errorText}>Erro ao carregar buscas salvas.</Text>
+          <Text style={[styles.errorText, { color: colors.danger, fontFamily: typography.primary }]}>
+            Erro ao carregar buscas salvas.
+          </Text>
         </View>
       ) : (
         <FlashList
@@ -121,9 +133,11 @@ export default function BuscasSalvasScreen() {
           contentContainerStyle={styles.listContent}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Ionicons name="search-outline" size={64} color="#475569" />
-              <Text style={styles.emptyTitle}>Nenhuma busca salva</Text>
-              <Text style={styles.emptySubtitle}>
+              <Ionicons name="search-outline" size={64} color={colors.textMuted} />
+              <Text style={[styles.emptyTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>
+                Nenhuma busca salva
+              </Text>
+              <Text style={[styles.emptySubtitle, { color: colors.textMuted, fontFamily: typography.body }]}>
                 Salve suas buscas para ser alertado quando novos anúncios chegarem.
               </Text>
             </View>
@@ -139,7 +153,6 @@ export default function BuscasSalvasScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f172a',
   },
   center: {
     flex: 1,
@@ -150,21 +163,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#1e293b',
-    backgroundColor: '#0f172a',
   },
   input: {
     flex: 1,
-    backgroundColor: '#1e293b',
     borderWidth: 1,
-    borderColor: '#334155',
     borderRadius: 8,
     paddingHorizontal: 16,
-    color: '#f8fafc',
     marginRight: 12,
   },
   addButton: {
-    backgroundColor: '#3b82f6',
     width: 48,
     height: 48,
     borderRadius: 8,
@@ -172,7 +179,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addButtonDisabled: {
-    backgroundColor: '#334155',
+    opacity: 0.5,
   },
   limitInfo: {
     paddingHorizontal: 16,
@@ -180,31 +187,26 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   limitText: {
-    color: '#94a3b8',
     fontSize: 12,
   },
   listContent: {
     padding: 16,
   },
   card: {
-    backgroundColor: '#1e293b',
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#334155',
   },
   cardInfo: {
     marginBottom: 12,
   },
   cardTitle: {
-    color: '#f8fafc',
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 4,
   },
   cardDate: {
-    color: '#94a3b8',
     fontSize: 12,
   },
   cardActions: {
@@ -212,7 +214,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: '#334155',
     paddingTop: 12,
   },
   toggleContainer: {
@@ -220,7 +221,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   toggleLabel: {
-    color: '#cbd5e1',
     marginRight: 8,
     fontSize: 14,
   },
@@ -228,7 +228,6 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   errorText: {
-    color: '#ef4444',
     fontSize: 16,
   },
   emptyContainer: {
@@ -237,14 +236,12 @@ const styles = StyleSheet.create({
     paddingVertical: 64,
   },
   emptyTitle: {
-    color: '#f8fafc',
     fontSize: 18,
     fontWeight: 'bold',
     marginTop: 16,
     marginBottom: 8,
   },
   emptySubtitle: {
-    color: '#94a3b8',
     fontSize: 14,
     textAlign: 'center',
     paddingHorizontal: 32,
