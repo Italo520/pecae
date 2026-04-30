@@ -5,6 +5,7 @@ import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
 import { useFavorites } from '../../src/hooks/useFavorites';
 import { usePecaeTheme } from '../../src/theme';
+import { PecaeBackground } from '../../src/components/PecaeUI/PecaeBackground';
 
 export default function FavoritosScreen() {
   const router = useRouter();
@@ -33,26 +34,17 @@ export default function FavoritosScreen() {
           style={styles.favoriteButton}
           onPress={() => handleToggleFavorite(item.listing.id)}
         >
-          <Ionicons name="heart" size={24} color={colors.danger} />
+          <Ionicons name="heart" size={24} color={colors.error} />
         </TouchableOpacity>
       </TouchableOpacity>
     );
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <PecaeBackground>
       <Stack.Screen 
         options={{
           title: 'Favoritos',
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()} style={{ marginLeft: 16 }}>
-              <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-            </TouchableOpacity>
-          ),
-          headerStyle: {
-            backgroundColor: colors.background,
-          },
-          headerTintColor: colors.textPrimary,
         }}
       />
 
@@ -62,7 +54,7 @@ export default function FavoritosScreen() {
         </View>
       ) : getFavorites.isError ? (
         <View style={styles.center}>
-          <Text style={[styles.errorText, { color: colors.danger, fontFamily: typography.primary }]}>
+          <Text style={[styles.errorText, { color: colors.error, fontFamily: typography.body }]}>
             Erro ao carregar favoritos.
           </Text>
         </View>
@@ -87,7 +79,7 @@ export default function FavoritosScreen() {
           onRefresh={getFavorites.refetch}
         />
       )}
-    </View>
+    </PecaeBackground>
   );
 }
 

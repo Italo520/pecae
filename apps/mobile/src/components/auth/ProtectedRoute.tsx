@@ -22,15 +22,18 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   useEffect(() => {
     if (!isLoading) {
       if (!isAuthenticated) {
-        console.log('[ProtectedRoute] User not authenticated, redirecting to login');
-        router.replace('/(auth)/login');
+        console.log('[ProtectedRoute] 🔒 Not authenticated - redirecting to login');
+        // Usar um pequeno delay para evitar redirecionamento durante transições de estado
+        const timer = setTimeout(() => {
+          router.replace('/(auth)/login');
+        }, 100);
+        return () => clearTimeout(timer);
       } else if (allowedRoles && user) {
         const userRole = user.type || 'BUYER';
         const isAllowed = allowedRoles.includes(userRole) || userRole === 'ADMIN' || userRole === 'BOTH';
         
         if (!isAllowed) {
-          console.log(`[ProtectedRoute] Access denied for role: ${userRole}. Allowed: ${allowedRoles}`);
-          // Redirect to appropriate home based on their actual role
+          console.log(`[ProtectedRoute] 🚫 Access denied: ${userRole}. Needed: ${allowedRoles}`);
           if (userRole === 'SELLER') {
             router.replace('/(seller)/(tabs)');
           } else {

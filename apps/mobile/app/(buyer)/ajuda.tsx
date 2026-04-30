@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { usePecaeTheme } from '../../src/theme';
+import { PecaeBackground } from '../../src/components/PecaeUI/PecaeBackground';
 
 export default function MenuAjuda() {
   const { colors, typography } = usePecaeTheme();
@@ -25,17 +26,7 @@ export default function MenuAjuda() {
   ];
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-        </TouchableOpacity>
-        <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.display }]}>
-          AJUDA & SUPORTE
-        </Text>
-      </View>
-
+    <PecaeBackground>
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         <Text style={[styles.sectionTitle, { color: colors.textMuted, fontFamily: typography.display }]}>
           PERGUNTAS FREQUENTES (FAQ)
@@ -71,7 +62,7 @@ export default function MenuAjuda() {
         </View>
 
       </ScrollView>
-    </SafeAreaView>
+    </PecaeBackground>
   );
 }
 

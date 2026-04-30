@@ -7,13 +7,14 @@ import { useForm, Controller } from 'react-hook-form';
 import * as ImagePicker from 'expo-image-picker';
 import { usePecaeTheme } from '../../src/theme';
 import { useBuyerProfile, useUpdateBuyerProfile } from '../../src/hooks/useBuyer';
+import { PecaeBackground } from '../../src/components/PecaeUI/PecaeBackground';
 
 interface FormData {
   name: string;
 }
 
 export default function PerfilEditar() {
-  const { colors, typography, spacing, glassmorphism } = usePecaeTheme();
+  const { colors, typography, spacing } = usePecaeTheme();
   const router = useRouter();
   
   const { data: profile, isLoading: isLoadingProfile } = useBuyerProfile();
@@ -48,7 +49,7 @@ export default function PerfilEditar() {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.5, // Resize/Compress
+      quality: 0.5,
     });
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
@@ -57,15 +58,10 @@ export default function PerfilEditar() {
   };
 
   const uploadToSupabase = async (uri: string): Promise<string> => {
-    // TODO: Implement Supabase Storage upload flow
-    // 1. Fetch presigned URL from backend OR use Supabase Client
-    // 2. Upload blob to Supabase storage bucket
-    // 3. Return the public URL
-    
     console.log('Simulating upload to Supabase storage...', uri);
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(uri); // Em dev, usaremos o URI local
+        resolve(uri);
       }, 1000);
     });
   };
@@ -75,7 +71,6 @@ export default function PerfilEditar() {
       setIsUploading(true);
       let finalAvatarUrl = profile?.avatar;
 
-      // If the avatarUri changed and is a local file URI (starts with file://)
       if (avatarUri && avatarUri !== profile?.avatar && avatarUri.startsWith('file://')) {
         finalAvatarUrl = await uploadToSupabase(avatarUri);
       }
@@ -97,86 +92,89 @@ export default function PerfilEditar() {
 
   if (isLoadingProfile) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: '#050505' }]}>
-        <ActivityIndicator size="large" color={colors.brand} style={{ marginTop: 50 }} />
-      </SafeAreaView>
+      <PecaeBackground>
+        <SafeAreaView style={styles.container}>
+          <ActivityIndicator size="large" color={colors.brand} style={{ marginTop: 50 }} />
+        </SafeAreaView>
+      </PecaeBackground>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: '#050505' }]} edges={['bottom', 'left', 'right']}>
-      <View style={styles.content}>
-        
-        {/* Header Customizado (Opcional se usar o Stack Header) */}
-        
-        {/* Avatar Editor */}
-        <View style={styles.avatarSection}>
-          <View style={styles.avatarContainer}>
-            {avatarUri ? (
-              <Image source={{ uri: avatarUri }} style={[styles.avatar, { borderColor: colors.border }]} />
-            ) : (
-              <View style={[styles.avatarPlaceholder, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                <Ionicons name="person" size={40} color={colors.textMuted} />
-              </View>
-            )}
-            <TouchableOpacity 
-              style={[styles.changeAvatarBtn, { backgroundColor: colors.surface }]}
-              onPress={handlePickImage}
-            >
-              <Ionicons name="camera" size={20} color={colors.text} />
-            </TouchableOpacity>
+    <PecaeBackground>
+      <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+        <View style={styles.content}>
+          
+          <View style={styles.avatarSection}>
+            <View style={styles.avatarContainer}>
+              {avatarUri ? (
+                <Image source={{ uri: avatarUri }} style={[styles.avatar, { borderColor: colors.brand }]} />
+              ) : (
+                <View style={[styles.avatarPlaceholder, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                  <Ionicons name="person" size={40} color={colors.textMuted} />
+                </View>
+              )}
+              <TouchableOpacity 
+                style={[styles.changeAvatarBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                onPress={handlePickImage}
+              >
+                <Ionicons name="camera" size={20} color={colors.brand} />
+              </TouchableOpacity>
+            </View>
+            <Text style={[styles.avatarHint, { color: colors.textMuted, fontFamily: typography.body }]}>
+              Toque no ícone para alterar a foto
+            </Text>
           </View>
-          <Text style={[styles.avatarHint, { color: colors.textMuted, fontFamily: typography.secondary }]}>
-            Toque no ícone para alterar a foto
-          </Text>
-        </View>
 
-        {/* Formulário */}
-        <View style={styles.form}>
-          <Text style={[styles.label, { color: colors.textMuted, fontFamily: typography.primary }]}>NOME COMPLETO</Text>
-          <Controller
-            control={control}
-            rules={{
-              required: 'Nome é obrigatório',
-              minLength: { value: 2, message: 'O nome deve ter no mínimo 2 caracteres' }
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={[
-                  styles.input, 
-                  glassmorphism.panel,
-                  { color: colors.text, borderColor: errors.name ? colors.danger : colors.border, fontFamily: typography.primary }
-                ]}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                placeholder="Seu nome"
-                placeholderTextColor={colors.textMuted}
-              />
+          <View style={styles.form}>
+            <Text style={[styles.label, { color: colors.textMuted, fontFamily: typography.display }]}>NOME COMPLETO</Text>
+            <Controller
+              control={control}
+              rules={{
+                required: 'Nome é obrigatório',
+                minLength: { value: 2, message: 'O nome deve ter no mínimo 2 caracteres' }
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={[
+                    styles.input, 
+                    { 
+                      backgroundColor: colors.surface,
+                      color: colors.textPrimary, 
+                      borderColor: errors.name ? colors.error : colors.border, 
+                      fontFamily: typography.body 
+                    }
+                  ]}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  placeholder="Seu nome"
+                  placeholderTextColor={colors.textMuted}
+                />
+              )}
+              name="name"
+            />
+            {errors.name && <Text style={[styles.errorText, { color: colors.error, fontFamily: typography.body }]}>{errors.name.message}</Text>}
+          </View>
+
+          <TouchableOpacity
+            style={[
+              styles.saveButton,
+              { backgroundColor: colors.brand },
+              (updateProfileMutation.isPending || isUploading) && { opacity: 0.7 }
+            ]}
+            onPress={handleSubmit(onSubmit)}
+            disabled={updateProfileMutation.isPending || isUploading}
+          >
+            {updateProfileMutation.isPending || isUploading ? (
+              <ActivityIndicator color="#000" />
+            ) : (
+              <Text style={[styles.saveButtonText, { fontFamily: typography.medium }]}>SALVAR ALTERAÇÕES</Text>
             )}
-            name="name"
-          />
-          {errors.name && <Text style={[styles.errorText, { color: colors.danger }]}>{errors.name.message}</Text>}
+          </TouchableOpacity>
         </View>
-
-        {/* Botão Salvar */}
-        <TouchableOpacity
-          style={[
-            styles.saveButton,
-            { backgroundColor: colors.brand },
-            (updateProfileMutation.isPending || isUploading) && { opacity: 0.7 }
-          ]}
-          onPress={handleSubmit(onSubmit)}
-          disabled={updateProfileMutation.isPending || isUploading}
-        >
-          {updateProfileMutation.isPending || isUploading ? (
-            <ActivityIndicator color="#000" />
-          ) : (
-            <Text style={[styles.saveButtonText, { fontFamily: typography.primary }]}>SALVAR ALTERAÇÕES</Text>
-          )}
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </PecaeBackground>
   );
 }
 
@@ -218,10 +216,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 5,
-    boxShadow: '0px 2px 3px rgba(0, 0, 0, 0.3)',
+    borderWidth: 1,
   },
-
   avatarHint: {
     marginTop: 12,
     fontSize: 12,

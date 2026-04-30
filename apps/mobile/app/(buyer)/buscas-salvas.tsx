@@ -5,6 +5,7 @@ import { FlashList } from '@shopify/flash-list';
 import { Ionicons } from '@expo/vector-icons';
 import { useSavedSearches } from '../../src/hooks/useSavedSearches';
 import { usePecaeTheme } from '../../src/theme';
+import { PecaeBackground } from '../../src/components/PecaeUI/PecaeBackground';
 
 export default function BuscasSalvasScreen() {
   const router = useRouter();
@@ -60,7 +61,7 @@ export default function BuscasSalvasScreen() {
             style={styles.deleteButton}
             onPress={() => handleRemoveSearch(item.id)}
           >
-            <Ionicons name="trash-outline" size={20} color={colors.danger} />
+            <Ionicons name="trash-outline" size={20} color={colors.error} />
           </TouchableOpacity>
         </View>
       </View>
@@ -68,23 +69,14 @@ export default function BuscasSalvasScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <PecaeBackground>
       <Stack.Screen 
         options={{
           title: 'Buscas Salvas',
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()} style={{ marginLeft: 16 }}>
-              <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-            </TouchableOpacity>
-          ),
-          headerStyle: {
-            backgroundColor: colors.background,
-          },
-          headerTintColor: colors.textPrimary,
         }}
       />
 
-      <View style={[styles.addSection, { borderBottomColor: colors.border, backgroundColor: colors.background }]}>
+      <View style={[styles.addSection, { borderBottomColor: colors.border }]}>
         <TextInput
           style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary, fontFamily: typography.body }]}
           placeholder="Salvar nova busca..."
@@ -121,7 +113,7 @@ export default function BuscasSalvasScreen() {
         </View>
       ) : getSavedSearches.isError ? (
         <View style={styles.center}>
-          <Text style={[styles.errorText, { color: colors.danger, fontFamily: typography.primary }]}>
+          <Text style={[styles.errorText, { color: colors.error, fontFamily: typography.body }]}>
             Erro ao carregar buscas salvas.
           </Text>
         </View>
@@ -146,7 +138,7 @@ export default function BuscasSalvasScreen() {
           onRefresh={getSavedSearches.refetch}
         />
       )}
-    </View>
+    </PecaeBackground>
   );
 }
 

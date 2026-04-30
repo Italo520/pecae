@@ -196,7 +196,11 @@ async function seedAdminUser() {
 
   await prisma.user.upsert({
     where: { email: adminEmail },
-    update: {},
+    update: {
+      passwordHash,
+      type: UserType.ADMIN,
+      status: UserStatus.ACTIVE,
+    },
     create: {
       id: crypto.randomUUID(),
       name: 'Admin PECAÊ',

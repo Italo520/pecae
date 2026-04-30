@@ -15,7 +15,7 @@ export const PecaeBackground: React.FC<PecaeBackgroundProps> = ({ children }) =>
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={colors.background as [string, string, ...string[]]}
+        colors={colors.backgroundGradient as [string, string, ...string[]]}
         style={StyleSheet.absoluteFill}
       />
       

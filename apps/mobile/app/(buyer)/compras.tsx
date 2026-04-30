@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { usePecaeTheme } from '../../src/theme';
+import { PecaeBackground } from '../../src/components/PecaeUI/PecaeBackground';
 
 export default function MinhasCompras() {
   const { colors, typography, spacing } = usePecaeTheme();
@@ -32,17 +33,7 @@ export default function MinhasCompras() {
   ];
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-        </TouchableOpacity>
-        <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.display }]}>
-          MINHAS COMPRAS
-        </Text>
-      </View>
-
+    <PecaeBackground>
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         {comprasMock.map((compra) => (
           <View 
@@ -82,7 +73,7 @@ export default function MinhasCompras() {
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </PecaeBackground>
   );
 }
 

@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { usePecaeTheme } from '../../src/theme';
+import { PecaeBackground } from '../../src/components/PecaeUI/PecaeBackground';
 
 export default function CentralSeguranca() {
   const { colors, typography } = usePecaeTheme();
@@ -26,17 +27,7 @@ export default function CentralSeguranca() {
   ];
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-        </TouchableOpacity>
-        <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.display }]}>
-          CENTRAL DE SEGURANÇA
-        </Text>
-      </View>
-
+    <PecaeBackground>
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         
         {/* Nível de Segurança */}
@@ -120,7 +111,7 @@ export default function CentralSeguranca() {
         </View>
 
       </ScrollView>
-    </SafeAreaView>
+    </PecaeBackground>
   );
 }
 

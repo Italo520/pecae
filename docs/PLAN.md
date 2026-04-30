@@ -97,18 +97,36 @@
 **Agentes:** `devops-engineer`, `backend-specialist`, `test-engineer`
 
 ### 6.1. Levantamento da Infraestrutura
-- [ ] **Docker Compose**: Executar `docker compose up --build` para subir Postgres, Redis e API.
-- [ ] **Database Initialization**: Validar se as migrações e o seed foram aplicados corretamente pelo `entrypoint.sh`.
-- [ ] **Log Monitoring**: Acompanhar logs para garantir que não há erros de conexão entre os serviços.
+- [x] **Docker Compose**: Executar `docker compose up --build` para subir Postgres, Redis e API. [CONCLUÍDO]
+- [x] **Database Initialization**: Validar se as migrações e o seed foram aplicados corretamente pelo `entrypoint.sh`. [CONCLUÍDO]
+- [x] **Log Monitoring**: Acompanhar logs para garantir que não há erros de conexão entre os serviços. [CONCLUÍDO]
 
 ### 6.2. Testes de Fumaça (API)
-- [ ] **Health Check**: Validar `GET /api/v1/health`.
-- [ ] **Auth Check**: Tentar login com o usuário admin seed (`admin@pecae.com.br`).
-- [ ] **Inventory Check**: Verificar se o inventário retorna vazio (conforme esperado para um novo seller).
+- [x] **Health Check**: Validar `GET /api/v1/health`. [CONCLUÍDO]
+- [x] **Auth Check**: Tentar login com o usuário admin seed (`admin@pecae.com.br`). [CONCLUÍDO]
+- [x] **Inventory Check**: Verificar se o inventário retorna vazio (conforme esperado para um novo seller). [CONCLUÍDO]
 
 ### 6.3. Testes Mobile Web
-- [ ] **Web Access**: Acessar `http://localhost:8080` e validar se a aplicação mobile carrega no browser.
-- [ ] **Flow Validation**: Testar o fluxo de cadastro de veículo (Wizard) e verificar se o dado é persistido no Postgres do container.
+- [x] **Web Access**: Acessar `http://localhost:8080` e validar se a aplicação mobile carrega no browser. [CONCLUÍDO]
+- [x] **Flow Validation**: Testar o fluxo de cadastro de veículo (Wizard) e verificar se o dado é persistido no Postgres do container. [CONCLUÍDO]
+
+---
+
+## 🛠️ Fase 7: Estabilização de Auth & Mobile UX (Browser/Web)
+**Agentes:** `frontend-specialist`, `security-auditor`, `ux-designer`
+
+### 7.1. Persistência de Auth (Web/Mobile)
+- [ ] **Auth Store Audit**: Corrigir possíveis race conditions no `initializeAuth`. Garantir que `isLoading` seja tratado corretamente para evitar redirecionamentos precoces no browser.
+- [x] **State Restoration**: Validar se o `localStorage` está sendo lido corretamente antes do primeiro render do `ProtectedRoute`.
+
+### 7.2. UI/UX: Menu & Light Mode
+- [x] **Theme Calibration**: Ajustar `pecae-tokens.ts`. No modo claro, aumentar a opacidade do `surface` e `border` para garantir contraste em fundos claros.
+- [x] **Menu Redesign**: Aplicar "Industrial Glassmorphism" no `perfil.tsx`. Usar `Space Grotesk` para títulos e `Manrope` para corpo.
+- [x] **Visual Audit**: Garantir que todos os componentes sejam visíveis no modo claro (contraste mínimo 4.5:1).
+
+### 7.3. Auditoria de Rotas (Buyer)
+- [x] **Route Verification**: Implementar ou corrigir as rotas: `favoritos`, `buscas-salvas`, `compras`, `seguranca`, `ajuda`.
+- [x] **Navigation Flow**: Garantir que o botão "Voltar" funcione corretamente em todas as sub-páginas sem perder o contexto.
 
 ---
 
@@ -117,5 +135,7 @@
 2. Anúncios podem ser criados, editados e deletados por usuários autenticados.
 3. E-mail verificado altera de fato o status no banco.
 4. Chat funciona em tempo real (Gateway ativo).
-5. Sem arquivos de lixo no repositório.
+5. **Novo**: Auth context é mantido após refresh no browser.
+6. **Novo**: Menu do comprador é visualmente premium em Dark e Light mode.
+7. Sem arquivos de lixo no repositório.
 6. **Docker**: Todos os serviços subindo com um único comando e banco populado.

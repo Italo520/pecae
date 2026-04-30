@@ -4,9 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Notifications from 'expo-notifications';
 import { usePecaeTheme } from '../../src/theme';
 import { useBuyerProfile, useUpdateNotificationPreferences } from '../../src/hooks/useBuyer';
+import { PecaeBackground } from '../../src/components/PecaeUI/PecaeBackground';
 
 export default function Configuracoes() {
-  const { colors, typography, glassmorphism } = usePecaeTheme();
+  const { colors, typography } = usePecaeTheme();
   
   const { data: profile, isLoading } = useBuyerProfile();
   const updatePrefsMutation = useUpdateNotificationPreferences();
@@ -26,7 +27,6 @@ export default function Configuracoes() {
   const handleTogglePush = async (value: boolean) => {
     try {
       if (value) {
-        // Request OS permission if trying to enable push
         const { status: existingStatus } = await Notifications.getPermissionsAsync();
         let finalStatus = existingStatus;
         
@@ -45,7 +45,7 @@ export default function Configuracoes() {
       setPushEnabled(value);
       await updatePrefsMutation.mutateAsync({ push: value });
     } catch (error) {
-      setPushEnabled(!value); // revert
+      setPushEnabled(!value);
       Alert.alert('Erro', 'Não foi possível atualizar a preferência.');
     }
   };
@@ -72,74 +72,78 @@ export default function Configuracoes() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: '#050505' }]}>
-        <ActivityIndicator size="large" color={colors.brand} style={{ marginTop: 50 }} />
-      </SafeAreaView>
+      <PecaeBackground>
+        <SafeAreaView style={styles.container}>
+          <ActivityIndicator size="large" color={colors.brand} style={{ marginTop: 50 }} />
+        </SafeAreaView>
+      </PecaeBackground>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: '#050505' }]} edges={['bottom', 'left', 'right']}>
-      <View style={styles.content}>
-        
-        <Text style={[styles.sectionTitle, { color: colors.textMuted, fontFamily: typography.primary }]}>
-          NOTIFICAÇÕES
-        </Text>
-        
-        <View style={[styles.card, glassmorphism.panel, { borderColor: colors.border }]}>
+    <PecaeBackground>
+      <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+        <View style={styles.content}>
           
-          <View style={[styles.row, { borderBottomColor: colors.border, borderBottomWidth: 1 }]}>
-            <View style={styles.textContainer}>
-              <Text style={[styles.title, { color: colors.text, fontFamily: typography.primary }]}>Notificações Push</Text>
-              <Text style={[styles.subtitle, { color: colors.textMuted, fontFamily: typography.secondary }]}>
-                Receba alertas no seu celular mesmo com o app fechado
-              </Text>
+          <Text style={[styles.sectionTitle, { color: colors.textMuted, fontFamily: typography.display }]}>
+            NOTIFICAÇÕES
+          </Text>
+          
+          <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            
+            <View style={[styles.row, { borderBottomColor: colors.border, borderBottomWidth: 1 }]}>
+              <View style={styles.textContainer}>
+                <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.heading }]}>Notificações Push</Text>
+                <Text style={[styles.subtitle, { color: colors.textMuted, fontFamily: typography.body }]}>
+                  Receba alertas no seu celular mesmo com o app fechado
+                </Text>
+              </View>
+              <Switch
+                trackColor={{ false: colors.border, true: colors.brand }}
+                thumbColor={'#fff'}
+                onValueChange={handleTogglePush}
+                value={pushEnabled}
+                disabled={updatePrefsMutation.isPending}
+              />
             </View>
-            <Switch
-              trackColor={{ false: colors.surface, true: colors.brand }}
-              thumbColor={Platform.OS === 'ios' ? '#fff' : (pushEnabled ? '#fff' : '#f4f3f4')}
-              onValueChange={handleTogglePush}
-              value={pushEnabled}
-              disabled={updatePrefsMutation.isPending}
-            />
-          </View>
 
-          <View style={[styles.row, { borderBottomColor: colors.border, borderBottomWidth: 1 }]}>
-            <View style={styles.textContainer}>
-              <Text style={[styles.title, { color: colors.text, fontFamily: typography.primary }]}>E-mail</Text>
-              <Text style={[styles.subtitle, { color: colors.textMuted, fontFamily: typography.secondary }]}>
-                Receba resumos e ofertas importantes por e-mail
-              </Text>
+            <View style={[styles.row, { borderBottomColor: colors.border, borderBottomWidth: 1 }]}>
+              <View style={styles.textContainer}>
+                <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.heading }]}>E-mail</Text>
+                <Text style={[styles.subtitle, { color: colors.textMuted, fontFamily: typography.body }]}>
+                  Receba resumos e ofertas importantes por e-mail
+                </Text>
+              </View>
+              <Switch
+                trackColor={{ false: colors.border, true: colors.brand }}
+                thumbColor={'#fff'}
+                onValueChange={handleToggleEmail}
+                value={emailEnabled}
+                disabled={updatePrefsMutation.isPending}
+              />
             </View>
-            <Switch
-              trackColor={{ false: colors.surface, true: colors.brand }}
-              thumbColor={Platform.OS === 'ios' ? '#fff' : (emailEnabled ? '#fff' : '#f4f3f4')}
-              onValueChange={handleToggleEmail}
-              value={emailEnabled}
-              disabled={updatePrefsMutation.isPending}
-            />
-          </View>
 
-          <View style={styles.row}>
-            <View style={styles.textContainer}>
-              <Text style={[styles.title, { color: colors.text, fontFamily: typography.primary }]}>In-App</Text>
-              <Text style={[styles.subtitle, { color: colors.textMuted, fontFamily: typography.secondary }]}>
-                Receba alertas dentro do app (mensagens, atualizações)
-              </Text>
+            <View style={styles.row}>
+              <View style={styles.textContainer}>
+                <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.heading }]}>In-App</Text>
+                <Text style={[styles.subtitle, { color: colors.textMuted, fontFamily: typography.body }]}>
+                  Receba alertas dentro do app (mensagens, atualizações)
+                </Text>
+              </View>
+              <Switch
+                trackColor={{ false: colors.border, true: colors.brand }}
+                thumbColor={'#fff'}
+                onValueChange={handleToggleInApp}
+                value={inAppEnabled}
+                disabled={updatePrefsMutation.isPending}
+              />
             </View>
-            <Switch
-              trackColor={{ false: colors.surface, true: colors.brand }}
-              thumbColor={Platform.OS === 'ios' ? '#fff' : (inAppEnabled ? '#fff' : '#f4f3f4')}
-              onValueChange={handleToggleInApp}
-              value={inAppEnabled}
-              disabled={updatePrefsMutation.isPending}
-            />
+
           </View>
 
         </View>
-
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </PecaeBackground>
   );
 }
 

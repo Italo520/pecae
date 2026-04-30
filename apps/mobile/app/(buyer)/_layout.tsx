@@ -10,15 +10,15 @@ export default function BuyerLayout() {
   const router = useRouter();
 
   return (
-    <ProtectedRoute allowedRoles={['BUYER', 'BOTH']}>
+    <ProtectedRoute allowedRoles={['BUYER', 'BOTH', 'ADMIN', 'MODERATOR']}>
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#050505',
+            backgroundColor: colors.background,
           },
-          headerTintColor: colors.text,
+          headerTintColor: colors.textPrimary,
           headerTitleStyle: {
-            fontFamily: typography.primary,
+            fontFamily: typography.heading,
             fontWeight: '600',
           },
           headerShadowVisible: false,
@@ -27,7 +27,7 @@ export default function BuyerLayout() {
               onPress={() => router.back()} 
               style={{ padding: 8, marginLeft: -8 }}
             >
-              <Ionicons name="arrow-back" size={24} color={colors.text} />
+              <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
             </TouchableOpacity>
           ),
         }}
@@ -36,41 +36,57 @@ export default function BuyerLayout() {
           name="perfil" 
           options={{ 
             title: 'Meu Perfil',
-            headerShown: false // We will likely build a custom header for the main profile screen
+            headerShown: false
           }} 
         />
         <Stack.Screen 
           name="perfil-editar" 
           options={{ 
             title: 'Editar Perfil',
-            presentation: 'modal'
+            presentation: 'modal',
+            headerShown: true
+          }} 
+        />
+        <Stack.Screen 
+          name="favoritos" 
+          options={{ 
+            title: 'Favoritos',
+            headerShown: true
+          }} 
+        />
+        <Stack.Screen 
+          name="buscas-salvas" 
+          options={{ 
+            title: 'Buscas Salvas',
+            headerShown: true
           }} 
         />
         <Stack.Screen 
           name="configuracoes" 
           options={{ 
-            title: 'Configurações' 
+            title: 'Configurações',
+            headerShown: true
           }} 
         />
         <Stack.Screen 
           name="compras" 
           options={{ 
             title: 'Minhas Compras',
-            headerShown: false
+            headerShown: true
           }} 
         />
         <Stack.Screen 
           name="seguranca" 
           options={{ 
             title: 'Central de Segurança',
-            headerShown: false
+            headerShown: true
           }} 
         />
         <Stack.Screen 
           name="ajuda" 
           options={{ 
             title: 'Ajuda',
-            headerShown: false
+            headerShown: true
           }} 
         />
       </Stack>
