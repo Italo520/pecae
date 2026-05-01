@@ -343,14 +343,17 @@ export class AuthService {
 
   async login(loginDto: LoginDto, ip: string, userAgent: string) {
     const { email, password } = loginDto;
-
-    const user = await this.usersService.findByEmail(email);
+    const normalizedEmail = email.toLowerCase();
+    const user = await this.usersService.findByEmail(normalizedEmail);
+    
     if (!user) {
+      console.warn(`[AuthService] Login failed: User not found for email ${normalizedEmail}`);
       throw new UnauthorizedException('Credenciais inválidas.');
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash || '');
     if (!isPasswordValid) {
+      console.warn(`[AuthService] Login failed: Invalid password for user ${normalizedEmail}`);
       throw new UnauthorizedException('Credenciais inválidas.');
     }
 
