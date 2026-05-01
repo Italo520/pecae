@@ -35,7 +35,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
         if (!isAllowed) {
           console.log(`[ProtectedRoute] 🚫 Access denied: ${userRole}. Needed: ${allowedRoles}`);
           if (userRole === 'SELLER') {
-            router.replace('/(seller)/(tabs)');
+            router.replace('/(seller)/(seller-tabs)');
           } else {
             router.replace('/(tabs)/');
           }

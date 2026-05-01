@@ -18,7 +18,7 @@ export default function InventoryScreen() {
       "Perfil",
       "O que você deseja fazer?",
       [
-        { text: "Ver Perfil", onPress: () => router.push('/(seller)/(tabs)/perfil') },
+        { text: "Ver Perfil", onPress: () => router.push('/(seller)/(seller-tabs)/perfil') },
         { 
           text: "Sair da Conta", 
           onPress: async () => {
