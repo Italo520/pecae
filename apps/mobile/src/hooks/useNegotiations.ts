@@ -3,17 +3,19 @@ import { api } from '../services/api';
 
 export interface Negotiation {
   id: string;
-  listing: {
+  vehicle: {
+    id: string;
+    brand: string;
+    model: string;
+    version: string;
+    thumbnail: string | null;
+    status: string;
+  } | null;
+  listing?: {
     id: string;
     title: string;
     status: string;
     price: number | null;
-    thumbnail: string | null;
-    vehicleInfo: {
-      brand: string;
-      model: string;
-      version: string;
-    } | null;
   };
   seller: {
     id: string;

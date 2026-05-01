@@ -127,7 +127,7 @@ export class BuyersService {
   }
 
   /**
-   * Returns listings the buyer has interacted with (Negotiations).
+   * Returns vehicles or listings the buyer has interacted with (Negotiations).
    */
   async getNegotiations(userId: string) {
     const chatRooms = await this.prisma.chatRoom.findMany({
@@ -144,6 +144,13 @@ export class BuyersService {
             sellerProfile: true,
           },
         },
+        vehicle: {
+          include: {
+            photos: { where: { order: 0 }, take: 1 },
+            version: { include: { model: { include: { brand: true } } } },
+            seller: true,
+          },
+        },
         messages: {
           orderBy: { createdAt: 'desc' },
           take: 1,
@@ -152,26 +159,33 @@ export class BuyersService {
       orderBy: { updatedAt: 'desc' },
     });
 
-    return chatRooms.map((room) => ({
-      id: room.id,
-      listing: {
-        id: room.listing.id,
-        title: room.listing.title,
-        status: room.listing.status,
-        price: room.listing.price,
-        thumbnail: room.listing.vehicle?.photos[0]?.url || null,
-        vehicleInfo: room.listing.vehicle ? {
-          brand: room.listing.vehicle.version.model.brand.name,
-          model: room.listing.vehicle.version.model.name,
-          version: room.listing.vehicle.version.name,
+    return chatRooms.map((room) => {
+      const vehicle = room.vehicle || room.listing?.vehicle;
+      const seller = room.vehicle?.seller || room.listing?.sellerProfile;
+
+      return {
+        id: room.id,
+        vehicle: vehicle ? {
+          id: vehicle.id,
+          brand: vehicle.version.model.brand.name,
+          model: vehicle.version.model.name,
+          version: vehicle.version.name,
+          thumbnail: vehicle.photos[0]?.url || null,
+          status: vehicle.status,
         } : null,
-      },
-      seller: {
-        id: room.listing.sellerProfile.id,
-        storeName: room.listing.sellerProfile.storeName,
-      },
-      lastInteraction: room.messages[0]?.createdAt || room.updatedAt,
-      lastMessage: room.messages[0]?.content || null,
-    }));
+        listing: room.listing ? {
+          id: room.listing.id,
+          title: room.listing.title,
+          status: room.listing.status,
+          price: room.listing.price,
+        } : null,
+        seller: seller ? {
+          id: seller.id,
+          storeName: seller.storeName,
+        } : null,
+        lastInteraction: room.messages[0]?.createdAt || room.updatedAt,
+        lastMessage: room.messages[0]?.content || null,
+      };
+    });
   }
 }

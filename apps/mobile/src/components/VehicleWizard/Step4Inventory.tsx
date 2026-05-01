@@ -13,67 +13,83 @@ export const Step4Inventory: React.FC = () => {
   const { data, updateData, nextStep, prevStep } = useVehicleWizardStore();
   const { data: categories, isLoading } = usePartCategories();
 
-  const togglePart = (name: string) => {
-    const newParts = data.availableParts.includes(name)
-      ? data.availableParts.filter((p) => p !== name)
-      : [...data.availableParts, name];
+  const togglePart = (id: string) => {
+    const newParts = data.availableParts.includes(id)
+      ? data.availableParts.filter((p) => p !== id)
+      : [...data.availableParts, id];
     updateData({ availableParts: newParts });
   };
 
-  const isValid = !!(data.title && data.availableParts.length > 0);
+  const selectAll = () => {
+    if (categories) {
+      updateData({ availableParts: categories.map(c => c.id) });
+    }
+  };
+
+  const deselectAll = () => {
+    updateData({ availableParts: [] });
+  };
+
+  const isValid = data.availableParts.length > 0;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <PecaeInput
-        label="Título do Anúncio"
-        placeholder="Ex: Sucata do Fiat Uno 2015 - Peças"
-        value={data.title}
-        onChangeText={(text) => updateData({ title: text })}
-      />
-
-      <PecaeInput
-        label="Descrição do Anúncio (Opcional)"
-        placeholder="Descreva o estado das peças..."
-        value={data.description}
-        onChangeText={(text) => updateData({ description: text })}
-        multiline
-        numberOfLines={3}
-      />
-
-      <Text style={[styles.sectionTitle, { color: colors.textPrimary, fontFamily: typography.heading }]}>
-        Peças Disponíveis
+      <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.display }]}>
+        Inventário de Peças
       </Text>
+      <Text style={[styles.subtitle, { color: colors.textMuted, fontFamily: typography.body }]}>
+        Marque as peças que estão em bom estado para venda neste veículo.
+      </Text>
+
+      <View style={styles.bulkActions}>
+        <TouchableOpacity onPress={selectAll}>
+          <Text style={[styles.actionText, { color: colors.brand, fontFamily: typography.bold }]}>
+            Selecionar Tudo
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={deselectAll}>
+          <Text style={[styles.actionText, { color: colors.textMuted, fontFamily: typography.bold }]}>
+            Limpar Tudo
+          </Text>
+        </TouchableOpacity>
+      </View>
       
       {isLoading ? (
-        <ActivityIndicator color={colors.brand} style={{ margin: 20 }} />
+        <ActivityIndicator color={colors.brand} style={{ margin: 40 }} />
       ) : (
         <View style={styles.grid}>
           {categories?.map((cat) => {
-            const isSelected = data.availableParts.includes(cat.name);
+            const isSelected = data.availableParts.includes(cat.id);
             return (
               <TouchableOpacity 
                 key={cat.id} 
                 style={styles.partCardWrapper}
-                onPress={() => togglePart(cat.name)}
+                onPress={() => togglePart(cat.id)}
+                activeOpacity={0.7}
               >
                 <PecaeGlassCard 
-                  intensity={isSelected ? 30 : 10} 
+                  intensity={isSelected ? 35 : 15} 
                   style={[
                     styles.partCard, 
-                    isSelected && { borderColor: colors.brand, borderWidth: 1 }
+                    isSelected && { borderColor: colors.brand, borderWidth: 1.5 }
                   ]}
                 >
-                  <Ionicons 
-                    name={cat.icon as any || 'settings-outline'} 
-                    size={24} 
-                    color={isSelected ? colors.brand : colors.textMuted} 
-                  />
+                  <View style={styles.partHeader}>
+                    <Ionicons 
+                      name={cat.icon as any || 'settings-outline'} 
+                      size={20} 
+                      color={isSelected ? colors.brand : colors.textMuted} 
+                    />
+                    {isSelected && (
+                      <Ionicons name="checkmark-circle" size={16} color={colors.brand} />
+                    )}
+                  </View>
                   <Text 
-                    numberOfLines={1}
+                    numberOfLines={2}
                     style={[
                       styles.partLabel, 
                       { 
-                        color: isSelected ? colors.brand : colors.textMuted,
+                        color: isSelected ? colors.textPrimary : colors.textMuted,
                         fontFamily: isSelected ? typography.bold : typography.body 
                       }
                     ]}
@@ -87,6 +103,17 @@ export const Step4Inventory: React.FC = () => {
         </View>
       )}
 
+      <View style={styles.observationsContainer}>
+        <PecaeInput
+          label="Observações do Carro Doador"
+          placeholder="Ex: Motor ok, batida lateral esquerda, interior em couro impecável..."
+          value={data.observations || ''}
+          onChangeText={(text) => updateData({ observations: text })}
+          multiline
+          numberOfLines={4}
+        />
+      </View>
+
       <View style={styles.footer}>
         <PecaeButton
           title="Voltar"
@@ -95,7 +122,7 @@ export const Step4Inventory: React.FC = () => {
           style={styles.button}
         />
         <PecaeButton
-          title="Revisar"
+          title="Revisar Cadastro"
           onPress={nextStep}
           disabled={!isValid}
           style={styles.button}
@@ -108,12 +135,27 @@ export const Step4Inventory: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    paddingBottom: 40,
+    paddingBottom: 60,
   },
-  sectionTitle: {
-    fontSize: 18,
-    marginTop: 20,
+  title: {
+    fontSize: 24,
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 14,
+    marginBottom: 20,
+    lineHeight: 20,
+  },
+  bulkActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 15,
+    paddingHorizontal: 5,
+  },
+  actionText: {
+    fontSize: 13,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   grid: {
     flexDirection: 'row',
@@ -121,27 +163,35 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   partCardWrapper: {
-    width: '31%',
-    aspectRatio: 1,
-    marginBottom: 10,
+    width: '48%',
+    height: 90,
+    marginBottom: 12,
   },
   partCard: {
     flex: 1,
     justifyContent: 'center',
+    padding: 12,
+    borderRadius: 16,
+  },
+  partHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 8,
+    marginBottom: 8,
   },
   partLabel: {
-    fontSize: 10,
-    marginTop: 5,
-    textAlign: 'center',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  observationsContainer: {
+    marginTop: 20,
   },
   footer: {
     flexDirection: 'row',
-    marginTop: 30,
+    marginTop: 40,
+    gap: 12,
   },
   button: {
     flex: 1,
-    marginHorizontal: 5,
   },
 });

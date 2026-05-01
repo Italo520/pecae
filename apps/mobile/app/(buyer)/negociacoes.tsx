@@ -5,40 +5,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../src/theme';
 import { PecaeBackground } from '../../src/components/PecaeUI/PecaeBackground';
 import { PecaeGlassCard } from '../../src/components/PecaeUI/PecaeGlassCard';
-import { useNegotiations } from '../../src/hooks/useNegotiations';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { useNegotiations, Negotiation } from '../../src/hooks/useNegotiations';
 
 export default function Negociacoes() {
   const { colors, typography, isDark } = usePecaeTheme();
-  const router = useRouter();
   const { data: negotiations, isLoading, refetch, isRefetching } = useNegotiations();
-
-  const formatCurrency = (value: number | null) => {
-    if (value === null) return 'Sob Consulta';
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'PUBLISHED': return '#22c55e';
-      case 'SOLD': return colors.textMuted;
-      case 'EXPIRED': return '#ef4444';
-      default: return colors.brand;
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'PUBLISHED': return 'DISPONÍVEL';
-      case 'SOLD': return 'VENDIDO';
-      case 'EXPIRED': return 'INDISPONÍVEL';
-      default: return status;
-    }
-  };
 
   return (
     <PecaeBackground>
@@ -72,78 +43,7 @@ export default function Negociacoes() {
             </View>
           ) : negotiations && negotiations.length > 0 ? (
             negotiations.map((item) => (
-              <PecaeGlassCard 
-                key={item.id} 
-                style={styles.card}
-                intensity={isDark ? 10 : 35}
-              >
-                <TouchableOpacity 
-                  onPress={() => router.push(`/chat/${item.id}`)}
-                  activeOpacity={0.7}
-                >
-                  <View style={styles.cardInner}>
-                    {item.listing.thumbnail ? (
-                      <Image source={{ uri: item.listing.thumbnail }} style={styles.cardImg} />
-                    ) : (
-                      <View style={[styles.cardImg, { backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }]}>
-                        <Ionicons name="car-outline" size={32} color={colors.textMuted} />
-                      </View>
-                    )}
-                    <View style={styles.cardBody}>
-                      <Text 
-                        style={[styles.veiculoTitle, { color: colors.textPrimary, fontFamily: typography.display }]}
-                        numberOfLines={1}
-                      >
-                        {item.listing.title}
-                      </Text>
-                      
-                      <View style={styles.infoRow}>
-                        <Text style={[styles.infoLabel, { color: colors.textMuted, fontFamily: typography.mono }]}>VENDEDOR</Text>
-                        <Text style={[styles.infoValue, { color: colors.textPrimary, fontFamily: typography.body }]} numberOfLines={1}>
-                          {item.seller.storeName}
-                        </Text>
-                      </View>
-
-                      <View style={styles.infoRow}>
-                        <Text style={[styles.infoLabel, { color: colors.textMuted, fontFamily: typography.mono }]}>ÚLTIMA INTERAÇÃO</Text>
-                        <Text style={[styles.infoValue, { color: colors.textPrimary, fontFamily: typography.body }]}>
-                          {format(new Date(item.lastInteraction), "dd 'de' MMM", { locale: ptBR })}
-                        </Text>
-                      </View>
-
-                      {item.lastMessage && (
-                        <Text 
-                          style={[styles.lastMessage, { color: colors.textMuted, fontFamily: typography.body }]}
-                          numberOfLines={1}
-                        >
-                          "{item.lastMessage}"
-                        </Text>
-                      )}
-
-                      <View style={[styles.cardFooter, { borderTopColor: colors.border + '30' }]}>
-                        <Text style={[styles.price, { color: colors.brand, fontFamily: typography.display }]}>
-                          {formatCurrency(item.listing.price)}
-                        </Text>
-                        <View style={[styles.statusBadge, { 
-                          backgroundColor: getStatusColor(item.listing.status) + '15', 
-                          borderColor: getStatusColor(item.listing.status) + '40' 
-                        }]}>
-                          <Text style={[styles.statusText, { color: getStatusColor(item.listing.status), fontFamily: typography.mono }]}>
-                            {getStatusLabel(item.listing.status)}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                  
-                  <View style={[styles.detailsBtn, { borderTopColor: colors.border + '30' }]}>
-                    <Text style={[styles.detailsBtnText, { color: colors.brand, fontFamily: typography.medium }]}>
-                      Continuar Conversa
-                    </Text>
-                    <Ionicons name="chatbubbles-outline" size={16} color={colors.brand} />
-                  </View>
-                </TouchableOpacity>
-              </PecaeGlassCard>
+              <NegotiationItem key={item.id} negotiation={item} />
             ))
           ) : (
             <View style={styles.emptyContainer}>
@@ -154,14 +54,8 @@ export default function Negociacoes() {
                 Nenhuma negociação
               </Text>
               <Text style={[styles.emptySubtext, { color: colors.textMuted, fontFamily: typography.body }]}>
-                Inicie um chat em qualquer anúncio para começar uma negociação.
+                Fale com um vendedor sobre um veículo para iniciar uma negociação.
               </Text>
-              <TouchableOpacity 
-                style={[styles.browseButton, { backgroundColor: colors.brand }]}
-                onPress={() => router.push('/(tabs)')}
-              >
-                <Text style={styles.browseButtonText}>Explorar Veículos</Text>
-              </TouchableOpacity>
             </View>
           )}
         </ScrollView>
@@ -170,12 +64,76 @@ export default function Negociacoes() {
   );
 }
 
+const NegotiationItem: React.FC<{ negotiation: Negotiation }> = ({ negotiation }) => {
+  const { colors, typography, effects, isDark } = usePecaeTheme();
+  const router = useRouter();
+
+  const title = negotiation.vehicle 
+    ? `${negotiation.vehicle.brand} ${negotiation.vehicle.model}`.toUpperCase()
+    : (negotiation.listing?.title || 'NEGOCIAÇÃO').toUpperCase();
+
+  const subtitle = negotiation.vehicle
+    ? negotiation.vehicle.version
+    : negotiation.seller.storeName;
+
+  const thumbnail = negotiation.vehicle?.thumbnail || 'https://via.placeholder.com/150?text=PECAÊ';
+
+  return (
+    <TouchableOpacity 
+      onPress={() => router.push({
+        pathname: '/(tabs)/chat/[id]',
+        params: { 
+          id: negotiation.id,
+          vehicleId: negotiation.vehicle?.id
+        }
+      })}
+      activeOpacity={0.7}
+      style={styles.itemWrapper}
+    >
+      <PecaeGlassCard intensity={isDark ? 10 : 35} style={styles.itemContainer}>
+        <Image 
+          source={{ uri: thumbnail }} 
+          style={[styles.thumbnail, { borderRadius: effects.radius.sm }]} 
+        />
+        <View style={styles.itemInfo}>
+          <View style={styles.itemHeader}>
+            <Text style={[styles.itemTitle, { color: colors.textPrimary, fontFamily: typography.display }]} numberOfLines={1}>
+              {title}
+            </Text>
+            <Text style={[styles.itemTime, { color: colors.textMuted, fontFamily: typography.body }]}>
+              {new Date(negotiation.lastInteraction).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+            </Text>
+          </View>
+          
+          <View style={styles.sellerRow}>
+            <Ionicons name="storefront-outline" size={12} color={colors.brand} />
+            <Text style={[styles.itemSeller, { color: colors.brand, fontFamily: typography.bold }]} numberOfLines={1}>
+              {negotiation.seller.storeName}
+            </Text>
+          </View>
+
+          <Text style={[styles.subtitle, { color: colors.textPrimary, fontFamily: typography.body }]} numberOfLines={1}>
+            {subtitle}
+          </Text>
+
+          {negotiation.lastMessage && (
+            <Text style={[styles.lastMessage, { color: colors.textMuted, fontFamily: typography.body }]} numberOfLines={1}>
+              "{negotiation.lastMessage}"
+            </Text>
+          )}
+        </View>
+        <Ionicons name="chevron-forward" size={20} color={colors.textMuted} style={styles.chevron} />
+      </PecaeGlassCard>
+    </TouchableOpacity>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   headerSpacer: {
-    height: 80,
+    height: 100,
   },
   listContent: {
     padding: 16,
@@ -185,84 +143,63 @@ const styles = StyleSheet.create({
     paddingVertical: 100,
     alignItems: 'center',
   },
-  card: {
-    marginBottom: 20,
-    padding: 0,
+  itemWrapper: {
+    marginBottom: 16,
   },
-  cardInner: {
+  itemContainer: {
     flexDirection: 'row',
-    padding: 16,
-    gap: 16,
+    padding: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.05)',
   },
-  cardImg: {
-    width: 100,
-    height: 100,
-    borderRadius: 14,
+  thumbnail: {
+    width: 80,
+    height: 80,
+    backgroundColor: 'rgba(255,255,255,0.05)',
   },
-  cardBody: {
+  itemInfo: {
     flex: 1,
+    marginLeft: 16,
+    marginRight: 8,
   },
-  veiculoTitle: {
-    fontSize: 16,
-    marginBottom: 8,
-    lineHeight: 20,
-  },
-  infoRow: {
+  itemHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 4,
   },
-  infoLabel: {
-    fontSize: 8,
-    letterSpacing: 0.5,
+  itemTitle: {
+    fontSize: 15,
+    flex: 1,
+    marginRight: 8,
+  },
+  itemTime: {
+    fontSize: 10,
     opacity: 0.6,
   },
-  infoValue: {
+  sellerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 2,
+  },
+  itemSeller: {
     fontSize: 11,
-    flex: 1,
-    textAlign: 'right',
-    marginLeft: 8,
+    letterSpacing: 0.5,
+  },
+  subtitle: {
+    fontSize: 12,
+    opacity: 0.8,
+    marginBottom: 4,
   },
   lastMessage: {
     fontSize: 12,
     fontStyle: 'italic',
-    marginTop: 8,
-    opacity: 0.8,
+    opacity: 0.6,
   },
-  cardFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-  },
-  price: {
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    borderWidth: 1,
-  },
-  statusText: {
-    fontSize: 9,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
-  detailsBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 14,
-    borderTopWidth: 1,
-    gap: 8,
-  },
-  detailsBtnText: {
-    fontSize: 13,
+  chevron: {
+    marginLeft: 'auto',
   },
   emptyContainer: {
     flex: 1,
@@ -287,16 +224,6 @@ const styles = StyleSheet.create({
   emptySubtext: {
     fontSize: 15,
     textAlign: 'center',
-    marginBottom: 32,
     opacity: 0.7,
-  },
-  browseButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    borderRadius: 14,
-  },
-  browseButtonText: {
-    color: '#000',
-    fontWeight: '700',
   },
 });
