@@ -36,3 +36,8 @@ prisma/generated
 apps/mobile/.expo
 apps/mobile/dist
 apps/api/dist
+
+# === SCRATCH & TEMP ===
+**/scratch
+**/coverage
+*.tsbuildinfo
