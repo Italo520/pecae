@@ -8,7 +8,11 @@ import { PecaeInput } from '../PecaeUI/PecaeInput';
 import { useVehicleWizardStore } from '../../store/vehicle-wizard-store';
 import { usePartCategories } from '../../hooks/useCatalog';
 
-export const Step4Inventory: React.FC = () => {
+interface Step4InventoryProps {
+  isInline?: boolean;
+}
+
+export const Step4Inventory: React.FC<Step4InventoryProps> = ({ isInline }) => {
   const { colors, typography } = usePecaeTheme();
   const { data, updateData, nextStep, prevStep } = useVehicleWizardStore();
   const { data: categories, isLoading } = usePartCategories();
@@ -32,14 +36,18 @@ export const Step4Inventory: React.FC = () => {
 
   const isValid = data.availableParts.length > 0;
 
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.display }]}>
-        Inventário de Peças
-      </Text>
-      <Text style={[styles.subtitle, { color: colors.textMuted, fontFamily: typography.body }]}>
-        Marque as peças que estão em bom estado para venda neste veículo.
-      </Text>
+  const content = (
+    <View style={!isInline && styles.container}>
+      {!isInline && (
+        <>
+          <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.display }]}>
+            Inventário de Peças
+          </Text>
+          <Text style={[styles.subtitle, { color: colors.textMuted, fontFamily: typography.body }]}>
+            Marque as peças que estão em bom estado para venda neste veículo.
+          </Text>
+        </>
+      )}
 
       <View style={styles.bulkActions}>
         <TouchableOpacity onPress={selectAll}>
@@ -103,31 +111,43 @@ export const Step4Inventory: React.FC = () => {
         </View>
       )}
 
-      <View style={styles.observationsContainer}>
-        <PecaeInput
-          label="Observações do Carro Doador"
-          placeholder="Ex: Motor ok, batida lateral esquerda, interior em couro impecável..."
-          value={data.observations || ''}
-          onChangeText={(text) => updateData({ observations: text })}
-          multiline
-          numberOfLines={4}
-        />
-      </View>
+      {!isInline && (
+        <>
+          <View style={styles.observationsContainer}>
+            <PecaeInput
+              label="Observações do Carro Doador"
+              placeholder="Ex: Motor ok, batida lateral esquerda, interior em couro impecável..."
+              value={data.observations || ''}
+              onChangeText={(text) => updateData({ observations: text })}
+              multiline
+              numberOfLines={4}
+            />
+          </View>
 
-      <View style={styles.footer}>
-        <PecaeButton
-          title="Voltar"
-          type="secondary"
-          onPress={prevStep}
-          style={styles.button}
-        />
-        <PecaeButton
-          title="Revisar Cadastro"
-          onPress={nextStep}
-          disabled={!isValid}
-          style={styles.button}
-        />
-      </View>
+          <View style={styles.footer}>
+            <PecaeButton
+              title="Voltar"
+              type="secondary"
+              onPress={prevStep}
+              style={styles.button}
+            />
+            <PecaeButton
+              title="Revisar Cadastro"
+              onPress={nextStep}
+              disabled={!isValid}
+              style={styles.button}
+            />
+          </View>
+        </>
+      )}
+    </View>
+  );
+
+  if (isInline) return content;
+
+  return (
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      {content}
     </ScrollView>
   );
 };
@@ -193,5 +213,8 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
+  },
+  scrollContainer: {
+    padding: 0,
   },
 });
