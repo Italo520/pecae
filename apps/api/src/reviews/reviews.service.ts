@@ -20,8 +20,17 @@ export class ReviewsService {
       throw new ForbiddenException('Não é possível avaliar um chat sem interação.');
     }
 
-    // TODO: Validar se o buyerId realmente pertence ao chatRoomId e se ele é o comprador.
-    // Como o módulo M08 não existe, assumimos que o usuário autenticado é o comprador válido.
+    const chatRoom = await this.prisma.chatRoom.findUnique({
+      where: { id: dto.chatRoomId },
+    });
+
+    if (!chatRoom) {
+      throw new NotFoundException('Sala de chat não encontrada.');
+    }
+
+    if (chatRoom.buyerId !== buyerId) {
+      throw new ForbiddenException('Apenas o comprador pode avaliar esta negociação.');
+    }
 
     try {
       const review = await this.prisma.review.create({
