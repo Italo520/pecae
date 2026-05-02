@@ -103,22 +103,21 @@ export class AnalyticsProcessor extends WorkerHost {
         }
 
         // 2. Consolidar os SellerStats
-        const sellers = await this.prisma.sellerProfile.findMany();
+        const sellers = await this.prisma.sellerProfile.findMany({
+          select: {
+            id: true,
+            listings: {
+              select: {
+                _count: {
+                  select: { chatRooms: true },
+                },
+              },
+            },
+          },
+        });
 
         for (const seller of sellers) {
-          // Total de chats iniciados para todos os anúncios do vendedor
-          const sellerListings = await this.prisma.listing.findMany({
-            where: { sellerProfileId: seller.id },
-            select: { id: true },
-          });
-
-          const listingIds = sellerListings.map(l => l.id);
-
-          const totalChatsInitiated = await this.prisma.chatRoom.count({
-            where: {
-              listingId: { in: listingIds },
-            },
-          });
+          const totalChatsInitiated = seller.listings.reduce((sum, listing) => sum + listing._count.chatRooms, 0);
 
           await this.prisma.sellerStats.upsert({
             where: { sellerProfileId: seller.id },
