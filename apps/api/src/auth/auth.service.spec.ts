@@ -49,6 +49,7 @@ describe('AuthService', () => {
   const mockConfigService = {
     get: jest.fn((key: string) => {
       if (key === 'JWT_ACCESS_SECRET') return 'secret';
+      if (key === 'GOOGLE_CLIENT_ID') return 'mock-client-id';
       return null;
     }),
   };
@@ -76,6 +77,19 @@ describe('AuthService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('loginWithGoogle', () => {
+    it('should throw UnauthorizedException if token verification fails', async () => {
+      // Mocking googleClient.verifyIdToken to throw an error
+      (service as any).googleClient = {
+        verifyIdToken: jest.fn().mockRejectedValue(new Error('Invalid token')),
+      };
+
+      await expect(
+        service.loginWithGoogle('invalid-token', '127.0.0.1', 'user-agent')
+      ).rejects.toThrow(new UnauthorizedException('Token Google inválido ou expirado.'));
+    });
   });
 
   describe('verifyEmail', () => {
