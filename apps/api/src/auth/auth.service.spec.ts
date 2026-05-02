@@ -21,6 +21,9 @@ describe('AuthService', () => {
     sellerProfile: {
       findUnique: jest.fn(),
     },
+    passwordResetToken: {
+      create: jest.fn(),
+    },
     emailVerificationToken: {
       findFirst: jest.fn(),
       update: jest.fn(),
@@ -40,6 +43,7 @@ describe('AuthService', () => {
 
   const mockMailService = {
     sendVerificationEmail: jest.fn(),
+    sendPasswordResetEmail: jest.fn(),
   };
 
   const mockJwtService = {
@@ -101,6 +105,52 @@ describe('AuthService', () => {
       mockPrisma.user.findUnique.mockResolvedValue(null);
 
       await expect(service.verifyEmail('invalid-token')).rejects.toThrow();
+    });
+  });
+
+  describe('forgotPassword', () => {
+    it('should return generic message if user does not exist', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+
+      const result = await service.forgotPassword('nonexistent@example.com');
+
+      expect(result).toEqual({
+        message: 'Se o e-mail informado estiver em nossa base, você receberá instruções para redefinir sua senha.',
+      });
+      expect(mockPrisma.passwordResetToken.create).not.toHaveBeenCalled();
+      expect(mockMailService.sendPasswordResetEmail).not.toHaveBeenCalled();
+    });
+
+    it('should generate token, save it, and send email if user exists', async () => {
+      const mockUser = {
+        id: 'user-1',
+        email: 'test@example.com',
+        name: 'Test User',
+      };
+
+      mockPrisma.user.findUnique.mockResolvedValue(mockUser);
+      mockPrisma.passwordResetToken.create.mockResolvedValue({ id: 'token-id' });
+      mockMailService.sendPasswordResetEmail.mockResolvedValue(true);
+
+      const result = await service.forgotPassword('test@example.com');
+
+      expect(result).toEqual({
+        message: 'Instruções de recuperação enviadas para o e-mail informado.',
+      });
+
+      expect(mockPrisma.passwordResetToken.create).toHaveBeenCalledWith({
+        data: {
+          userId: mockUser.id,
+          tokenHash: expect.any(String),
+          expiresAt: expect.any(Date),
+        },
+      });
+
+      expect(mockMailService.sendPasswordResetEmail).toHaveBeenCalledWith(
+        mockUser.email,
+        mockUser.name,
+        expect.any(String),
+      );
     });
   });
 });
