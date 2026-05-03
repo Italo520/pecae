@@ -36,6 +36,10 @@ export class ChatService {
     return { title, thumbnail };
   }
 
+  /**
+   * Maps a room entity to the response format.
+   * Extracted from findMyRooms to improve readability and testability.
+   */
   private async mapRoomToResponse(room: any, userId: string, precalculatedUnreadCount?: number) {
     const { title, thumbnail } = this.getRoomMetadata(room);
 
@@ -178,7 +182,11 @@ export class ChatService {
     return room;
   }
 
-    async findMyRooms(userId: string) {
+    /**
+   * Finds all active rooms for a given user.
+   * Room mapping logic has been extracted to mapRoomToResponse.
+   */
+  async findMyRooms(userId: string) {
     const rooms = await this.prisma.chatRoom.findMany({
       where: {
         OR: [

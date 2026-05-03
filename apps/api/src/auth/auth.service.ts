@@ -391,6 +391,45 @@ export class AuthService {
     return this.generateTokens(user, ip, userAgent);
   }
 
+  private async createBuyerProfileIfNotExists(
+    tx: any,
+    userId: string,
+    userName: string,
+    type: UserType,
+  ) {
+    if (type === UserType.BUYER || type === UserType.BOTH) {
+      await tx.buyerProfile.create({
+        data: {
+          userId,
+          name: userName,
+        },
+      });
+      await tx.notificationPreferences.create({
+        data: {
+          userId,
+        },
+      });
+    }
+  }
+
+  private async createEmailVerificationToken(tx: any, userId: string) {
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(rawToken)
+      .digest("hex");
+
+    await tx.emailVerificationToken.create({
+      data: {
+        userId,
+        tokenHash,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      },
+    });
+
+    return rawToken;
+  }
+
   async register(registerDto: RegisterDto, ip: string, userAgent: string) {
     const { email, password, name, type } = registerDto;
 
