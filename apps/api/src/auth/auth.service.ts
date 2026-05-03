@@ -3,6 +3,7 @@ import {
   ConflictException,
   InternalServerErrorException,
   UnauthorizedException,
+  Logger,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
@@ -19,6 +20,8 @@ import { SmsService } from "../common/sms/sms.service";
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   private googleClient: OAuth2Client;
 
   constructor(
@@ -305,7 +308,7 @@ export class AuthService {
     // 3. Enviar e-mail
     await this.mailService
       .sendPasswordResetEmail(user.email, user.name, token)
-      .catch((err) => console.error("Error sending reset email:", err));
+      .catch((err) => this.logger.error("Error sending reset email:", err));
 
     return {
       message: "Instruções de recuperação enviadas para o e-mail informado.",
@@ -358,8 +361,8 @@ export class AuthService {
     const user = await this.usersService.findByEmail(normalizedEmail);
 
     if (!user) {
-      console.warn(
-        `[AuthService] Login failed: User not found for email ${normalizedEmail}`,
+      this.logger.warn(
+        `Login failed: User not found for email ${normalizedEmail}`,
       );
       throw new UnauthorizedException("Credenciais inválidas.");
     }
@@ -369,8 +372,8 @@ export class AuthService {
       user.passwordHash || "",
     );
     if (!isPasswordValid) {
-      console.warn(
-        `[AuthService] Login failed: Invalid password for user ${normalizedEmail}`,
+      this.logger.warn(
+        `Login failed: Invalid password for user ${normalizedEmail}`,
       );
       throw new UnauthorizedException("Credenciais inválidas.");
     }
@@ -459,16 +462,33 @@ export class AuthService {
             },
           });
 
-          await this.createBuyerProfileIfNotExists(
-            tx,
-            newUser.id,
-            newUser.name,
-            type,
-          );
-          const rawToken = await this.createEmailVerificationToken(
-            tx,
-            newUser.id,
-          );
+          if (type === UserType.BUYER || type === UserType.BOTH) {
+            await tx.buyerProfile.create({
+              data: {
+                userId: newUser.id,
+                name: newUser.name,
+              },
+            });
+            await tx.notificationPreferences.create({
+              data: {
+                userId: newUser.id,
+              },
+            });
+          }
+
+          const rawToken = crypto.randomBytes(32).toString("hex");
+          const tokenHash = crypto
+            .createHash("sha256")
+            .update(rawToken)
+            .digest("hex");
+
+          await tx.emailVerificationToken.create({
+            data: {
+              userId: newUser.id,
+              tokenHash,
+              expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+            },
+          });
 
           return { user: newUser, verificationToken: rawToken };
         },
@@ -476,14 +496,14 @@ export class AuthService {
 
       this.mailService
         .sendVerificationEmail(user.email, user.name, verificationToken)
-        .catch((err) => console.error("Delayed Error sending email:", err));
+        .catch((err) => this.logger.error("Delayed Error sending email:", err));
 
       return {
         message:
           "Cadastro realizado com sucesso. Verifique seu e-mail para ativar sua conta.",
       };
     } catch (error) {
-      console.error("Registration Error:", error);
+      this.logger.error("Registration Error:", error);
       throw new InternalServerErrorException(
         "Erro ao processar o cadastro. Tente novamente mais tarde.",
       );
