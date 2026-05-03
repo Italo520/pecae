@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException, ConflictException } from '@nestjs/common';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 import { UpdateAvailablePartsDto } from './dto/update-available-parts.dto';
@@ -24,10 +24,22 @@ export class VehiclesService {
       availableParts, 
       title, 
       description, 
+      plate,
       ...vehicleData 
     } = dto;
 
-    // Check for potential duplicity (RN10)
+    // Check for duplicate plate (RN10)
+    if (plate) {
+      const existingVehicle = await this.prisma.vehicle.findFirst({
+        where: { plate },
+        select: { id: true },
+      });
+      if (existingVehicle) {
+        throw new ConflictException('Já existe um veículo cadastrado com esta placa.');
+      }
+    }
+
+    // Check for potential listing duplicity (RN10)
     const duplicate = await this.prisma.listing.findFirst({
       where: {
         sellerProfileId: sellerId,
@@ -50,6 +62,7 @@ export class VehiclesService {
           ...vehicleData,
           versionId,
           yearFabId,
+          plate,
           sellerId,
           availableParts,
           status: VehicleStatus.PENDING,
@@ -214,6 +227,29 @@ export class VehiclesService {
           status: ListingStatus.EXPIRED,
         },
       });
+    });
+  }
+
+  /**
+   * Generic status update with validation (RN06).
+   */
+  async updateStatus(id: string, status: VehicleStatus, sellerId: string) {
+    const vehicle = await this.prisma.vehicle.findUnique({
+      where: { id },
+      select: { sellerId: true, status: true },
+    });
+
+    if (!vehicle) throw new NotFoundException('Veículo não encontrado');
+    if (vehicle.sellerId !== sellerId) throw new ForbiddenException('Ação não permitida');
+
+    // RN06: SOLD is a terminal state (cannot go back to DRAFT/ACTIVE)
+    if (vehicle.status === VehicleStatus.SOLD && status !== VehicleStatus.SOLD) {
+      throw new BadRequestException('Não é possível alterar o status de um veículo vendido.');
+    }
+
+    return this.prisma.vehicle.update({
+      where: { id },
+      data: { status },
     });
   }
 

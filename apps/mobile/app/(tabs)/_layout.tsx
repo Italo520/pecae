@@ -1,4 +1,5 @@
 import React from 'react';
+import { View, StyleSheet, Platform } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../src/theme';
@@ -6,7 +7,7 @@ import { useUnreadCount } from '../../src/hooks/useNotifications';
 import { ProtectedRoute } from '../../src/components/auth/ProtectedRoute';
 
 export default function TabLayout() {
-  const { colors, typography } = usePecaeTheme();
+  const { colors, typography, effects } = usePecaeTheme();
   const { data: unreadData } = useUnreadCount();
   const unreadCount = unreadData?.count || 0;
 
@@ -19,68 +20,111 @@ export default function TabLayout() {
           tabBarStyle: {
             backgroundColor: colors.surface,
             borderTopColor: colors.border,
-            height: 65,
-            paddingBottom: 10,
+            height: Platform.OS === 'ios' ? 88 : 70,
+            paddingBottom: Platform.OS === 'ios' ? 30 : 10,
+            paddingTop: 10,
+            borderTopWidth: 1,
+            elevation: 8,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.05,
+            shadowRadius: 10,
           },
           tabBarActiveTintColor: colors.brand,
           tabBarInactiveTintColor: colors.textMuted,
           tabBarLabelStyle: {
-            fontFamily: typography.mono,
+            fontFamily: typography.medium,
             fontSize: 10,
-            letterSpacing: 1,
+            marginTop: 4,
           },
         }}
       >
         <Tabs.Screen
           name="index"
           options={{
-            title: 'INÍCIO',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="home-outline" size={size} color={color} />
+            title: 'Home',
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons name={focused ? "home" : "home-outline"} size={24} color={color} />
             ),
           }}
         />
         <Tabs.Screen
           name="search"
           options={{
-            title: 'EXPLORAR',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="search-outline" size={size} color={color} />
+            title: 'Pesquisar',
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons name={focused ? "search" : "search-outline"} size={24} color={color} />
             ),
           }}
         />
         <Tabs.Screen
-          name="mensagens"
+          name="sell-bridge"
           options={{
-            title: 'CHAT',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="chatbubble-ellipses-outline" size={size} color={color} />
+            title: 'Vender',
+            tabBarIcon: ({ focused }) => (
+              <View style={[
+                styles.sellIconContainer, 
+                { backgroundColor: colors.brand, shadowColor: colors.brand }
+              ]}>
+                <Ionicons name="add" size={32} color="#FFF" />
+              </View>
+            ),
+            tabBarLabelStyle: {
+              display: 'none',
+            },
+          }}
+        />
+        <Tabs.Screen
+          name="favoritos"
+          options={{
+            title: 'Favoritos',
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons name={focused ? "heart" : "heart-outline"} size={24} color={color} />
             ),
           }}
         />
         <Tabs.Screen
           name="profile"
           options={{
-            title: 'MENU',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="menu-outline" size={size} color={color} />
+            title: 'Perfil',
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons name={focused ? "person" : "person-outline"} size={24} color={color} />
             ),
           }}
         />
+        
+        {/* Hidden Screens */}
         <Tabs.Screen
           name="catalog"
-          options={{
-            href: null,
-          }}
+          options={{ href: null }}
         />
         <Tabs.Screen
           name="notificacoes"
-          options={{
-            href: null,
-          }}
+          options={{ href: null }}
+        />
+        <Tabs.Screen
+          name="mensagens"
+          options={{ href: null }}
         />
       </Tabs>
     </ProtectedRoute>
   );
 }
+
+const styles = StyleSheet.create({
+  sellIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: -25,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+    borderWidth: 4,
+    borderColor: 'transparent', // Can be used for a ring effect if needed
+  },
+});
 

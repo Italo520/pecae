@@ -33,7 +33,7 @@ export default function SellerTabsLayout() {
       }}
     >
       <Tabs.Screen
-        name="perfil"
+        name="index"
         options={{
           title: 'Início',
           tabBarIcon: ({ color, size }) => (
@@ -44,7 +44,7 @@ export default function SellerTabsLayout() {
       <Tabs.Screen
         name="inventory"
         options={{
-          title: 'Anúncios',
+          title: 'Inventário',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="list-outline" size={size} color={color} />
           ),
@@ -56,6 +56,24 @@ export default function SellerTabsLayout() {
           title: 'Vendas',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="cart-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="mensagens"
+        options={{
+          title: 'Mensagens',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbubbles-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="perfil"
+        options={{
+          title: 'Perfil',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-outline" size={size} color={color} />
           ),
         }}
       />

@@ -1,7 +1,12 @@
 #!/bin/sh
 
-# Aguardar o banco de dados estar pronto (opcional, o Prisma lida com retentativas basicas)
-echo "Starting PECAE API..."
+# Aguardar o banco de dados estar pronto para conexões
+echo "Waiting for database to be ready at database:5432..."
+until nc -z database 5432; do
+  echo "Database is unavailable - sleeping"
+  sleep 1
+done
+echo "Database is up!"
 
 # Rodar migracoes pendentes em producao
 echo "Running prisma migrate deploy..."

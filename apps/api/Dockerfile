@@ -7,7 +7,7 @@ FROM base AS pruner
 WORKDIR /app
 RUN npm install -g turbo
 # Cache breaker para forçar cópia de novos arquivos
-# Timestamp: 2026-04-25T18:25
+# Timestamp: 2026-05-03T00:50
 COPY . .
 RUN turbo prune @pecae/api --docker
 
@@ -25,7 +25,7 @@ COPY --from=pruner /app/out/package-lock.json ./package-lock.json
 COPY scripts/ ./scripts/
 
 # Agora podemos rodar o install COM scripts para o bcrypt compilar
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # --- Estagio 3: Build ---
 FROM base AS builder

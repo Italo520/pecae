@@ -3,6 +3,8 @@ FROM node:22-alpine AS pruner
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 RUN npm install -g turbo
+# Cache breaker
+# Timestamp: 2026-05-03T00:50
 COPY . .
 RUN turbo prune @pecae/mobile --docker
 
@@ -13,7 +15,7 @@ WORKDIR /app
 COPY --from=pruner /app/out/json/ .
 COPY --from=pruner /app/out/package-lock.json ./package-lock.json
 COPY scripts/ ./scripts/
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Stage 3: Build — A variavel EXPO_PUBLIC_API_URL DEVE ser passada como ARG para ser embutida no bundle
 FROM node:22-alpine AS builder

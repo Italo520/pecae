@@ -36,15 +36,34 @@ export const Step4Inventory: React.FC<Step4InventoryProps> = ({ isInline }) => {
 
   const isValid = data.availableParts.length > 0;
 
+
+  const inventoryGroups = [
+    {
+      name: 'Motor & Câmbio',
+      slugs: ['motor', 'cambio', 'arrefecimento', 'ar-condicionado', 'escapamento'],
+      icon: 'settings-outline' as const
+    },
+    {
+      name: 'Suspensão & Eixos',
+      slugs: ['suspensao-dianteira', 'suspensao-traseira', 'freios', 'rodas-pneus', 'direcao'],
+      icon: 'construct-outline' as const
+    },
+    {
+      name: 'Carroceria & Cabine',
+      slugs: ['lataria', 'vidros', 'bancos-estofamento', 'painel-eletrica', 'capo-para-choque'],
+      icon: 'car-outline' as const
+    }
+  ];
+
   const content = (
     <View style={!isInline && styles.container}>
       {!isInline && (
         <>
           <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.display }]}>
-            Inventário de Peças
+            Inventário Técnico
           </Text>
           <Text style={[styles.subtitle, { color: colors.textMuted, fontFamily: typography.body }]}>
-            Marque as peças que estão em bom estado para venda neste veículo.
+            Selecione os componentes disponíveis para comercialização imediata.
           </Text>
         </>
       )}
@@ -52,12 +71,12 @@ export const Step4Inventory: React.FC<Step4InventoryProps> = ({ isInline }) => {
       <View style={styles.bulkActions}>
         <TouchableOpacity onPress={selectAll}>
           <Text style={[styles.actionText, { color: colors.brand, fontFamily: typography.bold }]}>
-            Selecionar Tudo
+            MARCAR TODOS
           </Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={deselectAll}>
           <Text style={[styles.actionText, { color: colors.textMuted, fontFamily: typography.bold }]}>
-            Limpar Tudo
+            LIMPAR SELEÇÃO
           </Text>
         </TouchableOpacity>
       </View>
@@ -65,47 +84,65 @@ export const Step4Inventory: React.FC<Step4InventoryProps> = ({ isInline }) => {
       {isLoading ? (
         <ActivityIndicator color={colors.brand} style={{ margin: 40 }} />
       ) : (
-        <View style={styles.grid}>
-          {categories?.map((cat) => {
-            const isSelected = data.availableParts.includes(cat.id);
+        <View>
+          {inventoryGroups.map((group) => {
+            const groupParts = categories?.filter(cat => group.slugs.includes(cat.slug)) || [];
+            if (groupParts.length === 0) return null;
+
             return (
-              <TouchableOpacity 
-                key={cat.id} 
-                style={styles.partCardWrapper}
-                onPress={() => togglePart(cat.id)}
-                activeOpacity={0.7}
-              >
-                <PecaeGlassCard 
-                  intensity={isSelected ? 35 : 15} 
-                  style={[
-                    styles.partCard, 
-                    isSelected && { borderColor: colors.brand, borderWidth: 1.5 }
-                  ]}
-                >
-                  <View style={styles.partHeader}>
-                    <Ionicons 
-                      name={cat.icon as any || 'settings-outline'} 
-                      size={20} 
-                      color={isSelected ? colors.brand : colors.textMuted} 
-                    />
-                    {isSelected && (
-                      <Ionicons name="checkmark-circle" size={16} color={colors.brand} />
-                    )}
-                  </View>
-                  <Text 
-                    numberOfLines={2}
-                    style={[
-                      styles.partLabel, 
-                      { 
-                        color: isSelected ? colors.textPrimary : colors.textMuted,
-                        fontFamily: isSelected ? typography.bold : typography.body 
-                      }
-                    ]}
-                  >
-                    {cat.name}
+              <View key={group.name} style={styles.groupContainer}>
+                <View style={styles.groupHeader}>
+                  <Ionicons name={group.icon} size={16} color={colors.brand} />
+                  <Text style={[styles.groupTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>
+                    {group.name.toUpperCase()}
                   </Text>
-                </PecaeGlassCard>
-              </TouchableOpacity>
+                </View>
+                
+                <View style={styles.grid}>
+                  {groupParts.map((cat) => {
+                    const isSelected = data.availableParts.includes(cat.id);
+                    return (
+                      <TouchableOpacity 
+                        key={cat.id} 
+                        style={styles.partCardWrapper}
+                        onPress={() => togglePart(cat.id)}
+                        activeOpacity={0.7}
+                      >
+                        <PecaeGlassCard 
+                          intensity={isSelected ? 35 : 15} 
+                          style={[
+                            styles.partCard, 
+                            isSelected && { borderColor: colors.brand, borderWidth: 1 }
+                          ]}
+                        >
+                          <View style={styles.partHeader}>
+                            <Ionicons 
+                              name={isSelected ? 'checkbox' : 'square-outline'} 
+                              size={16} 
+                              color={isSelected ? colors.brand : colors.textMuted} 
+                            />
+                            {isSelected && (
+                              <View style={[styles.activeIndicator, { backgroundColor: colors.brand }]} />
+                            )}
+                          </View>
+                          <Text 
+                            numberOfLines={1}
+                            style={[
+                              styles.partLabel, 
+                              { 
+                                color: isSelected ? colors.textPrimary : colors.textMuted,
+                                fontFamily: isSelected ? typography.bold : typography.body 
+                              }
+                            ]}
+                          >
+                            {cat.name}
+                          </Text>
+                        </PecaeGlassCard>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              </View>
             );
           })}
         </View>
@@ -173,9 +210,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   actionText: {
-    fontSize: 13,
+    fontSize: 11,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 1.5,
+  },
+  groupContainer: {
+    marginBottom: 24,
+  },
+  groupHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    gap: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+    paddingBottom: 8,
+  },
+  groupTitle: {
+    fontSize: 14,
+    letterSpacing: 1,
   },
   grid: {
     flexDirection: 'row',
@@ -183,32 +236,38 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   partCardWrapper: {
-    width: '48%',
-    height: 90,
-    marginBottom: 12,
+    width: '48.5%',
+    height: 70,
+    marginBottom: 10,
   },
   partCard: {
     flex: 1,
     justifyContent: 'center',
-    padding: 12,
-    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 12,
   },
   partHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
+  },
+  activeIndicator: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
   },
   partLabel: {
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 12,
+    lineHeight: 16,
   },
   observationsContainer: {
-    marginTop: 20,
+    marginTop: 10,
   },
   footer: {
     flexDirection: 'row',
-    marginTop: 40,
+    marginTop: 30,
     gap: 12,
   },
   button: {

@@ -1,13 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './src/app.module';
 import { SearchService } from './src/search/search.service';
+import { RedisService } from './src/common/redis/redis.service';
 
 async function run() {
   const app = await NestFactory.createApplicationContext(AppModule);
   const searchService = app.get(SearchService);
 
   // clear redis cache to test DB queries
-  const redisService = app.get('RedisService');
+  const redisService = app.get(RedisService);
   await redisService.delByPrefix('search:');
 
   const start = Date.now();
