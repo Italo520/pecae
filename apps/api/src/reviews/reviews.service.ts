@@ -41,12 +41,16 @@ export class ReviewsService {
       throw new NotFoundException('Perfil de vendedor não encontrado.');
     }
 
-    if (sellerProfile.userId !== chatRoom.sellerId) {
-      throw new ForbiddenException('Este chat não pertence ao vendedor que você está tentando avaliar.');
+    const chatRoom = await this.prisma.chatRoom.findUnique({
+      where: { id: dto.chatRoomId },
+    });
+
+    if (!chatRoom) {
+      throw new NotFoundException('Sala de chat não encontrada.');
     }
 
-    if (chatRoom._count.messages === 0) {
-      throw new ForbiddenException('Não é possível avaliar um chat sem interação.');
+    if (chatRoom.buyerId !== buyerId) {
+      throw new ForbiddenException('Apenas o comprador pode avaliar esta negociação.');
     }
 
     try {
