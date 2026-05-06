@@ -54,12 +54,15 @@ export const Step5Review: React.FC = () => {
         // 2b. Perform uploads
         const uploadedPhotos = await Promise.all(
           data.photos.map(async (photo, index) => {
+            const isCover = photo.uri === data.coverPhotoUri;
+            const photoOrder = isCover ? 0 : index + 1;
+
             // Skip if photo already has a remote URL (is not a local URI)
             if (photo.uri.startsWith('http')) {
               return {
                 url: photo.uri,
                 type: 'EXTERNAL',
-                order: index,
+                order: photoOrder,
               };
             }
 
@@ -78,8 +81,8 @@ export const Step5Review: React.FC = () => {
 
             return {
               url: uploadInfo.publicUrl,
-              type: 'EXTERNAL', // PhotoType.EXTERNAL (Common for most slots)
-              order: index,
+              type: 'EXTERNAL', 
+              order: photoOrder,
             };
           })
         );

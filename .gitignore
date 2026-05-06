@@ -43,3 +43,4 @@ apps/api/dist
 *.tsbuildinfo
 __pycache__/
 *.pyc
+.planning/

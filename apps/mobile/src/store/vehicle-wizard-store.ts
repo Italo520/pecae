@@ -18,6 +18,7 @@ interface WizardData {
 
   // Step 3: Photos
   photos: Array<{ uri: string; type: string; name: string }>;
+  coverPhotoUri?: string;
 
   // Step 4: Inventory
   title?: string;
@@ -61,6 +62,7 @@ export const useVehicleWizardStore = create<WizardState>((set, get) => ({
     })),
 
   loadVehicle: (vehicle) => {
+    const mainPhoto = vehicle.photos?.find((p: any) => p.order === 0);
     set({
       data: {
         brandId: vehicle.version?.model?.brandId,
@@ -74,10 +76,11 @@ export const useVehicleWizardStore = create<WizardState>((set, get) => ({
         observations: vehicle.observations,
         lat: vehicle.lat,
         lng: vehicle.lng,
-        title: vehicle.listing?.title,
-        description: vehicle.listing?.description,
+        title: vehicle.listings?.[0]?.title,
+        description: vehicle.listings?.[0]?.description,
         availableParts: vehicle.availableParts || [],
         editingId: vehicle.id,
+        coverPhotoUri: mainPhoto?.url,
         photos: vehicle.photos?.map((p: any) => ({
           uri: p.url,
           type: 'image/jpeg',
@@ -98,9 +101,10 @@ export const useVehicleWizardStore = create<WizardState>((set, get) => ({
       case 2:
         return !!(data.color && data.city && data.state);
       case 3:
-        return data.photos.length >= 1; // Mínimo 1 foto para prosseguir, idealmente 5 (RN)
+        // RN: Mínimo 3 fotos, Máximo 12.
+        return data.photos.length >= 3 && data.photos.length <= 12;
       case 4:
-        return !!(data.title && data.availableParts.length > 0);
+        return !!(data.title && data.title.length >= 5 && data.availableParts.length > 0);
       default:
         return true;
     }

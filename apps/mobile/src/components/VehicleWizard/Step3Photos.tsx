@@ -17,9 +17,14 @@ const PHOTO_SLOTS = [
 
 export const Step3Photos: React.FC = () => {
   const { colors, typography } = usePecaeTheme();
-  const { data, updateData, nextStep, prevStep } = useVehicleWizardStore();
+  const { data, updateData, nextStep, prevStep, isStepValid } = useVehicleWizardStore();
 
-  const pickImage = async (index: number) => {
+  const pickImage = async () => {
+    if (data.photos.length >= 12) {
+      Alert.alert('Limite Atingido', 'Você pode adicionar no máximo 12 fotos.');
+      return;
+    }
+
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     
     if (status !== 'granted') {
@@ -35,65 +40,92 @@ export const Step3Photos: React.FC = () => {
     });
 
     if (!result.canceled) {
-      const newPhotos = [...data.photos];
       const asset = result.assets[0];
-      
-      newPhotos[index] = {
+      const newPhoto = {
         uri: asset.uri,
         type: 'image/jpeg',
-        name: `photo_${index}.jpg`,
+        name: `photo_${Date.now()}.jpg`,
       };
       
-      updateData({ photos: newPhotos });
+      const newPhotos = [...data.photos, newPhoto];
+      const updatePayload: any = { photos: newPhotos };
+      
+      // If it's the first photo, set as cover by default
+      if (!data.coverPhotoUri) {
+        updatePayload.coverPhotoUri = asset.uri;
+      }
+
+      updateData(updatePayload);
     }
   };
 
   const removeImage = (index: number) => {
+    const photoToRemove = data.photos[index];
     const newPhotos = [...data.photos];
     newPhotos.splice(index, 1);
-    updateData({ photos: newPhotos });
+    
+    const updatePayload: any = { photos: newPhotos };
+    
+    // If we removed the cover photo, pick the next one as cover
+    if (photoToRemove.uri === data.coverPhotoUri) {
+      updatePayload.coverPhotoUri = newPhotos.length > 0 ? newPhotos[0].uri : undefined;
+    }
+
+    updateData(updatePayload);
   };
 
-  const isValid = data.photos.filter(Boolean).length >= 1; // Mínimo 1 para dev, RN pede 5.
+  const setAsCover = (uri: string) => {
+    updateData({ coverPhotoUri: uri });
+  };
+
+  const isValid = isStepValid(3);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={[styles.instruction, { color: colors.textMuted, fontFamily: typography.body }]}>
-        Adicione pelo menos 5 fotos para uma melhor moderação.
+        Adicione entre 3 e 12 fotos. Toque na estrela para definir a capa.
       </Text>
 
       <View style={styles.grid}>
-        {PHOTO_SLOTS.map((slot, index) => {
-          const photo = data.photos[index];
+        {data.photos.map((photo, index) => {
+          const isCover = photo.uri === data.coverPhotoUri;
           return (
-            <TouchableOpacity 
-              key={slot.id} 
-              style={styles.slotWrapper}
-              onPress={() => pickImage(index)}
-            >
-              <PecaeGlassCard intensity={10} style={styles.photoSlot}>
-                {photo ? (
-                  <>
-                    <Image source={{ uri: photo.uri }} style={styles.image} />
-                    <TouchableOpacity 
-                      style={styles.removeBtn} 
-                      onPress={() => removeImage(index)}
-                    >
-                      <Ionicons name="close-circle" size={24} color={colors.error} />
-                    </TouchableOpacity>
-                  </>
-                ) : (
-                  <View style={styles.placeholder}>
-                    <Ionicons name="camera" size={32} color={colors.textMuted} />
-                    <Text style={[styles.slotLabel, { color: colors.textMuted, fontFamily: typography.medium }]}>
-                      {slot.label}
-                    </Text>
+            <View key={photo.uri + index} style={styles.slotWrapper}>
+              <PecaeGlassCard intensity={isCover ? 30 : 10} style={[styles.photoSlot, isCover && { borderColor: colors.primary, borderWidth: 2 }]}>
+                <Image source={{ uri: photo.uri }} style={styles.image} />
+                
+                <TouchableOpacity 
+                  style={styles.removeBtn} 
+                  onPress={() => removeImage(index)}
+                >
+                  <Ionicons name="close" size={18} color="white" />
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  style={[styles.coverBtn, isCover && { backgroundColor: colors.primary }]} 
+                  onPress={() => setAsCover(photo.uri)}
+                >
+                  <Ionicons name={isCover ? "star" : "star-outline"} size={16} color="white" />
+                </TouchableOpacity>
+
+                {isCover && (
+                  <View style={[styles.coverLabel, { backgroundColor: colors.primary }]}>
+                    <Text style={{ color: 'white', fontSize: 10, fontWeight: 'bold' }}>CAPA</Text>
                   </View>
                 )}
               </PecaeGlassCard>
-            </TouchableOpacity>
+            </View>
           );
         })}
+
+        {data.photos.length < 12 && (
+          <TouchableOpacity style={styles.slotWrapper} onPress={pickImage}>
+            <PecaeGlassCard intensity={5} style={[styles.photoSlot, styles.addBtn]}>
+              <Ionicons name="add" size={40} color={colors.textMuted} />
+              <Text style={{ color: colors.textMuted, fontSize: 12 }}>Adicionar</Text>
+            </PecaeGlassCard>
+          </TouchableOpacity>
+        )}
       </View>
 
       <View style={styles.footer}>
@@ -126,11 +158,12 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
   },
   slotWrapper: {
-    width: '48%',
+    width: '31%', // 3 per row
     aspectRatio: 1,
+    marginHorizontal: '1%',
     marginBottom: 15,
   },
   photoSlot: {
@@ -141,12 +174,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderRadius: 12,
   },
-  placeholder: {
-    alignItems: 'center',
-  },
-  slotLabel: {
-    marginTop: 8,
-    fontSize: 12,
+  addBtn: {
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   image: {
     width: '100%',
@@ -156,8 +187,25 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 5,
     right: 5,
+    backgroundColor: 'rgba(255,0,0,0.7)',
+    borderRadius: 10,
+    padding: 2,
+  },
+  coverBtn: {
+    position: 'absolute',
+    bottom: 5,
+    left: 5,
     backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: 12,
+    borderRadius: 10,
+    padding: 4,
+  },
+  coverLabel: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderBottomRightRadius: 8,
   },
   footer: {
     flexDirection: 'row',

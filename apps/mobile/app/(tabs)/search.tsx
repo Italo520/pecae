@@ -31,17 +31,22 @@ const QUICK_FILTERS = [
 ];
 
 export default function SearchScreen() {
-  const { colors, typography, effects } = usePecaeTheme();
+  const { colors, typography } = usePecaeTheme();
   const { width } = useWindowDimensions();
   const router = useRouter();
   
   const [searchText, setSearchText] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
 
   // Integração com API
   const { data: searchResponse, isLoading } = useSearchVehicles({
     q: searchText,
-    // Note: Adicionaremos suporte a filtros na API futuramente se necessário
+    brandId: activeFilter !== 'all' ? activeFilter : undefined,
+    city: city || undefined,
+    state: state || undefined,
   });
 
   const results = searchResponse?.data || [];
@@ -73,22 +78,60 @@ export default function SearchScreen() {
     <PecaeBackground>
       {/* Search Header HUD */}
       <View style={[styles.header, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
-        <View style={[styles.searchBar, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Ionicons name="search" size={20} color={colors.brand} />
-          <TextInput
-            style={[styles.input, { color: colors.textPrimary, fontFamily: typography.body }]}
-            placeholder="O que você está procurando?"
-            placeholderTextColor={colors.textMuted}
-            value={searchText}
-            onChangeText={setSearchText}
-            autoFocus={false}
-          />
-          {searchText.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchText('')}>
-              <Ionicons name="close-circle" size={20} color={colors.textMuted} />
-            </TouchableOpacity>
-          )}
+        <View style={styles.searchRow}>
+          <View style={[styles.searchBar, { backgroundColor: colors.surface, borderColor: colors.border, flex: 1 }]}>
+            <Ionicons name="search" size={20} color={colors.brand} />
+            <TextInput
+              style={[styles.input, { color: colors.textPrimary, fontFamily: typography.body }]}
+              placeholder="O que você está procurando?"
+              placeholderTextColor={colors.textMuted}
+              value={searchText}
+              onChangeText={setSearchText}
+              autoFocus={false}
+            />
+            {searchText.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchText('')}>
+                <Ionicons name="close-circle" size={20} color={colors.textMuted} />
+              </TouchableOpacity>
+            )}
+          </View>
+          
+          <TouchableOpacity 
+            style={[styles.filterToggle, { borderColor: colors.border, backgroundColor: colors.surface }]}
+            onPress={() => setShowFilters(!showFilters)}
+          >
+            <Ionicons name="options-outline" size={24} color={showFilters ? colors.brand : colors.textPrimary} />
+          </TouchableOpacity>
         </View>
+
+        {showFilters && (
+          <View style={styles.advancedFilters}>
+            <View style={styles.filterRow}>
+              <View style={[styles.filterInput, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+                <TextInput
+                  style={{ color: colors.textPrimary, flex: 1, fontSize: 12 }}
+                  placeholder="Cidade"
+                  placeholderTextColor={colors.textMuted}
+                  value={city}
+                  onChangeText={setCity}
+                />
+              </View>
+              <View style={[styles.filterInput, { backgroundColor: colors.surface, borderColor: colors.border, width: 60 }]}>
+                <TextInput
+                  style={{ color: colors.textPrimary, flex: 1, fontSize: 12, textAlign: 'center' }}
+                  placeholder="UF"
+                  placeholderTextColor={colors.textMuted}
+                  value={state}
+                  onChangeText={(val) => setState(val.toUpperCase().substring(0, 2))}
+                  maxLength={2}
+                />
+              </View>
+              <TouchableOpacity onPress={() => { setCity(''); setState(''); }}>
+                <Text style={{ color: colors.brand, fontSize: 12 }}>Limpar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
 
         {/* Filtros Rápidos Chips */}
         <ScrollView 
@@ -148,10 +191,10 @@ export default function SearchScreen() {
         ) : (
           <View style={styles.resultsGrid}>
             {results.map((vehicle: any) => {
-              const brand = vehicle.listing?.brand || vehicle.version?.model?.brand?.name || '';
-              const model = vehicle.listing?.model || vehicle.version?.model?.name || '';
-              const imageUrl = getVehicleImage(brand, model, vehicle.id);
-              const title = vehicle.listing?.title || `${brand} ${model}`.trim();
+              const brand = vehicle.version?.model?.brand?.name || '';
+              const model = vehicle.version?.model?.name || '';
+              const imageUrl = vehicle.thumbnail || (vehicle.photos && vehicle.photos.length > 0 ? vehicle.photos[0] : null);
+              const title = vehicle.title || `${brand} ${model}`.trim();
 
               return (
                 <TouchableOpacity 
@@ -161,18 +204,21 @@ export default function SearchScreen() {
                 >
                   <PecaeGlassCard intensity={15} style={styles.productCard}>
                     <View style={styles.imageContainer}>
-                      <Image source={{ uri: imageUrl }} style={styles.productImage} resizeMode="cover" />
+                      {imageUrl ? (
+                        <Image source={{ uri: imageUrl }} style={styles.productImage} resizeMode="cover" />
+                      ) : (
+                        <View style={[styles.productImage, { backgroundColor: colors.surface, justifyContent: 'center', alignItems: 'center' }]}>
+                          <Ionicons name="image-outline" size={32} color={colors.border} />
+                        </View>
+                      )}
                       <View style={[styles.badge, { backgroundColor: colors.brand }]}>
                         <Text style={styles.badgeText}>SUCATA</Text>
                       </View>
                     </View>
                     
                     <View style={styles.productInfo}>
-                      <Text style={[styles.productTitle, { color: colors.textPrimary, fontFamily: typography.display }]} numberOfLines={1}>
+                      <Text style={[styles.productTitle, { color: colors.textPrimary, fontFamily: typography.display }]} numberOfLines={2}>
                         {title}
-                      </Text>
-                      <Text style={[styles.productPrice, { color: colors.brand, fontFamily: typography.display }]}>
-                        R$ {vehicle.listing?.price?.toLocaleString('pt-BR') || '---'}
                       </Text>
                       
                       <View style={styles.productFooter}>
@@ -180,6 +226,10 @@ export default function SearchScreen() {
                         <Text style={[styles.productLocation, { color: colors.textMuted }]} numberOfLines={1}>
                           {vehicle.city}/{vehicle.state}
                         </Text>
+                      </View>
+
+                      <View style={[styles.viewDetailsBtn, { borderColor: colors.brand }]}>
+                        <Text style={{ color: colors.brand, fontSize: 10, fontWeight: 'bold' }}>VER DETALHES</Text>
                       </View>
                     </View>
                   </PecaeGlassCard>
@@ -192,6 +242,9 @@ export default function SearchScreen() {
     </PecaeBackground>
   );
 }
+    </PecaeBackground>
+  );
+}
 
 const styles = StyleSheet.create({
   header: {
@@ -200,15 +253,48 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     zIndex: 100,
   },
-  searchBar: {
+  searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: 20,
+    gap: 10,
+    marginBottom: 15,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 16,
     height: 50,
     borderRadius: 25,
     borderWidth: 1,
+  },
+  filterToggle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  advancedFilters: {
+    marginHorizontal: 20,
     marginBottom: 15,
+    padding: 12,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.03)',
+  },
+  filterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  filterInput: {
+    flex: 1,
+    height: 35,
+    borderRadius: 8,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    justifyContent: 'center',
   },
   input: {
     flex: 1,
@@ -314,24 +400,27 @@ const styles = StyleSheet.create({
   },
   productInfo: {
     padding: 12,
-    gap: 4,
+    gap: 6,
   },
   productTitle: {
     fontSize: 14,
     lineHeight: 18,
   },
-  productPrice: {
-    fontSize: 18,
-    marginTop: 2,
-  },
   productFooter: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    marginTop: 4,
   },
   productLocation: {
     fontSize: 10,
+  },
+  viewDetailsBtn: {
+    marginTop: 8,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

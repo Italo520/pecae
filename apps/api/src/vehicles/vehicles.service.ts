@@ -303,6 +303,7 @@ export class VehiclesService {
 
   /**
    * Confirms photo uploads and saves them to database.
+   * RN14: Adding/changing photos forces status back to PENDING.
    */
   async confirmPhotos(id: string, sellerId: string, photos: { url: string; type: PhotoType; order: number }[]) {
     const vehicle = await this.prisma.vehicle.findUnique({
@@ -313,13 +314,32 @@ export class VehiclesService {
     if (!vehicle) throw new NotFoundException('Veículo não encontrado');
     if (vehicle.sellerId !== sellerId) throw new ForbiddenException('Ação não permitida');
 
-    return this.prisma.vehiclePhoto.createMany({
-      data: photos.map((p) => ({
-        vehicleId: id,
-        url: p.url,
-        type: p.type,
-        order: p.order,
-      })),
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Create photo records
+      await tx.vehiclePhoto.createMany({
+        data: photos.map((p) => ({
+          vehicleId: id,
+          url: p.url,
+          type: p.type,
+          order: p.order,
+        })),
+      });
+
+      // 2. Reset status to PENDING
+      await tx.vehicle.update({
+        where: { id },
+        data: { status: VehicleStatus.PENDING },
+      });
+
+      await tx.listing.updateMany({
+        where: { vehicleId: id },
+        data: { 
+          status: ListingStatus.PENDING,
+          publishedAt: null
+        },
+      });
+
+      return { message: 'Fotos confirmadas. O anúncio passará por nova moderação.' };
     });
   }
 }
