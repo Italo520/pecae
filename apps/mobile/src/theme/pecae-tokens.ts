@@ -13,15 +13,15 @@ export const PecaeTokens = {
       error: '#EF4444',
     },
     dark: {
-      brand: '#4ADE80', // Verde Vibrante
-      vibrant: '#2D8C4E', // Verde PEÇAE
-      dark: '#022C22', // Very Dark Green
-      background: '#022C22',
+      brand: '#3fff8b', // Vibrant Electric Green
+      vibrant: '#7ae6ff', // Tech Accent (Blue/Cyan)
+      dark: '#0a0e14', // Base Obsidian
+      background: '#0a0e14',
       backgroundGradient: ['#022C22', '#0a0e14'],
-      surface: 'rgba(255, 255, 255, 0.05)', 
-      border: 'rgba(255, 255, 255, 0.1)', 
-      textPrimary: '#F8FAFC', 
-      textMuted: '#94A3B8', 
+      surface: 'rgba(27, 32, 40, 0.6)', // Glass Obsidian
+      border: 'rgba(63, 255, 139, 0.15)', // Tonal highlight
+      textPrimary: '#F1F3FC', 
+      textMuted: '#A8ABB3', 
       error: '#FF4D4D',
     },
   },

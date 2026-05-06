@@ -21,7 +21,6 @@ interface RoomDetails {
   listingId: string;
   listingTitle: string;
   listingThumbnail: string | null;
-  listingPrice?: number;
   interlocutor: {
     id: string;
     name: string | null;
@@ -32,7 +31,7 @@ interface RoomDetails {
 
 export default function ChatRoomScreen() {
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
-  const { colors, typography, effects } = usePecaeTheme();
+  const { colors, typography, effects, isDark } = usePecaeTheme();
   const { user } = useAuthStore();
   const router = useRouter();
   const flatListRef = useRef<FlatList>(null);
@@ -112,15 +111,15 @@ export default function ChatRoomScreen() {
     return (
       <View style={[styles.messageRow, isMe ? styles.myMessageRow : styles.otherMessageRow]}>
         <PecaeGlassCard 
-          intensity={isMe ? 35 : 15} 
+          intensity={isMe ? 30 : 15} 
           style={[
             styles.messageCard, 
             { 
-              borderRadius: effects.radius.md,
-              borderTopRightRadius: isMe ? 2 : effects.radius.md,
-              borderTopLeftRadius: isMe ? effects.radius.md : 2,
-              borderColor: isMe ? `${colors.brand}88` : colors.border,
-              backgroundColor: isMe ? `${colors.brand}15` : 'rgba(255,255,255,0.03)',
+              borderRadius: 20,
+              borderBottomRightRadius: isMe ? 4 : 20,
+              borderBottomLeftRadius: isMe ? 20 : 4,
+              backgroundColor: isMe ? 'rgba(63, 255, 139, 0.1)' : 'rgba(255,255,255,0.05)',
+              borderColor: isMe ? 'rgba(63, 255, 139, 0.2)' : 'rgba(255,255,255,0.05)',
             }
           ]}
         >
@@ -143,8 +142,8 @@ export default function ChatRoomScreen() {
       <PecaeBackground>
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color={colors.brand} />
-          <Text style={[styles.loadingText, { color: colors.textMuted, fontFamily: typography.body, marginTop: 16 }]}>
-            LOADING SECURE CHANNEL...
+          <Text style={[styles.loadingText, { color: colors.textMuted, fontFamily: typography.display, marginTop: 16 }]}>
+            ESTABLISHING SECURE CHANNEL...
           </Text>
         </View>
       </PecaeBackground>
@@ -160,7 +159,7 @@ export default function ChatRoomScreen() {
           keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
         >
           {/* Header HUD */}
-          <BlurView intensity={20} style={[styles.headerHUD, { borderBottomColor: colors.border }]}>
+          <BlurView intensity={30} tint={isDark ? 'dark' : 'light'} style={[styles.headerHUD, { borderBottomColor: colors.border }]}>
             <View style={styles.headerTop}>
               <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                 <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
@@ -169,53 +168,42 @@ export default function ChatRoomScreen() {
               <View style={styles.interlocutorInfo}>
                 <View style={styles.nameRow}>
                   <Text style={[styles.interlocutorName, { color: colors.textPrimary, fontFamily: typography.display }]}>
-                    {room?.interlocutor.name || 'Usuário PECAÊ'}
+                    {room?.interlocutor.name?.toUpperCase() || 'USUÁRIO PECAÊ'}
                   </Text>
-                  <MaterialCommunityIcons name="check-decagram" size={16} color={colors.brand} style={{ marginLeft: 4 }} />
+                  {room?.interlocutor.isVerified && (
+                    <MaterialCommunityIcons name="check-decagram" size={16} color={colors.brand} style={{ marginLeft: 4 }} />
+                  )}
                 </View>
                 <View style={styles.statusRow}>
                   <View style={[styles.statusDot, { backgroundColor: colors.brand }]} />
-                  <Text style={[styles.statusText, { color: colors.textMuted, fontFamily: typography.body }]}>
-                    SECURE CONNECTION ACTIVE
+                  <Text style={[styles.statusText, { color: colors.textMuted, fontFamily: typography.display }]}>
+                    CONNECTION ENCRYPTED
                   </Text>
                 </View>
               </View>
-
-              <TouchableOpacity 
-                onPress={() => router.push({
-                  pathname: `/chat/${roomId}/avaliar`,
-                  params: { 
-                    sellerId: room?.interlocutor.id,
-                    storeName: room?.interlocutor.name
-                  }
-                })}
-                style={styles.actionButton}
-              >
-                <Ionicons name="star-outline" size={22} color={colors.brand} />
-              </TouchableOpacity>
 
               <TouchableOpacity style={styles.optionsButton}>
                 <Ionicons name="ellipsis-vertical" size={20} color={colors.textMuted} />
               </TouchableOpacity>
             </View>
 
-            {/* Item Details Strip */}
+            {/* Vehicle context HUD */}
             {room && (
-              <PecaeGlassCard intensity={5} style={styles.itemStrip}>
+              <PecaeGlassCard intensity={10} padding={8} style={styles.itemStrip}>
                 <Image source={{ uri: room.listingThumbnail || '' }} style={styles.itemThumb} />
                 <View style={styles.itemTextContainer}>
-                  <Text style={[styles.itemTitle, { color: colors.textPrimary, fontFamily: typography.medium }]} numberOfLines={1}>
-                    {room.listingTitle?.toUpperCase() || 'NEGOCIAÇÃO'}
+                  <Text style={[styles.itemTitle, { color: colors.textPrimary, fontFamily: typography.display }]} numberOfLines={1}>
+                    {room.listingTitle?.toUpperCase() || 'NEGOCIAÇÃO EM CURSO'}
                   </Text>
                   <Text style={[styles.itemPrice, { color: colors.brand, fontFamily: typography.display }]}>
-                    {room.listingPrice ? `R$ ${room.listingPrice.toFixed(2)}` : 'NEGOTIABLE'}
+                    NEGOCIAÇÃO ABERTA
                   </Text>
                 </View>
                 <TouchableOpacity 
                   onPress={() => router.push(`/vehicle/${room.listingId}`)}
-                  style={[styles.viewButton, { borderColor: `${colors.brand}44` }]}
+                  style={[styles.viewButton, { borderColor: colors.brand }]}
                 >
-                  <Text style={[styles.viewButtonText, { color: colors.brand, fontFamily: typography.display }]}>VIEW</Text>
+                  <Text style={[styles.viewButtonText, { color: colors.brand, fontFamily: typography.display }]}>INFO</Text>
                 </TouchableOpacity>
               </PecaeGlassCard>
             )}
@@ -234,15 +222,15 @@ export default function ChatRoomScreen() {
 
           {/* Input Bar */}
           <View style={styles.inputWrapper}>
-            <PecaeGlassCard intensity={20} style={[styles.inputContainer, { borderRadius: effects.radius.full }]}>
+            <PecaeGlassCard intensity={25} padding={4} style={[styles.inputContainer, { borderRadius: 30 }]}>
               <TouchableOpacity style={styles.attachButton}>
-                <Ionicons name="add" size={24} color={colors.textMuted} />
+                <Ionicons name="add-circle-outline" size={28} color={colors.textMuted} />
               </TouchableOpacity>
               
               <TextInput
                 style={[styles.textInput, { color: colors.textPrimary, fontFamily: typography.body }]}
-                placeholder="Secure message..."
-                placeholderTextColor={`${colors.textMuted}88`}
+                placeholder="Transmit message..."
+                placeholderTextColor={`${colors.textMuted}66`}
                 value={newMessage}
                 onChangeText={setNewMessage}
                 multiline
@@ -256,7 +244,6 @@ export default function ChatRoomScreen() {
                   styles.sendButton, 
                   { 
                     backgroundColor: newMessage.trim() ? colors.brand : 'transparent',
-                    opacity: newMessage.trim() ? 1 : 0.5
                   }
                 ]}
               >
@@ -264,8 +251,8 @@ export default function ChatRoomScreen() {
                   <ActivityIndicator size="small" color="#000" />
                 ) : (
                   <Ionicons 
-                    name="arrow-up" 
-                    size={22} 
+                    name="chevron-up" 
+                    size={28} 
                     color={newMessage.trim() ? '#000' : colors.textMuted} 
                   />
                 )}
@@ -315,11 +302,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   interlocutorName: {
-    fontSize: 16,
-    letterSpacing: 0.5,
-  },
-  actionButton: {
-    padding: 8,
+    fontSize: 14,
+    letterSpacing: 1,
   },
   statusRow: {
     flexDirection: 'row',
@@ -333,9 +317,9 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   statusText: {
-    fontSize: 9,
-    letterSpacing: 0.5,
-    opacity: 0.7,
+    fontSize: 8,
+    letterSpacing: 1,
+    opacity: 0.6,
   },
   optionsButton: {
     padding: 8,
@@ -343,15 +327,14 @@ const styles = StyleSheet.create({
   itemStrip: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 8,
     marginTop: 4,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.05)',
   },
   itemThumb: {
-    width: 44,
-    height: 44,
-    borderRadius: 6,
+    width: 40,
+    height: 40,
+    borderRadius: 8,
     backgroundColor: 'rgba(255,255,255,0.05)',
   },
   itemTextContainer: {
@@ -359,27 +342,27 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   itemTitle: {
-    fontSize: 10,
+    fontSize: 9,
     letterSpacing: 1,
   },
   itemPrice: {
-    fontSize: 14,
+    fontSize: 12,
     marginTop: 2,
   },
   viewButton: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 4,
+    borderRadius: 8,
     borderWidth: 1,
   },
   viewButtonText: {
-    fontSize: 10,
+    fontSize: 9,
     letterSpacing: 1,
   },
   messagesList: {
     padding: 16,
     paddingBottom: 32,
-    gap: 12,
+    gap: 16,
   },
   messageRow: {
     flexDirection: 'row',
@@ -393,19 +376,19 @@ const styles = StyleSheet.create({
   },
   messageCard: {
     maxWidth: '85%',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderWidth: 1,
   },
   messageText: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
   },
   messageFooter: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    marginTop: 4,
+    marginTop: 6,
   },
   messageTime: {
     fontSize: 9,
@@ -418,10 +401,9 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 6,
-    paddingLeft: 12,
+    padding: 4,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(255,255,255,0.05)',
   },
   attachButton: {
     padding: 8,
@@ -431,14 +413,13 @@ const styles = StyleSheet.create({
     maxHeight: 120,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    fontSize: 15,
+    fontSize: 16,
   },
   sendButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
   },
 });
-

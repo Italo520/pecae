@@ -7,6 +7,7 @@ import {
   TextInputProps,
   ViewStyle,
 } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { usePecaeTheme } from '../../theme';
 
 interface PecaeInputProps extends TextInputProps {
@@ -35,14 +36,18 @@ export const PecaeInput: React.FC<PecaeInputProps> = ({
           {label.toUpperCase()}
         </Text>
       )}
-      <View
+      <BlurView
+        intensity={isFocused ? 40 : 20}
+        tint={isDark ? 'dark' : 'light'}
         style={[
           styles.inputWrapper,
           {
-            backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+            backgroundColor: colors.surface,
             borderRadius: effects.radius.sm,
             borderColor: error ? colors.error : isFocused ? colors.brand : colors.border,
             borderWidth: 1,
+            // Subtle top highlight
+            borderTopColor: isFocused ? colors.brand : isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
           },
         ]}
       >
@@ -70,7 +75,7 @@ export const PecaeInput: React.FC<PecaeInputProps> = ({
           />
           {rightIcon && <View style={styles.iconRight}>{rightIcon}</View>}
         </View>
-      </View>
+      </BlurView>
       {error && (
         <Text style={[styles.errorText, { color: colors.error, fontFamily: typography.body }]}>
           {error}

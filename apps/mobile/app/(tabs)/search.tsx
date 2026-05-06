@@ -202,37 +202,45 @@ export default function SearchScreen() {
                   style={[styles.productCardWrapper, { width: itemWidth }]}
                   onPress={() => router.push(`/(tabs)/vehicle/${vehicle.id}`)}
                 >
-                  <PecaeGlassCard intensity={15} style={styles.productCard}>
-                    <View style={styles.imageContainer}>
+                  <View style={styles.imageOverlapContainer}>
+                    <PecaeGlassCard padding={0} intensity={15} style={styles.productCard}>
+                      <View style={styles.imagePlaceholder} />
+                      <View style={styles.productInfo}>
+                        <Text style={[styles.brandLabel, { color: colors.brand, fontFamily: typography.display }]}>
+                          {brand.toUpperCase()}
+                        </Text>
+                        <Text style={[styles.productTitle, { color: colors.textPrimary, fontFamily: typography.display }]} numberOfLines={1}>
+                          {model}
+                        </Text>
+                        
+                        <View style={styles.productFooter}>
+                          <Ionicons name="location-outline" size={10} color={colors.textMuted} />
+                          <Text style={[styles.productLocation, { color: colors.textMuted, fontFamily: typography.medium }]} numberOfLines={1}>
+                            {vehicle.city}/{vehicle.state}
+                          </Text>
+                        </View>
+
+                        <View style={[styles.viewDetailsBtn, { backgroundColor: 'rgba(63, 255, 139, 0.05)', borderColor: colors.brand }]}>
+                          <Text style={{ color: colors.brand, fontSize: 10, fontFamily: typography.display }}>ACESSAR FORJA</Text>
+                        </View>
+                      </View>
+                    </PecaeGlassCard>
+                    
+                    {/* Floating Image Overlap Effect */}
+                    <View style={styles.floatingImageContainer}>
                       {imageUrl ? (
-                        <Image source={{ uri: imageUrl }} style={styles.productImage} resizeMode="cover" />
+                        <Image source={{ uri: imageUrl }} style={styles.floatingImage} resizeMode="contain" />
                       ) : (
-                        <View style={[styles.productImage, { backgroundColor: colors.surface, justifyContent: 'center', alignItems: 'center' }]}>
-                          <Ionicons name="image-outline" size={32} color={colors.border} />
+                        <View style={[styles.floatingImage, { backgroundColor: 'rgba(255,255,255,0.05)', justifyContent: 'center', alignItems: 'center' }]}>
+                          <Ionicons name="car-outline" size={40} color={colors.border} />
                         </View>
                       )}
-                      <View style={[styles.badge, { backgroundColor: colors.brand }]}>
-                        <Text style={styles.badgeText}>SUCATA</Text>
-                      </View>
                     </View>
                     
-                    <View style={styles.productInfo}>
-                      <Text style={[styles.productTitle, { color: colors.textPrimary, fontFamily: typography.display }]} numberOfLines={2}>
-                        {title}
-                      </Text>
-                      
-                      <View style={styles.productFooter}>
-                        <Ionicons name="location-outline" size={10} color={colors.textMuted} />
-                        <Text style={[styles.productLocation, { color: colors.textMuted }]} numberOfLines={1}>
-                          {vehicle.city}/{vehicle.state}
-                        </Text>
-                      </View>
-
-                      <View style={[styles.viewDetailsBtn, { borderColor: colors.brand }]}>
-                        <Text style={{ color: colors.brand, fontSize: 10, fontWeight: 'bold' }}>VER DETALHES</Text>
-                      </View>
+                    <View style={[styles.badge, { backgroundColor: colors.brand }]}>
+                      <Text style={styles.badgeText}>DOADOR</Text>
                     </View>
-                  </PecaeGlassCard>
+                  </View>
                 </TouchableOpacity>
               );
             })}
@@ -369,29 +377,48 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   productCardWrapper: {
-    marginBottom: 12,
+    marginBottom: 24,
+  },
+  imageOverlapContainer: {
+    position: 'relative',
+    paddingTop: 40, // Space for the floating image
   },
   productCard: {
     padding: 0,
     overflow: 'hidden',
-    borderRadius: 16,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.05)',
   },
-  imageContainer: {
-    position: 'relative',
+  imagePlaceholder: {
+    height: 100, // Reduced as the image floats above
   },
-  productImage: {
-    width: '100%',
+  floatingImageContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 10,
+    right: 10,
     height: 140,
+    zIndex: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  floatingImage: {
+    width: '100%',
+    height: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 15,
   },
   badge: {
     position: 'absolute',
-    top: 10,
-    left: 10,
+    top: 50,
+    right: 10,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 4,
+    zIndex: 20,
   },
   badgeText: {
     color: '#000',
@@ -399,25 +426,32 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   productInfo: {
-    padding: 12,
-    gap: 6,
+    padding: 16,
+    paddingTop: 0,
+    gap: 4,
+  },
+  brandLabel: {
+    fontSize: 10,
+    letterSpacing: 2,
+    opacity: 0.7,
   },
   productTitle: {
-    fontSize: 14,
-    lineHeight: 18,
+    fontSize: 18,
+    lineHeight: 22,
+    marginBottom: 8,
   },
   productFooter: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    marginBottom: 12,
   },
   productLocation: {
     fontSize: 10,
   },
   viewDetailsBtn: {
-    marginTop: 8,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingVertical: 10,
+    borderRadius: 12,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',

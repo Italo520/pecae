@@ -5,7 +5,7 @@ import { VehicleSelector } from '../../src/components/Catalog';
 import { PecaeScreenContainer } from '../../src/components/PecaeUI/PecaeScreenContainer';
 import { PecaeBackground } from '../../src/components/PecaeUI/PecaeBackground';
 import { PecaeGlassCard } from '../../src/components/PecaeUI/PecaeGlassCard';
-import { usePecaeTheme } from '../../src/theme';
+import { usePecaeTheme } from '../../theme';
 import { useSearchVehicles, VehicleDonor } from '../../src/hooks/useVehicles';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -39,49 +39,53 @@ export default function CatalogScreen() {
       onPress={() => router.push(`/(tabs)/vehicle/${item.id}`)}
       style={styles.cardWrapper}
     >
-      <PecaeGlassCard style={styles.vehicleCard} intensity={20}>
-        <Image 
-          source={{ uri: item.thumbnail || 'https://via.placeholder.com/400x300?text=Sem+Foto' }} 
-          style={styles.thumbnail}
-          resizeMode="cover"
-        />
-        <View style={styles.cardContent}>
-          <View style={styles.cardHeader}>
-            <Text style={[styles.brandText, { color: colors.brand, fontFamily: typography.bold }]}>
-              {item.brand}
+      <View style={styles.imageOverlapContainer}>
+        <PecaeGlassCard padding={0} intensity={20} style={styles.vehicleCard}>
+          <View style={styles.imagePlaceholder} />
+          
+          <View style={styles.cardContent}>
+            <View style={styles.cardHeader}>
+              <Text style={[styles.brandLabel, { color: colors.brand, fontFamily: typography.display }]}>
+                {item.brand.toUpperCase()}
+              </Text>
+              <View style={[styles.badge, { backgroundColor: 'rgba(63, 255, 139, 0.1)' }]}>
+                <Text style={[styles.badgeText, { color: colors.brand }]}>DOADOR</Text>
+              </View>
+            </View>
+            
+            <Text style={[styles.modelText, { color: colors.textPrimary, fontFamily: typography.display }]}>
+              {item.model}
             </Text>
-            <View style={[styles.badge, { backgroundColor: 'rgba(63, 255, 139, 0.1)' }]}>
-              <Text style={[styles.badgeText, { color: colors.brand }]}>DOADOR</Text>
+            
+            <View style={styles.specsRow}>
+              <View style={styles.specItem}>
+                <Ionicons name="calendar-outline" size={12} color={colors.textMuted} />
+                <Text style={[styles.specText, { color: colors.textMuted, fontFamily: typography.medium }]}>{item.yearFab}</Text>
+              </View>
+              <View style={styles.specItem}>
+                <Ionicons name="location-outline" size={12} color={colors.textMuted} />
+                <Text style={[styles.specText, { color: colors.textMuted, fontFamily: typography.medium }]}>{item.city}/{item.state}</Text>
+              </View>
             </View>
-          </View>
-          
-          <Text style={[styles.modelText, { color: colors.textPrimary, fontFamily: typography.display }]}>
-            {item.model} {item.version}
-          </Text>
-          
-          <View style={styles.specsRow}>
-            <View style={styles.specItem}>
-              <Ionicons name="calendar-outline" size={14} color={colors.textMuted} />
-              <Text style={[styles.specText, { color: colors.textMuted }]}>{item.yearFab}</Text>
-            </View>
-            <View style={styles.specItem}>
-              <Ionicons name="color-palette-outline" size={14} color={colors.textMuted} />
-              <Text style={[styles.specText, { color: colors.textMuted }]}>{item.color}</Text>
-            </View>
-            <View style={styles.specItem}>
-              <Ionicons name="location-outline" size={14} color={colors.textMuted} />
-              <Text style={[styles.specText, { color: colors.textMuted }]}>{item.city}/{item.state}</Text>
-            </View>
-          </View>
 
-          <View style={[styles.inventoryTag, { borderTopColor: colors.border }]}>
-            <Ionicons name="layers-outline" size={14} color={colors.brand} />
-            <Text style={[styles.inventoryText, { color: colors.textPrimary, fontFamily: typography.bold }]}>
-              {item.availablePartsCount} peças disponíveis
-            </Text>
+            <View style={[styles.inventoryTag, { borderTopColor: colors.border }]}>
+              <Ionicons name="layers-outline" size={14} color={colors.brand} />
+              <Text style={[styles.inventoryText, { color: colors.textPrimary, fontFamily: typography.display }]}>
+                {item.availablePartsCount} PEÇAS NA FORJA
+              </Text>
+            </View>
           </View>
+        </PecaeGlassCard>
+
+        {/* Floating Image Overlap Effect */}
+        <View style={styles.floatingImageContainer}>
+          <Image 
+            source={{ uri: item.thumbnail || 'https://via.placeholder.com/400x300?text=Sem+Foto' }} 
+            style={styles.floatingImage}
+            resizeMode="contain"
+          />
         </View>
-      </PecaeGlassCard>
+      </View>
     </TouchableOpacity>
   );
 
@@ -108,7 +112,7 @@ export default function CatalogScreen() {
                   <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
                 </TouchableOpacity>
                 <Text style={[styles.resultsTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>
-                  Sucatas Disponíveis
+                  SUCATAS DISPONÍVEIS
                 </Text>
               </View>
 
@@ -122,17 +126,18 @@ export default function CatalogScreen() {
                   renderItem={renderVehicle}
                   keyExtractor={(item) => item.id}
                   contentContainerStyle={styles.listContent}
+                  showsVerticalScrollIndicator={false}
                   ListEmptyComponent={
                     <View style={styles.center}>
                       <Ionicons name="car-sport-outline" size={64} color={colors.textMuted} />
-                      <Text style={[styles.emptyText, { color: colors.textMuted }]}>
+                      <Text style={[styles.emptyText, { color: colors.textMuted, fontFamily: typography.body }]}>
                         Nenhum veículo doador encontrado para este modelo.
                       </Text>
                       <TouchableOpacity 
                         onPress={() => setIsSelecting(true)}
                         style={[styles.retryButton, { borderColor: colors.brand }]}
                       >
-                        <Text style={{ color: colors.brand }}>Tentar outro modelo</Text>
+                        <Text style={{ color: colors.brand, fontFamily: typography.display }}>TENTAR OUTRO MODELO</Text>
                       </TouchableOpacity>
                     </View>
                   }
@@ -166,26 +171,48 @@ const styles = StyleSheet.create({
   },
   resultsTitle: {
     fontSize: 20,
-    letterSpacing: 1,
+    letterSpacing: 2,
   },
   listContent: {
     paddingHorizontal: 15,
-    paddingBottom: 40,
+    paddingBottom: 100,
   },
   cardWrapper: {
-    marginBottom: 16,
+    marginBottom: 24,
+  },
+  imageOverlapContainer: {
+    position: 'relative',
+    paddingTop: 60,
   },
   vehicleCard: {
     padding: 0,
-    borderRadius: 20,
+    borderRadius: 24,
     overflow: 'hidden',
   },
-  thumbnail: {
-    width: '100%',
+  imagePlaceholder: {
+    height: 120,
+  },
+  floatingImageContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 20,
+    right: 20,
     height: 180,
+    zIndex: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  floatingImage: {
+    width: '100%',
+    height: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 15,
   },
   cardContent: {
-    padding: 16,
+    padding: 20,
+    paddingTop: 0,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -193,10 +220,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 4,
   },
-  brandText: {
-    fontSize: 12,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
+  brandLabel: {
+    fontSize: 10,
+    letterSpacing: 2,
+    opacity: 0.7,
   },
   badge: {
     paddingHorizontal: 8,
@@ -208,13 +235,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   modelText: {
-    fontSize: 18,
+    fontSize: 22,
     marginBottom: 12,
   },
   specsRow: {
     flexDirection: 'row',
     gap: 15,
-    marginBottom: 15,
+    marginBottom: 20,
   },
   specItem: {
     flexDirection: 'row',
@@ -229,10 +256,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     borderTopWidth: 1,
-    paddingTop: 12,
+    paddingTop: 16,
   },
   inventoryText: {
-    fontSize: 14,
+    fontSize: 12,
+    letterSpacing: 1,
   },
   center: {
     flex: 1,
@@ -243,14 +271,15 @@ const styles = StyleSheet.create({
   emptyText: {
     textAlign: 'center',
     marginTop: 20,
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: 14,
+    lineHeight: 22,
+    opacity: 0.7,
   },
   retryButton: {
-    marginTop: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
+    marginTop: 30,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
     borderWidth: 1,
   },
 });
