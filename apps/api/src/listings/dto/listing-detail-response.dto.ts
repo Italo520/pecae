@@ -38,7 +38,6 @@ export class ListingDetailResponseDto {
   id: string;
   title: string;
   description: string | null;
-  price: number | null;
   views: number;
   favoritesCount: number;
   createdAt: Date;

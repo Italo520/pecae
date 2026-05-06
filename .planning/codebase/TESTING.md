@@ -1,21 +1,21 @@
-# Testing — PECAÊ
+# Testes — PECAÊ
 
-## 🧪 Strategy
-The project follows the testing pyramid:
-1. **Unit Tests**: Focus on business logic in Services (NestJS) and Hooks/Stores (Mobile).
-2. **Integration Tests**: Focus on API endpoints and database interactions (Prisma).
-3. **E2E Tests**: Focused on critical flows (Login, Scrap Registration) using Playwright (planned).
+## 🧪 Estratégia
+O projeto segue a pirâmide de testes:
+1. **Testes Unitários**: Foco na lógica de negócio nos Services (NestJS) e Hooks/Stores (Mobile).
+2. **Testes de Integração**: Foco nos endpoints da API e interações com o banco de dados (Prisma).
+3. **Testes E2E**: Focados em fluxos críticos (Login, Cadastro de Sucata) usando Playwright (planejado).
 
-## 🛠️ Tooling
-- **Backend**: [Jest](https://jestjs.io/) (configured per module).
+## 🛠️ Ferramental
+- **Backend**: [Jest](https://jestjs.io/) (configurado por módulo).
 - **Mobile**: [Jest Expo](https://docs.expo.dev/develop/unit-testing/) + [React Native Testing Library](https://callstack.github.io/react-native-testing-library/).
-- **Validation**: Prisma schema validation and DTO schema testing.
+- **Validação**: Validação de schema Prisma e testes de schema de DTO.
 
-## 📈 Coverage Areas
-- **Auth**: 100% coverage on login/register/refresh logic.
-- **Vehicles/Listings**: Unit tests present in `vehicles.service.spec.ts`.
-- **UI Components**: Snapshot and interaction testing for `PecaeUI`.
+## 📈 Áreas de Cobertura
+- **Auth**: 100% de cobertura na lógica de login/cadastro/refresh.
+- **Veículos/Anúncios**: Testes unitários presentes em `vehicles.service.spec.ts`.
+- **Componentes de UI**: Testes de snapshot e interação para `PecaeUI`.
 
-## 🚀 Future Improvements
-- Implement Playwright E2E tests for the `VehicleWizard` flow.
-- Add performance benchmarks for the `Search` module.
+## 🚀 Melhorias Futuras
+- Implementar testes E2E com Playwright para o fluxo do `VehicleWizard`.
+- Adicionar benchmarks de performance para o módulo de `Busca`.

@@ -1,24 +1,24 @@
-# Conventions — PECAÊ
+# Convenções — PECAÊ
 
-## 📝 Coding Standards
-- **Naming**:
-    - **Files**: `kebab-case` for all files (e.g., `vehicle-wizard.tsx`).
-    - **Classes**: `PascalCase` (e.g., `VehiclesService`).
-    - **Variables/Functions**: `camelCase`.
-    - **Database**: `snake_case` via Prisma `@map` and `@@map`.
-- **Formatting**: Standard Prettier/ESLint rules enforced via monorepo root config.
+## 📝 Padrões de Código
+- **Nomenclatura**:
+    - **Arquivos**: `kebab-case` para todos os arquivos (ex: `vehicle-wizard.tsx`).
+    - **Classes**: `PascalCase` (ex: `VehiclesService`).
+    - **Variáveis/Funções**: `camelCase`.
+    - **Banco de Dados**: `snake_case` via Prisma `@map` e `@@map`.
+- **Formatação**: Regras padrão de Prettier/ESLint aplicadas via config na raiz do monorepo.
 
-## 🏗️ Design Patterns
+## 🏗️ Padrões de Design
 - **NestJS**:
-    - Controller-Service-Repository pattern (using Prisma as Repository).
-    - DTO-based validation via `class-validator`.
-    - CASL-based Authorization guards.
+    - Padrão Controller-Service-Repository (usando Prisma como Repository).
+    - Validação baseada em DTO via `class-validator`.
+    - Guards de autorização baseados em CASL.
 - **Mobile**:
-    - **Atomic Components**: Reusable UI components in `components/PecaeUI`.
-    - **Hook-based Logic**: Business logic encapsulated in custom hooks (`hooks/`).
-    - **Store Pattern**: Zustand for global state (Auth, UI, Wizard).
+    - **Componentes Atômicos**: Componentes de UI reutilizáveis em `components/PecaeUI`.
+    - **Lógica Baseada em Hooks**: Lógica de negócio encapsulada em hooks customizados (`hooks/`).
+    - **Padrão Store**: Zustand para estado global (Auth, UI, Wizard).
 
-## 📐 API Design
-- **Endpoints**: Plural nouns (e.g., `/vehicles`, `/listings`).
-- **Response Format**: Consistent JSON objects with error details for non-2xx codes.
-- **Versioning**: Standardized in `docs-modules` as `v1.0.0`.
+## 📐 Design de API
+- **Endpoints**: Substantivos no plural (ex: `/vehicles`, `/listings`).
+- **Formato de Resposta**: Objetos JSON consistentes com detalhes de erro para códigos não-2xx.
+- **Versão**: Padronizada nos `docs-modules` como `v1.0.0`.

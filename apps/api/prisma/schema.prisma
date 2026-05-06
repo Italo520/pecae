@@ -521,7 +521,6 @@ model Listing {
   status          ListingStatus @default(PENDING) // RN14: Default PENDING
   
   // Metrics
-  price           Float?
   views           Int           @default(0)
   favoritesCount  Int           @default(0) @map("favorites_count")
   

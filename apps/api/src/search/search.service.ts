@@ -49,8 +49,6 @@ export class SearchService {
       city,
       state,
       q,
-      priceMin,
-      priceMax,
       cursor,
       limit = 10,
     } = filters;

@@ -15,7 +15,6 @@ export interface Negotiation {
     id: string;
     title: string;
     status: string;
-    price: number | null;
   };
   seller: {
     id: string;

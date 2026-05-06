@@ -55,7 +55,6 @@ export class ListingsService {
           vehicleId: vehicle.id,
           title: dto.title,
           description: dto.description,
-          price: dto.price,
           status: 'PENDING',
         },
       });
@@ -64,23 +63,48 @@ export class ListingsService {
 
   private readonly logger = new Logger(ListingsService.name);
 
-  async findAll(query: any) {
+  async findAll(query: { 
+    brandId?: string; 
+    modelId?: string; 
+    city?: string; 
+    state?: string;
+    partCategoryId?: string;
+  }) {
     try {
-      this.logger.log('Fetching all published listings...');
+      this.logger.log(`Fetching published listings with filters: ${JSON.stringify(query)}`);
+      
+      const where: any = {
+        deletedAt: null,
+        status: 'PUBLISHED',
+      };
+
+      if (query.brandId) where.vehicle = { ...where.vehicle, version: { model: { brandId: query.brandId } } };
+      if (query.modelId) where.vehicle = { ...where.vehicle, version: { modelId: query.modelId } };
+      if (query.city) where.vehicle = { ...where.vehicle, city: query.city };
+      if (query.state) where.vehicle = { ...where.vehicle, state: query.state };
+      if (query.partCategoryId) {
+        where.vehicle = { 
+          ...where.vehicle, 
+          availableParts: {
+            array_contains: query.partCategoryId
+          }
+        };
+      }
+
       const listings = await this.prisma.listing.findMany({
-        where: {
-          deletedAt: null,
-          status: 'PUBLISHED',
-        },
+        where,
         include: {
           vehicle: {
             include: {
               photos: { where: { order: 0 }, take: 1 },
               version: { include: { model: { include: { brand: true } } } },
+              yearFab: true,
             },
           },
         },
+        orderBy: { publishedAt: 'desc' },
       });
+      
       this.logger.log(`Found ${listings.length} listings.`);
       return listings;
     } catch (error) {
@@ -153,7 +177,6 @@ export class ListingsService {
       id: listing.id,
       title: listing.title,
       description: listing.description,
-      price: listing.price,
       views: listing.views,
       favoritesCount: listing.favoritesCount,
       createdAt: listing.createdAt,
@@ -202,7 +225,7 @@ export class ListingsService {
       throw new ForbiddenException('Você não tem permissão para alterar este anúncio.');
     }
 
-    const { title, description, price, ...vehicleFields } = dto;
+    const { title, description, ...vehicleFields } = dto;
     const { photos, ...directVehicleFields } = vehicleFields as any;
 
     return this.prisma.listing.update({
@@ -210,7 +233,7 @@ export class ListingsService {
       data: {
         title,
         description,
-        price,
+        status: 'PENDING', // RN14: Reset to PENDING on update
         vehicle: Object.keys(directVehicleFields).length > 0 ? {
           update: directVehicleFields
         } : undefined,

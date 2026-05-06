@@ -91,6 +91,13 @@ When auto-applying an agent, inform the user:
 > 🔴 **Self-Check Trigger:** Every time you are about to write code or create UI, ask yourself:
 > "Have I completed the Agent Routing Checklist?" If NO → Complete it first.
 
+### 🌐 Política de Idioma (PT-BR)
+
+> 🔴 **MANDATORY:** Todas as respostas, explicações, comentários de código e documentações (.md, .json) geradas DEVEM estar em **Português do Brasil (PT-BR)**.
+- **Código**: Nomes de variáveis, funções e classes permanecem em **Inglês** (padrão da indústria).
+- **Comentários**: Devem ser em **PT-BR**.
+- **Documentação**: Arquivos na pasta `.planning/` e outros docs do projeto devem ser estritamente em **PT-BR**.
+
 ---
 
 ## TIER 0: UNIVERSAL RULES (Always Active)

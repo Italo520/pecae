@@ -25,11 +25,6 @@ export class CreateListingDto {
   @IsString()
   description?: string;
 
-  @ApiProperty({ description: 'Preço (opcional)', required: false })
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  price?: number;
 
   // --- Vehicle Data ---
   @ApiProperty({ description: 'ID da versão do veículo (catálogo)' })

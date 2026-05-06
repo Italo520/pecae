@@ -1,25 +1,25 @@
-# Integrations — PECAÊ
+# Integrações — PECAÊ
 
-## 🌐 External Services
+## 🌐 Serviços Externos
 - **Supabase**:
-    - **Database**: PostgreSQL (managed).
-    - **Auth**: Social login (Google) and token management.
-    - **Storage**: Vehicle and profile photos (S3-compatible).
-- **Resend**: Transactional emails (verification, password reset, notifications).
-- **Expo EAS**: Mobile build and deployment pipeline.
-- **FCM/APNs**: Push notification delivery via `expo-notifications`.
+    - **Banco de Dados**: PostgreSQL (gerenciado).
+    - **Autenticação**: Login social (Google) e gerenciamento de tokens.
+    - **Storage**: Fotos de veículos e perfis (compatível com S3).
+- **Resend**: E-mails transacionais (verificação, reset de senha, notificações).
+- **Expo EAS**: Pipeline de build e deploy mobile.
+- **FCM/APNs**: Entrega de notificações push via `expo-notifications`.
 
-## 🔄 Internal Service Dependencies
+## 🔄 Dependências de Serviços Internos
 - **Redis (Upstash/Local)**:
-    - Used by BullMQ for task persistence.
-    - Used for rate-limiting (OTP, login attempts).
-- **BullMQ Queues**:
-    - `listings`: View counting and async updates.
-    - `mail`: Email dispatch.
-    - `notifications`: Push notification fan-out.
-    - `photo-processing`: Image resizing and thumbnail generation.
+    - Usado pelo BullMQ para persistência de tarefas.
+    - Usado para rate-limiting (OTP, tentativas de login).
+- **Filas BullMQ**:
+    - `listings`: Contagem de visualizações e atualizações assíncronas.
+    - `mail`: Despacho de e-mails.
+    - `notifications`: Fan-out de notificações push.
+    - `photo-processing`: Redimensionamento de imagens e geração de thumbnails.
 
-## 🔌 API Protocols
-- **REST**: Primary communication between mobile and API.
-- **Socket.IO**: Real-time communication for the `chat` module.
-- **Prisma Client**: Shared internal dependency for all database operations.
+## 🔌 Protocolos de API
+- **REST**: Comunicação primária entre mobile e API.
+- **Socket.IO**: Comunicação em tempo real para o módulo de `chat`.
+- **Prisma Client**: Dependência interna compartilhada para todas as operações de banco de dados.

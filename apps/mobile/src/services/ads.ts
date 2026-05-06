@@ -12,7 +12,6 @@ export interface AdCampaign {
   createdAt: string;
   listing: {
     title: string;
-    price: number;
     vehicle?: {
       brand?: { name: string };
       model?: { name: string };

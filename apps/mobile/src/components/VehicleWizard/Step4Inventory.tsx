@@ -34,7 +34,7 @@ export const Step4Inventory: React.FC<Step4InventoryProps> = ({ isInline }) => {
     updateData({ availableParts: [] });
   };
 
-  const isValid = data.availableParts.length > 0;
+  const isValid = data.availableParts.length > 0 && !!data.title;
 
 
   const inventoryGroups = [
@@ -152,12 +152,28 @@ export const Step4Inventory: React.FC<Step4InventoryProps> = ({ isInline }) => {
         <>
           <View style={styles.observationsContainer}>
             <PecaeInput
-              label="Observações do Carro Doador"
-              placeholder="Ex: Motor ok, batida lateral esquerda, interior em couro impecável..."
+              label="Título do Anúncio"
+              placeholder="Ex: Sucata Uno Vivace 2015 Inteira"
+              value={data.title || ''}
+              onChangeText={(text) => updateData({ title: text })}
+            />
+            
+            <PecaeInput
+              label="Descrição do Anúncio"
+              placeholder="Descreva o estado geral para o comprador..."
+              value={data.description || ''}
+              onChangeText={(text) => updateData({ description: text })}
+              multiline
+              numberOfLines={3}
+            />
+
+            <PecaeInput
+              label="Observações Técnicas (Interno)"
+              placeholder="Ex: Motor ok, batida lateral esquerda..."
               value={data.observations || ''}
               onChangeText={(text) => updateData({ observations: text })}
               multiline
-              numberOfLines={4}
+              numberOfLines={3}
             />
           </View>
 

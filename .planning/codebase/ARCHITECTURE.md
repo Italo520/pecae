@@ -1,20 +1,20 @@
-# Architecture — PECAÊ
+# Arquitetura — PECAÊ
 
-## 🏗️ Monorepo Design
-The project follows a modular monorepo structure managed by Turbo, separating the execution environment (apps) from shared logic (packages).
+## 🏗️ Design do Monorepo
+O projeto segue uma estrutura de monorepo modular gerenciada pelo Turbo, separando o ambiente de execução (apps) da lógica compartilhada (packages).
 
-### 📂 Workspace Layout
-- **`apps/api`**: NestJS backend. Modular architecture where each domain (auth, vehicles, chat) is a self-contained module.
-- **`apps/mobile`**: React Native/Expo app. Uses Expo Router for file-based navigation and a centralized `src/hooks` and `src/services` layer for API interaction.
-- **`packages/shared`**: Shared TypeScript types, interfaces, and enums to ensure type safety across the entire stack.
+### 📂 Layout do Workspace
+- **`apps/api`**: Backend NestJS. Arquitetura modular onde cada domínio (auth, vehicles, chat) é um módulo independente.
+- **`apps/mobile`**: App React Native/Expo. Utiliza Expo Router para navegação baseada em arquivos e uma camada centralizada de `src/hooks` e `src/services` para interação com a API.
+- **`packages/shared`**: Tipos, interfaces e enums TypeScript compartilhados para garantir a segurança de tipos em toda a stack.
 
-## 🔄 Data Flow
-1. **Client-Server**: Mobile app communicates with the API via REST.
-2. **Real-time**: Socket.IO handles the contextualized chat between buyers and sellers.
-3. **Async Processing**: BullMQ processes heavy tasks like photo processing, email dispatch, and notification fan-outs.
-4. **Database**: Prisma acts as the single source of truth, with Supabase providing the managed PostgreSQL instance.
+## 🔄 Fluxo de Dados
+1. **Cliente-Servidor**: O app mobile se comunica com a API via REST.
+2. **Tempo Real**: Socket.IO gerencia o chat contextualizado entre compradores e vendedores.
+3. **Processamento Assíncrono**: BullMQ processa tarefas pesadas como processamento de fotos, envio de e-mails e disparo de notificações.
+4. **Banco de Dados**: Prisma atua como a única fonte de verdade, com o Supabase fornecendo a instância PostgreSQL gerenciada.
 
-## 🔐 Security Model
-- **Authentication**: JWT-based stateless authentication with short-lived access tokens (15m) and long-lived refresh tokens (7d) stored in `SecureStore` (mobile).
-- **Authorization**: Role-Based Access Control (RBAC) via CASL in the API to distinguish between Buyers, Sellers, and Moderators.
-- **Data Privacy**: Masquing of sensitive data like vehicle plates (RN08) and absence of Chassi/VIN collection (RN05).
+## 🔐 Modelo de Segurança
+- **Autenticação**: Baseada em JWT sem estado (stateless) com access tokens de curta duração (15m) e refresh tokens de longa duração (7d) armazenados no `SecureStore` (mobile).
+- **Autorização**: Controle de Acesso Baseado em Funções (RBAC) via CASL na API para distinguir entre Compradores, Vendedores e Moderadores.
+- **Privacidade de Dados**: Mascaramento de dados sensíveis como placas de veículos (RN08) e ausência de coleta de Chassi/VIN (RN05).

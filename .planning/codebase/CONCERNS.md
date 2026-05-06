@@ -1,30 +1,26 @@
-# Concerns — Technical Audit & Errors
+## 🟢 Problemas Resolvidos
 
-## 🔴 Critical Business Rule Violations (Must Fix)
+### 1. Campo de Preço Proibido (RN04) - ✅ RESOLVIDO
+- **Ação**: Campo `price` removido do Prisma, DTOs, Services e Hooks do Mobile.
+- **Status**: Em conformidade total com o PRD.
 
-### 1. Prohibited Price Field (RN04)
-- **Issue**: The `Listing` model in Prisma and the `ListingsService` implementation still include a `price` field.
-- **Violation**: **RN04** states: "A plataforma NÃO exibe preços em nenhum campo — negociação exclusivamente via chat".
-- **Impact**: Inconsistent user experience and violation of the core specialized marketplace model.
+### 2. Lógica de "Desmembramento" Incorreta (RN03) - ✅ RESOLVIDO
+- **Ação**: Removida a criação automática de múltiplos anúncios no `VehiclesService`. Agora cada veículo possui exatamente um anúncio principal.
+- **Status**: Em conformidade total com o PRD.
 
-### 2. Incorrect "Desmembramento" Logic (RN03)
-- **Issue**: `VehiclesService.create` contains logic to create individual listings for each part marked as available.
-- **Violation**: **RN03** states: "Anúncio representa SEMPRE um veículo completo NUNCA peças avulsas independentes".
-- **Impact**: Catálogo pollution and violation of the vehicle-centric search model.
+## 🟡 Débitos Técnicos & Inconsistências
 
-## 🟡 Technical Debt & Inconsistencies
+### 3. Duplicação de Lógica de Serviço
+- **Problema**: Tanto o `VehiclesService` quanto o `ListingsService` possuem métodos `create` e `update` com responsabilidades sobrepostas.
+- **Impacto**: Custo de manutenção elevado e potencial para erros de sincronização de estado (ex: status de moderação não sendo resetado em todos os fluxos).
 
-### 3. Duplicate Service Logic
-- **Issue**: Both `VehiclesService` and `ListingsService` have `create` and `update` methods with overlapping responsibilities.
-- **Impact**: High maintenance cost and potential for state synchronization errors (e.g., moderation status not being reset in all flows).
+### 4. Segurança de Tipos no Prisma
+- **Problema**: Uso extensivo de casts `as any` nos serviços `VehiclesService` e `ListingsService`.
+- **Impacto**: Perda de segurança em tempo de compilação e aumento do risco de falhas em tempo de execução.
 
-### 4. Prisma Type Safety
-- **Issue**: Extensive use of `as any` casts in `VehiclesService` and `ListingsService`.
-- **Impact**: Loss of compile-time safety and increased risk of runtime crashes.
+### 5. Completude do Roteamento Mobile
+- **Problema**: Embora o diretório `app/` exista, alguns passos do wizard em `VehicleWizard` podem não estar totalmente integrados com as mudanças mais recentes da API (ex: confirmação de upload de fotos).
 
-### 5. Mobile Routing Completeness
-- **Issue**: While the `app/` directory exists, some wizard steps in `VehicleWizard` may not be fully integrated with the latest API changes (e.g., photo upload confirmation).
-
-## 🟢 Implementation Gaps
-- **Module M10 (Admin)**: Mostly backend-only currently; lacks a dedicated mobile/web admin interface beyond Swagger.
-- **Search Refinement (M07)**: Geolocation filters in `VehiclesService` are basic and may need optimization for scale.
+## 🟢 Lacunas de Implementação
+- **Módulo M10 (Admin)**: Atualmente focado apenas no backend; falta uma interface administrativa dedicada no mobile/web além do Swagger.
+- **Refinamento de Busca (M07)**: Os filtros de geolocalização no `VehiclesService` são básicos e podem precisar de otimização para escala.
