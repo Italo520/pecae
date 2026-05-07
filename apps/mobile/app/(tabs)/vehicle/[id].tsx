@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, useWindowDimensions, ActivityIndicator, Alert, Image, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
-import { PecaeBackground, PecaeGlassCard, PecaeButton } from '../../../src/components/PecaeUI';
+import { PecaeBackground, PecaeGlassCard, PecaeButton, ReportBottomSheet, PecaeImage } from '../../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../../src/theme';
 import { useVehicleDetails } from '../../../src/hooks/useVehicles';
 import { useFavorites } from '../../../src/hooks/useFavorites';
@@ -18,6 +18,7 @@ export default function VehicleDetailsScreen() {
   const { createRoom } = useChat();
   const { getFavorites, toggleFavorite } = useFavorites();
   const [isStartingChat, setIsStartingChat] = useState(false);
+  const [isReportVisible, setIsReportVisible] = useState(false);
 
   if (loadingVehicle) {
     return (
@@ -109,14 +110,23 @@ export default function VehicleDetailsScreen() {
             color={getFavorites.data?.some((f: any) => f.id === vehicle.id) ? colors.brand : colors.textPrimary} 
           />
         </TouchableOpacity>
+
+        <TouchableOpacity 
+          onPress={() => setIsReportVisible(true)} 
+          style={[styles.hudButton, { backgroundColor: 'rgba(10, 14, 20, 0.6)', borderColor: colors.border }]}
+        >
+          <Ionicons name="alert-circle-outline" size={24} color={colors.textPrimary} />
+        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.imageSection}>
-          <Image 
-            source={{ uri: imageUrl }} 
-            style={styles.mainImage} 
-            resizeMode="cover"
+          <PecaeImage 
+            path={vehicle.photos?.[0]?.url || vehicle.thumbnail}
+            blurhash={vehicle.photos?.[0]?.blurhash}
+            width={800}
+            priority="high"
+            style={styles.mainImage}
           />
           <View style={styles.imageGradientOverlay} />
           
@@ -214,6 +224,14 @@ export default function VehicleDetailsScreen() {
           />
         </View>
       </ScrollView>
+
+      <ReportBottomSheet
+        isVisible={isReportVisible}
+        onClose={() => setIsReportVisible(false)}
+        listingId={vehicle.listingId}
+        reportedUserId={vehicle.seller?.userId}
+        targetName={vehicleTitle}
+      />
     </PecaeBackground>
   );
 }

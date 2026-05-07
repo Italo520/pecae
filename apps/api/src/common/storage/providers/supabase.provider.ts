@@ -44,6 +44,17 @@ export class SupabaseStorageProvider implements StorageProvider {
     return data.map(item => item.signedUrl).filter((url): url is string => Boolean(url));
   }
 
+  generateOptimizedUrl(bucket: string, path: string, options: { width: number; quality?: number }): string {
+    const { data } = this.supabase.storage.from(bucket).getPublicUrl(path, {
+      transform: {
+        width: options.width,
+        format: 'webp',
+        quality: options.quality || 80,
+      },
+    });
+    return data.publicUrl;
+  }
+
   async deleteFile(bucket: string, path: string): Promise<void> {
     await this.supabase.storage.from(bucket).remove([path]);
   }

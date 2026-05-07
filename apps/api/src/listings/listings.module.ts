@@ -4,6 +4,7 @@ import { ListingsController } from './listings.controller';
 import { ListingsService } from './listings.service';
 import { ListingsProcessor } from './listings.processor';
 import { RedisModule } from '../common/redis/redis.module';
+import { NotificationModule } from '../notifications/notification.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { RedisModule } from '../common/redis/redis.module';
       name: 'listings',
     }),
     RedisModule,
+    NotificationModule,
   ],
   controllers: [ListingsController],
   providers: [ListingsService, ListingsProcessor],

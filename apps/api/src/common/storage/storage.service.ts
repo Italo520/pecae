@@ -44,6 +44,10 @@ export class StorageService implements OnModuleInit {
     return data.publicUrl;
   }
 
+  getOptimizedUrl(bucket: string, path: string, width: number, quality = 80) {
+    return this.provider.generateOptimizedUrl(bucket, path, { width, quality });
+  }
+
   async deleteFile(bucket: string, path: string) {
     if (!this.provider) return;
     await this.provider.deleteFile(bucket, path);

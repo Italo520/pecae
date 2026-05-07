@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Image, ActivityIndicator, SafeAreaView, Animated } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { PecaeBackground, PecaeGlassCard } from '../../src/components/PecaeUI';
+import { PecaeBackground, PecaeGlassCard, ReportBottomSheet } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
 import { useAuthStore } from '../../src/store/auth-store';
@@ -21,6 +21,7 @@ interface RoomDetails {
   listingId: string;
   listingTitle: string;
   listingThumbnail: string | null;
+  sellerId: string;
   interlocutor: {
     id: string;
     name: string | null;
@@ -102,6 +103,7 @@ export default function ChatRoomScreen() {
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
+  const [isReportVisible, setIsReportVisible] = useState(false);
 
   useEffect(() => {
     Animated.spring(hudAnim, {
@@ -174,6 +176,20 @@ export default function ChatRoomScreen() {
     }
   };
 
+  const handleMarkAsSold = async () => {
+    if (!room?.listingId) return;
+
+    try {
+      await api.patch(`/listings/${room.listingId}/sold`);
+      // Feedback visual e redirecionamento ou atualização de status
+      alert('Veículo marcado como vendido com sucesso!');
+      router.back();
+    } catch (error) {
+      console.error('Erro ao marcar como vendido:', error);
+      alert('Erro ao processar a venda.');
+    }
+  };
+
   const renderItem = ({ item }: { item: Message }) => {
     const isMe = item.senderId === user?.id;
     return <AnimatedMessage item={item} isMe={isMe} colors={colors} typography={typography} />;
@@ -225,9 +241,23 @@ export default function ChatRoomScreen() {
                   </View>
                 </View>
 
-                <TouchableOpacity style={styles.optionsButton}>
-                  <Ionicons name="ellipsis-vertical" size={20} color={colors.textMuted} />
-                </TouchableOpacity>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  {user?.id === room?.sellerId && (
+                    <TouchableOpacity 
+                      onPress={handleMarkAsSold}
+                      style={[styles.soldButton, { backgroundColor: colors.brand + '20', borderColor: colors.brand }]}
+                    >
+                      <Text style={[styles.soldButtonText, { color: colors.brand, fontFamily: typography.display }]}>VENDIDO</Text>
+                    </TouchableOpacity>
+                  )}
+
+                  <TouchableOpacity 
+                    style={styles.optionsButton}
+                    onPress={() => setIsReportVisible(true)}
+                  >
+                    <Ionicons name="alert-circle-outline" size={24} color={colors.textMuted} />
+                  </TouchableOpacity>
+                </View>
               </View>
 
               {/* Vehicle context HUD - Estilo Digital Forge */}
@@ -312,6 +342,14 @@ export default function ChatRoomScreen() {
             </PecaeGlassCard>
           </View>
         </KeyboardAvoidingView>
+
+        <ReportBottomSheet
+          isVisible={isReportVisible}
+          onClose={() => setIsReportVisible(false)}
+          chatRoomId={roomId}
+          reportedUserId={room?.interlocutor.id}
+          targetName={room?.interlocutor.name || 'Usuário'}
+        />
       </SafeAreaView>
     </PecaeBackground>
   );
@@ -374,6 +412,17 @@ const styles = StyleSheet.create({
   },
   optionsButton: {
     padding: 8,
+  },
+  soldButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginRight: 8,
+  },
+  soldButtonText: {
+    fontSize: 9,
+    letterSpacing: 1,
   },
   itemStrip: {
     flexDirection: 'row',

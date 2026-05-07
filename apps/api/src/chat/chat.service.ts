@@ -69,6 +69,7 @@ export class ChatService {
       vehicleId: room.vehicleId,
       listingTitle: title,
       listingThumbnail: thumbnail,
+      sellerId: room.sellerId,
       interlocutor: userId === room.buyerId ? room.seller : room.buyer,
       lastMessage: lastMessage
         ? {

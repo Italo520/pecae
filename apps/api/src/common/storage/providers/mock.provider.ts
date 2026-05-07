@@ -24,6 +24,10 @@ export class MockStorageProvider implements StorageProvider {
     return paths.map(path => `https://pecae-mock-storage.com/${bucket}/${path}?expires=${expiresIn}`);
   }
 
+  generateOptimizedUrl(bucket: string, path: string, options: { width: number; quality?: number }): string {
+    return `https://pecae-mock-storage.com/${bucket}/${path}?width=${options.width}&format=webp&quality=${options.quality || 80}`;
+  }
+
   async deleteFile(bucket: string, path: string): Promise<void> {
     this.logger.debug(`[MOCK STORAGE] Deletando arquivo no bucket: ${bucket}, path: ${path}`);
   }

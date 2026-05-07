@@ -5,11 +5,13 @@ import { Queue } from 'bullmq';
 import { ListingDetailResponseDto } from './dto/listing-detail-response.dto';
 import { CreateListingDto } from './dto/create-listing.dto';
 import { UpdateListingDto } from './dto/update-listing.dto';
+import { NotificationService } from '../notifications/notification.service';
 
 @Injectable()
 export class ListingsService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly notificationService: NotificationService,
     @InjectQueue('listings') private readonly listingsQueue: Queue,
   ) {}
 
@@ -261,6 +263,81 @@ export class ListingsService {
         deletedAt: new Date(),
         status: 'EXPIRED', // Marking as expired/removed from public view
       },
+    });
+  }
+
+  async markAsSold(id: string, userId: string) {
+    const listing = await this.prisma.listing.findUnique({
+      where: { id, deletedAt: null },
+      include: { 
+        sellerProfile: {
+          include: { stats: true }
+        }
+      },
+    });
+
+    if (!listing) {
+      throw new NotFoundException('Anúncio não encontrado ou já removido.');
+    }
+
+    if (listing.sellerProfile.userId !== userId) {
+      throw new ForbiddenException('Você não tem permissão para marcar este anúncio como vendido.');
+    }
+
+    if (listing.status === 'SOLD') {
+      return listing;
+    }
+
+    const soldAt = new Date();
+    const publishedAt = listing.publishedAt || listing.createdAt;
+    const diffMinutes = Math.floor((soldAt.getTime() - publishedAt.getTime()) / (1000 * 60));
+
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Update Listing and Vehicle status
+      const updatedListing = await tx.listing.update({
+        where: { id },
+        data: {
+          status: 'SOLD',
+          soldAt,
+          vehicle: {
+            update: { status: 'SOLD' }
+          }
+        },
+      });
+
+      // 2. Archive all chats for this listing
+      await tx.chatRoom.updateMany({
+        where: { listingId: id, isActive: true },
+        data: {
+          isActive: false,
+          isArchived: true,
+          closedAt: soldAt
+        }
+      });
+
+      // 3. Update Seller Stats
+      const stats = listing.sellerProfile.stats;
+      if (stats) {
+        const newTotalSold = stats.totalSold + 1;
+        const currentAvg = stats.avgTimeToSellMinutes || 0;
+        const newAvg = Math.floor((currentAvg * stats.totalSold + diffMinutes) / newTotalSold);
+
+        await tx.sellerStats.update({
+          where: { id: stats.id },
+          data: {
+            totalSold: newTotalSold,
+            avgTimeToSellMinutes: newAvg,
+            activeListings: { decrement: 1 }
+          }
+        });
+      }
+
+      // 4. Trigger notifications
+      await this.notificationService.notifySoldListing(id, listing.title);
+
+      this.logger.log(`Listing ${id} marked as SOLD. Notifications sent to favorites.`);
+
+      return updatedListing;
     });
   }
 }

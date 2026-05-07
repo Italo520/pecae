@@ -1,15 +1,31 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, OnModuleInit } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationType } from '@prisma/client';
 
 @Injectable()
-export class NotificationService {
+export class NotificationService implements OnModuleInit {
   constructor(
     private readonly prisma: PrismaService,
     @InjectQueue('notifications-queue') private readonly notificationQueue: Queue,
+    @InjectQueue('alerts') private readonly alertsQueue: Queue,
   ) {}
+
+  async onModuleInit() {
+    // Agendar o Digest Diário (executa todo dia às 08:00)
+    await this.alertsQueue.add(
+      'daily-digest',
+      {},
+      {
+        repeat: {
+          pattern: '0 8 * * *', // Cron: Segundo Minuto Hora DiaMes Mes DiaSemana
+        },
+        jobId: 'daily-digest-job', // Evita duplicatas
+      },
+    );
+    console.log('[NotificationService] Job de Digest Diário agendado para 08:00');
+  }
 
   /**
    * Envia uma notificação e delega push/email para segundo plano via BullMQ.
@@ -136,5 +152,27 @@ export class NotificationService {
       },
       data: { isRead: true },
     });
+  }
+
+  async notifySoldListing(listingId: string, title: string) {
+    const favorites = await this.prisma.favorite.findMany({
+      where: { listingId },
+      select: { userId: true },
+    });
+
+    if (favorites.length === 0) return;
+
+    const userIds = favorites.map((f) => f.userId);
+
+    // Envia notificações para todos que favoritaram
+    for (const userId of userIds) {
+      await this.send({
+        userId,
+        type: 'LISTING_SOLD',
+        title: 'Item Vendido!',
+        body: `O veículo "${title}" que você favoritou foi vendido.`,
+        data: { listingId },
+      });
+    }
   }
 }

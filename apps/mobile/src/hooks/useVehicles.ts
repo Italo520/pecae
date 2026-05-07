@@ -1,6 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../services/api';
 
+export interface VehiclePhoto {
+  url: string;
+  blurhash?: string | null;
+  order?: number;
+}
+
 export interface VehicleListing {
   id: string;
   title?: string;
@@ -13,7 +19,7 @@ export interface VehicleListing {
   state: string;
   status: 'DRAFT' | 'PENDING' | 'ACTIVE' | 'INACTIVE' | 'SOLD';
   createdAt: string;
-  photos: Array<{ url: string; order: number }>;
+  photos: VehiclePhoto[];
   availableParts: string[];
 }
 
@@ -27,7 +33,7 @@ export interface VehicleDonor {
   city: string;
   state: string;
   thumbnail: string | null;
-  photos: string[];
+  photos: VehiclePhoto[];
   availablePartsCount: number;
   availableParts: string[];
   seller: {

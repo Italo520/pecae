@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { StyleSheet, View, Text, ScrollView, Image, ActivityIndicator, TouchableOpacity, useWindowDimensions, TextInput, Animated, Alert } from 'react-native';
-import { PecaeBackground, PecaeGlassCard } from '../../src/components/PecaeUI';
+import { PecaeBackground, PecaeGlassCard, PecaeImage } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
 import { useSearchVehicles } from '../../src/hooks/useVehicles';
 import { useAuthStore } from '../../src/store/auth-store';
@@ -8,6 +8,7 @@ import { getVehicleImage } from '../../src/utils/vehicleImages';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { SearchFilterModal } from '../../src/components/Search/SearchFilterModal';
+import { useSavedSearches } from '../../src/hooks/useSavedSearches';
 
 const CATEGORIES = [
   { id: '1', name: 'Carros Sucata', icon: 'car-outline' },
@@ -29,6 +30,7 @@ export default function BuyerHomeScreen() {
     q: activeQuery || activeCategory,
     ...filters
   });
+  const { createSavedSearch } = useSavedSearches();
   const listings = searchResponse?.data || [];
   const { width } = useWindowDimensions();
   const router = useRouter();
@@ -54,6 +56,24 @@ export default function BuyerHomeScreen() {
         { text: "Cancelar", style: 'cancel' }
       ]
     );
+  };
+
+  const handleSaveSearch = async () => {
+    if (!searchText && !activeCategory && Object.keys(filters).length === 0) {
+      Alert.alert("Aviso", "Aplique filtros ou digite algo para salvar sua busca.");
+      return;
+    }
+
+    try {
+      await createSavedSearch.mutateAsync({
+        query: searchText || activeCategory,
+        filters: filters,
+        alertActive: true,
+      });
+      Alert.alert("Busca Salva!", "Você receberá alertas diários de novos veículos que combinam com esta busca.");
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível salvar sua busca. Tente novamente.");
+    }
   };
 
   const isWeb = width >= 768;
@@ -200,7 +220,12 @@ export default function BuyerHomeScreen() {
                   onPress={() => router.push(`/(tabs)/vehicle/${vehicle.id}`)}
                 >
                   <PecaeGlassCard intensity={10} style={styles.productCard}>
-                    <Image source={{ uri: imageUrl }} style={styles.productImage} resizeMode="cover" />
+                    <PecaeImage 
+                      path={vehicle.photos?.[0]?.url || vehicle.thumbnail || imageUrl} 
+                      blurhash={vehicle.photos?.[0]?.blurhash}
+                      width={400} // Thumbnail resolution
+                      style={styles.productImage} 
+                    />
                     <View style={styles.productInfo}>
                       <Text style={[styles.productTitle, { color: colors.textPrimary, fontFamily: typography.display }]} numberOfLines={2}>
                         {title}
@@ -228,6 +253,19 @@ export default function BuyerHomeScreen() {
         onApply={(newFilters) => setFilters(newFilters)}
         initialFilters={filters}
       />
+
+      {(searchText || activeCategory || Object.keys(filters).length > 0) && (
+        <TouchableOpacity 
+          style={[styles.fab, { backgroundColor: colors.brand }]}
+          onPress={handleSaveSearch}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="bookmark" size={18} color="#000" />
+          <Text style={[styles.fabText, { color: '#000', fontFamily: typography.medium }]}>
+            Salvar Busca
+          </Text>
+        </TouchableOpacity>
+      )}
     </PecaeBackground>
   );
 }

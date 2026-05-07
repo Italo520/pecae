@@ -147,6 +147,16 @@ export default function ModerationListingsScreen() {
           <Text style={[styles.subtitle, { color: colors.brand, fontFamily: typography.heading }]}>
             // ANÚNCIOS_AUTOMOTIVOS
           </Text>
+          
+          <TouchableOpacity 
+            style={styles.reportsNavButton}
+            onPress={() => router.push('/(moderator)/reports')}
+          >
+            <Ionicons name="warning-outline" size={16} color={colors.brand} />
+            <Text style={[styles.reportsNavText, { color: colors.brand, fontFamily: typography.display }]}>
+              FILA DE DENÚNCIAS
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Status Filter */}
@@ -533,5 +543,21 @@ const styles = StyleSheet.create({
     height: 1,
     marginVertical: 20,
     opacity: 0.3,
+  },
+  reportsNavButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(63, 255, 139, 0.3)',
+    backgroundColor: 'rgba(63, 255, 139, 0.05)',
+  },
+  reportsNavText: {
+    fontSize: 10,
+    letterSpacing: 1,
   },
 });

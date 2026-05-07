@@ -3,6 +3,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { NotificationService } from './notification.service';
 import { NotificationProcessor } from './notification.processor';
 import { MatchProcessor } from './match.processor';
+import { DigestProcessor } from './digest.processor';
 import { MailModule } from '../mail/mail.module';
 import { NotificationController } from './notification.controller';
 
@@ -16,7 +17,7 @@ import { NotificationController } from './notification.controller';
     MailModule,
   ],
   controllers: [NotificationController],
-  providers: [NotificationService, NotificationProcessor, MatchProcessor],
+  providers: [NotificationService, NotificationProcessor, MatchProcessor, DigestProcessor],
   exports: [NotificationService, BullModule],
 })
 export class NotificationModule {}

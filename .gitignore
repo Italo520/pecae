@@ -43,4 +43,7 @@ apps/api/dist
 *.tsbuildinfo
 __pycache__/
 *.pyc
+# === AI AGENT & PLANNING ===
+.agent/
 .planning/
+.gemini/

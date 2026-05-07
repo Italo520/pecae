@@ -49,4 +49,11 @@ export class ListingsController {
   async remove(@Param('id') id: string, @CurrentUser('id') userId: string) {
     return this.listingsService.softDelete(id, userId);
   }
+
+  @Patch(':id/sold')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Marcar um anúncio como vendido' })
+  async markAsSold(@Param('id') id: string, @CurrentUser('id') userId: string) {
+    return this.listingsService.markAsSold(id, userId);
+  }
 }

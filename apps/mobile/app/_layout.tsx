@@ -11,7 +11,10 @@ import {
   Manrope_500Medium,
 } from '@expo-google-fonts/manrope';
 import * as SplashScreen from 'expo-splash-screen';
+import * as Notifications from 'expo-notifications';
+import * as Linking from 'expo-linking';
 import { useEffect } from 'react';
+import { useRouter } from 'expo-router';
 import { useAuthStore } from '../src/store/auth-store';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -30,6 +33,7 @@ const queryClient = new QueryClient({
 
 export default function RootLayout() {
   const { initializeAuth, isLoading: isAuthLoading } = useAuthStore();
+  const router = useRouter();
   const [fontsLoaded, fontError] = useFonts({
     SpaceGrotesk_700Bold,
     SpaceGrotesk_600SemiBold,
@@ -39,6 +43,24 @@ export default function RootLayout() {
 
   useEffect(() => {
     initializeAuth();
+
+    // Listener para notificações (clique)
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const data = response.notification.request.content.data;
+      
+      // Se a notificação tiver uma URL (ex: pecae://vehicle/123), navega para ela
+      if (data?.url) {
+        // Remove o esquema pecae:// se estiver presente para o router.push entender
+        const path = data.url.replace('pecae://', '/');
+        router.push(path);
+      } else if (data?.type === 'CHAT_MESSAGE') {
+        router.push(`/chat/${data.roomId}`);
+      } else if (data?.type === 'SAVED_SEARCH_ALERT') {
+        router.push('/(tabs)/search');
+      }
+    });
+
+    return () => subscription.remove();
   }, []);
 
   useEffect(() => {
