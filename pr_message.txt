@@ -1,6 +1,13 @@
-🧹 [code health improvement description]
+🧪 [testing] Improve MailService test coverage for Resend error handling
 
-🎯 What: The code health issue of extracting the nested `Promise.all` logic inside `findMyRooms` in `ChatService` was already addressed in the current state of the repository, having been moved to a private method `mapRoomToResponse`. This PR adds documentation to clarify this logic extraction.
-💡 Why: Adding documentation to clarify code extractions improves the maintainability and readability of the codebase by providing context to developers analyzing or extending the chat features.
-✅ Verification: Confirmed that tests in `apps/api` pass successfully (`npm test`) and that the NestJS compiler compiles correctly (`npm run build`). The actual logic of the codebase is unchanged, so there's no risk of regressions.
-✨ Result: The codebase's readability has improved with comments confirming that the desired optimization was correctly applied, leaving the behavior intact.
+🎯 **What:**
+Added unit tests to `apps/api/src/mail/mail.service.spec.ts` to cover the `MailService`'s email dispatch logic. Specifically, this fills a testing gap by verifying the behavior of the `try/catch` block inside `sendEmail` when the Resend client encounters an error or throws an exception.
+
+📊 **Coverage:**
+- The `try/catch` error re-throwing branch (`if (error instanceof InternalServerErrorException)`) is now explicitly tested.
+- Includes tests for Resend API failures causing `InternalServerErrorException`.
+- Includes tests for fallback error handling of unexpected exceptions within the `try` block.
+- Adds comprehensive coverage for the happy path and debug mode (missing API key).
+
+✨ **Result:**
+Significant improvement in unit test coverage for `MailService`, ensuring robust error handling logic during email dispatch is now verified automatically, preventing regressions in future refactors.
