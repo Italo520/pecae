@@ -22,7 +22,17 @@ export class MailService {
     }
   }
 
-  private async sendEmail(payload: any, defaultErrorMessage: string) {
+  private async sendEmail(
+    to: string[],
+    subject: string,
+    html: string,
+    defaultErrorMessage: string,
+  ) {
+    const from =
+      this.configService.get<string>("MAIL_FROM") ||
+      "PECAÊ <onboarding@resend.dev>";
+    const payload = { from, to, subject, html };
+
     try {
       if (!this.resend) {
         this.logger.debug("--- [DEBUG EMAIL] ---");
@@ -53,20 +63,13 @@ export class MailService {
 
   /**
    * Envia um e-mail de verificação para o usuário.
-
    * Por enquanto, envia um link fictício.
    */
   async sendVerificationEmail(email: string, name: string, code: string) {
-    const from =
-      this.configService.get<string>("MAIL_FROM") ||
-      "PECAÊ <onboarding@resend.dev>";
-
     return this.sendEmail(
-      {
-        from,
-        to: [email],
-        subject: "Seu código de acesso PECAÊ",
-        html: `
+      [email],
+      "Seu código de acesso PECAÊ",
+      `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background-color: #000; color: #fff; padding: 40px; border-radius: 10px; border: 1px solid #333;">
             <h1 style="color: #3fff8b; font-size: 24px; letter-spacing: 2px;">VERIFICAÇÃO DE IDENTIDADE</h1>
             <p style="color: #ccc; font-size: 16px; margin-top: 20px;">Olá, ${name}.</p>
@@ -81,14 +84,10 @@ export class MailService {
             <p style="color: #666; font-size: 12px;">SISTEMA AUTOMATIZADO PECAÊ // NÃO RESPONDA A ESTE E-MAIL</p>
           </div>
         `,
-      },
       "Falha ao enviar e-mail de verificação.",
     );
   }
 
-  /**
-   * Envia um e-mail de recuperação de senha.
-   */
   /**
    * Envia um e-mail com o status da verificação do vendedor.
    */
@@ -111,16 +110,10 @@ export class MailService {
       ? `<p><strong>Motivo / Observações:</strong> ${notes}</p>`
       : "";
 
-    const from =
-      this.configService.get<string>("MAIL_FROM") ||
-      "PECAÊ <onboarding@resend.dev>";
-
     return this.sendEmail(
-      {
-        from,
-        to: [email],
-        subject,
-        html: `
+      [email],
+      subject,
+      `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
             <h1 style="color: #333;">Olá, ${storeName}!</h1>
             ${statusMessage}
@@ -130,23 +123,20 @@ export class MailService {
             <p style="color: #999; font-size: 12px;">Equipe PECAÊ</p>
           </div>
         `,
-      },
       "Falha ao enviar e-mail de status de verificação.",
     );
   }
 
+  /**
+   * Envia um e-mail de recuperação de senha.
+   */
   async sendPasswordResetEmail(email: string, name: string, token: string) {
     const resetUrl = `${this.configService.get<string>("FRONTEND_URL")}/reset-password?token=${token}`;
-    const from =
-      this.configService.get<string>("MAIL_FROM") ||
-      "PECAÊ <onboarding@resend.dev>";
 
     return this.sendEmail(
-      {
-        from,
-        to: [email],
-        subject: "Recuperação de senha - PECAÊ",
-        html: `
+      [email],
+      "Recuperação de senha - PECAÊ",
+      `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
             <h1 style="color: #333;">Olá, ${name}!</h1>
             <p>Você solicitou a redefinição de sua senha no <strong>PECAÊ</strong>. Para prosseguir, clique no botão abaixo:</p>
@@ -160,7 +150,6 @@ export class MailService {
             <p style="color: #999; font-size: 12px;">Se você não solicitou a redefinição, sua senha permanecerá a mesma e você pode ignorar este e-mail.</p>
           </div>
         `,
-      },
       "Falha ao enviar e-mail de recuperação.",
     );
   }
