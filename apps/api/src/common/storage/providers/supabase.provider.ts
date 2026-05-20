@@ -48,7 +48,7 @@ export class SupabaseStorageProvider implements StorageProvider {
     const { data } = this.supabase.storage.from(bucket).getPublicUrl(path, {
       transform: {
         width: options.width,
-        format: 'webp',
+        format: 'webp' as any,
         quality: options.quality || 80,
       },
     });

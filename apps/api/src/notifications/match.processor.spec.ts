@@ -22,7 +22,7 @@ describe('MatchProcessor', () => {
   };
 
   const mockNotificationService = {
-    createNotification: jest.fn(),
+    send: jest.fn().mockResolvedValue(undefined),
   };
 
   beforeEach(async () => {
@@ -63,6 +63,10 @@ describe('MatchProcessor', () => {
       },
     };
 
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
     it('should trigger notification when all filters match', async () => {
       mockPrisma.listing.findUnique.mockResolvedValue(mockListing);
       mockPrisma.vehicleYear.findUnique.mockResolvedValue({ yearFab: 2024 });
@@ -81,9 +85,9 @@ describe('MatchProcessor', () => {
 
       await (processor as any).handleMatchAlerts('listing-1');
 
-      expect(mockNotificationService.createNotification).toHaveBeenCalledWith(
-        'user-1',
+      expect(mockNotificationService.send).toHaveBeenCalledWith(
         expect.objectContaining({
+          userId: 'user-1',
           type: 'SAVED_SEARCH_ALERT',
           title: expect.any(String),
         }),
@@ -105,7 +109,7 @@ describe('MatchProcessor', () => {
 
       await (processor as any).handleMatchAlerts('listing-1');
 
-      expect(mockNotificationService.createNotification).not.toHaveBeenCalled();
+      expect(mockNotificationService.send).not.toHaveBeenCalled();
     });
 
     it('should NOT trigger notification when year is out of range', async () => {
@@ -123,7 +127,7 @@ describe('MatchProcessor', () => {
 
       await (processor as any).handleMatchAlerts('listing-1');
 
-      expect(mockNotificationService.createNotification).not.toHaveBeenCalled();
+      expect(mockNotificationService.send).not.toHaveBeenCalled();
     });
   });
 });

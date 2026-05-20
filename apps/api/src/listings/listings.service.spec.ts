@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ListingsService } from './listings.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificationService } from '../notifications/notification.service';
 import { getQueueToken } from '@nestjs/bullmq';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { ListingStatus } from '@prisma/client';
@@ -28,6 +29,10 @@ describe('ListingsService', () => {
     $transaction: jest.fn((callback) => callback(mockPrisma)),
   };
 
+  const mockNotificationService = {
+    notifySoldListing: jest.fn().mockResolvedValue(undefined),
+  };
+
   const mockQueue = {
     add: jest.fn(),
   };
@@ -37,6 +42,7 @@ describe('ListingsService', () => {
       providers: [
         ListingsService,
         { provide: PrismaService, useValue: mockPrisma },
+        { provide: NotificationService, useValue: mockNotificationService },
         { provide: getQueueToken('listings'), useValue: mockQueue },
       ],
     }).compile();

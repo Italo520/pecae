@@ -366,7 +366,7 @@ export class ChatService {
 
     this.notificationService.send({
       userId: recipientId,
-      type: NotificationType.CHAT_MESSAGE,
+      type: NotificationType.CHAT_NEW_MESSAGE,
       title: title,
       body: content.length > 50 ? `${content.substring(0, 47)}...` : content,
       data: {
