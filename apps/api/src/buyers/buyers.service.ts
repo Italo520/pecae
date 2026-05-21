@@ -78,6 +78,10 @@ export class BuyersService {
   async deleteAccount(userId: string, deleteAccountDto: DeleteAccountDto) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
+      include: {
+        sellerProfile: true,
+        buyerProfile: true,
+      },
     });
 
     if (!user) {
@@ -99,20 +103,62 @@ export class BuyersService {
     }
 
     await this.prisma.$transaction(async (tx) => {
+      const deletedAtDate = new Date();
+
       // Soft delete: status DELETED
       await tx.user.update({
         where: { id: userId },
         data: {
           status: 'DELETED',
-          deletedAt: new Date(),
+          deletedAt: deletedAtDate,
           originalEmail: user.email,
         },
       });
 
+      // Soft delete: BuyerProfile
+      if (user.buyerProfile) {
+        await tx.buyerProfile.update({
+          where: { id: user.buyerProfile.id },
+          data: { deletedAt: deletedAtDate },
+        });
+      }
+
+      // Soft delete: SellerProfile e suas dependências (Listings, Vehicles)
+      if (user.sellerProfile) {
+        await tx.sellerProfile.update({
+          where: { id: user.sellerProfile.id },
+          data: { deletedAt: deletedAtDate },
+        });
+
+        // Expira e oculta anúncios ativos/pendentes do vendedor
+        await tx.listing.updateMany({
+          where: {
+            sellerProfileId: user.sellerProfile.id,
+            deletedAt: null,
+          },
+          data: {
+            status: 'EXPIRED',
+            deletedAt: deletedAtDate,
+          },
+        });
+
+        // Inativa e oculta veículos/sucatas físicas do vendedor
+        await tx.vehicle.updateMany({
+          where: {
+            sellerId: user.sellerProfile.id,
+            deletedAt: null,
+          },
+          data: {
+            status: 'INACTIVE',
+            deletedAt: deletedAtDate,
+          },
+        });
+      }
+
       // Revoke all refresh tokens
       await tx.refreshToken.updateMany({
         where: { userId },
-        data: { revokedAt: new Date() },
+        data: { revokedAt: deletedAtDate },
       });
     });
 

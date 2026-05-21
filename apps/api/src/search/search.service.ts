@@ -59,6 +59,10 @@ export class SearchService {
 
     const where: any = {
       status: 'ACTIVE', // Status do veículo no catálogo
+      deletedAt: null,
+      seller: {
+        deletedAt: null, // Ocultar veículos de vendedores deletados (LGPD)
+      },
       ...(brandId && { version: { model: { brandId } } }),
       ...(modelId && { version: { modelId } }),
       ...(versionId && { versionId }),

@@ -78,6 +78,9 @@ export class ListingsService {
       const where: any = {
         deletedAt: null,
         status: 'PUBLISHED',
+        sellerProfile: {
+          deletedAt: null, // Ocultar anúncios se o vendedor correspondente for deletado (LGPD)
+        },
       };
 
       if (query.brandId) where.vehicle = { ...where.vehicle, version: { model: { brandId: query.brandId } } };
@@ -117,7 +120,13 @@ export class ListingsService {
 
   async findOne(id: string, ip: string): Promise<ListingDetailResponseDto> {
     const listing = await this.prisma.listing.findFirst({
-      where: { id, deletedAt: null },
+      where: { 
+        id, 
+        deletedAt: null,
+        sellerProfile: {
+          deletedAt: null, // Ocultar anúncio se o vendedor correspondente for deletado (LGPD)
+        },
+      },
       include: {
         vehicle: {
           include: {

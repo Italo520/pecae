@@ -357,6 +357,7 @@ model SellerProfile {
   zipCode     String?    @db.VarChar(10) @map("zip_code")
   lat         Float?
   lng         Float?
+  deliveryRadius Int?      @map("delivery_radius")
   whatsapp    String     @db.VarChar(20)
   phone       String?    @db.VarChar(20)
   openHours   Json?      @map("open_hours")
