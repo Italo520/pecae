@@ -4,80 +4,38 @@
 
 Este documento detalha o roteiro cronológico de desenvolvimento estruturado por Milestones (Sprints) para mitigar dependências técnicas e agilizar entregas contínuas de valor.
 
-## Milestone 1 (Sprint 1) — Fundações: Autenticação & Catálogo Automotivo (Foco: M01 + M04)
+## [CONCLUÍDA] Milestone 1 (Sprint 1) — Fundações: Autenticação & Catálogo Automotivo (Foco: M01 + M04)
 
 > [!NOTE]
-> As tarefas e estimativas originais desta Milestone foram arquivadas em [v1.0-ROADMAP.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v1.0-ROADMAP.md) conforme o protocolo de compressão de contexto.
+> As tarefas e estimativas originais desta Milestone foram arquivadas em [v1.0-ROADMAP.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v1.0/v1.0-ROADMAP.md) conforme o protocolo de compressão de contexto.
 
 ---
 
 ## [CONCLUÍDA] Milestone 2 (Sprint 2) — Perfis de Usuário: Comprador & Vendedor (Foco: M02 + M03)
 
 > [!NOTE]
-> As tarefas e estimativas originais desta Milestone foram arquivadas em [v2.0-ROADMAP.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v2.0-ROADMAP.md) conforme o protocolo de compressão de contexto.
+> As tarefas e estimativas originais desta Milestone foram arquivadas em [v2.0-ROADMAP.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v2.0/v2.0-ROADMAP.md) conforme o protocolo de compressão de contexto.
 
 ---
 
 ## [CONCLUÍDA] Milestone 3 (Sprint 3) — Inventário: Cadastro de Sucatas & Veículos (Foco: M05)
 
 > [!NOTE]
-> As tarefas e estimativas originais desta Milestone foram arquivadas em [v3.0-ROADMAP.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v3.0-ROADMAP.md) conforme o protocolo de compressão de contexto.
+> As tarefas e estimativas originais desta Milestone foram arquivadas em [v3.0-ROADMAP.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v3.0/v3.0-ROADMAP.md) conforme o protocolo de compressão de contexto.
 
 ---
 
 ## [CONCLUÍDA] Milestone 4 (Sprint 4) — Busca, Descoberta e Detalhe de Peças (Foco: M07)
 
-### M07 — Busca e Descoberta (P0)
-**Descrição:** Módulo responsável pela busca e descoberta de sucatas no PECAÊ. Comprador pesquisa por veículo (marca → modelo → ano) e opcionalmente por localização e texto livre (nome da peça). Resultados retornam SEMPRE sucatas completas (veículos), nunca peças avulsas. Usa PostgreSQL Full-Text Search no MVP e migração para OpenSearch na Fase 2.
-
-- [x] **M07-T01: SearchController e SearchService com PostgreSQL Full-Text Search** (Prioridade: P0)
-  *Descrição:* Implementar SearchModule no NestJS com GET /search endpoint. Usar Prisma para queries PostgreSQL otimizadas com filtros em cascata (brandId, modelId, yearMin, yearMax, city, state) e busca por texto livre (FTS nas observações e nome do modelo). Paginação cursor-based. Resultados sempre filtrados por Listing.status=PUBLISHED.
-    - [x] **M07-T01-ST01:** Implementar SearchService com queries Prisma e filtros em cascata (Estimativa: 5h)
-    - [x] **M07-T01-ST02:** Cache Redis para resultados de busca frequentes (Estimativa: 3h)
-    - [x] **M07-T01-ST03:** Endpoint de sugestões de autocomplete de busca (Estimativa: 3h)
-- [x] **M07-T02: Telas de busca e resultados no app React Native** (Prioridade: P0)
-  *Descrição:* Implementar tela principal de busca app/(tabs)/busca.tsx com VehicleSelector em modo search, tela de resultados app/resultados.tsx com FlashList e paginação infinita, e tela de detalhe app/anuncio/[id].tsx com galeria de fotos, peças disponíveis e botão de chat.
-    - [x] **M07-T02-ST01:** Tela de busca (app/(tabs)/busca.tsx) com filtros (Estimativa: 4h)
-    - [x] **M07-T02-ST02:** Tela de resultados com FlashList e paginação infinita (Estimativa: 4h)
-    - [x] **M07-T02-ST03:** Tela de detalhe do anúncio (app/anuncio/[id].tsx) (Estimativa: 6h)
-- [x] **M07-T03: ListingController e endpoint de detalhe** (Prioridade: P0)
-  *Descrição:* Implementar ListingController com GET /listings/:id que retorna dados completos de um anúncio para a tela de detalhe. Incluir Vehicle, VehiclePhotos, SellerProfile (dados públicos) e PartCategory names. Endpoint público (@Public()).
-    - [x] **M07-T03-ST01:** Implementar GET /listings/:id e ListingDetailResponseDto (Estimativa: 4h)
-    - [x] **M07-T03-ST02:** Incremento assíncrono de views e contagem de favoritos (Estimativa: 2h)
-    - [x] **M07-T03-ST03:** Compartilhamento de anúncios e deep links (Estimativa: 2h)
-- [x] **M07-T04: Preparação para migração para OpenSearch (Fase 2)** (Prioridade: P2)
-  *Descrição:* Documentar a estratégia de migração do PostgreSQL Full-Text Search para OpenSearch na Fase 2. Definir índices OpenSearch, mapping de campos e estratégia de sincronização. Preparar SearchService para suportar ambas as implementações via Strategy Pattern.
-    - [x] **M07-T04-ST01:** Definir interface ISearchStrategy e padrão Strategy no SearchService (Estimativa: 3h)
-    - [x] **M07-T04-ST02:** Estratégia de sincronização com OpenSearch (documento de arquitetura) (Estimativa: 2h)
-    - [x] **M07-T04-ST03:** Testes de performance da busca PostgreSQL (baseline) (Estimativa: 3h)
+> [!NOTE]
+> As tarefas e estimativas originais desta Milestone foram arquivadas em [v4.0-ROADMAP.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v4.0/v4.0-ROADMAP.md) conforme o protocolo de compressão de contexto.
 
 ---
 
-## Milestone 5 (Sprint 5) — Negociação Real-Time: Chat, Mensageria & Push (Foco: M08)
+## [CONCLUÍDA] Milestone 5 (Sprint 5) — Negociação Real-Time: Chat, Mensageria & Push (Foco: M08)
 
-### M08 — Chat e Negociação (P0)
-**Descrição:** Módulo de comunicação em tempo real entre comprador e vendedor usando Supabase Realtime. Toda negociação ocorre exclusivamente via chat vinculado a um anúncio específico. Não há preços, transações financeiras ou pagamentos no chat — é apenas a interface de negociação textual. Chat só pode ser iniciado em anúncios com status PUBLISHED (RN11).
-
-- [ ] **M08-T01: Schema Prisma — ChatRoom, ChatMessage e ChatRead** (Prioridade: P0)
-  *Descrição:* Criar entidades ChatRoom (sala de chat 1:1 entre comprador e vendedor por anúncio), ChatMessage (mensagem individual) e ChatRead (controle de leitura por usuário para contador de não lidas) no Prisma.
-    - [ ] **M08-T01-ST01:** Escrever models ChatRoom, ChatMessage e ChatRead (Estimativa: 3h)
-    - [ ] **M08-T01-ST02:** Configurar Supabase Realtime para tabela chat_message (Estimativa: 2h)
-- [ ] **M08-T02: ChatController e ChatService — Endpoints REST** (Prioridade: P0)
-  *Descrição:* Implementar ChatModule com endpoints: POST /chat/rooms (criar/buscar sala), GET /chat/rooms (listar salas do usuário), GET /chat/rooms/:id/messages (histórico paginado), POST /chat/rooms/:id/messages (enviar mensagem), PUT /chat/rooms/:id/read (marcar como lida).
-    - [ ] **M08-T02-ST01:** Implementar POST /chat/rooms com upsert idempotente (Estimativa: 3h)
-    - [ ] **M08-T02-ST02:** Endpoint POST /messages e send de mensagem com Realtime (Estimativa: 4h)
-    - [ ] **M08-T02-ST03:** GET /chat/rooms com lista de conversas e unreadCount (Estimativa: 3h)
-- [ ] **M08-T03: Tela de chat no app React Native com Supabase Realtime** (Prioridade: P0)
-  *Descrição:* Implementar tela de chat app/chat/[roomId].tsx com: header do anúncio, lista de mensagens invertida (mais recentes embaixo), input de mensagem, integração com Supabase Realtime para receber mensagens em tempo real, paginação de histórico e marcação automática de lida.
-    - [ ] **M08-T03-ST01:** Implementar Supabase Realtime subscription no app (Estimativa: 4h)
-    - [ ] **M08-T03-ST02:** Tela de chat com FlatList invertida e MessageBubble (Estimativa: 5h)
-    - [ ] **M08-T03-ST03:** Tela de lista de conversas (aba Mensagens) (Estimativa: 3h)
-- [ ] **M08-T04: Push Notifications para mensagens de chat (via BullMQ + Expo)** (Prioridade: P0)
-  *Nota de Dependency:* A infraestrutura de envio utiliza a fila BullMQ e deve se apoiar nas preferências do M02, com o log consolidado no M11.
-  *Descrição:* Implementar worker BullMQ 'send-push-notification' que envia push notifications via Expo Push Notification API para usuários com o app em background. Salvar Expo Push Token no banco. Respeitar preferências de notificação (NotificationPreferences do M02).
-    - [ ] **M08-T04-ST01:** Registro de PushToken ao login no app (Estimativa: 3h)
-    - [ ] **M08-T04-ST02:** Worker BullMQ para envio de push notifications (Estimativa: 3h)
-    - [ ] **M08-T04-ST03:** Handler de deep link ao tocar na push notification (Estimativa: 2h)
+> [!NOTE]
+> As tarefas e estimativas originais desta Milestone foram arquivadas em [v5.0-ROADMAP.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v5.0/v5.0-ROADMAP.md) conforme o protocolo de compressão de contexto.
 
 ---
 

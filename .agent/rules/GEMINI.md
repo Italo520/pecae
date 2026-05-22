@@ -152,6 +152,22 @@ When user's prompt is NOT in English:
 2. What PRINCIPLES must I apply?
 3. How does this DIFFER from generic output?
 
+### 🧹 Governança de Planejamento e Cleanup de Milestones
+
+> 🔴 **MANDATORY:** Toda documentação e progresso de Milestones devem seguir este protocolo organizacional estrito.
+
+1. **Organização da Pasta `.planning/milestones/`**:
+   - Todos os arquivos referentes a uma Milestone (`ROADMAP.md`, `REQUIREMENTS.md`, `PLAN.md`, `*-MILESTONE-AUDIT.md`) devem ser armazenados exclusivamente dentro de sua respectiva subpasta dedicada: `.planning/milestones/vX.Y/` (onde `vX.Y` é a versão correspondente).
+   - NENHUM arquivo de Milestone deve ficar solto na raiz da pasta `.planning/` ou na raiz da pasta `.planning/milestones/`.
+2. **Estrutura de Fases (`phases`) ou Ondas (`waves`)**:
+   - Caso uma Milestone utilize subfases ou waves (por exemplo, `vX.Y-phases`), esta estrutura de pastas inteira deve ser organizada/aninhada obrigatoriamente dentro da pasta específica da Milestone correspondente (`.planning/milestones/vX.Y/vX.Y-phases/`).
+3. **Protocolo de Extração e Compressão de Milestones Concluídas**:
+   - Sempre que uma Milestone for marcada como concluída (`[CONCLUÍDA]`), os detalhes de suas tarefas no `ROADMAP.md` global e de seus requisitos/regras de negócio/casos de uso no `REQUIREMENTS.md` global **DEVEM** ser extraídos para arquivos históricos exclusivos dentro de sua respectiva pasta da Milestone (`vX.Y-ROADMAP.md` e `vX.Y-REQUIREMENTS.md`).
+   - Nos arquivos globais de escopo ativo (`ROADMAP.md` e `REQUIREMENTS.md` na raiz de `.planning`), os detalhes devem ser substituídos por notas breves explicativas (`> [!NOTE]`) contendo os links diretos para os arquivos de histórico correspondentes, mantendo os documentos mestres limpos e focados apenas no progresso ativo das próximas etapas.
+4. **Protocolo de Limpeza (`Cleanup`) pós-Milestone**:
+   - Imediatamente após a conclusão bem-sucedida da auditoria de uma Milestone (ex: execução do `gsd-audit-milestone` com sucesso), o agente **DEVE** realizar uma limpeza geral (`cleanup`).
+   - O cleanup consiste no arquivamento seguro de logs parciais e na eliminação de planos de fase voláteis e rascunhos temporários locais que não sejam artefatos finais de governança consolidada. Isso garante um repositório leve, organizado e focado apenas no estado real do projeto.
+
 ---
 
 ## TIER 1: CODE RULES (When Writing Code)

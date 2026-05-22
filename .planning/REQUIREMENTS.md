@@ -5,27 +5,27 @@
 ### M01 - Autenticação e Cadastro
 
 > [!NOTE]
-> Os requisitos funcionais deste módulo foram 100% satisfeitos e arquivados em [v1.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v1.0-REQUIREMENTS.md).
+> Os requisitos funcionais deste módulo foram 100% satisfeitos e arquivados em [v1.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v1.0/v1.0-REQUIREMENTS.md).
 
 ### M02 - Perfil do Comprador
 
 > [!NOTE]
-> Os requisitos funcionais deste módulo foram 100% satisfeitos e arquivados em [v2.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v2.0-REQUIREMENTS.md).
+> Os requisitos funcionais deste módulo foram 100% satisfeitos e arquivados em [v2.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v2.0/v2.0-REQUIREMENTS.md).
 
 ### M03 - Perfil do Vendedor
 
 > [!NOTE]
-> Os requisitos funcionais deste módulo foram 100% satisfeitos e arquivados em [v2.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v2.0-REQUIREMENTS.md).
+> Os requisitos funcionais deste módulo foram 100% satisfeitos e arquivados em [v2.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v2.0/v2.0-REQUIREMENTS.md).
 
 ### M04 - Catálogo Automotivo
 
 > [!NOTE]
-> Os requisitos funcionais deste módulo foram 100% satisfeitos e arquivados em [v1.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v1.0-REQUIREMENTS.md).
+> Os requisitos funcionais deste módulo foram 100% satisfeitos e arquivados em [v1.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v1.0/v1.0-REQUIREMENTS.md).
 
 ### M05 - Cadastro de Sucata / Veículo
 
 > [!NOTE]
-> Os requisitos funcionais deste módulo foram 100% satisfeitos e arquivados em [v3.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v3.0-REQUIREMENTS.md).
+> Os requisitos funcionais deste módulo foram 100% satisfeitos e arquivados em [v3.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v3.0/v3.0-REQUIREMENTS.md).
 
 ### M06 - Avaliações e Reputação
 - **RF70:** Comprador deve poder avaliar vendedor com nota 1-5 e comentário opcional após interação em chat (P1)
@@ -34,23 +34,14 @@
 - **RF73:** Apenas uma avaliação por chatRoom (uma negociação = uma avaliação) (P0)
 
 ### M07 - Busca e Descoberta
-- **RF50:** Sistema deve permitir busca de sucatas por marca, modelo e faixa de ano (P0)
-- **RF51:** Sistema deve filtrar resultados por cidade e/ou estado (P0)
-- **RF52:** Sistema deve suportar busca por texto livre (nome de peça) com debounce de 300ms (P1)
-- **RF53:** Resultados devem ser paginados via cursor (não offset) para performance (P0)
-- **RF54:** Sistema deve exibir autocomplete de marca e modelo no campo de texto (P1)
-- **RF55:** Tela de detalhe do anúncio deve exibir galeria de fotos, peças disponíveis (sem preços) e dados do vendedor (P0)
-- **RF56:** Sistema deve sugerir 'Salvar busca' quando resultados retornam zero (P1)
-- **RF57:** Busca deve retornar exclusivamente sucatas (veículos completos) com status PUBLISHED (P0)
+
+> [!NOTE]
+> Os requisitos funcionais deste módulo foram 100% satisfeitos e arquivados em [v4.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v4.0/v4.0-REQUIREMENTS.md).
 
 ### M08 - Chat e Negociação
-- **RF60:** Comprador deve poder iniciar chat a partir de anúncio PUBLISHED (uma sala por comprador por anúncio) (P0)
-- **RF61:** Mensagens devem ser entregues em tempo real via Supabase Realtime (P0)
-- **RF62:** Histórico de mensagens deve ser persistido no banco com paginação cursor (P0)
-- **RF63:** Usuários devem receber push notification de novas mensagens quando o app estiver em background (P0)
-- **RF64:** Comprador deve visualizar lista de todas as suas conversas ativas na aba Mensagens (P0)
-- **RF65:** Vendedor deve visualizar lista de todas as conversas ativas nos seus anúncios na aba Mensagens (P0)
-- **RF66:** Sistema deve exibir contador de mensagens não lidas por conversa (P0)
+
+> [!NOTE]
+> Os requisitos funcionais deste módulo foram 100% satisfeitos e arquivados em [v5.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v5.0/v5.0-REQUIREMENTS.md).
 
 ### M09 - Painel de Moderação
 - **RF100:** Moderador deve visualizar fila de anúncios PENDING_APPROVAL com filtros por data, vendedor e tipo de veículo (P0)
@@ -103,27 +94,27 @@
 ### M01 - Autenticação e Cadastro
 
 > [!NOTE]
-> As regras de negócio deste módulo foram 100% satisfeitas e arquivadas em [v1.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v1.0-REQUIREMENTS.md).
+> As regras de negócio deste módulo foram 100% satisfeitas e arquivadas em [v1.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v1.0/v1.0-REQUIREMENTS.md).
 
 ### M02 - Perfil do Comprador
 
 > [!NOTE]
-> As regras de negócio deste módulo foram 100% satisfeitas e arquivadas em [v2.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v2.0-REQUIREMENTS.md).
+> As regras de negócio deste módulo foram 100% satisfeitas e arquivadas em [v2.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v2.0/v2.0-REQUIREMENTS.md).
 
 ### M03 - Perfil do Vendedor
 
 > [!NOTE]
-> As regras de negócio deste módulo foram 100% satisfeitas e arquivadas em [v2.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v2.0-REQUIREMENTS.md).
+> As regras de negócio deste módulo foram 100% satisfeitas e arquivadas em [v2.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v2.0/v2.0-REQUIREMENTS.md).
 
 ### M04 - Catálogo Automotivo
 
 > [!NOTE]
-> As regras de negócio deste módulo foram 100% satisfeitas e arquivadas em [v1.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v1.0-REQUIREMENTS.md).
+> As regras de negócio deste módulo foram 100% satisfeitas e arquivadas em [v1.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v1.0/v1.0-REQUIREMENTS.md).
 
 ### M05 - Cadastro de Sucata / Veículo
 
 > [!NOTE]
-> As regras de negócio deste módulo foram 100% satisfeitas e arquivadas em [v3.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v3.0-REQUIREMENTS.md).
+> As regras de negócio deste módulo foram 100% satisfeitas e arquivadas em [v3.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v3.0/v3.0-REQUIREMENTS.md).
 
 ### M06 - Avaliações e Reputação
 - **RN-M06-01:** Avaliação permitida apenas para comprador que teve chatRoom com o vendedor
@@ -132,17 +123,14 @@
 - **RN-M06-04:** Vendedor não avalia comprador nesta versão
 
 ### M07 - Busca e Descoberta
-- **RN03:** Busca retorna SEMPRE veículos/sucatas completas, NUNCA peças avulsas independentes
-- **RN04:** Resultados e detalhe do anúncio NUNCA exibem preço — negociação via chat
-- **RN08:** Placa exibida mascarada no detalhe do anúncio: ABC-****
-- **RN11:** Chat só pode ser iniciado em anúncios com status PUBLISHED
-- **RN-M07-01:** Busca sempre filtra por Listing.status = PUBLISHED (nunca retorna PENDING, REJECTED, SOLD, EXPIRED)
+
+> [!NOTE]
+> As regras de negócio deste módulo foram 100% satisfeitas e arquivadas em [v4.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v4.0/v4.0-REQUIREMENTS.md).
 
 ### M08 - Chat e Negociação
-- **RN04:** Chat é interface exclusivamente textual — sem campo de preço, sem pagamentos
-- **RN11:** Chat só pode ser iniciado em anúncios com status PUBLISHED — anúncios SOLD, REJECTED ou EXPIRED não aceitam novas mensagens
-- **RN12:** Apenas comprador e vendedor do anúncio podem acessar o chat específico
-- **RN09:** Sistema deve fornecer botões de moderação rápida no chat (Denunciar mensagem), mas não interceptar automaticamente
+
+> [!NOTE]
+> As regras de negócio deste módulo foram 100% satisfeitas e arquivadas em [v5.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v5.0/v5.0-REQUIREMENTS.md).
 
 ### M09 - Painel de Moderação
 - **RN14:** Nenhum anúncio é publicado sem aprovação de moderador — fluxo mandatório
@@ -192,27 +180,27 @@
 ### M01 - Autenticação e Cadastro
 
 > [!NOTE]
-> Os casos de uso deste módulo foram 100% satisfeitos e arquivados em [v1.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v1.0-REQUIREMENTS.md).
+> Os casos de uso deste módulo foram 100% satisfeitos e arquivados em [v1.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v1.0/v1.0-REQUIREMENTS.md).
 
 ### M02 - Perfil do Comprador
 
 > [!NOTE]
-> Os casos de uso deste módulo foram 100% satisfeitos e arquivados em [v2.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v2.0-REQUIREMENTS.md).
+> Os casos de uso deste módulo foram 100% satisfeitos e arquivados em [v2.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v2.0/v2.0-REQUIREMENTS.md).
 
 ### M03 - Perfil do Vendedor
 
 > [!NOTE]
-> Os casos de uso deste módulo foram 100% satisfeitos e arquivados em [v2.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v2.0-REQUIREMENTS.md).
+> Os casos de uso deste módulo foram 100% satisfeitos e arquivados em [v2.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v2.0/v2.0-REQUIREMENTS.md).
 
 ### M04 - Catálogo Automotivo
 
 > [!NOTE]
-> Os casos de uso deste módulo foram 100% satisfeitos e arquivados em [v1.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v1.0-REQUIREMENTS.md).
+> Os casos de uso deste módulo foram 100% satisfeitos e arquivados em [v1.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v1.0/v1.0-REQUIREMENTS.md).
 
 ### M05 - Cadastro de Sucata / Veículo
 
 > [!NOTE]
-> Os casos de uso deste módulo foram 100% satisfeitos e arquivados em [v3.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v3.0-REQUIREMENTS.md).
+> Os casos de uso deste módulo foram 100% satisfeitos e arquivados em [v3.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v3.0/v3.0-REQUIREMENTS.md).
 
 ### M06 - Avaliações e Reputação
 #### UC35: Avaliar vendedor após negociação
@@ -228,63 +216,14 @@
   A1. Avaliação já existe: botão desabilitado com texto 'Você já avaliou'
 
 ### M07 - Busca e Descoberta
-#### UC25: Buscar sucatas por veículo
-- **Atores:** Comprador, Visitante
-- **Pré-condições:** Catálogo com dados (M04) e anúncios PUBLISHED (M05)
-- **Fluxo Principal:**
-  1. Usuário acessa tela de busca
-  2. Seleciona marca, modelo e/ou ano
-  3. Opcionalmente define localização e texto livre
-  4. Sistema retorna sucatas PUBLISHED compatíveis
-  5. Usuário visualiza resultados e acessa detalhe
-- **Fluxos Alternativos:**
-  A1. Zero resultados: sugerir salvar busca como alerta
-  A2. Cache hit: retornar resultado sem query ao banco
 
-#### UC26: Visualizar detalhe de sucata
-- **Atores:** Comprador, Visitante
-- **Pré-condições:** Listing com status PUBLISHED
-- **Fluxo Principal:**
-  1. Comprador toca em card de sucata nos resultados
-  2. Sistema exibe galeria de fotos, dados do veículo, peças disponíveis e dados públicos do vendedor
-  3. Comprador toca em 'Entrar em contato' para iniciar chat (M06)
-- **Fluxos Alternativos:**
-  A1. Anúncio não PUBLISHED: exibir 404 ou mensagem de indisponibilidade
+> [!NOTE]
+> Os casos de uso deste módulo foram 100% satisfeitos e arquivados em [v4.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v4.0/v4.0-REQUIREMENTS.md).
 
 ### M08 - Chat e Negociação
-#### UC30: Iniciar chat com vendedor
-- **Atores:** Comprador
-- **Pré-condições:** Comprador autenticado, Listing com status PUBLISHED
-- **Fluxo Principal:**
-  1. Comprador toca 'Entrar em Contato' no anúncio
-  2. Sistema cria/recupera ChatRoom para este comprador + listing
-  3. Comprador navega para tela de chat
-  4. Comprador envia primeira mensagem
-- **Fluxos Alternativos:**
-  A1. Listing não PUBLISHED: botão desabilitado + toast 'Anúncio não disponível'
-  A2. ChatRoom já existe: abrir sala existente (idempotente)
 
-#### UC31: Trocar mensagens em tempo real
-- **Atores:** Comprador, Vendedor
-- **Pré-condições:** ChatRoom existente e ambos os usuários ativos
-- **Fluxo Principal:**
-  1. Usuário digita mensagem
-  2. Mensagem enviada via POST /chat/rooms/:id/messages
-  3. Mensagem persistida no banco
-  4. Supabase Realtime broadcast para o outro usuário
-  5. Se destinatário offline: push notification enviado via BullMQ
-- **Fluxos Alternativos:**
-  A1. Erro de conexão: mensagem fica em fila local e retry automático
-
-#### UC32: Visualizar lista de conversas
-- **Atores:** Comprador, Vendedor
-- **Pré-condições:** Usuário autenticado com conversas existentes
-- **Fluxo Principal:**
-  1. Usuário acessa aba Mensagens
-  2. Sistema exibe lista de ChatRooms com última mensagem, data e contador de não lidas
-  3. Usuário toca em conversa para acessar chat
-- **Fluxos Alternativos:**
-  A1. Sem conversas: EmptyState com CTA 'Explorar sucatas'
+> [!NOTE]
+> Os casos de uso deste módulo foram 100% satisfeitos e arquivados em [v5.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v5.0/v5.0-REQUIREMENTS.md).
 
 ### M09 - Painel de Moderação
 #### UC50: Aprovar anúncio de sucata
