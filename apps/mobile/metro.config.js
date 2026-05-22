@@ -38,7 +38,7 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
         filePath: resolvedPath,
         type: 'sourceFile',
       };
-    } catch (e) {
+    } catch {
       // Se nem na raiz existir, relança o erro original
       throw error;
     }
