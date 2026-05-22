@@ -1,9 +1,8 @@
 # PROJECT.md
 
-> **Versão Expedida:** v1.0 (Milestone 1) | v2.0 (Milestone 2) | v3.0 (Milestone 3)  
-> **Status Geral:** Milestones 1, 2 e 3 concluídas e arquivadas com sucesso. Iniciando o ciclo de desenvolvimento da Milestone 4.  
-> **Foco Atual:** M07 — Busca e Descoberta (Busca por filtros, texto livre com debounce, paginação via cursor, autocomplete e tela de detalhes do anúncio com galeria de fotos).
-
+> **Versão Expedida:** v8.0 (Milestone 8)  
+> **Status Geral:** Todas as Milestones de 1 a 8 foram concluídas e arquivadas com sucesso. O MVP + Analytics foram finalizados.  
+> **Foco Atual:** Próximos passos e encerramento (Post-MVP).
 
 
 ## Visão Geral do Sistema PECAÊ

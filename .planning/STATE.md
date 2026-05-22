@@ -13,7 +13,8 @@
 - **Milestone 5 (Sprint 5)**: M08 (Chat e Negociação) — Status: `completed`
 - **Milestone 6 (Sprint 6)**: M06 (Avaliações), M09 (Moderação), M11 (Notificações) & MFA (Alertas) — Status: `completed`
 - **Milestone 7 (Sprint 7)**: M13 (Ads e Monetização) — Status: `completed`
-- **Milestone 8 (Sprint 8)**: M12 (Analytics) & M10 (Assinaturas) — Status: `active`
+- **Milestone 8 (Sprint 8)**: M12 (Analytics) — Status: `completed` (M10 Assinaturas: `deferred`)
 
 ### Próxima Etapa Ativa:
-- **Milestone 8 — Sprint 8**: Implementação do módulo de Analytics e Dashboards (M12) para vendedores e admins ( Victory Native, BullMQ crons) e do módulo de Gestão de Assinaturas (M10) com checkout via Mercado Pago.
+- **Milestones 1 a 8 concluídas**. MVP e escopos adicionais entregues com sucesso.
+- **Próximos Passos**: Manutenção, deploy em produção, monitoramento e eventuais melhorias pós-lançamento.
