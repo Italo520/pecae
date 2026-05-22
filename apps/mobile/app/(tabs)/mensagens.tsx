@@ -6,6 +6,8 @@ import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
+import { useAuthStore } from '../../src/store/auth-store';
+import { supabase } from '../../src/services/supabase';
 
 interface ChatRoom {
   id: string;
@@ -27,6 +29,7 @@ interface ChatRoom {
 
 export default function MensagensScreen() {
   const { colors, typography, effects } = usePecaeTheme();
+  const { user } = useAuthStore();
   const router = useRouter();
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -53,9 +56,21 @@ export default function MensagensScreen() {
   useEffect(() => {
     fetchRooms();
     
-    // Refresh every 15 seconds
-    const interval = setInterval(fetchRooms, 15000);
-    return () => clearInterval(interval);
+    // Assinatura global para recarregar a lista de conversas caso receba nova mensagem
+    const channel = supabase
+      .channel('public:chat_messages')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'chat_messages' },
+        () => {
+          fetchRooms();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const handleRefresh = () => {

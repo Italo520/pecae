@@ -53,7 +53,7 @@ export default function RootLayout() {
         // Remove o esquema pecae:// se estiver presente para o router.push entender
         const path = data.url.replace('pecae://', '/');
         router.push(path);
-      } else if (data?.type === 'CHAT_MESSAGE') {
+      } else if (data?.type === 'CHAT' || data?.type === 'CHAT_MESSAGE') {
         router.push(`/chat/${data.roomId}`);
       } else if (data?.type === 'SAVED_SEARCH_ALERT') {
         router.push('/(tabs)/search');

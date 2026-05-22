@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
+import * as Notifications from 'expo-notifications';
+import { api } from '../services/api';
 
 interface User {
   id: string;
@@ -48,6 +50,32 @@ export const useAuthStore = create<AuthState>((set) => ({
       }
       
       set({ user, token: accessToken, refreshToken, isAuthenticated: true, isLoading: false });
+
+      // Registrar o Push Token do dispositivo
+      if (Platform.OS !== 'web') {
+        try {
+          const { status: existingStatus } = await Notifications.getPermissionsAsync();
+          let finalStatus = existingStatus;
+          if (existingStatus !== 'granted') {
+            const { status } = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+          }
+          if (finalStatus === 'granted') {
+            const token = (await Notifications.getExpoPushTokenAsync()).data;
+            // API interceptors usually handle the Authorization header
+            // But we pass it explicitly just in case the interceptor is not ready yet
+            await api.post('/users/push-token', {
+              token,
+              platform: Platform.OS,
+            }, {
+              headers: { Authorization: `Bearer ${accessToken}` }
+            });
+            console.log('[AuthStore] Push token registered successfully');
+          }
+        } catch (pushErr) {
+          console.error('[AuthStore] Failed to register push token:', pushErr);
+        }
+      }
     } catch (error) {
       console.error('Error saving auth state:', error);
     }

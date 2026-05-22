@@ -94,6 +94,7 @@ model User {
   chatMessages             ChatMessage[]
   chatReads                ChatRead[]
   notifications            Notification[]
+  pushTokens               PushToken[]
   reportsCreated           Report[]                 @relation("Reporter")
   reportsAgainst           Report[]                 @relation("Reported")
   moderatedReports         Report[]                 @relation("Moderator")
@@ -126,6 +127,29 @@ model RefreshToken {
   @@index([tokenHash])
   @@index([userId])
   @@map("refresh_tokens")
+}
+
+enum PushPlatform {
+  ios
+  android
+  web
+}
+
+/// Push tokens registered from mobile app (Expo)
+model PushToken {
+  id        String       @id @default(uuid())
+  userId    String       @map("user_id")
+  token     String       @map("token")
+  platform  PushPlatform
+
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, platform])
+  @@index([userId])
+  @@map("push_tokens")
 }
 
 /// Single-use tokens sent via e-mail for account verification.

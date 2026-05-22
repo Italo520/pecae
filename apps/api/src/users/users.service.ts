@@ -30,4 +30,23 @@ export class UserService {
       data,
     });
   }
+
+  async savePushToken(userId: string, token: string, platform: 'ios' | 'android' | 'web') {
+    return this.prisma.pushToken.upsert({
+      where: {
+        userId_platform: {
+          userId,
+          platform,
+        },
+      },
+      create: {
+        userId,
+        token,
+        platform,
+      },
+      update: {
+        token,
+      },
+    });
+  }
 }

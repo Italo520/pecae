@@ -20,7 +20,6 @@
     "postinstall": "node scripts/patch-metro.js"
   },
   "overrides": {
-    "ajv": "^8.18.0",
     "lodash": "^4.17.23",
     "glob": "^11.0.0",
     "braces": "^3.0.3",

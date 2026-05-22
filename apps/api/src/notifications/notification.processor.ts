@@ -20,12 +20,12 @@ export class NotificationProcessor extends WorkerHost {
     switch (job.name) {
       case 'send-push': {
         try {
-          // 1. Obter pushToken nas preferências
-          const prefs = await this.prisma.notificationPreferences.findUnique({
+          // 1. Obter pushTokens da tabela dedicada
+          const userTokens = await this.prisma.pushToken.findMany({
             where: { userId },
           });
 
-          if (!prefs || !prefs.pushToken) {
+          if (!userTokens || userTokens.length === 0) {
             if (notificationId) {
               await this.prisma.notificationLog.create({
                 data: {
@@ -39,8 +39,10 @@ export class NotificationProcessor extends WorkerHost {
             return;
           }
 
-          // 2. Disparar via Expo Push API
-          await this.sendExpoPush(prefs.pushToken, title, body, job.data.data);
+          // 2. Disparar via Expo Push API para cada token
+          for (const pushToken of userTokens) {
+            await this.sendExpoPush(pushToken.token, title, body, job.data.data);
+          }
 
           if (notificationId) {
             await this.prisma.notificationLog.create({

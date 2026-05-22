@@ -1,11 +1,10 @@
-import { Controller, Get, Post, Put, Body, Param, UseGuards, Request, Query, Sse, MessageEvent } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, Param, UseGuards, Request, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { ChatService } from './chat.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { SendMessageDto } from './dto/send-message.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+
 
 @ApiTags('Chat e Negociação')
 @ApiBearerAuth()
@@ -59,16 +58,4 @@ export class ChatController {
     return this.chatService.markAsRead(roomId, req.user.id);
   }
 
-  @Sse('rooms/:id/stream')
-  @ApiOperation({ summary: 'Stream de mensagens em tempo real (Server-Sent Events)' })
-  streamMessages(
-    @Request() req: any,
-    @Param('id') roomId: string,
-  ): Observable<MessageEvent> {
-    // Nota: O JwtAuthGuard não valida SSE da mesma forma que REST em algumas implementações,
-    // mas aqui o stream já filtra se a pessoa tentar abrir. O ideal seria validar o token na query params.
-    return this.chatService.getMessageStream(roomId).pipe(
-      map((message) => ({ data: message } as MessageEvent))
-    );
-  }
 }

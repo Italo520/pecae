@@ -1,31 +1,14 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Subject, Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
 import { NotificationService } from '../notifications/notification.service';
 import { NotificationType } from '@prisma/client';
 
 @Injectable()
 export class ChatService {
-  // Mapa para gerenciar streams de mensagens em tempo real por sala
-  private messageStreams = new Map<string, Subject<any>>();
-
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationService,
   ) {}
-
-  private getOrCreateStream(roomId: string): Subject<any> {
-    if (!this.messageStreams.has(roomId)) {
-      this.messageStreams.set(roomId, new Subject<any>());
-    }
-    return this.messageStreams.get(roomId)!;
-  }
-
-  getMessageStream(roomId: string): Observable<any> {
-    return this.getOrCreateStream(roomId).asObservable();
-  }
-
   private getRoomMetadata(room: any) {
     let title = 'Conversa';
     let thumbnail = null;
@@ -91,8 +74,8 @@ export class ChatService {
     }
 
     let sellerId: string;
-    let targetListingId: string | null = listingId || null;
-    let targetVehicleId: string | null = vehicleId || null;
+    const targetListingId: string | null = listingId || null;
+    const targetVehicleId: string | null = vehicleId || null;
 
     if (vehicleId) {
       const vehicle = await this.prisma.vehicle.findUnique({
@@ -355,10 +338,6 @@ export class ChatService {
       where: { id: roomId },
       data: { updatedAt: new Date() },
     });
-
-    // Envia a mensagem para o stream em tempo real
-    const stream = this.getOrCreateStream(roomId);
-    stream.next(message);
 
     // Enviar notificação para o destinatário
     const recipientId = senderId === room.buyerId ? room.sellerId : room.buyerId;

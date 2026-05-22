@@ -7,6 +7,7 @@ import { api } from '../../src/services/api';
 import { useAuthStore } from '../../src/store/auth-store';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
+import { supabase } from '../../src/services/supabase';
 
 interface Message {
   id: string;
@@ -151,8 +152,33 @@ export default function ChatRoomScreen() {
     fetchMessages();
     markAsRead();
 
-    const interval = setInterval(fetchMessages, 4000);
-    return () => clearInterval(interval);
+    const channel = supabase
+      .channel(`chat:${roomId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'chat_messages',
+          filter: `room_id=eq.${roomId}`,
+        },
+        (payload) => {
+          const newMsg = payload.new as Message;
+          setMessages((prev) => {
+            if (prev.some((m) => m.id === newMsg.id)) return prev;
+            return [...prev, newMsg];
+          });
+
+          setTimeout(() => {
+            flatListRef.current?.scrollToEnd({ animated: true });
+          }, 100);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [roomId]);
 
   const handleSend = async () => {
