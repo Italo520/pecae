@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
-import SegmentedControl from '@react-native-segmented-control/segmented-control';
+// import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { LineChart } from 'react-native-gifted-charts';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -68,7 +68,7 @@ export default function AnalyticsScreen() {
           </View>
 
           <View style={styles.segmentedWrapper}>
-            <SegmentedControl
+            {/* <SegmentedControl
               values={['7 Dias', '30 Dias', '90 Dias']}
               selectedIndex={periodIndex}
               onChange={(event) => {
@@ -78,7 +78,7 @@ export default function AnalyticsScreen() {
               fontStyle={{ color: colors.textMuted }}
               activeFontStyle={{ color: '#fff', fontWeight: 'bold' }}
               backgroundColor={colors.surface}
-            />
+            /> */}
           </View>
 
           {isLoading ? (
