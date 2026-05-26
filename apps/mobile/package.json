@@ -65,6 +65,7 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@expo/dev-server": "0.1.120",
     "@babel/core": "^7.24.6",
     "@pecae/shared": "*",
     "@react-native-community/cli": "^13.6.9",
