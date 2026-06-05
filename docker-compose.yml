@@ -16,7 +16,7 @@ services:
     networks:
       - pecae-network
 
-  redis:
+  pecae-redis:
     image: public.ecr.aws/docker/library/redis:7-alpine
     restart: always
     volumes:
@@ -38,7 +38,7 @@ services:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://postgres:password123@database:5432/pecae_db?schema=public
       - DIRECT_URL=postgresql://postgres:password123@database:5432/pecae_db?schema=public
-      - REDIS_HOST=redis
+      - REDIS_HOST=pecae-redis
       - REDIS_PORT=6379
       - JWT_SECRET=${JWT_SECRET}
       - PORT=3000
@@ -59,7 +59,7 @@ services:
     depends_on:
       database:
         condition: service_healthy
-      redis:
+      pecae-redis:
         condition: service_healthy
     networks:
       - pecae-network
