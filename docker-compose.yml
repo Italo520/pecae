@@ -7,8 +7,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password123
       POSTGRES_DB: pecae_db
-    ports:
-      - "5432:5432"
+
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -23,8 +22,7 @@ services:
     image: public.ecr.aws/docker/library/redis:7-alpine
     container_name: pecae-redis
     restart: always
-    ports:
-      - "6379:6379"
+
     volumes:
       - redis_data:/data
     healthcheck:
@@ -56,8 +54,7 @@ services:
       - SUPABASE_SERVICE_ROLE_KEY=placeholder
       - ADMIN_SEED_EMAIL=admin@pecae.com.br
       - ADMIN_SEED_PASSWORD=Admin@pecae123
-    ports:
-      - "3000:3000"
+
     depends_on:
       database:
         condition: service_healthy
@@ -75,8 +72,7 @@ services:
         EXPO_PUBLIC_API_URL: https://api-pecae.italohub.cloud/api/v1
     container_name: pecae-mobile-web
     restart: always
-    ports:
-      - "8080:80"
+
     depends_on:
       - api
     networks:
