@@ -23,12 +23,7 @@ async function bootstrap() {
 
   // --- CORS ---
   app.enableCors({
-    origin: [
-      'https://pecae.italohub.cloud',
-      'http://localhost:8081',
-      'http://localhost:3000',
-      'http://localhost:3001',
-    ],
+    origin: true,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
     credentials: true,
