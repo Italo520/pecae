@@ -40,20 +40,20 @@ services:
     container_name: pecae-api
     restart: always
     environment:
-      - NODE_ENV=development
-      - DATABASE_URL=postgresql://postgres:password123@database:5432/pecae_db?schema=public
-      - DIRECT_URL=postgresql://postgres:password123@database:5432/pecae_db?schema=public
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - JWT_SECRET=super_secret_dev_key
-      - PORT=3000
-      - RESEND_API_KEY=re_dev_placeholder
-      - EMAIL_FROM=noreply@pecae.com.br
-      - STORAGE_TYPE=mock
-      - SUPABASE_URL=https://placeholder.supabase.co
-      - SUPABASE_SERVICE_ROLE_KEY=placeholder
-      - ADMIN_SEED_EMAIL=admin@pecae.com.br
-      - ADMIN_SEED_PASSWORD=Admin@pecae123
+      - NODE_ENV=${NODE_ENV:-development}
+      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:password123@database:5432/pecae_db?schema=public}
+      - DIRECT_URL=${DIRECT_URL:-postgresql://postgres:password123@database:5432/pecae_db?schema=public}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - JWT_SECRET=${JWT_SECRET:-super_secret_dev_key}
+      - PORT=${PORT:-3000}
+      - RESEND_API_KEY=${RESEND_API_KEY:-re_dev_placeholder}
+      - EMAIL_FROM=${EMAIL_FROM:-noreply@pecae.com.br}
+      - STORAGE_TYPE=${STORAGE_TYPE:-mock}
+      - SUPABASE_URL=${SUPABASE_URL:-https://placeholder.supabase.co}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY:-placeholder}
+      - ADMIN_SEED_EMAIL=${ADMIN_SEED_EMAIL:-admin@pecae.com.br}
+      - ADMIN_SEED_PASSWORD=${ADMIN_SEED_PASSWORD:-Admin@pecae123}
 
     depends_on:
       database:
