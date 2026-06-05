@@ -1,13 +1,11 @@
 services:
   database:
     image: public.ecr.aws/docker/library/postgres:16-alpine
-    container_name: pecae-postgres
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password123
       POSTGRES_DB: pecae_db
-
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -20,9 +18,7 @@ services:
 
   redis:
     image: public.ecr.aws/docker/library/redis:7-alpine
-    container_name: pecae-redis
     restart: always
-
     volumes:
       - redis_data:/data
     healthcheck:
@@ -37,31 +33,35 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-    container_name: pecae-api
     restart: always
     environment:
-      - NODE_ENV=${NODE_ENV:-development}
-      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:password123@database:5432/pecae_db?schema=public}
-      - DIRECT_URL=${DIRECT_URL:-postgresql://postgres:password123@database:5432/pecae_db?schema=public}
-      - REDIS_HOST=${REDIS_HOST:-redis}
-      - REDIS_PORT=${REDIS_PORT:-6379}
-      - JWT_SECRET=${JWT_SECRET:-super_secret_dev_key}
-      - PORT=${PORT:-3000}
-      - RESEND_API_KEY=${RESEND_API_KEY:-re_dev_placeholder}
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:password123@database:5432/pecae_db?schema=public
+      - DIRECT_URL=postgresql://postgres:password123@database:5432/pecae_db?schema=public
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=${JWT_SECRET}
+      - PORT=3000
+      - RESEND_API_KEY=${RESEND_API_KEY}
       - EMAIL_FROM=${EMAIL_FROM:-noreply@pecae.com.br}
       - STORAGE_TYPE=${STORAGE_TYPE:-mock}
-      - SUPABASE_URL=${SUPABASE_URL:-https://placeholder.supabase.co}
-      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY:-placeholder}
-      - ADMIN_SEED_EMAIL=${ADMIN_SEED_EMAIL:-admin@pecae.com.br}
-      - ADMIN_SEED_PASSWORD=${ADMIN_SEED_PASSWORD:-Admin@pecae123}
-
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - ADMIN_SEED_EMAIL=${ADMIN_SEED_EMAIL}
+      - ADMIN_SEED_PASSWORD=${ADMIN_SEED_PASSWORD}
     depends_on:
       database:
         condition: service_healthy
       redis:
         condition: service_healthy
     labels:
-      - "traefik.docker.network=coolify"
+      - traefik.enable=true
+      - traefik.docker.network=coolify
+      - traefik.http.routers.pecae-api.rule=Host(`api-pecae.italohub.cloud`)
+      - traefik.http.routers.pecae-api.entrypoints=https
+      - traefik.http.routers.pecae-api.tls=true
+      - traefik.http.routers.pecae-api.tls.certresolver=letsencrypt
+      - traefik.http.services.pecae-api.loadbalancer.server.port=3000
     networks:
       - pecae-network
       - coolify
@@ -71,15 +71,18 @@ services:
       context: .
       dockerfile: apps/mobile/Dockerfile
       args:
-        # CRITICO: passado como ARG de build-time para ser embutido no bundle JS pelo Expo
         EXPO_PUBLIC_API_URL: https://api-pecae.italohub.cloud/api/v1
-    container_name: pecae-mobile-web
     restart: always
-
     depends_on:
       - api
     labels:
-      - "traefik.docker.network=coolify"
+      - traefik.enable=true
+      - traefik.docker.network=coolify
+      - traefik.http.routers.pecae-web.rule=Host(`pecae.italohub.cloud`)
+      - traefik.http.routers.pecae-web.entrypoints=https
+      - traefik.http.routers.pecae-web.tls=true
+      - traefik.http.routers.pecae-web.tls.certresolver=letsencrypt
+      - traefik.http.services.pecae-web.loadbalancer.server.port=80
     networks:
       - pecae-network
       - coolify
