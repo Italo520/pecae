@@ -13,13 +13,13 @@ export class MailService {
 
   constructor(private readonly configService: ConfigService) {
     const apiKey = this.configService.get<string>("RESEND_API_KEY");
-    if (apiKey && apiKey !== "re_123456789") {
-      this.resend = new Resend(apiKey);
-    } else {
-      this.logger.warn(
-        "RESEND_API_KEY não configurada ou inválida. E-mails serão apenas logados no console.",
+    // DESATIVADO TEMPORARIAMENTE: Força o uso do mock de log
+    // if (apiKey && apiKey !== "re_123456789") {
+    //   this.resend = new Resend(apiKey);
+    // } else {
+    this.logger.warn(
+        "Resend desativado temporariamente. E-mails serão apenas logados no console.",
       );
-    }
   }
 
   private async sendEmail(payload: any, defaultErrorMessage: string) {
