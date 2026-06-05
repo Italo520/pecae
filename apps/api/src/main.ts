@@ -16,37 +16,24 @@ async function bootstrap() {
   app.use(
     helmet({
       contentSecurityPolicy: env === 'production',
-      crossOriginEmbedderPolicy: env === 'production',
+      crossOriginEmbedderPolicy: false,
+      crossOriginResourcePolicy: false, // Prevent Helmet from blocking cross-origin requests
     }),
   );
 
   // --- CORS ---
-  const defaultOrigins = [
-    'https://pecae.italohub.cloud',
-    'https://api-pecae.italohub.cloud',
-    'http://localhost:8081',
-    'http://localhost:3000',
-    'http://localhost:3001',
-  ];
-
-  const configuredOrigin = config.get<string>('CORS_ORIGIN');
-  let corsOrigin: string | string[] = defaultOrigins;
-
-  if (configuredOrigin) {
-    if (configuredOrigin === '*') {
-      corsOrigin = '*';
-    } else if (configuredOrigin.includes(',')) {
-      corsOrigin = configuredOrigin.split(',').map(o => o.trim());
-    } else {
-      corsOrigin = configuredOrigin;
-    }
-  }
-
   app.enableCors({
-    origin: corsOrigin,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type, Authorization, Accept',
+    origin: [
+      'https://pecae.italohub.cloud',
+      'http://localhost:8081',
+      'http://localhost:3000',
+      'http://localhost:3001',
+    ],
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
     credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
 
   // --- Global prefix ---
