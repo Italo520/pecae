@@ -72,7 +72,7 @@ services:
       dockerfile: apps/mobile/Dockerfile
       args:
         # CRITICO: passado como ARG de build-time para ser embutido no bundle JS pelo Expo
-        EXPO_PUBLIC_API_URL: http://localhost:3000/api/v1
+        EXPO_PUBLIC_API_URL: https://api-pecae.italohub.cloud/api/v1
     container_name: pecae-mobile-web
     restart: always
     ports:
