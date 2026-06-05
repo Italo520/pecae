@@ -21,9 +21,10 @@ WORKDIR /app
 COPY --from=pruner /app/out/json/ .
 COPY --from=pruner /app/out/package-lock.json ./package-lock.json
 
-# Copiamos a pasta scripts para que o postinstall do root package.json nao falhe
 COPY scripts/ ./scripts/
 
+# Forçar NODE_ENV para instalar devDependencies necessárias para o build
+ENV NODE_ENV=development
 # Agora podemos rodar o install COM scripts para o bcrypt compilar
 RUN npm install --legacy-peer-deps
 

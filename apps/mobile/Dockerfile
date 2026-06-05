@@ -20,6 +20,8 @@ WORKDIR /app
 COPY --from=pruner /app/out/json/ .
 COPY --from=pruner /app/out/package-lock.json ./package-lock.json
 COPY scripts/ ./scripts/
+# Forçar NODE_ENV para instalar devDependencies necessárias para o build
+ENV NODE_ENV=development
 RUN npm install --legacy-peer-deps
 
 # Stage 3: Build — A variavel EXPO_PUBLIC_API_URL DEVE ser passada como ARG para ser embutida no bundle
