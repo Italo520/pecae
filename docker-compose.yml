@@ -49,19 +49,18 @@ services:
       - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
       - ADMIN_SEED_EMAIL=${ADMIN_SEED_EMAIL}
       - ADMIN_SEED_PASSWORD=${ADMIN_SEED_PASSWORD}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pecae-api.rule=Host(`${SERVICE_FQDN_API:-api-pecae.italohub.cloud}`)
+      - traefik.http.routers.pecae-api.entrypoints=https
+      - traefik.http.routers.pecae-api.tls=true
+      - traefik.http.routers.pecae-api.tls.certresolver=letsencrypt
+      - traefik.http.services.pecae-api.loadbalancer.server.port=3000
     depends_on:
       database:
         condition: service_healthy
       redis:
         condition: service_healthy
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=coolify
-      - traefik.http.routers.pecae-api.rule=Host(`api-pecae.italohub.cloud`)
-      - traefik.http.routers.pecae-api.entrypoints=https
-      - traefik.http.routers.pecae-api.tls=true
-      - traefik.http.routers.pecae-api.tls.certresolver=letsencrypt
-      - traefik.http.services.pecae-api.loadbalancer.server.port=3000
     networks:
       - pecae-network
       - coolify
@@ -73,16 +72,15 @@ services:
       args:
         EXPO_PUBLIC_API_URL: https://api-pecae.italohub.cloud/api/v1
     restart: always
-    depends_on:
-      - api
     labels:
       - traefik.enable=true
-      - traefik.docker.network=coolify
-      - traefik.http.routers.pecae-web.rule=Host(`pecae.italohub.cloud`)
-      - traefik.http.routers.pecae-web.entrypoints=https
-      - traefik.http.routers.pecae-web.tls=true
-      - traefik.http.routers.pecae-web.tls.certresolver=letsencrypt
-      - traefik.http.services.pecae-web.loadbalancer.server.port=80
+      - traefik.http.routers.pecae-mobile-web.rule=Host(`${SERVICE_FQDN_MOBILE_WEB:-pecae.italohub.cloud}`)
+      - traefik.http.routers.pecae-mobile-web.entrypoints=https
+      - traefik.http.routers.pecae-mobile-web.tls=true
+      - traefik.http.routers.pecae-mobile-web.tls.certresolver=letsencrypt
+      - traefik.http.services.pecae-mobile-web.loadbalancer.server.port=80
+    depends_on:
+      - api
     networks:
       - pecae-network
       - coolify
