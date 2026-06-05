@@ -31,7 +31,7 @@ COPY --from=pruner /app/out/full/ .
 COPY --from=installer /app/ .
 
 # ARG de build-time: injeta a URL da API dentro do bundle JavaScript
-ARG EXPO_PUBLIC_API_URL=http://localhost:3000/api/v1
+ARG EXPO_PUBLIC_API_URL=https://api-pecae.italohub.cloud/api/v1
 ENV EXPO_PUBLIC_API_URL=$EXPO_PUBLIC_API_URL
 
 RUN npx turbo@2.0.0 run build --filter=@pecae/mobile
