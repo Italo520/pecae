@@ -21,8 +21,31 @@ async function bootstrap() {
   );
 
   // --- CORS ---
+  const defaultOrigins = [
+    'https://pecae.italohub.cloud',
+    'https://api-pecae.italohub.cloud',
+    'http://localhost:8081',
+    'http://localhost:3000',
+    'http://localhost:3001',
+  ];
+
+  const configuredOrigin = config.get<string>('CORS_ORIGIN');
+  let corsOrigin: string | string[] = defaultOrigins;
+
+  if (configuredOrigin) {
+    if (configuredOrigin === '*') {
+      corsOrigin = '*';
+    } else if (configuredOrigin.includes(',')) {
+      corsOrigin = configuredOrigin.split(',').map(o => o.trim());
+    } else {
+      corsOrigin = configuredOrigin;
+    }
+  }
+
   app.enableCors({
-    origin: config.get('CORS_ORIGIN', '*'),
+    origin: corsOrigin,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Authorization, Accept',
     credentials: true,
   });
 
