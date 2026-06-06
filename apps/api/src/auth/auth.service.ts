@@ -378,11 +378,12 @@ export class AuthService {
       throw new UnauthorizedException("Credenciais inválidas.");
     }
 
-    if (user.status === UserStatus.PENDING_VERIFICATION) {
-      throw new UnauthorizedException(
-        "Sua conta ainda não foi ativada. Verifique seu e-mail.",
-      );
-    }
+    // Temporarily disabled for demonstration purposes
+    // if (user.status === UserStatus.PENDING_VERIFICATION) {
+    //   throw new UnauthorizedException(
+    //     "Sua conta ainda não foi ativada. Verifique seu e-mail.",
+    //   );
+    // }
 
     if (user.status === UserStatus.BANNED) {
       throw new UnauthorizedException("Esta conta foi suspensa.");
@@ -449,7 +450,8 @@ export class AuthService {
               email,
               passwordHash,
               type,
-              status: UserStatus.PENDING_VERIFICATION,
+              // Temporarily creating users as ACTIVE for demo purposes
+              status: UserStatus.ACTIVE,
             },
           });
 
