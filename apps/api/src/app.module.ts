@@ -45,7 +45,7 @@ import { BillingModule } from './billing/billing.module';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         connection: {
-          host: configService.get<string>('REDIS_HOST', 'localhost'),
+          host: configService.get<string>('REDIS_HOST', 'localhost') === 'redis' ? 'pecae-redis' : configService.get<string>('REDIS_HOST', 'localhost'),
           port: configService.get<number>('REDIS_PORT', 6379),
           password: configService.get<string>('REDIS_PASSWORD'),
         },

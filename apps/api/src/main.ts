@@ -62,7 +62,7 @@ async function bootstrap() {
 
   await app.listen(port, '0.0.0.0');
   
-  const publicIp = config.get<string>('API_PUBLIC_URL', `http://localhost:${port}`);
+  const publicIp = config.get<string>('API_PUBLIC_URL', `http://0.0.0.0:${port}`);
   
   logger.log(`🚀 PECAÊ API running on: ${publicIp}/api/v1`);
   if (env !== 'production') {
