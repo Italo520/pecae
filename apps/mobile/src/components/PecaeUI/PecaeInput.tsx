@@ -71,6 +71,7 @@ export const PecaeInput: React.FC<PecaeInputProps> = ({
                 color: colors.textPrimary,
                 fontFamily: typography.body,
               },
+              props.multiline && { textAlignVertical: 'top', paddingTop: 16, paddingBottom: 16 },
               props.style,
             ]}
           />
@@ -97,19 +98,19 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   inputWrapper: {
-    height: 56,
+    minHeight: 56,
     justifyContent: 'center',
     paddingHorizontal: 4,
   },
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: '100%',
+    minHeight: 56,
   },
   input: {
     flex: 1,
     fontSize: 16,
-    height: '100%',
+    minHeight: 56,
     paddingHorizontal: 12,
   },
   iconLeft: {
