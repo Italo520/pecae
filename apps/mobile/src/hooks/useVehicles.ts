@@ -52,8 +52,8 @@ export const useVehicles = () => {
   return useQuery({
     queryKey: ['vehicles', 'me'],
     queryFn: async () => {
-      const { data } = await api.get<VehicleListing[]>('/vehicles/me');
-      return data;
+      const { data } = await api.get<any>('/vehicles/me');
+      return Array.isArray(data) ? data : (data?.items || []);
     },
   });
 };
