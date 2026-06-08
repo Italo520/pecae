@@ -1,13 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ChatController } from './chat.controller';
 import { ChatService } from './chat.service';
+import { ChatGateway } from './chat.gateway';
 import { JwtModule } from '@nestjs/jwt';
 import { NotificationModule } from '../notifications/notification.module';
+import { RedisModule } from '../common/redis/redis.module';
 
 @Module({
-  imports: [JwtModule, NotificationModule],
+  imports: [JwtModule, NotificationModule, RedisModule],
   controllers: [ChatController],
-  providers: [ChatService],
+  providers: [ChatService, ChatGateway],
   exports: [ChatService],
 })
 export class ChatModule {}
