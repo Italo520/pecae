@@ -60,13 +60,26 @@ export default function SellerOnboardingScreen() {
 
   const onSubmit = async (data: SellerFormData) => {
     try {
-      await api.post('/sellers', data);
+      // Formatar dados para o backend
+      const formattedWhatsapp = data.whatsapp.replace(/\D/g, '');
+      const finalWhatsapp = formattedWhatsapp.startsWith('55') 
+        ? `+${formattedWhatsapp}` 
+        : `+55${formattedWhatsapp}`;
+        
+      const payload = {
+        ...data,
+        whatsapp: finalWhatsapp,
+        phone: data.phone.replace(/\D/g, ''),
+        openHours: data.openHours ? { "Horário": data.openHours } : undefined
+      };
+
+      await api.post('/sellers', payload);
       Alert.alert('PERFIL CONCLUÍDO', 'Seu perfil de vendedor foi ativado. Bem-vindo à rede.', [
         { text: 'ACESSAR DASHBOARD', onPress: () => router.replace('/(seller)/(seller-tabs)') },
       ]);
     } catch (error: any) {
       const message = error.response?.data?.message || 'Erro ao criar perfil de vendedor';
-      Alert.alert('ERRO NO PERFIL', message);
+      Alert.alert('ERRO NO PERFIL', Array.isArray(message) ? message.join('\\n') : message);
     }
   };
 
