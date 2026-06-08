@@ -1,20 +1,4 @@
 services:
-  database:
-    image: public.ecr.aws/docker/library/postgres:16-alpine
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password123
-      POSTGRES_DB: pecae_db
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d pecae_db"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    networks:
-      - pecae-network
 
   pecae-redis:
     image: public.ecr.aws/docker/library/redis:7-alpine
@@ -36,8 +20,8 @@ services:
     restart: always
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:password123@database:5432/pecae_db?schema=public
-      - DIRECT_URL=postgresql://postgres:password123@database:5432/pecae_db?schema=public
+      - DATABASE_URL=${DATABASE_URL}
+      - DIRECT_URL=${DIRECT_URL}
       - REDIS_HOST=pecae-redis
       - REDIS_PORT=6379
       - JWT_SECRET=${JWT_SECRET}
@@ -57,8 +41,6 @@ services:
       - traefik.http.routers.pecae-api.tls.certresolver=letsencrypt
       - traefik.http.services.pecae-api.loadbalancer.server.port=3000
     depends_on:
-      database:
-        condition: service_healthy
       pecae-redis:
         condition: service_healthy
     networks:
@@ -86,7 +68,6 @@ services:
       - coolify
 
 volumes:
-  postgres_data:
   redis_data:
 
 networks:
