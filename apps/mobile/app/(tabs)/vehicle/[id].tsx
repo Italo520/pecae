@@ -70,11 +70,18 @@ export default function VehicleDetailsScreen() {
     return val.name || '';
   };
 
-  const normalizedBrand = getSafeText(vehicle.brand);
-  const normalizedModel = getSafeText(vehicle.model);
-  const normalizedVersion = getSafeText(vehicle.version);
-  const yearFab = vehicle.yearFab || '--';
-  const yearModel = vehicle.yearModel || yearFab;
+  const normalizedBrand = vehicle.version?.model?.brand?.name || getSafeText(vehicle.brand);
+  const normalizedModel = vehicle.version?.model?.name || getSafeText(vehicle.model);
+  const normalizedVersion = vehicle.version?.name || getSafeText(vehicle.version);
+  
+  const yearFab = typeof vehicle.yearFab === 'object' && vehicle.yearFab !== null
+    ? (vehicle.yearFab.value?.toString() || '--')
+    : (vehicle.yearFab?.toString() || '--');
+    
+  const yearModel = typeof vehicle.yearModel === 'object' && vehicle.yearModel !== null
+    ? (vehicle.yearModel.value?.toString() || yearFab)
+    : (vehicle.yearModel?.toString() || yearFab);
+
   const vehicleTitle = `${normalizedBrand} - ${normalizedModel} - (${yearFab}/${yearModel})`;
   const imageUrl = getVehicleImage(normalizedBrand, normalizedModel, vehicle.id);
 
