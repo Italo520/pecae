@@ -23,6 +23,7 @@ import {
 import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
 import { Ionicons } from '@expo/vector-icons';
+import { useResponsive } from '../../src/theme/breakpoints';
 
 const sellerSchema = z.object({
   storeName: z.string().min(3, 'Nome da loja deve ter pelo menos 3 caracteres'),
@@ -42,6 +43,7 @@ type SellerFormData = z.infer<typeof sellerSchema>;
 export default function SellerOnboardingScreen() {
   const router = useRouter();
   const { colors, typography, effects } = usePecaeTheme();
+  const { isMobile } = useResponsive();
   
   const {
     control,
@@ -186,8 +188,8 @@ export default function SellerOnboardingScreen() {
                 )}
               />
 
-              <View style={styles.row}>
-                <View style={{ flex: 1, marginRight: 10 }}>
+              <View style={[styles.row, isMobile && { flexDirection: 'column' }]}>
+                <View style={[isMobile ? { width: '100%' } : { flex: 1, marginRight: 10 }]}>
                   <Controller
                     control={control}
                     name="phone"
@@ -204,7 +206,7 @@ export default function SellerOnboardingScreen() {
                     )}
                   />
                 </View>
-                <View style={{ flex: 1 }}>
+                <View style={[isMobile ? { width: '100%' } : { flex: 1 }]}>
                   <Controller
                     control={control}
                     name="whatsapp"
@@ -239,8 +241,8 @@ export default function SellerOnboardingScreen() {
                 )}
               />
 
-              <View style={styles.row}>
-                <View style={{ flex: 2, marginRight: 10 }}>
+              <View style={[styles.row, isMobile && { flexDirection: 'column' }]}>
+                <View style={[isMobile ? { width: '100%' } : { flex: 2, marginRight: 10 }]}>
                   <Controller
                     control={control}
                     name="city"
@@ -256,7 +258,7 @@ export default function SellerOnboardingScreen() {
                     )}
                   />
                 </View>
-                <View style={{ flex: 1 }}>
+                <View style={[isMobile ? { width: '100%' } : { flex: 1 }]}>
                   <Controller
                     control={control}
                     name="state"
