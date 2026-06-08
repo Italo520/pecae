@@ -432,7 +432,8 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto, ip: string, userAgent: string) {
-    const { email, password, name, type } = registerDto;
+    const { password, name, type } = registerDto;
+    const email = registerDto.email.toLowerCase();
 
     const existingUser = await this.usersService.findByEmail(email);
     if (existingUser) {

@@ -61,9 +61,14 @@ export default function RegisterScreen() {
   const onSubmit = async (data: RegisterFormData) => {
     try {
       await api.post("/auth/register", data);
-      Alert.alert("Sucesso", "Cadastro realizado! Verifique seu e-mail.", [
-        { text: "OK", onPress: () => router.push("/(auth)/verify-email") },
-      ]);
+      if (Platform.OS === "web") {
+        alert("Cadastro realizado! Verifique seu e-mail.");
+        router.push("/(auth)/verify-email");
+      } else {
+        Alert.alert("Sucesso", "Cadastro realizado! Verifique seu e-mail.", [
+          { text: "OK", onPress: () => router.push("/(auth)/verify-email") },
+        ]);
+      }
     } catch (error: any) {
       const message =
         error.response?.data?.message || "Erro ao realizar cadastro";
