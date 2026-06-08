@@ -302,7 +302,7 @@ export default function ChatRoomScreen() {
                         <Text style={[styles.tagText, { color: colors.brand, fontFamily: typography.display }]}>OPEN_DEAL</Text>
                       </View>
                       <Text style={[styles.technicalCode, { color: colors.textMuted, fontFamily: typography.mono }]}>
-                        REF_{room.listingId.substring(0, 8).toUpperCase()}
+                        REF_{room.listingId ? room.listingId.substring(0, 8).toUpperCase() : 'N/A'}
                       </Text>
                     </View>
                   </View>
