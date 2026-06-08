@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 
@@ -12,12 +13,15 @@ async function bootstrap() {
   const port = config.get<number>('PORT', 3001);
   const env = config.get<string>('NODE_ENV', 'development');
 
+  // --- WebSocket Adapter ---
+  app.useWebSocketAdapter(new IoAdapter(app));
+
   // --- Security ---
   app.use(
     helmet({
       contentSecurityPolicy: env === 'production',
       crossOriginEmbedderPolicy: false,
-      crossOriginResourcePolicy: false, // Prevent Helmet from blocking cross-origin requests
+      crossOriginResourcePolicy: false,
     }),
   );
 
@@ -61,14 +65,15 @@ async function bootstrap() {
   }
 
   await app.listen(port, '0.0.0.0');
-  
+
   const publicIp = config.get<string>('API_PUBLIC_URL', `http://0.0.0.0:${port}`);
-  
+
   logger.log(`🚀 PECAÊ API running on: ${publicIp}/api/v1`);
   if (env !== 'production') {
     logger.log(`📌 Swagger docs: ${publicIp}/api/docs`);
   }
   logger.log(`📌 Environment: ${env}`);
+  logger.log(`🔌 WebSocket Chat: ws://0.0.0.0:${port}/chat`);
 }
 
 bootstrap();
