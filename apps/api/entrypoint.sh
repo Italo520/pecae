@@ -1,12 +1,7 @@
 #!/bin/sh
 
-# Aguardar o banco de dados estar pronto para conexões
-echo "Waiting for database to be ready at database:5432..."
-until nc -z database 5432; do
-  echo "Database is unavailable - sleeping"
-  sleep 1
-done
-echo "Database is up!"
+# Conectando ao banco de dados configurado...
+echo "Iniciando conexão com o banco de dados remoto..."
 
 # Rodar migracoes pendentes em producao
 echo "Running prisma migrate deploy..."
