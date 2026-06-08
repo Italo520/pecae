@@ -24,6 +24,7 @@ import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
 import { Ionicons } from '@expo/vector-icons';
 import { useResponsive } from '../../src/theme/breakpoints';
+import { useAuthStore } from '../../src/store/auth-store';
 
 const sellerSchema = z.object({
   storeName: z.string().min(3, 'Nome da loja deve ter pelo menos 3 caracteres'),
@@ -76,12 +77,23 @@ export default function SellerOnboardingScreen() {
       };
 
       await api.post('/sellers', payload);
-      Alert.alert('PERFIL CONCLUÍDO', 'Seu perfil de vendedor foi ativado. Bem-vindo à rede.', [
-        { text: 'ACESSAR DASHBOARD', onPress: () => router.replace('/(seller)/(seller-tabs)') },
-      ]);
+      
+      const { user, token, refreshToken, setAuth } = useAuthStore.getState();
+      if (user && token && refreshToken) {
+        await setAuth({ ...user, hasProfile: true }, token, refreshToken);
+      }
+
+      if (Platform.OS === 'web') {
+        alert('Seu perfil de vendedor foi ativado. Bem-vindo à rede.');
+        router.replace('/(seller)/(seller-tabs)');
+      } else {
+        Alert.alert('PERFIL CONCLUÍDO', 'Seu perfil de vendedor foi ativado. Bem-vindo à rede.', [
+          { text: 'ACESSAR DASHBOARD', onPress: () => router.replace('/(seller)/(seller-tabs)') },
+        ]);
+      }
     } catch (error: any) {
       const message = error.response?.data?.message || 'Erro ao criar perfil de vendedor';
-      Alert.alert('ERRO NO PERFIL', Array.isArray(message) ? message.join('\\n') : message);
+      Alert.alert('ERRO NO PERFIL', Array.isArray(message) ? message.join('\n') : message);
     }
   };
 

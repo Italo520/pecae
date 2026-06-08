@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useNavigation } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -24,6 +24,7 @@ import { usePecaeTheme } from "../../src/theme";
 import { api } from "../../src/services/api";
 import { Ionicons } from "@expo/vector-icons";
 import { useResponsive } from "../../src/theme/breakpoints";
+import { useAuthStore } from "../../src/store/auth-store";
 
 const registerSchema = z.object({
   name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
@@ -38,6 +39,7 @@ const registerSchema = z.object({
 type RegisterFormData = z.infer<typeof registerSchema>;
 export default function RegisterScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
   const { colors, typography, effects } = usePecaeTheme();
   const { isMobile, pick } = useResponsive();
 
@@ -61,13 +63,46 @@ export default function RegisterScreen() {
   const onSubmit = async (data: RegisterFormData) => {
     try {
       await api.post("/auth/register", data);
-      if (Platform.OS === "web") {
-        alert("Cadastro realizado! Verifique seu e-mail.");
-        router.push("/(auth)/verify-email");
-      } else {
-        Alert.alert("Sucesso", "Cadastro realizado! Verifique seu e-mail.", [
-          { text: "OK", onPress: () => router.push("/(auth)/verify-email") },
-        ]);
+      
+      try {
+        // Tenta auto-login após cadastro
+        const normalizedData = {
+          email: data.email.toLowerCase().trim(),
+          password: data.password,
+        };
+        const response = await api.post("/auth/login", normalizedData);
+        const { user, tokens } = response.data;
+        const { setAuth } = useAuthStore.getState();
+        await setAuth(user, tokens.accessToken, tokens.refreshToken);
+
+        if (user.type === "SELLER" || user.type === "BOTH") {
+          router.replace("/(seller)/onboarding");
+        } else {
+          try {
+            (navigation as any).reset({
+              index: 0,
+              routes: [
+                {
+                  name: "(tabs)",
+                  state: {
+                    routes: [{ name: "index" }],
+                  },
+                },
+              ],
+            });
+          } catch (e) {
+            router.replace("/(tabs)/");
+          }
+        }
+      } catch (loginError) {
+        // Fallback para tela de verificação se o login falhar
+        if (Platform.OS === "web") {
+          router.push("/(auth)/verify-email");
+        } else {
+          Alert.alert("Sucesso", "Cadastro realizado! Verifique seu e-mail.", [
+            { text: "OK", onPress: () => router.push("/(auth)/verify-email") },
+          ]);
+        }
       }
     } catch (error: any) {
       const message =
