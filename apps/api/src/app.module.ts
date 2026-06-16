@@ -23,6 +23,7 @@ import { ModerationModule } from './moderation/moderation.module';
 import { NotificationModule } from './notifications/notification.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { AdsModule } from './ads/ads.module';
+import { BannersModule } from './banners/banners.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { SmsModule } from './common/sms/sms.module';
 import { ReportsModule } from './reports/reports.module';
@@ -89,6 +90,7 @@ import { BillingModule } from './billing/billing.module';
     NotificationModule,
     AnalyticsModule,
     AdsModule,
+    BannersModule,
     SmsModule,
     ReportsModule,
     SavedSearchesModule,

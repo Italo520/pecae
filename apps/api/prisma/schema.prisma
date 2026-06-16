@@ -855,6 +855,28 @@ enum BudgetType {
   FLAT_PERIOD
 }
 
+model Banner {
+  id        String           @id @default(uuid())
+  title     String           @db.VarChar(255)
+  imageUrl  String           @map("image_url") @db.Text
+  linkUrl   String?          @map("link_url") @db.Text
+  position  String           @default("HOME_TOP") @db.VarChar(50)
+  status    AdCampaignStatus @default(ACTIVE)
+  
+  impressions Int            @default(0)
+  clicks      Int            @default(0)
+  
+  startDate DateTime         @map("start_date")
+  endDate   DateTime?        @map("end_date")
+  
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([position])
+  @@map("banners")
+}
+
 model AdCampaign {
   id        String           @id @default(uuid())
   listingId String           @map("listing_id")

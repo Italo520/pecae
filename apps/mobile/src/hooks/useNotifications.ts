@@ -1,20 +1,25 @@
 import { useInfiniteQuery, useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { notificationService, Notification } from '../services/notification.service';
+import { useAuthStore } from '../store/auth-store';
 
 export const useNotifications = (limit = 20) => {
+  const user = useAuthStore((state) => state.user);
   return useInfiniteQuery({
     queryKey: ['notifications'],
     queryFn: ({ pageParam }) => notificationService.getUserNotifications(limit, pageParam as string | undefined),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    enabled: !!user,
   });
 };
 
 export const useUnreadCount = () => {
+  const user = useAuthStore((state) => state.user);
   return useQuery({
     queryKey: ['notifications', 'unread-count'],
     queryFn: () => notificationService.getUnreadCount(),
     refetchInterval: 30000, // Poll every 30 seconds
+    enabled: !!user,
   });
 };
 

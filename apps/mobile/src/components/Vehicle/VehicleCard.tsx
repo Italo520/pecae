@@ -46,10 +46,6 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
     }
   };
 
-  const formattedPrice = price !== undefined && price !== null
-    ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price)
-    : 'Sob consulta';
-
   const isList = variant === 'list';
 
   return (
@@ -59,7 +55,8 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
       style={[
         styles.container,
         isList ? styles.containerList : styles.containerGrid,
-        { backgroundColor: colors.surface, borderColor: isSponsored ? colors.brand : colors.border },
+        { backgroundColor: colors.surface },
+        isSponsored && { borderColor: colors.brand, borderWidth: 1 },
         style
       ]}
     >
@@ -77,12 +74,8 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
       </View>
 
       <View style={[styles.infoContainer, isList && styles.infoContainerList]}>
-        <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.medium }]} numberOfLines={2}>
+        <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.body }]} numberOfLines={2}>
           {title}
-        </Text>
-
-        <Text style={[styles.price, { color: colors.textPrimary, fontFamily: typography.display }]} numberOfLines={1}>
-          {formattedPrice}
         </Text>
 
         <View style={styles.detailsRow}>
@@ -94,7 +87,6 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
         </View>
 
         <View style={styles.locationRow}>
-          <Ionicons name="location-sharp" size={12} color={colors.textMuted} />
           <Text style={[styles.locationText, { color: colors.textMuted, fontFamily: typography.body }]} numberOfLines={1}>
             {city || 'Local'}{state ? ` - ${state}` : ''}
           </Text>
@@ -106,9 +98,14 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 8,
-    borderWidth: 1,
+    borderRadius: 6,
     overflow: 'hidden',
+    // Usando boxShadow compatível com web e mobile (através das propriedades do React Native)
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
   containerGrid: {
     flexDirection: 'column',
@@ -120,10 +117,10 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     position: 'relative',
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#F3F4F6', // cinza bem claro para placeholder
   },
   imageContainerList: {
-    width: 120,
+    width: 140,
   },
   image: {
     width: '100%',
@@ -133,13 +130,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 8,
     left: 8,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     borderRadius: 4,
   },
   sponsoredText: {
     fontSize: 9,
     letterSpacing: 0.5,
+    fontWeight: 'bold',
   },
   infoContainer: {
     padding: 12,
@@ -147,27 +145,25 @@ const styles = StyleSheet.create({
   infoContainerList: {
     flex: 1,
     justifyContent: 'space-between',
+    paddingLeft: 16,
   },
   title: {
     fontSize: 14,
-    marginBottom: 8,
-    lineHeight: 20,
-  },
-  price: {
-    fontSize: 18,
-    marginBottom: 8,
+    marginBottom: 10,
+    lineHeight: 18,
+    height: 36, // mantendo altura fixa para alinhar o layout do grid
   },
   detailsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
     flexWrap: 'wrap',
   },
   detailText: {
     fontSize: 12,
   },
   dot: {
-    color: '#666',
+    color: '#9CA3AF',
     marginHorizontal: 4,
     fontSize: 10,
   },
@@ -177,6 +173,5 @@ const styles = StyleSheet.create({
   },
   locationText: {
     fontSize: 11,
-    marginLeft: 4,
   },
 });

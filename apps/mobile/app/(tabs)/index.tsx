@@ -62,7 +62,8 @@ export default function BuyerHomeScreen() {
   const columns = isWeb ? 4 : 2;
   const gap = 12;
   const horizontalPadding = 20;
-  const itemWidth = (width - (horizontalPadding * 2) - (gap * (columns - 1))) / columns;
+  const containerWidth = Math.min(width, 1200);
+  const itemWidth = (containerWidth - (horizontalPadding * 2) - (gap * (columns - 1))) / columns;
 
   return (
     <PecaeBackground>

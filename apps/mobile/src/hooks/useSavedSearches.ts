@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../services/api';
+import { useAuthStore } from '../store/auth-store';
 
 export interface SavedSearch {
   id: string;
@@ -19,6 +20,7 @@ export interface CreateSavedSearchDto {
 
 export function useSavedSearches() {
   const queryClient = useQueryClient();
+  const user = useAuthStore((state) => state.user);
 
   const getSavedSearches = useQuery({
     queryKey: ['savedSearches'],
@@ -26,6 +28,7 @@ export function useSavedSearches() {
       const response = await api.get<SavedSearch[]>('/buyers/saved-searches');
       return response.data;
     },
+    enabled: !!user,
   });
 
   const saveSearch = useMutation({

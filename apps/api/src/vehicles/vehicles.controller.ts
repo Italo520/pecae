@@ -24,6 +24,7 @@ import { UpdateAvailablePartsDto } from './dto/update-available-parts.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
 import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
+import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('vehicles')
 @ApiBearerAuth()
@@ -68,6 +69,7 @@ export class VehiclesController {
     return this.vehiclesService.findBySeller(sellerId, page ? Number(page) : 1, limit ? Number(limit) : 20);
   }
 
+  @Public()
   @Get(':id')
   @UseGuards(OptionalJwtAuthGuard)
   @ApiOperation({ summary: 'Busca detalhes de um veículo específico' })

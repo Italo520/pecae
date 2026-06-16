@@ -4,29 +4,14 @@ import { api } from '../../services/api';
 import { usePecaeTheme } from '../../theme';
 import { useDeviceLayout } from '../../hooks/useDeviceLayout';
 
+import * as Linking from 'expo-linking';
+
 interface Banner {
   id: string;
   imageUrl: string;
-  link?: string;
+  linkUrl?: string;
   title?: string;
 }
-const MOCK_BANNERS: Banner[] = [
-  {
-    id: 'mock-1',
-    imageUrl: 'https://images.unsplash.com/photo-1611078516086-fb22e8312e06?auto=format&fit=crop&w=1200&q=80',
-    title: 'Peças Originais',
-  },
-  {
-    id: 'mock-2',
-    imageUrl: 'https://images.unsplash.com/photo-1625047509168-a71c6f71b9e0?auto=format&fit=crop&w=1200&q=80',
-    title: 'Desconto em Pneus',
-  },
-  {
-    id: 'mock-3',
-    imageUrl: 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=1200&q=80',
-    title: 'Acessórios Automotivos',
-  }
-];
 
 export function BannerCarousel() {
   const [banners, setBanners] = useState<Banner[]>([]);
@@ -40,18 +25,28 @@ export function BannerCarousel() {
         const response = await api.get('/banners');
         if (response.data && response.data.length > 0) {
           setBanners(response.data);
-        } else {
-          setBanners(MOCK_BANNERS);
         }
       } catch (error) {
-        console.warn('Failed to load banners, using mocks', error);
-        setBanners(MOCK_BANNERS);
+        console.warn('Failed to load banners', error);
       } finally {
         setIsLoading(false);
       }
     };
     fetchBanners();
   }, []);
+
+  const handleBannerPress = async (banner: Banner) => {
+    try {
+      // Track click in the background
+      api.post(`/banners/${banner.id}/click`).catch(() => {});
+      
+      if (banner.linkUrl) {
+        await Linking.openURL(banner.linkUrl);
+      }
+    } catch (error) {
+      console.warn('Failed to open banner link', error);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -81,11 +76,7 @@ export function BannerCarousel() {
             key={banner.id} 
             activeOpacity={0.9} 
             style={[styles.bannerWrapper, { width: bannerWidth, height: bannerHeight }]}
-            onPress={() => {
-              if (banner.link) {
-                // handle deep linking or navigation
-              }
-            }}
+            onPress={() => handleBannerPress(banner)}
           >
             <Image 
               source={{ uri: banner.imageUrl }} 
