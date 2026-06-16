@@ -189,7 +189,7 @@ export const Step5Review: React.FC = () => {
       <View style={styles.footer}>
         <PecaeButton
           title="VOLTAR"
-          type="secondary"
+          variant="secondary"
           onPress={prevStep}
           disabled={isSubmitting}
           style={styles.button}

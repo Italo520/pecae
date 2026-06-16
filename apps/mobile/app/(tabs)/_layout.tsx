@@ -4,24 +4,28 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../src/theme';
 import { useUnreadCount } from '../../src/hooks/useNotifications';
-import { ProtectedRoute } from '../../src/components/auth/ProtectedRoute';
+
 import { useAuthStore } from '../../src/store/auth-store';
+import { AppHeader } from '../../src/components/Layout/AppHeader';
+import { useDeviceLayout } from '../../src/hooks/useDeviceLayout';
 
 export default function TabLayout() {
   const { colors, typography, effects } = usePecaeTheme();
   const { data: unreadData } = useUnreadCount();
   const unreadCount = unreadData?.count || 0;
   const { user } = useAuthStore();
+  const { isDesktop } = useDeviceLayout();
   
   const isOnlyBuyer = user?.type === 'BUYER';
 
   return (
-    <ProtectedRoute allowedRoles={['BUYER', 'BOTH']}>
+    <>
+      {isDesktop && <AppHeader />}
       <Tabs
         initialRouteName="index"
         screenOptions={{
           headerShown: false,
-          tabBarStyle: {
+          tabBarStyle: isDesktop ? { display: 'none' } : {
             backgroundColor: colors.surface,
             borderTopColor: colors.border,
             height: Platform.OS === 'ios' ? 88 : 70,
@@ -92,7 +96,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="profile"
           options={{
-            title: 'Perfil',
+            title: user ? 'Perfil' : 'Entrar',
             tabBarIcon: ({ color, focused }) => (
               <Ionicons name={focused ? "person" : "person-outline"} size={24} color={color} />
             ),
@@ -117,7 +121,7 @@ export default function TabLayout() {
           options={{ href: null }}
         />
       </Tabs>
-    </ProtectedRoute>
+    </>
   );
 }
 

@@ -8,6 +8,7 @@ import { useFavorites } from '../../../src/hooks/useFavorites';
 import { getVehicleImage } from '../../../src/utils/vehicleImages';
 import { Ionicons } from '@expo/vector-icons';
 import { useChat } from '../../../src/hooks/useChat';
+import { useAuthGuard } from '../../../src/hooks/useAuthGuard';
 
 export default function VehicleDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -17,6 +18,7 @@ export default function VehicleDetailsScreen() {
   const { width } = useWindowDimensions();
   const { createRoom } = useChat();
   const { getFavorites, toggleFavorite } = useFavorites();
+  const { requireAuth } = useAuthGuard();
   const [isStartingChat, setIsStartingChat] = useState(false);
   const [isReportVisible, setIsReportVisible] = useState(false);
 
@@ -49,19 +51,21 @@ export default function VehicleDetailsScreen() {
   }
 
   const handleContact = async () => {
-    if (isStartingChat) return;
-    
-    setIsStartingChat(true);
-    try {
-      const room = await createRoom.mutateAsync({ vehicleId: vehicle.id });
-      router.push(`/chat/${room.id}`);
-    } catch (error: any) {
-      console.error('Error starting chat:', error);
-      const message = error.response?.data?.message || 'Não foi possível iniciar a negociação.';
-      Alert.alert('Erro', message);
-    } finally {
-      setIsStartingChat(false);
-    }
+    requireAuth(async () => {
+      if (isStartingChat) return;
+      
+      setIsStartingChat(true);
+      try {
+        const room = await createRoom.mutateAsync({ vehicleId: vehicle.id });
+        router.push(`/chat/${room.id}`);
+      } catch (error: any) {
+        console.error('Error starting chat:', error);
+        const message = error.response?.data?.message || 'Não foi possível iniciar a negociação.';
+        Alert.alert('Erro', message);
+      } finally {
+        setIsStartingChat(false);
+      }
+    });
   };
 
   const getSafeText = (val: any) => {

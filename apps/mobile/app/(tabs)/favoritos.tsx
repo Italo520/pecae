@@ -4,11 +4,13 @@ import { useRouter } from 'expo-router';
 import { PecaeBackground, PecaeGlassCard } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
 import { useFavorites } from '../../src/hooks/useFavorites';
+import { useAuthGuard } from '../../src/hooks/useAuthGuard';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function FavoritesScreen() {
   const { colors, typography, effects } = usePecaeTheme();
   const { getFavorites, toggleFavorite } = useFavorites();
+  const { requireAuth } = useAuthGuard();
   const { width } = useWindowDimensions();
   const router = useRouter();
 
@@ -82,7 +84,7 @@ export default function FavoritesScreen() {
                 />
                 <TouchableOpacity 
                   style={styles.heartBtn}
-                  onPress={() => toggleFavorite.mutate(item.id)}
+                  onPress={() => requireAuth(() => toggleFavorite.mutate(item.id))}
                 >
                   <Ionicons name="heart" size={20} color={colors.brand} />
                 </TouchableOpacity>

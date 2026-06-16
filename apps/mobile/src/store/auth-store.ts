@@ -4,6 +4,7 @@ import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import axios from 'axios';
 import { queryClient } from '../lib/queryClient';
+import Constants from 'expo-constants';
 
 interface User {
   id: string;

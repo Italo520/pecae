@@ -126,7 +126,7 @@ export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehi
 
           <View style={styles.inventoryStatus}>
              <Ionicons name="list" size={14} color={colors.brand} />
-             <Text style={[styles.inventoryText, { color: colors.brand, fontFamily: typography.bold }]}>
+             <Text style={[styles.inventoryText, { color: colors.brand, fontFamily: typography.medium }]}>
                {vehicle.availableParts.length} PEÇAS DISPONÍVEIS
              </Text>
           </View>
@@ -142,7 +142,7 @@ export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehi
         {vehicle.status === 'ACTIVE' ? (
           <TouchableOpacity style={styles.actionBtn} onPress={handleSold}>
             <Ionicons name="checkmark-done" size={18} color={colors.brand} />
-            <Text style={[styles.actionText, { color: colors.brand, fontFamily: typography.bold }]}>VENDIDO</Text>
+            <Text style={[styles.actionText, { color: colors.brand, fontFamily: typography.medium }]}>VENDIDO</Text>
           </TouchableOpacity>
         ) : (
            <TouchableOpacity style={styles.actionBtn} onPress={() => reactivateVehicle.mutate(vehicle.id)}>

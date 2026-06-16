@@ -7,8 +7,14 @@ import { useAuthStore } from '../../src/store/auth-store';
 import { getVehicleImage } from '../../src/utils/vehicleImages';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { SearchFilterModal } from '../../src/components/Search/SearchFilterModal';
+import { VehicleSearchBar } from '../../src/components/Search/VehicleSearchBar';
 import { useSavedSearches } from '../../src/hooks/useSavedSearches';
+import { BannerCarousel } from '../../src/components/Home/BannerCarousel';
+import { PageContainer } from '../../src/components/Layout/PageContainer';
+import { AppFooter } from '../../src/components/Layout/AppFooter';
+import { useDeviceLayout } from '../../src/hooks/useDeviceLayout';
+import { FipeSearchForm } from '../../src/components/Search/FipeSearchForm';
+import { VehicleCard } from '../../src/components/Vehicle/VehicleCard';
 
 const CATEGORIES = [
   { id: '1', name: 'Carros Sucata', icon: 'car-outline' },
@@ -20,24 +26,16 @@ const CATEGORIES = [
 
 export default function BuyerHomeScreen() {
   const { colors, typography, effects } = usePecaeTheme();
-  const [searchText, setSearchText] = useState('');
-  const [activeQuery, setActiveQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string | undefined>(undefined);
-  const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
-  const [filters, setFilters] = useState<{ brandId?: string; modelId?: string; yearFabId?: string }>({});
-
   const { data: searchResponse, isLoading } = useSearchVehicles({ 
-    q: activeQuery || activeCategory,
-    ...filters
+    q: activeCategory
   });
   const { createSavedSearch } = useSavedSearches();
   const listings = searchResponse?.data || [];
-  const { width } = useWindowDimensions();
+  const { width, isDesktop } = useDeviceLayout();
   const router = useRouter();
 
-  const handleSearch = () => {
-    setActiveQuery(searchText);
-  };
+
 
   const handleProfilePress = () => {
     Alert.alert(
@@ -58,23 +56,7 @@ export default function BuyerHomeScreen() {
     );
   };
 
-  const handleSaveSearch = async () => {
-    if (!searchText && !activeCategory && Object.keys(filters).length === 0) {
-      Alert.alert("Aviso", "Aplique filtros ou digite algo para salvar sua busca.");
-      return;
-    }
 
-    try {
-      await createSavedSearch.mutateAsync({
-        query: searchText || activeCategory,
-        filters: filters,
-        alertActive: true,
-      });
-      Alert.alert("Busca Salva!", "Você receberá alertas diários de novos veículos que combinam com esta busca.");
-    } catch (error) {
-      Alert.alert("Erro", "Não foi possível salvar sua busca. Tente novamente.");
-    }
-  };
 
   const isWeb = width >= 768;
   const columns = isWeb ? 4 : 2;
@@ -84,8 +66,9 @@ export default function BuyerHomeScreen() {
 
   return (
     <PecaeBackground>
-      {/* Header Fixo */}
-      <View style={[styles.header, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
+      {/* Header Fixo - Mostrado no Mobile. No Desktop é substituído pelo AppHeader do _layout */}
+      {!isDesktop && (
+        <View style={[styles.header, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
         <View style={styles.headerTop}>
           {/* Logo Estilizado */}
           <View style={styles.logoContainer}>
@@ -93,34 +76,8 @@ export default function BuyerHomeScreen() {
             <Text style={[styles.logoText, { color: colors.textPrimary, fontFamily: typography.display }]}>PEÇAÊ</Text>
           </View>
 
-          {/* Barra de Busca Arredondada */}
-          <View style={[styles.searchBar, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <TouchableOpacity onPress={handleSearch}>
-              <Ionicons name="search" size={18} color={colors.textMuted} />
-            </TouchableOpacity>
-            <TextInput
-              style={[styles.searchInput, { color: colors.textPrimary, fontFamily: typography.body }]}
-              placeholder="Busca rápida de veículos..."
-              placeholderTextColor={colors.textMuted}
-              value={searchText}
-              onChangeText={setSearchText}
-              onSubmitEditing={handleSearch}
-              returnKeyType="search"
-            />
-            <TouchableOpacity 
-              onPress={() => setIsFilterModalVisible(true)}
-              style={[
-                styles.filterBtn, 
-                Object.keys(filters).length > 0 && { backgroundColor: 'rgba(63, 255, 139, 0.1)' }
-              ]}
-            >
-              <Ionicons 
-                name="options-outline" 
-                size={18} 
-                color={Object.keys(filters).length > 0 ? colors.brand : colors.textMuted} 
-              />
-            </TouchableOpacity>
-          </View>
+          {/* Barra de Busca Redirecionável */}
+          <VehicleSearchBar />
 
           {/* Ações Direitas */}
           <View style={styles.headerActions}>
@@ -134,13 +91,18 @@ export default function BuyerHomeScreen() {
               </View>
             </TouchableOpacity>
           </View>
+          </View>
         </View>
-      </View>
+      )}
 
-      <ScrollView 
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+      <PageContainer contentContainerStyle={styles.scrollContent}>
+        
+        {/* Banner Carousel */}
+        <BannerCarousel />
+        
+        {/* FIPE Search Form */}
+        <FipeSearchForm />
+        
         {/* Carrossel de Categorias */}
         <View style={styles.categoriesSection}>
           <ScrollView 
@@ -163,8 +125,6 @@ export default function BuyerHomeScreen() {
                     setActiveCategory(undefined);
                   } else {
                     setActiveCategory(cat.name);
-                    setActiveQuery('');
-                    setSearchText('');
                   }
                 }}
               >
@@ -214,58 +174,28 @@ export default function BuyerHomeScreen() {
               const title = `${brand} - ${model} - (${yearFab}/${yearModel})`.trim() || 'Veículo sem título';
               
               return (
-                <TouchableOpacity 
-                  key={vehicle.id} 
-                  style={[styles.productCardWrapper, { width: itemWidth }]}
-                  onPress={() => router.push(`/(tabs)/vehicle/${vehicle.id}`)}
-                >
-                  <PecaeGlassCard intensity={10} style={styles.productCard}>
-                    <PecaeImage 
-                      path={vehicle.photos?.[0]?.url || vehicle.thumbnail || imageUrl} 
-                      blurhash={vehicle.photos?.[0]?.blurhash}
-                      width={400} // Thumbnail resolution
-                      style={styles.productImage} 
-                    />
-                    <View style={styles.productInfo}>
-                      <Text style={[styles.productTitle, { color: colors.textPrimary, fontFamily: typography.display }]} numberOfLines={2}>
-                        {title}
-                      </Text>
-                      <View style={styles.productFooter}>
-                        <Text style={[styles.productLocation, { color: colors.textMuted }]}>
-                          📍 {vehicle.city || vehicle.seller?.city || 'Brasil'}/{vehicle.state || vehicle.seller?.state || '--'}
-                        </Text>
-                        <Text style={[styles.productTime, { color: colors.textMuted }]}>
-                          Há 2 horas
-                        </Text>
-                      </View>
-                    </View>
-                  </PecaeGlassCard>
-                </TouchableOpacity>
+                <VehicleCard
+                  key={vehicle.id}
+                  id={vehicle.id}
+                  title={title}
+                  price={vehicle.price}
+                  year={`${yearFab}/${yearModel}`}
+                  mileage={vehicle.mileage}
+                  fuel={vehicle.fuelType}
+                  city={vehicle.city || vehicle.seller?.city}
+                  state={vehicle.state || vehicle.seller?.state}
+                  imageUrl={vehicle.photos?.[0]?.url || vehicle.thumbnail || imageUrl}
+                  style={{ width: itemWidth, marginBottom: 24 }}
+                />
               );
             })}
           </View>
         )}
-      </ScrollView>
+        
+        {isDesktop && <AppFooter />}
+      </PageContainer>
 
-      <SearchFilterModal
-        visible={isFilterModalVisible}
-        onClose={() => setIsFilterModalVisible(false)}
-        onApply={(newFilters) => setFilters(newFilters)}
-        initialFilters={filters}
-      />
 
-      {(searchText || activeCategory || Object.keys(filters).length > 0) && (
-        <TouchableOpacity 
-          style={[styles.fab, { backgroundColor: colors.brand }]}
-          onPress={handleSaveSearch}
-          activeOpacity={0.8}
-        >
-          <Ionicons name="bookmark" size={18} color="#000" />
-          <Text style={[styles.fabText, { color: '#000', fontFamily: typography.medium }]}>
-            Salvar Busca
-          </Text>
-        </TouchableOpacity>
-      )}
     </PecaeBackground>
   );
 }

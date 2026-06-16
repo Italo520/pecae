@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image, ActivityIndicator, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { PecaeBackground, PecaeGlassCard, PecaeMatchToast } from '../../src/components/PecaeUI';
+import { VehicleCard } from '../../src/components/Vehicle';
 import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -39,68 +40,26 @@ export default function CatalogScreen() {
     return () => clearTimeout(timer);
   }, []);
 
-  const renderVehicle = ({ item }: { item: any }) => (
-    <TouchableOpacity 
-      activeOpacity={0.9}
-      onPress={() => router.push(`/vehicle/${item.listingId}`)}
-      style={styles.cardContainer}
-    >
-      <PecaeGlassCard padding={0} intensity={25} style={styles.card}>
-        <View style={styles.imageWrapper}>
-          <Image 
-            source={{ uri: item.thumbnail || 'https://images.unsplash.com/photo-1507136566006-cfc505b114fc?auto=format&fit=crop&w=600&q=80' }} 
-            style={styles.image}
-            resizeMode="cover"
-          />
-          <BlurView intensity={20} style={styles.versionBadge}>
-            <Text style={[styles.versionText, { color: colors.textPrimary, fontFamily: typography.display }]}>
-              {item.version?.toUpperCase() || 'STANDARD'}
-            </Text>
-          </BlurView>
-          
-          <View style={styles.floatingInfo}>
-             <View style={[styles.glowBadge, { backgroundColor: `${colors.brand}22`, borderColor: colors.brand }]}>
-                <Text style={[styles.glowText, { color: colors.brand, fontFamily: typography.display }]}>
-                  DISPONÍVEL
-                </Text>
-             </View>
-          </View>
-        </View>
-
-        <View style={styles.details}>
-          <View style={styles.titleRow}>
-            <Text style={[styles.brand, { color: colors.brand, fontFamily: typography.display }]}>
-              {item.brand?.toUpperCase() || 'PECAÊ'}
-            </Text>
-            <Text style={[styles.year, { color: colors.textMuted, fontFamily: typography.display }]}>
-              {item.year || '2024'}
-            </Text>
-          </View>
-          
-          <Text style={[styles.model, { color: colors.textPrimary, fontFamily: typography.display }]} numberOfLines={1}>
-            {item.model?.toUpperCase() || 'VEÍCULOS DOADOR'}
-          </Text>
-
-          <View style={styles.locationRow}>
-            <Ionicons name="location-sharp" size={12} color={colors.brand} />
-            <Text style={[styles.location, { color: colors.textMuted, fontFamily: typography.body }]}>
-              {item.city?.toUpperCase() || 'SÃO PAULO'}, {item.state?.toUpperCase() || 'SP'}
-            </Text>
-          </View>
-
-          <TouchableOpacity 
-            style={[styles.actionButton, { backgroundColor: colors.brand }]}
-            onPress={() => router.push(`/vehicle/${item.listingId}`)}
-          >
-            <Text style={[styles.actionButtonText, { fontFamily: typography.display }]}>
-              ABRIR FORJA
-            </Text>
-            <Ionicons name="chevron-forward" size={16} color="#000" />
-          </TouchableOpacity>
-        </View>
-      </PecaeGlassCard>
-    </TouchableOpacity>
-  );
+  const renderVehicle = ({ item }: { item: any }) => {
+    const brand = item.brand || item.version?.model?.brand?.name || '';
+    const model = item.model || item.version?.model?.name || '';
+    const title = `${brand} ${model}`.trim();
+    
+    return (
+      <VehicleCard
+        id={item.listingId || item.id}
+        title={title}
+        price={item.price}
+        year={item.year}
+        mileage={item.mileage}
+        fuel={item.fuelType}
+        city={item.city}
+        state={item.state}
+        imageUrl={item.thumbnail}
+        style={styles.cardContainer}
+      />
+    );
+  };
 
   return (
     <PecaeBackground>

@@ -19,8 +19,12 @@ import {
 import { usePecaeTheme } from '../../src/theme';
 import { useSearchVehicles, useSearchSuggestions } from '../../src/hooks/useVehicles';
 import { useSavedSearches } from '../../src/hooks/useSavedSearches';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SponsoredListingCard } from '../../src/components/Ads/SponsoredListingCard';
+import { VehicleCard } from '../../src/components/Vehicle';
+import { PageContainer } from '../../src/components/Layout/PageContainer';
+import { AppFooter } from '../../src/components/Layout/AppFooter';
+import { useDeviceLayout } from '../../src/hooks/useDeviceLayout';
 
 const QUICK_FILTERS = [
   { id: 'all', label: 'Todos', icon: 'apps-outline' },
@@ -33,14 +37,21 @@ const QUICK_FILTERS = [
 
 export default function SearchScreen() {
   const { colors, typography } = usePecaeTheme();
-  const { width } = useWindowDimensions();
+  const { width, isDesktop } = useDeviceLayout();
+  const params = useLocalSearchParams();
   const router = useRouter();
   
-  const [searchText, setSearchText] = useState('');
-  const [debouncedSearchText, setDebouncedSearchText] = useState('');
-  const [activeFilter, setActiveFilter] = useState('all');
+  const initialQ = params.q ? String(params.q) : 
+                   [params.marca, params.modelo].filter(Boolean).join(' ');
+  const [searchText, setSearchText] = useState(initialQ);
+  const [debouncedSearchText, setDebouncedSearchText] = useState(initialQ);
+  
+  // Maps params.marca to activeFilter if it matches a quick filter, otherwise 'all'
+  const initialFilter = params.marca ? String(params.marca).toLowerCase() : 'all';
+  const [activeFilter, setActiveFilter] = useState(initialFilter);
+  
   const [city, setCity] = useState('');
-  const [state, setState] = useState('');
+  const [state, setState] = useState(params.state ? String(params.state) : '');
   const [showFilters, setShowFilters] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
@@ -59,12 +70,16 @@ export default function SearchScreen() {
   // Hook de Sugestões de Busca
   const { data: suggestions = [] } = useSearchSuggestions(searchText);
 
+  const yearNum = params.ano ? parseInt(String(params.ano), 10) : undefined;
+
   // Integração com API (usando debouncedSearchText)
   const { data: searchResponse, isLoading } = useSearchVehicles({
     q: debouncedSearchText,
     brandId: activeFilter !== 'all' ? activeFilter : undefined,
     city: city || undefined,
     state: state || undefined,
+    yearMin: yearNum,
+    yearMax: yearNum,
   });
 
   const results = searchResponse?.data || [];
@@ -272,7 +287,7 @@ export default function SearchScreen() {
         </ScrollView>
       </View>
 
-      <ScrollView 
+      <PageContainer 
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
@@ -304,58 +319,26 @@ export default function SearchScreen() {
               const isMatch = index === 0 && searchText.length > 2; // Simulação de match destacado
 
               return (
-                <TouchableOpacity 
-                  key={vehicle.id} 
-                  style={[styles.productCardWrapper, { width: itemWidth }]}
-                  onPress={() => router.push(`/(tabs)/vehicle/${vehicle.id}`)}
-                >
-                  <View style={styles.imageOverlapContainer}>
-                    <PecaeGlassCard padding={0} intensity={15} pulse={isMatch} style={styles.productCard}>
-                      <View style={styles.imagePlaceholder} />
-                      <View style={styles.productInfo}>
-                        <Text style={[styles.brandLabel, { color: colors.brand, fontFamily: typography.display }]}>
-                          {brand.toUpperCase()}
-                        </Text>
-                        <Text style={[styles.productTitle, { color: colors.textPrimary, fontFamily: typography.display }]} numberOfLines={1}>
-                          {model.toUpperCase()}
-                        </Text>
-                        
-                        <View style={styles.productFooter}>
-                          <Ionicons name="location-outline" size={10} color={colors.textMuted} />
-                          <Text style={[styles.productLocation, { color: colors.textMuted, fontFamily: typography.medium }]} numberOfLines={1}>
-                            {vehicle.city?.toUpperCase()}/{vehicle.state?.toUpperCase()}
-                          </Text>
-                        </View>
-
-                        <View style={[styles.viewDetailsBtn, { backgroundColor: isMatch ? `${colors.brand}15` : 'rgba(255, 255, 255, 0.05)', borderColor: colors.brand }]}>
-                          <Text style={{ color: colors.brand, fontSize: 10, fontFamily: typography.display }}>
-                            {isMatch ? 'VER MATCH' : 'ACESSAR FORJA'}
-                          </Text>
-                        </View>
-                      </View>
-                    </PecaeGlassCard>
-                    
-                    {/* Floating Image Overlap Effect */}
-                    <View style={styles.floatingImageContainer}>
-                      {imageUrl ? (
-                        <Image source={{ uri: imageUrl }} style={styles.floatingImage} resizeMode="contain" />
-                      ) : (
-                        <View style={[styles.floatingImage, { backgroundColor: 'rgba(255,255,255,0.05)', justifyContent: 'center', alignItems: 'center' }]}>
-                          <Ionicons name="car-outline" size={40} color={colors.border} />
-                        </View>
-                      )}
-                    </View>
-                    
-                    <View style={[styles.badge, { backgroundColor: isMatch ? colors.vibrant : colors.brand }]}>
-                      <Text style={styles.badgeText}>{isMatch ? 'MATCH' : 'DOADOR'}</Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
+                <VehicleCard
+                  key={vehicle.id}
+                  id={vehicle.id}
+                  title={`${brand} ${model}`.trim()}
+                  price={vehicle.price}
+                  year={vehicle.year}
+                  mileage={vehicle.mileage}
+                  fuel={vehicle.fuelType}
+                  city={vehicle.city}
+                  state={vehicle.state}
+                  imageUrl={imageUrl}
+                  style={{ width: itemWidth, marginBottom: 24 }}
+                />
               );
             })}
           </View>
         )}
-      </ScrollView>
+        
+        {isDesktop && <AppFooter />}
+      </PageContainer>
     </PecaeBackground>
   );
 }

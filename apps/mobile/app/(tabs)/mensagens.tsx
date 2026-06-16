@@ -29,13 +29,18 @@ interface ChatRoom {
 
 export default function MensagensScreen() {
   const { colors, typography, effects } = usePecaeTheme();
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const router = useRouter();
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const fetchRooms = async () => {
+    if (!isAuthenticated) {
+      setIsLoading(false);
+      setIsRefreshing(false);
+      return;
+    }
     try {
       const response = await api.get('/chat/rooms');
       // Sort by last message date or updatedAt
@@ -56,6 +61,8 @@ export default function MensagensScreen() {
   useEffect(() => {
     fetchRooms();
     
+    if (!isAuthenticated) return;
+
     // Assinatura global para recarregar a lista de conversas caso receba nova mensagem
     const channel = supabase
       .channel('public:chat_messages')
@@ -71,7 +78,7 @@ export default function MensagensScreen() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [isAuthenticated]);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -215,6 +222,24 @@ export default function MensagensScreen() {
             <Text style={[styles.loadingText, { color: colors.textMuted, fontFamily: typography.body }]}>
               ESTABLISHING CONNECTION...
             </Text>
+          </View>
+        ) : !isAuthenticated ? (
+          <View style={styles.emptyContainer}>
+            <PecaeGlassCard intensity={5} style={[styles.emptyCard, { borderRadius: effects.radius.lg }]}>
+              <Ionicons name="lock-closed-outline" size={48} color={`${colors.textMuted}33`} />
+              <Text style={[styles.emptyText, { color: colors.textPrimary, fontFamily: typography.display }]}>
+                ACESSO RESTRITO
+              </Text>
+              <Text style={[styles.emptySubtext, { color: colors.textMuted, fontFamily: typography.body, marginBottom: 16 }]}>
+                Faça login para ver suas mensagens e negociar com vendedores.
+              </Text>
+              <TouchableOpacity 
+                onPress={() => router.push('/(auth)/login')}
+                style={{ backgroundColor: colors.brand, paddingHorizontal: 24, paddingVertical: 12, borderRadius: effects.radius.sm }}
+              >
+                <Text style={{ fontFamily: typography.display, color: '#000' }}>FAZER LOGIN</Text>
+              </TouchableOpacity>
+            </PecaeGlassCard>
           </View>
         ) : (
           <FlatList

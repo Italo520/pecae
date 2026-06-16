@@ -19,9 +19,7 @@ export function useGoogleAuth({ onSuccess, onError }: UseGoogleAuthOptions) {
     clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID || 'placeholder-google-client-id.apps.googleusercontent.com',
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID || 'placeholder-google-client-id.apps.googleusercontent.com',
     redirectUri: makeRedirectUri({
-      // useProxy: true enables flow in Expo Go without custom URI scheme configured
       // When building a standalone app, set to false and configure the scheme
-      useProxy: true,
     }),
     scopes: ['openid', 'profile', 'email'],
   });
@@ -48,7 +46,7 @@ export function useGoogleAuth({ onSuccess, onError }: UseGoogleAuthOptions) {
         body: new URLSearchParams({
           code: result.params.code,
           client_id: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
-          redirect_uri: makeRedirectUri({ useProxy: true }),
+          redirect_uri: makeRedirectUri(),
           grant_type: 'authorization_code',
           code_verifier: result.params.code_verifier ?? '',
         }).toString(),
