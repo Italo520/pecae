@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { useRouter, useNavigation } from "expo-router";
+import { useRouter, useNavigation, useGlobalSearchParams } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -36,6 +36,8 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginScreen() {
   const router = useRouter();
   const navigation = useNavigation();
+  const params = useGlobalSearchParams();
+  const returnUrl = params?.returnUrl as string | undefined;
   const { colors, typography } = usePecaeTheme();
   const { setAuth } = useAuthStore();
   const { isMobile, isDesktop, pick } = useResponsive();
@@ -74,21 +76,25 @@ export default function LoginScreen() {
       } else if (user.type === "ADMIN" || user.type === "MODERATOR" || user.role === "ADMIN" || user.role === "MODERATOR") {
         router.replace("/(moderator)");
       } else {
-        // Força o redirecionamento limpo para as tabs do comprador, limpando histórico anterior
-        try {
-          (navigation as any).reset({
-            index: 0,
-            routes: [
-              {
-                name: "(tabs)",
-                state: {
-                  routes: [{ name: "index" }],
+        if (returnUrl) {
+          router.replace(returnUrl as any);
+        } else {
+          // Força o redirecionamento limpo para as tabs do comprador, limpando histórico anterior
+          try {
+            (navigation as any).reset({
+              index: 0,
+              routes: [
+                {
+                  name: "(tabs)",
+                  state: {
+                    routes: [{ name: "index" }],
+                  },
                 },
-              },
-            ],
-          });
-        } catch (e) {
-          router.replace("/(tabs)/");
+              ],
+            });
+          } catch (e) {
+            router.replace("/(tabs)/");
+          }
         }
       }
     } catch (error: any) {
@@ -118,20 +124,24 @@ export default function LoginScreen() {
       } else if (user.type === "ADMIN" || user.type === "MODERATOR" || user.role === "ADMIN" || user.role === "MODERATOR") {
         router.replace("/(moderator)");
       } else {
-        try {
-          (navigation as any).reset({
-            index: 0,
-            routes: [
-              {
-                name: "(tabs)",
-                state: {
-                  routes: [{ name: "index" }],
+        if (returnUrl) {
+          router.replace(returnUrl as any);
+        } else {
+          try {
+            (navigation as any).reset({
+              index: 0,
+              routes: [
+                {
+                  name: "(tabs)",
+                  state: {
+                    routes: [{ name: "index" }],
+                  },
                 },
-              },
-            ],
-          });
-        } catch (e) {
-          router.replace("/(tabs)/");
+              ],
+            });
+          } catch (e) {
+            router.replace("/(tabs)/");
+          }
         }
       }
     },

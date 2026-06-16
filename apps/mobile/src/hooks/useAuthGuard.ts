@@ -1,10 +1,11 @@
-import { useRouter } from 'expo-router';
+import { useRouter, usePathname } from 'expo-router';
 import { useAuthStore } from '../store/auth-store';
 import { Alert } from 'react-native';
 
 export function useAuthGuard() {
   const { isAuthenticated, user, isLoading } = useAuthStore();
   const router = useRouter();
+  const pathname = usePathname();
 
   const requireAuth = (
     action: () => void,
@@ -22,7 +23,13 @@ export function useAuthGuard() {
         options?.message || 'Você precisa estar logado para realizar esta ação.',
         [
           { text: 'Cancelar', style: 'cancel' },
-          { text: 'Fazer Login', onPress: () => router.push('/(auth)/login') },
+          { 
+            text: 'Fazer Login', 
+            onPress: () => router.push({ 
+              pathname: '/(auth)/login', 
+              params: { returnUrl: pathname } 
+            }) 
+          },
         ]
       );
       return;

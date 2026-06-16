@@ -5,10 +5,12 @@ import { PecaeBackground, PecaeGlassCard } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
 import { useFavorites } from '../../src/hooks/useFavorites';
 import { useAuthGuard } from '../../src/hooks/useAuthGuard';
+import { useAuthStore } from '../../src/store/auth-store';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function FavoritesScreen() {
   const { colors, typography, effects } = usePecaeTheme();
+  const { isAuthenticated } = useAuthStore();
   const { getFavorites, toggleFavorite } = useFavorites();
   const { requireAuth } = useAuthGuard();
   const { width } = useWindowDimensions();
@@ -19,6 +21,35 @@ export default function FavoritesScreen() {
   const gap = 12;
   const sidePadding = 20;
   const itemWidth = (width - (sidePadding * 2) - (gap * (columns - 1))) / columns;
+
+  if (!isAuthenticated) {
+    return (
+      <PecaeBackground>
+        <View style={styles.header}>
+          <Text style={[styles.headerTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>
+            MEUS FAVORITOS
+          </Text>
+        </View>
+        <View style={[styles.emptyContainer, { paddingTop: 40 }]}>
+          <PecaeGlassCard intensity={5} style={[styles.emptyCard, { borderRadius: effects.radius.lg }]}>
+            <Ionicons name="lock-closed-outline" size={48} color={`${colors.textMuted}33`} />
+            <Text style={[styles.emptyTitle, { color: colors.textPrimary, fontFamily: typography.display, marginTop: 16 }]}>
+              ACESSO RESTRITO
+            </Text>
+            <Text style={[styles.emptySubtitle, { color: colors.textMuted, fontFamily: typography.body, marginBottom: 16 }]}>
+              Faça login para ver seus veículos favoritos e gerenciar sua lista de desejos.
+            </Text>
+            <TouchableOpacity 
+              onPress={() => router.push('/(auth)/login')}
+              style={{ backgroundColor: colors.brand, paddingHorizontal: 24, paddingVertical: 12, borderRadius: effects.radius.sm }}
+            >
+              <Text style={{ fontFamily: typography.display, color: '#000' }}>FAZER LOGIN</Text>
+            </TouchableOpacity>
+          </PecaeGlassCard>
+        </View>
+      </PecaeBackground>
+    );
+  }
 
   if (getFavorites.isLoading) {
     return (
@@ -221,5 +252,13 @@ const styles = StyleSheet.create({
   exploreButtonText: {
     fontSize: 14,
     letterSpacing: 1,
+  },
+  emptyCard: {
+    padding: 40,
+    alignItems: 'center',
+    gap: 16,
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
 });

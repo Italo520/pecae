@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { useRouter, useNavigation } from "expo-router";
+import { useRouter, useNavigation, useGlobalSearchParams } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -40,6 +40,8 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export default function RegisterScreen() {
   const router = useRouter();
   const navigation = useNavigation();
+  const params = useGlobalSearchParams();
+  const returnUrl = params?.returnUrl as string | undefined;
   const { colors, typography, effects } = usePecaeTheme();
   const { isMobile, pick } = useResponsive();
 
@@ -78,20 +80,24 @@ export default function RegisterScreen() {
         if (user.type === "SELLER" || user.type === "BOTH") {
           router.replace("/(seller)/onboarding");
         } else {
-          try {
-            (navigation as any).reset({
-              index: 0,
-              routes: [
-                {
-                  name: "(tabs)",
-                  state: {
-                    routes: [{ name: "index" }],
+          if (returnUrl) {
+            router.replace(returnUrl as any);
+          } else {
+            try {
+              (navigation as any).reset({
+                index: 0,
+                routes: [
+                  {
+                    name: "(tabs)",
+                    state: {
+                      routes: [{ name: "index" }],
+                    },
                   },
-                },
-              ],
-            });
-          } catch (e) {
-            router.replace("/(tabs)/");
+                ],
+              });
+            } catch (e) {
+              router.replace("/(tabs)/");
+            }
           }
         }
       } catch (loginError) {
