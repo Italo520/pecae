@@ -89,7 +89,7 @@ export function FipeSearchForm() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.surface }, effects.cardShadow]}>
+    <View style={[styles.container, isDesktop && { marginHorizontal: 0 }, { backgroundColor: colors.surface }, effects.cardShadow]}>
       <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.heading }]}>
         Busque a peça certa para o seu veículo
       </Text>

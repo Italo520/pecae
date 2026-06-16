@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, Platform } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, Stack } from 'expo-router';
 import { PecaeBackground } from '../../src/components/PecaeUI/PecaeBackground';
@@ -12,11 +12,13 @@ import * as ImagePicker from 'expo-image-picker';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { PecaeScreenContainer } from '../../src/components/PecaeUI';
+import { useToast } from '../../src/context/ToastContext';
 
 export default function VerificationRequestScreen() {
   const { colors, typography } = usePecaeTheme();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   const [selectedDocs, setSelectedDocs] = useState<{ id: string, uri: string, name: string, type: string }[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -30,7 +32,7 @@ export default function VerificationRequestScreen() {
 
   const pickDocument = async () => {
     if (selectedDocs.length >= 5) {
-      Alert.alert('Limite atingido', 'Você pode enviar no máximo 5 documentos.');
+      showToast({ type: 'warning', title: 'Limite atingido', message: 'Você pode enviar no máximo 5 documentos.', duration: 3000 });
       return;
     }
 
@@ -59,7 +61,7 @@ export default function VerificationRequestScreen() {
 
     const permission = await ImagePicker.requestCameraPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert('Permissão necessária', 'Precisamos de acesso à câmera para tirar a foto.');
+      showToast({ type: 'error', title: 'Permissão necessária', message: 'Precisamos de acesso à câmera para tirar a foto.', duration: 4000 });
       return;
     }
 
@@ -84,7 +86,7 @@ export default function VerificationRequestScreen() {
 
   const handleSubmit = async () => {
     if (selectedDocs.length === 0) {
-      Alert.alert('Atenção', 'Selecione pelo menos um documento.');
+      showToast({ type: 'warning', title: 'Atenção', message: 'Selecione pelo menos um documento.', duration: 3000 });
       return;
     }
 
@@ -117,13 +119,13 @@ export default function VerificationRequestScreen() {
         documentUrls: uploadResults,
       });
 
-      Alert.alert('Sucesso', 'Sua solicitação foi enviada e será analisada em até 48h.');
+      showToast({ type: 'success', title: 'Sucesso', message: 'Sua solicitação foi enviada e será analisada em até 48h.', duration: 5000 });
       queryClient.invalidateQueries({ queryKey: ['verification-status'] });
       queryClient.invalidateQueries({ queryKey: ['seller-me'] });
       router.back();
     } catch (err) {
       console.error(err);
-      Alert.alert('Erro', 'Ocorreu um problema ao enviar seus documentos. Tente novamente.');
+      showToast({ type: 'error', title: 'Erro', message: 'Ocorreu um problema ao enviar seus documentos. Tente novamente.', duration: 4000 });
     } finally {
       setIsUploading(false);
     }

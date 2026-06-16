@@ -9,8 +9,7 @@ import {
   KeyboardAvoidingView, 
   Platform,
   ScrollView,
-  ActivityIndicator,
-  Alert
+  ActivityIndicator
 } from 'react-native';
 import { usePecaeTheme } from '../../theme';
 import { PecaeGlassCard } from './PecaeGlassCard';
@@ -18,6 +17,7 @@ import { PecaeInput } from './PecaeInput';
 import { PecaeButton } from './PecaeButton';
 import { Ionicons } from '@expo/vector-icons';
 import { api } from '../../services/api';
+import { useToast } from '../../context/ToastContext';
 
 export enum ReportCategory {
   FRAUD = 'FRAUD',
@@ -45,6 +45,7 @@ export const ReportBottomSheet: React.FC<ReportBottomSheetProps> = ({
   targetName
 }) => {
   const { colors, typography, effects, isDark } = usePecaeTheme();
+  const { showToast } = useToast();
   const [category, setCategory] = useState<ReportCategory | null>(null);
   const [reason, setReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,12 +60,12 @@ export const ReportBottomSheet: React.FC<ReportBottomSheetProps> = ({
 
   const handleSubmit = async () => {
     if (!category) {
-      Alert.alert('Erro', 'Selecione uma categoria para a denúncia.');
+      showToast({ type: 'warning', title: 'Atenção', message: 'Selecione uma categoria para a denúncia.', duration: 3000 });
       return;
     }
 
     if (reason.length < 10) {
-      Alert.alert('Erro', 'Por favor, descreva o motivo com pelo menos 10 caracteres.');
+      showToast({ type: 'warning', title: 'Atenção', message: 'Descreva o motivo com pelo menos 10 caracteres.', duration: 3000 });
       return;
     }
 
@@ -78,14 +79,13 @@ export const ReportBottomSheet: React.FC<ReportBottomSheetProps> = ({
         chatRoomId
       });
       
-      Alert.alert('Sucesso', 'Sua denúncia foi enviada e será analisada por nossa equipe.');
+      showToast({ type: 'success', title: 'Denúncia Enviada', message: 'Sua denúncia será analisada por nossa equipe.', duration: 4000 });
       onClose();
-      // Reset state
       setCategory(null);
       setReason('');
     } catch (error) {
       console.error('Erro ao enviar denúncia:', error);
-      Alert.alert('Erro', 'Não foi possível enviar a denúncia. Tente novamente mais tarde.');
+      showToast({ type: 'error', title: 'Erro', message: 'Não foi possível enviar a denúncia. Tente novamente.', duration: 4000 });
     } finally {
       setIsSubmitting(false);
     }

@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 import { useRouter, useNavigation, useGlobalSearchParams } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
@@ -25,6 +24,7 @@ import { api } from "../../src/services/api";
 import { useAuthStore } from "../../src/store/auth-store";
 import { useGoogleAuth } from "../../src/hooks/useGoogleAuth";
 import { useResponsive } from "../../src/theme/breakpoints";
+import { useToast } from "../../src/context/ToastContext";
 
 const loginSchema = z.object({
   email: z.string().email("Credencial inválida"),
@@ -41,6 +41,7 @@ export default function LoginScreen() {
   const { colors, typography } = usePecaeTheme();
   const { setAuth } = useAuthStore();
   const { isMobile, isDesktop, pick } = useResponsive();
+  const { showToast } = useToast();
 
   const {
     control,
@@ -100,7 +101,7 @@ export default function LoginScreen() {
     } catch (error: any) {
       const message =
         error.response?.data?.message || "E-mail ou senha incorretos";
-      Alert.alert("FALHA NO ACESSO", message);
+      showToast({ type: 'error', title: 'FALHA NO ACESSO', message, duration: 5000 });
     }
   };
 
@@ -145,7 +146,7 @@ export default function LoginScreen() {
         }
       }
     },
-    onError: (message) => Alert.alert("FALHA GOOGLE", message),
+    onError: (message) => showToast({ type: 'error', title: 'FALHA GOOGLE', message, duration: 5000 }),
   });
 
   return (

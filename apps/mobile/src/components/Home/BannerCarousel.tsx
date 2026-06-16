@@ -50,7 +50,7 @@ export function BannerCarousel() {
 
   if (isLoading) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: colors.surface }]}>
+      <View style={[styles.loadingContainer, isDesktop && { marginHorizontal: 0 }, { backgroundColor: colors.surface }]}>
         <ActivityIndicator color={colors.brand} />
       </View>
     );
@@ -61,7 +61,13 @@ export function BannerCarousel() {
   }
 
   const bannerHeight = isDesktop ? 300 : 150;
-  const bannerWidth = isDesktop ? 1200 : width - 40;
+  // Account for browser scrollbar on web
+  const scrollbarWidth = Platform.OS === 'web' ? 16 : 0;
+  const screenWidth = width - scrollbarWidth;
+
+  // No desktop, o PageContainer limita a área útil a 1200px com 32px de padding em cada lado (total de 64px de recuo).
+  // A largura máxima do banner deve ser a largura calculada para este container.
+  const bannerWidth = isDesktop ? Math.min(screenWidth, 1200) - 64 : screenWidth - 40;
 
   return (
     <View style={styles.container}>

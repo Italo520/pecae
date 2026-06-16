@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { usePecaeTheme } from '../../theme';
 import { PecaeGlassCard } from '../PecaeUI/PecaeGlassCard';
 import { Ionicons } from '@expo/vector-icons';
 import { useVehicleActions, VehicleListing } from '../../hooks/useVehicles';
 import { useVehicleWizardStore } from '../../store/vehicle-wizard-store';
 import { useRouter } from 'expo-router';
+import { useToast } from '../../context/ToastContext';
 
 interface VehicleInventoryCardProps {
   vehicle: VehicleListing;
@@ -16,6 +17,7 @@ export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehi
   const { markAsSold, markAsRemoved, deleteVehicle, reactivateVehicle } = useVehicleActions();
   const loadVehicle = useVehicleWizardStore(s => s.loadVehicle);
   const router = useRouter();
+  const { showToast } = useToast();
 
   const handleEdit = () => {
     loadVehicle(vehicle);
@@ -48,50 +50,29 @@ export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehi
   };
 
   const handleSold = () => {
-    if (Platform.OS === 'web') {
-      if (window.confirm('Deseja marcar esta sucata como vendida? Ela não aparecerá mais nas buscas.')) {
-        setTimeout(() => {
-          markAsSold.mutate(vehicle.id);
-        }, 10);
-      }
-      return;
-    }
-    
-    Alert.alert(
-      'Confirmar Venda',
-      'Deseja marcar esta sucata como vendida? Ela não aparecerá mais nas buscas.',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { 
-          text: 'Confirmar', 
-          onPress: () => markAsSold.mutate(vehicle.id) 
-        }
-      ]
-    );
+    showToast({
+      type: 'warning',
+      title: 'Confirmar Venda',
+      message: 'Deseja marcar esta sucata como vendida? Ela não aparecerá mais nas buscas.',
+      duration: 0,
+      actions: [
+        { label: 'Cancelar', onPress: () => {} },
+        { label: 'Confirmar', primary: true, onPress: () => markAsSold.mutate(vehicle.id) },
+      ],
+    });
   };
 
   const handleDelete = () => {
-    if (Platform.OS === 'web') {
-      if (window.confirm('Deseja excluir permanentemente esta sucata do seu inventário?')) {
-        setTimeout(() => {
-          deleteVehicle.mutate(vehicle.id);
-        }, 10);
-      }
-      return;
-    }
-
-    Alert.alert(
-      'Excluir Registro',
-      'Deseja excluir permanentemente esta sucata do seu inventário?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { 
-          text: 'Excluir', 
-          style: 'destructive',
-          onPress: () => deleteVehicle.mutate(vehicle.id) 
-        }
-      ]
-    );
+    showToast({
+      type: 'error',
+      title: 'Excluir Registro',
+      message: 'Deseja excluir permanentemente esta sucata do seu inventário?',
+      duration: 0,
+      actions: [
+        { label: 'Cancelar', onPress: () => {} },
+        { label: 'Excluir', primary: true, onPress: () => deleteVehicle.mutate(vehicle.id) },
+      ],
+    });
   };
 
   return (

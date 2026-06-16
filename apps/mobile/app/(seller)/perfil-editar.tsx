@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -11,6 +11,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { PecaeBackground, PecaeGlassCard, PecaeInput, PecaeButton } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
+import { useToast } from '../../src/context/ToastContext';
 
 const updateSellerSchema = z.object({
   storeName: z.string().min(3, 'Mínimo 3 caracteres'),
@@ -29,6 +30,7 @@ export default function EditProfileScreen() {
   const PecaeTokens = require('../../src/theme/pecae-tokens').PecaeTokens;
   const queryClient = useQueryClient();
   const [uploading, setUploading] = useState(false);
+  const { showToast } = useToast();
 
   const { data: seller, isLoading } = useQuery({
     queryKey: ['seller-me'],
@@ -71,18 +73,18 @@ export default function EditProfileScreen() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['seller-me'] });
-      Alert.alert('Sucesso', 'Perfil atualizado com sucesso!');
+      showToast({ type: 'success', title: 'Sucesso', message: 'Perfil atualizado com sucesso!', duration: 3000 });
       router.back();
     },
     onError: () => {
-      Alert.alert('Erro', 'Não foi possível atualizar o perfil.');
+      showToast({ type: 'error', title: 'Erro', message: 'Não foi possível atualizar o perfil.', duration: 4000 });
     }
   });
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permissão negada', 'Precisamos de acesso às suas fotos para alterar a logo.');
+      showToast({ type: 'error', title: 'Permissão negada', message: 'Precisamos de acesso às suas fotos para alterar a logo.', duration: 4000 });
       return;
     }
 
@@ -124,10 +126,10 @@ export default function EditProfileScreen() {
       });
 
       queryClient.invalidateQueries({ queryKey: ['seller-me'] });
-      Alert.alert('Sucesso', 'Logo atualizada com sucesso!');
+      showToast({ type: 'success', title: 'Sucesso', message: 'Logo atualizada com sucesso!', duration: 3000 });
     } catch (error) {
       console.error(error);
-      Alert.alert('Erro', 'Falha no upload da logo.');
+      showToast({ type: 'error', title: 'Erro', message: 'Falha no upload da logo.', duration: 4000 });
     } finally {
       setUploading(false);
     }

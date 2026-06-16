@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, SafeAreaView } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../../src/store/auth-store';
@@ -7,31 +7,31 @@ import { api } from '../../src/services/api';
 import { usePecaeTheme } from '../../src/theme';
 import { PecaeBackground } from '../../src/components/PecaeUI/PecaeBackground';
 import { PecaeGlassCard } from '../../src/components/PecaeUI/PecaeGlassCard';
+import { useToast } from '../../src/context/ToastContext';
 
 export default function ExcluirContaScreen() {
   const { colors, typography, isDark } = usePecaeTheme();
   const [password, setPassword] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const { clearAuth: signOut } = useAuthStore();
+  const { showToast } = useToast();
 
   const handleDelete = () => {
     if (!password || password.trim() === '') {
-      Alert.alert('Atenção', 'Você precisa informar sua senha atual para excluir a conta.');
+      showToast({ type: 'warning', title: 'Atenção', message: 'Informe sua senha atual para excluir a conta.', duration: 3000 });
       return;
     }
 
-    Alert.alert(
-      'Aviso Irreversível',
-      'Sua conta será apagada. Por motivos legais, seus dados ficarão retidos por 30 dias antes de serem permanentemente anonimizados, mas seu acesso será imediatamente revogado. Deseja mesmo continuar?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Excluir Conta',
-          style: 'destructive',
-          onPress: confirmDelete,
-        },
-      ]
-    );
+    showToast({
+      type: 'error',
+      title: 'Aviso Irreversível',
+      message: 'Sua conta será apagada. Acesso imediatamente revogado. Deseja continuar?',
+      duration: 0,
+      actions: [
+        { label: 'Cancelar', onPress: () => {} },
+        { label: 'Excluir Conta', primary: true, onPress: confirmDelete },
+      ],
+    });
   };
 
   const confirmDelete = async () => {
@@ -41,23 +41,17 @@ export default function ExcluirContaScreen() {
         data: { currentPassword: password },
       });
       
-      Alert.alert(
-        'Conta Excluída',
-        'Sua conta foi agendada para exclusão e você foi desconectado.',
-        [
-          {
-            text: 'OK',
-            onPress: async () => {
-              await signOut();
-              router.replace('/(auth)/login');
-            },
-          },
-        ]
-      );
+      showToast({
+        type: 'success',
+        title: 'Conta Excluída',
+        message: 'Sua conta foi agendada para exclusão.',
+        duration: 0,
+        actions: [{ label: 'OK', primary: true, onPress: async () => { await signOut(); router.replace('/(auth)/login'); } }],
+      });
     } catch (error: any) {
       console.error(error);
       const message = error.response?.data?.message || 'Erro ao tentar excluir a conta.';
-      Alert.alert('Erro', message);
+      showToast({ type: 'error', title: 'Erro', message, duration: 4000 });
     } finally {
       setIsDeleting(false);
     }

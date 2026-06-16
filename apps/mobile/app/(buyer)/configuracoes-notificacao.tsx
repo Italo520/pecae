@@ -5,7 +5,6 @@ import {
   StyleSheet, 
   Switch, 
   ActivityIndicator, 
-  Alert, 
   ScrollView, 
   SafeAreaView, 
   Platform,
@@ -18,6 +17,7 @@ import { usePecaeTheme } from '../../src/theme';
 import { useBuyerProfile, useUpdateNotificationPreferences } from '../../src/hooks/useBuyer';
 import { PecaeBackground } from '../../src/components/PecaeUI/PecaeBackground';
 import { PecaeGlassCard } from '../../src/components/PecaeUI/PecaeGlassCard';
+import { useToast } from '../../src/context/ToastContext';
 
 /**
  * 🤖 Applying knowledge of @frontend-specialist...
@@ -27,6 +27,7 @@ import { PecaeGlassCard } from '../../src/components/PecaeUI/PecaeGlassCard';
 
 export default function ConfiguracoesNotificacao() {
   const { colors, typography, isDark, effects } = usePecaeTheme();
+  const { showToast } = useToast();
   
   const { data: profile, isLoading } = useBuyerProfile();
   const updatePrefsMutation = useUpdateNotificationPreferences();
@@ -55,14 +56,12 @@ export default function ConfiguracoesNotificacao() {
         }
         
         if (finalStatus !== 'granted') {
-          Alert.alert(
-            'Acesso Negado', 
-            'As notificações push estão desabilitadas no sistema. Deseja abrir as configurações?',
-            [
-              { text: 'Cancelar', style: 'cancel' },
-              { text: 'Configurações', onPress: () => Platform.OS === 'ios' ? {} : {} } // In a real app, use Linking.openSettings()
-            ]
-          );
+          showToast({
+            type: 'warning',
+            title: 'Acesso Negado',
+            message: 'As notificações push estão desabilitadas. Habilite nas configurações do sistema.',
+            duration: 5000,
+          });
           setPushEnabled(false);
           return;
         }
@@ -72,7 +71,7 @@ export default function ConfiguracoesNotificacao() {
       await updatePrefsMutation.mutateAsync({ push: value });
     } catch (error) {
       setPushEnabled(!value);
-      Alert.alert('Erro Técnico', 'Não foi possível sincronizar sua preferência com a Central de Alertas.');
+      showToast({ type: 'error', title: 'Erro Técnico', message: 'Não foi possível sincronizar sua preferência.', duration: 4000 });
     }
   };
 
@@ -82,7 +81,7 @@ export default function ConfiguracoesNotificacao() {
       await updatePrefsMutation.mutateAsync({ email: value });
     } catch (error) {
       setEmailEnabled(!value);
-      Alert.alert('Erro Técnico', 'Falha na atualização do canal de e-mail.');
+      showToast({ type: 'error', title: 'Erro Técnico', message: 'Falha na atualização do canal de e-mail.', duration: 4000 });
     }
   };
 
@@ -92,7 +91,7 @@ export default function ConfiguracoesNotificacao() {
       await updatePrefsMutation.mutateAsync({ inApp: value });
     } catch (error) {
       setInAppEnabled(!value);
-      Alert.alert('Erro Técnico', 'Falha na atualização do canal in-app.');
+      showToast({ type: 'error', title: 'Erro Técnico', message: 'Falha na atualização do canal in-app.', duration: 4000 });
     }
   };
 

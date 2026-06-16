@@ -35,10 +35,10 @@ export function AppHeader() {
           <TouchableOpacity onPress={() => router.push('/(tabs)/search')} style={styles.navItem}>
             <Text style={[styles.navText, { color: colors.textPrimary, fontFamily: typography.medium }]}>Buscar Veículos</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => requireAuth(() => router.push('/(tabs)/favoritos'))} style={styles.navItem}>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/favoritos')} style={styles.navItem}>
             <Text style={[styles.navText, { color: colors.textPrimary, fontFamily: typography.medium }]}>Favoritos</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => requireAuth(() => router.push('/(tabs)/mensagens'))} style={styles.navItem}>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/mensagens')} style={styles.navItem}>
             <Text style={[styles.navText, { color: colors.textPrimary, fontFamily: typography.medium }]}>Mensagens</Text>
           </TouchableOpacity>
         </View>

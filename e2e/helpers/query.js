@@ -28,11 +28,27 @@ function loadEnvFile(filePath) {
 const envTestPath = path.resolve(__dirname, '../../apps/api/.env.test');
 loadEnvFile(envTestPath);
 
+let dbUrl = process.env.DATABASE_URL;
+
+// Resolver IP interno do docker no WSL para evitar falha no localhost
+if (dbUrl && (dbUrl.includes('localhost:5433') || dbUrl.includes('127.0.0.1:5433'))) {
+  try {
+    const { execSync } = require('child_process');
+    const containerIp = execSync("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' pecae-postgres-test 2>/dev/null").toString().trim();
+    if (containerIp) {
+      dbUrl = `postgresql://postgres:test123@${containerIp}:5432/pecae_test_db`;
+      console.error(`ℹ️ [SQL BRIDGE] Redirecionando conexão para IP do container no WSL: ${dbUrl}`);
+    }
+  } catch (e) {
+    // Silently fallback to default URL if docker is not available
+  }
+}
+
 // Configurar o Prisma Client para usar a URL carregada
 const prisma = new PrismaClient({
   datasources: {
     db: {
-      url: process.env.DATABASE_URL,
+      url: dbUrl,
     },
   },
 });

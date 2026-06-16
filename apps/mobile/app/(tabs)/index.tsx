@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { StyleSheet, View, Text, ScrollView, Image, ActivityIndicator, TouchableOpacity, useWindowDimensions, TextInput, Animated, Alert } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, Image, ActivityIndicator, TouchableOpacity, useWindowDimensions, TextInput, Animated, Platform } from 'react-native';
 import { PecaeBackground, PecaeGlassCard, PecaeImage } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
 import { useSearchVehicles } from '../../src/hooks/useVehicles';
@@ -15,6 +15,7 @@ import { AppFooter } from '../../src/components/Layout/AppFooter';
 import { useDeviceLayout } from '../../src/hooks/useDeviceLayout';
 import { FipeSearchForm } from '../../src/components/Search/FipeSearchForm';
 import { VehicleCard } from '../../src/components/Vehicle/VehicleCard';
+import { useToast } from '../../src/context/ToastContext';
 
 const CATEGORIES = [
   { id: '1', name: 'Carros Sucata', icon: 'car-outline' },
@@ -34,36 +35,49 @@ export default function BuyerHomeScreen() {
   const listings = searchResponse?.data || [];
   const { width, isDesktop } = useDeviceLayout();
   const router = useRouter();
+  const { showToast } = useToast();
 
 
 
   const handleProfilePress = () => {
-    Alert.alert(
-      "Perfil",
-      "O que você deseja fazer?",
-      [
-        { text: "Ver Perfil", onPress: () => router.push('/(buyer)/perfil') },
-        { 
-          text: "Sair da Conta", 
-          onPress: async () => {
-            await useAuthStore.getState().clearAuth();
-            router.replace('/(auth)/login');
-          }, 
-          style: 'destructive' 
-        },
-        { text: "Cancelar", style: 'cancel' }
-      ]
-    );
+    showToast({
+      type: 'info',
+      title: 'Perfil',
+      message: 'O que deseja fazer?',
+      duration: 0,
+      actions: [
+        { label: 'Ver Perfil', onPress: () => router.push('/(buyer)/perfil') },
+        { label: 'Sair da Conta', primary: true, onPress: async () => { await useAuthStore.getState().clearAuth(); router.replace('/(auth)/login'); } },
+      ],
+    });
   };
 
 
 
   const isWeb = width >= 768;
-  const columns = isWeb ? 4 : 2;
+  const columns = isWeb ? 4 : 1;
   const gap = 12;
-  const horizontalPadding = 20;
-  const containerWidth = Math.min(width, 1200);
-  const itemWidth = (containerWidth - (horizontalPadding * 2) - (gap * (columns - 1))) / columns;
+  const scrollbarWidth = isWeb ? 16 : 0;
+  const screenWidth = width - scrollbarWidth;
+  
+  // No desktop (isDesktop = true, width >= 1024), o PageContainer limita o maxWidth a 1200 
+  // e aplica um paddingHorizontal de 32 de cada lado (total de 64px). 
+  // Portanto, a largura útil real do container é Math.min(screenWidth, 1200) - 64.
+  const containerWidth = isDesktop ? Math.min(screenWidth, 1200) - 64 : screenWidth;
+  const gridPadding = isDesktop ? 0 : 20;
+
+  // Arredonda para baixo e adiciona uma folga maior (10px) para evitar quebras por scrollbar ou arredondamento de subpixel no navegador
+  const itemWidth = Math.floor((containerWidth - (gridPadding * 2) - (gap * (columns - 1))) / columns) - 10;
+
+  console.log("LAYOUT_DEBUG:", {
+    width,
+    isDesktop,
+    isWeb,
+    columns,
+    containerWidth,
+    gridPadding,
+    itemWidth
+  });
 
   return (
     <PecaeBackground>
@@ -111,7 +125,7 @@ export default function BuyerHomeScreen() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={[
               styles.categoriesScroll,
-              { flexGrow: 1, justifyContent: 'center' }
+              { flexGrow: 1, justifyContent: 'center', paddingHorizontal: gridPadding }
             ]}
           >
             {CATEGORIES.map((cat) => (
@@ -148,7 +162,7 @@ export default function BuyerHomeScreen() {
         </View>
 
         {/* Seção de Recomendações */}
-        <View style={styles.recommendationsHeader}>
+        <View style={[styles.recommendationsHeader, { paddingHorizontal: gridPadding }]}>
           <Text style={[styles.sectionTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>
             Recomendado para Você
           </Text>
@@ -157,7 +171,7 @@ export default function BuyerHomeScreen() {
         {isLoading ? (
           <ActivityIndicator size="large" color={colors.brand} style={{ marginTop: 40 }} />
         ) : (
-          <View style={styles.productGrid}>
+          <View style={[styles.productGrid, { paddingHorizontal: gridPadding }]}>
             {listings.map((vehicle: any) => {
               const getSafeText = (val: any) => {
                 if (!val) return '';
@@ -186,7 +200,7 @@ export default function BuyerHomeScreen() {
                   city={vehicle.city || vehicle.seller?.city}
                   state={vehicle.state || vehicle.seller?.state}
                   imageUrl={vehicle.photos?.[0]?.url || vehicle.thumbnail || imageUrl}
-                  style={{ width: itemWidth, marginBottom: 24 }}
+                  style={{ width: isWeb ? itemWidth : '100%', marginBottom: 24 }}
                 />
               );
             })}

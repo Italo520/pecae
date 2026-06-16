@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert, Platform, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Platform, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -12,6 +12,7 @@ import {
 } from '../../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../../src/theme';
 import { api } from '../../../src/services/api';
+import { useToast } from '../../../src/context/ToastContext';
 
 export default function EvalSellerScreen() {
   const { roomId, sellerId, storeName } = useLocalSearchParams<{ 
@@ -22,6 +23,7 @@ export default function EvalSellerScreen() {
   const router = useRouter();
   const { colors, typography, effects } = usePecaeTheme();
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
 
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
@@ -44,22 +46,14 @@ export default function EvalSellerScreen() {
     },
     onError: (error: any) => {
       const msg = error?.response?.data?.message || 'Erro ao enviar avaliação.';
-      const formattedMsg = Array.isArray(msg) ? msg.join('\n') : msg;
-      if (Platform.OS === 'web') {
-        alert(formattedMsg);
-      } else {
-        Alert.alert('Falha', formattedMsg);
-      }
+      const formattedMsg = Array.isArray(msg) ? msg.join(' | ') : msg;
+      showToast({ type: 'error', title: 'Falha', message: formattedMsg, duration: 5000 });
     }
   });
 
   const handleSubmit = () => {
     if (rating === 0) {
-      if (Platform.OS === 'web') {
-        alert('Por favor, selecione uma nota de 1 a 5 estrelas.');
-      } else {
-        Alert.alert('Atenção', 'Por favor, selecione uma nota de 1 a 5 estrelas.');
-      }
+      showToast({ type: 'warning', title: 'Atenção', message: 'Selecione uma nota de 1 a 5 estrelas.', duration: 3000 });
       return;
     }
     mutation.mutate();

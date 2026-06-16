@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
@@ -21,6 +20,7 @@ import {
 } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
+import { useToast } from '../../src/context/ToastContext';
 
 const forgotPasswordSchema = z.object({
   email: z.string().email('E-mail inválido'),
@@ -31,6 +31,7 @@ type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 export default function ForgotPasswordScreen() {
   const router = useRouter();
   const { colors, typography } = usePecaeTheme();
+  const { showToast } = useToast();
 
   const {
     control,
@@ -43,14 +44,16 @@ export default function ForgotPasswordScreen() {
   const onSubmit = async (data: ForgotPasswordFormData) => {
     try {
       await api.post('/auth/forgot-password', data);
-      Alert.alert(
-        'SUCESSO',
-        'Se este e-mail estiver cadastrado, você receberá um link de recuperação em instantes.',
-        [{ text: 'OK', onPress: () => router.back() }]
-      );
+      showToast({
+        type: 'success',
+        title: 'SUCESSO',
+        message: 'Se este e-mail estiver cadastrado, você receberá um link de recuperação.',
+        duration: 0,
+        actions: [{ label: 'OK', primary: true, onPress: () => router.back() }],
+      });
     } catch (error: any) {
       const message = error.response?.data?.message || 'Erro ao processar solicitação';
-      Alert.alert('FALHA', message);
+      showToast({ type: 'error', title: 'FALHA', message, duration: 5000 });
     }
   };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../theme';
@@ -15,20 +15,23 @@ const PHOTO_SLOTS = [
   { id: 'interior', label: 'Interior/Motor' },
 ];
 
+import { useToast } from '../../context/ToastContext';
+
 export const Step3Photos: React.FC = () => {
   const { colors, typography } = usePecaeTheme();
   const { data, updateData, nextStep, prevStep, isStepValid } = useVehicleWizardStore();
+  const { showToast } = useToast();
 
   const pickImage = async () => {
     if (data.photos.length >= 10) {
-      Alert.alert('Limite Atingido', 'Você pode adicionar no máximo 10 fotos.');
+      showToast({ type: 'warning', title: 'Limite Atingido', message: 'Você pode adicionar no máximo 10 fotos.', duration: 3000 });
       return;
     }
 
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     
     if (status !== 'granted') {
-      Alert.alert('Permissão Negada', 'Precisamos de acesso às suas fotos para continuar.');
+      showToast({ type: 'error', title: 'Permissão Negada', message: 'Precisamos de acesso às suas fotos para continuar.', duration: 4000 });
       return;
     }
 

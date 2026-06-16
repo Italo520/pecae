@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
@@ -21,6 +20,7 @@ import {
 } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
+import { useToast } from '../../src/context/ToastContext';
 
 const resetPasswordSchema = z.object({
   newPassword: z.string().min(8, 'A senha deve ter pelo menos 8 caracteres'),
@@ -36,6 +36,7 @@ export default function ResetPasswordScreen() {
   const router = useRouter();
   const { token } = useLocalSearchParams<{ token: string }>();
   const { colors, typography } = usePecaeTheme();
+  const { showToast } = useToast();
 
   const {
     control,
@@ -47,7 +48,7 @@ export default function ResetPasswordScreen() {
 
   const onSubmit = async (data: ResetPasswordFormData) => {
     if (!token) {
-      Alert.alert('ERRO', 'Token de redefinição ausente.');
+      showToast({ type: 'error', title: 'ERRO', message: 'Token de redefinição ausente.', duration: 5000 });
       return;
     }
 
@@ -56,14 +57,16 @@ export default function ResetPasswordScreen() {
         token,
         newPassword: data.newPassword,
       });
-      Alert.alert(
-        'SUCESSO',
-        'Sua chave de acesso foi redefinida com sucesso.',
-        [{ text: 'ENTRAR', onPress: () => router.replace('/(auth)/login') }]
-      );
+      showToast({
+        type: 'success',
+        title: 'SUCESSO',
+        message: 'Sua chave de acesso foi redefinida com sucesso.',
+        duration: 0,
+        actions: [{ label: 'ENTRAR', primary: true, onPress: () => router.replace('/(auth)/login') }],
+      });
     } catch (error: any) {
       const message = error.response?.data?.message || 'Erro ao redefinir senha';
-      Alert.alert('FALHA', message);
+      showToast({ type: 'error', title: 'FALHA', message, duration: 5000 });
     }
   };
 

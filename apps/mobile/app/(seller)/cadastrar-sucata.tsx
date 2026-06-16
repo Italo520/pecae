@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Alert, BackHandler, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, BackHandler, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import { Stack, useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../src/theme';
@@ -8,6 +8,7 @@ import { PecaeGlassCard } from '../../src/components/PecaeUI/PecaeGlassCard';
 import { useVehicleWizardStore } from '../../src/store/vehicle-wizard-store';
 import { useQueryClient } from '@tanstack/react-query';
 import { api } from '../../src/services/api';
+import { useToast } from '../../src/context/ToastContext';
 
 // Steps
 import { Step1VehicleSelection } from '../../src/components/VehicleWizard/Step1VehicleSelection';
@@ -31,28 +32,23 @@ export default function CadastrarSucataScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const [isLoadingVehicle, setIsLoadingVehicle] = useState(false);
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
 
   const handleClose = useCallback(() => {
-    Alert.alert(
-      "Sair do Cadastro",
-      "As informações não salvas serão perdidas. Deseja sair?",
-      [
-        { text: "Continuar Editando", style: "cancel" },
-        { 
-          text: "Sair", 
-          style: "destructive",
-          onPress: () => {
-            resetWizard();
-            if (router.canGoBack()) {
-              router.back();
-            } else {
-              router.replace('/(seller)/(seller-tabs)');
-            }
-          }
-        }
-      ]
-    );
-  }, [router, resetWizard]);
+    showToast({
+      type: 'warning',
+      title: 'Sair do Cadastro',
+      message: 'As informações não salvas serão perdidas. Deseja sair?',
+      duration: 0,
+      actions: [
+        { label: 'Continuar Editando', onPress: () => {} },
+        { label: 'Sair', primary: true, onPress: () => {
+          resetWizard();
+          if (router.canGoBack()) { router.back(); } else { router.replace('/(seller)/(seller-tabs)'); }
+        }},
+      ],
+    });
+  }, [router, resetWizard, showToast]);
 
   // Handle Android Back Button
   useEffect(() => {
@@ -83,11 +79,13 @@ export default function CadastrarSucataScreen() {
           loadVehicle(vehicleData);
         } catch (error: any) {
           console.error("Erro ao carregar veículo para edição:", error);
-          Alert.alert(
-            "Erro de Carregamento", 
-            "Não foi possível carregar as informações do veículo para edição.",
-            [{ text: "Voltar", onPress: () => router.back() }]
-          );
+          showToast({
+            type: 'error',
+            title: 'Erro de Carregamento',
+            message: 'Não foi possível carregar as informações do veículo para edição.',
+            duration: 0,
+            actions: [{ label: 'Voltar', primary: true, onPress: () => router.back() }],
+          });
         } finally {
           setIsLoadingVehicle(false);
         }

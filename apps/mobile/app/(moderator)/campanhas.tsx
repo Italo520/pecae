@@ -5,7 +5,6 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  Alert,
   Modal,
   TextInput,
   RefreshControl,
@@ -29,11 +28,13 @@ import {
   useCancelCampaign,
 } from '../../src/hooks/useAds';
 import { AdCampaign } from '../../src/services/ads';
+import { useToast } from '../../src/context/ToastContext';
 
 const { width, height: screenHeight } = Dimensions.get('window');
 
 export default function AdsCampaignScreen() {
   const { colors, typography } = usePecaeTheme();
+  const { showToast } = useToast();
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [newCampaign, setNewCampaign] = useState({
     listingId: '',
@@ -60,7 +61,7 @@ export default function AdsCampaignScreen() {
 
   const handleCreateCampaign = () => {
     if (!newCampaign.listingId || !newCampaign.budget) {
-      Alert.alert('Erro', 'Por favor, preencha o ID do anúncio e o orçamento.');
+      showToast({ type: 'warning', title: 'Erro', message: 'Por favor, preencha o ID do anúncio e o orçamento.', duration: 3000 });
       return;
     }
 
@@ -85,7 +86,7 @@ export default function AdsCampaignScreen() {
       payload,
       {
         onSuccess: () => {
-          Alert.alert('Sucesso', 'Campanha criada com sucesso!');
+          showToast({ type: 'success', title: 'Sucesso', message: 'Campanha criada com sucesso!', duration: 4000 });
           setIsCreateModalVisible(false);
           setNewCampaign({
             listingId: '',
@@ -105,7 +106,7 @@ export default function AdsCampaignScreen() {
         },
         onError: (error: any) => {
           const msg = error?.response?.data?.message || 'Falha ao criar campanha.';
-          Alert.alert('Erro', msg);
+          showToast({ type: 'error', title: 'Erro', message: msg, duration: 5000 });
         },
       }
     );
@@ -114,31 +115,33 @@ export default function AdsCampaignScreen() {
   const toggleCampaignStatus = (campaign: AdCampaign) => {
     if (campaign.status === 'ACTIVE') {
       pauseMutation.mutate(campaign.id, {
-        onSuccess: () => Alert.alert('Sucesso', 'Campanha pausada.'),
-        onError: (error: any) => Alert.alert('Erro', 'Falha ao pausar.'),
+        onSuccess: () => showToast({ type: 'success', title: 'Sucesso', message: 'Campanha pausada.', duration: 3000 }),
+        onError: (error: any) => showToast({ type: 'error', title: 'Erro', message: 'Falha ao pausar.', duration: 4000 }),
       });
     } else if (campaign.status === 'PAUSED') {
       resumeMutation.mutate(campaign.id, {
-        onSuccess: () => Alert.alert('Sucesso', 'Campanha retomada.'),
-        onError: (error: any) => Alert.alert('Erro', 'Falha ao retomar.'),
+        onSuccess: () => showToast({ type: 'success', title: 'Sucesso', message: 'Campanha retomada.', duration: 3000 }),
+        onError: (error: any) => showToast({ type: 'error', title: 'Erro', message: 'Falha ao retomar.', duration: 4000 }),
       });
     }
   };
 
   const handleCancelCampaign = (id: string) => {
-    Alert.alert('Cancelar Campanha', 'Tem certeza que deseja cancelar esta campanha?', [
-      { text: 'Não', style: 'cancel' },
-      {
-        text: 'Sim',
-        style: 'destructive',
-        onPress: () => {
+    showToast({
+      type: 'warning',
+      title: 'Cancelar Campanha',
+      message: 'Tem certeza que deseja cancelar esta campanha?',
+      duration: 0,
+      actions: [
+        { label: 'Não', onPress: () => {} },
+        { label: 'Sim', primary: true, onPress: () => {
           cancelMutation.mutate(id, {
-            onSuccess: () => Alert.alert('Sucesso', 'Campanha cancelada.'),
-            onError: () => Alert.alert('Erro', 'Falha ao cancelar.'),
+            onSuccess: () => showToast({ type: 'success', title: 'Sucesso', message: 'Campanha cancelada.', duration: 3000 }),
+            onError: () => showToast({ type: 'error', title: 'Erro', message: 'Falha ao cancelar.', duration: 4000 }),
           });
-        },
-      },
-    ]);
+        }},
+      ],
+    });
   };
 
   const renderCampaignItem = ({ item }: { item: AdCampaign }) => {

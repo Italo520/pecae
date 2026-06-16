@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Image, Alert, ScrollView, SafeAreaView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Image, ScrollView, SafeAreaView, Platform } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useForm, Controller } from 'react-hook-form';
@@ -8,6 +8,7 @@ import { usePecaeTheme } from '../../src/theme';
 import { useBuyerProfile, useUpdateBuyerProfile } from '../../src/hooks/useBuyer';
 import { PecaeBackground } from '../../src/components/PecaeUI/PecaeBackground';
 import { PecaeGlassCard } from '../../src/components/PecaeUI/PecaeGlassCard';
+import { useToast } from '../../src/context/ToastContext';
 
 interface FormData {
   name: string;
@@ -16,6 +17,7 @@ interface FormData {
 export default function PerfilEditar() {
   const { colors, typography, isDark } = usePecaeTheme();
   const router = useRouter();
+  const { showToast } = useToast();
   
   const { data: profile, isLoading: isLoadingProfile } = useBuyerProfile();
   const updateProfileMutation = useUpdateBuyerProfile();
@@ -41,7 +43,7 @@ export default function PerfilEditar() {
   const handlePickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permissão negada', 'Precisamos de acesso à sua galeria para alterar a foto.');
+      showToast({ type: 'error', title: 'Permissão negada', message: 'Precisamos de acesso à sua galeria para alterar a foto.', duration: 4000 });
       return;
     }
 
@@ -80,11 +82,11 @@ export default function PerfilEditar() {
         avatarUrl: finalAvatarUrl,
       });
 
-      Alert.alert('Sucesso', 'Perfil atualizado com sucesso!');
+      showToast({ type: 'success', title: 'Sucesso', message: 'Perfil atualizado com sucesso!', duration: 3000 });
       router.back();
     } catch (error) {
       console.error(error);
-      Alert.alert('Erro', 'Ocorreu um erro ao atualizar o perfil.');
+      showToast({ type: 'error', title: 'Erro', message: 'Ocorreu um erro ao atualizar o perfil.', duration: 4000 });
     } finally {
       setIsUploading(false);
     }

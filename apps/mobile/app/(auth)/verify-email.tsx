@@ -5,7 +5,6 @@ import {
   Text,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   TouchableOpacity,
   TextInput,
 } from 'react-native';
@@ -20,6 +19,7 @@ import {
 } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
+import { useToast } from '../../src/context/ToastContext';
 
 const verifySchema = z.object({
   code: z.string().length(6, 'O código deve ter 6 dígitos'),
@@ -30,6 +30,7 @@ type VerifyFormData = z.infer<typeof verifySchema>;
 export default function VerifyEmailScreen() {
   const router = useRouter();
   const { colors, typography, effects } = usePecaeTheme();
+  const { showToast } = useToast();
   
   const {
     control,
@@ -42,21 +43,25 @@ export default function VerifyEmailScreen() {
   const onSubmit = async (data: VerifyFormData) => {
     try {
       await api.post('/auth/verify-email', data);
-      Alert.alert('ACESSO CONCEDIDO', 'Entidade verificada com sucesso.', [
-        { text: 'PROSSEGUIR', onPress: () => router.push('/(auth)/login') },
-      ]);
+      showToast({
+        type: 'success',
+        title: 'ACESSO CONCEDIDO',
+        message: 'Entidade verificada com sucesso.',
+        duration: 0,
+        actions: [{ label: 'PROSSEGUIR', primary: true, onPress: () => router.push('/(auth)/login') }],
+      });
     } catch (error: any) {
       const message = error.response?.data?.message || 'Código inválido ou expirado';
-      Alert.alert('FALHA NA SINCRONIZAÇÃO', message);
+      showToast({ type: 'error', title: 'FALHA NA SINCRONIZAÇÃO', message, duration: 5000 });
     }
   };
 
   const resendCode = async () => {
     try {
       await api.post('/auth/resend-verification');
-      Alert.alert('NOTIFICAÇÃO', 'Novo código de acesso enviado.');
+      showToast({ type: 'info', title: 'NOTIFICAÇÃO', message: 'Novo código de acesso enviado.', duration: 4000 });
     } catch (error: any) {
-      Alert.alert('ERRO DE TRANSMISSÃO', 'Não foi possível reenviar o código.');
+      showToast({ type: 'error', title: 'ERRO DE TRANSMISSÃO', message: 'Não foi possível reenviar o código.', duration: 4000 });
     }
   };
 

@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
   TouchableOpacity,
 } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -25,6 +24,7 @@ import { api } from '../../src/services/api';
 import { Ionicons } from '@expo/vector-icons';
 import { useResponsive } from '../../src/theme/breakpoints';
 import { useAuthStore } from '../../src/store/auth-store';
+import { useToast } from '../../src/context/ToastContext';
 
 const sellerSchema = z.object({
   storeName: z.string().min(3, 'Nome da loja deve ter pelo menos 3 caracteres'),
@@ -45,6 +45,7 @@ export default function SellerOnboardingScreen() {
   const router = useRouter();
   const { colors, typography, effects } = usePecaeTheme();
   const { isMobile } = useResponsive();
+  const { showToast } = useToast();
   
   const {
     control,
@@ -87,13 +88,17 @@ export default function SellerOnboardingScreen() {
         alert('Seu perfil de vendedor foi ativado. Bem-vindo à rede.');
         router.replace('/(seller)/(seller-tabs)');
       } else {
-        Alert.alert('PERFIL CONCLUÍDO', 'Seu perfil de vendedor foi ativado. Bem-vindo à rede.', [
-          { text: 'ACESSAR DASHBOARD', onPress: () => router.replace('/(seller)/(seller-tabs)') },
-        ]);
+        showToast({
+          type: 'success',
+          title: 'PERFIL CONCLUÍDO',
+          message: 'Seu perfil de vendedor foi ativado. Bem-vindo à rede.',
+          duration: 0,
+          actions: [{ label: 'ACESSAR DASHBOARD', primary: true, onPress: () => router.replace('/(seller)/(seller-tabs)') }],
+        });
       }
     } catch (error: any) {
       const message = error.response?.data?.message || 'Erro ao criar perfil de vendedor';
-      Alert.alert('ERRO NO PERFIL', Array.isArray(message) ? message.join('\n') : message);
+      showToast({ type: 'error', title: 'ERRO NO PERFIL', message: Array.isArray(message) ? message.join(' | ') : message, duration: 5000 });
     }
   };
 

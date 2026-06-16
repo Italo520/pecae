@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, useWindowDimensions, ActivityIndicator, Alert, Image, Platform } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, useWindowDimensions, ActivityIndicator, Image, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { useToast } from '../../../src/context/ToastContext';
 import { PecaeBackground, PecaeGlassCard, PecaeButton, ReportBottomSheet, PecaeImage } from '../../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../../src/theme';
 import { useVehicleDetails } from '../../../src/hooks/useVehicles';
@@ -22,7 +23,7 @@ export default function VehicleDetailsScreen() {
   const [isStartingChat, setIsStartingChat] = useState(false);
   const [isReportVisible, setIsReportVisible] = useState(false);
 
-  if (loadingVehicle) {
+  if (loadingVehicle || !id) {
     return (
       <PecaeBackground>
         <View style={styles.center}>
@@ -61,7 +62,7 @@ export default function VehicleDetailsScreen() {
       } catch (error: any) {
         console.error('Error starting chat:', error);
         const message = error.response?.data?.message || 'Não foi possível iniciar a negociação.';
-        Alert.alert('Erro', message);
+        showToast({ type: 'error', title: 'Erro', message, duration: 4000 });
       } finally {
         setIsStartingChat(false);
       }
@@ -112,7 +113,7 @@ export default function VehicleDetailsScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity 
-          onPress={() => toggleFavorite.mutate(vehicle.id)} 
+          onPress={() => requireAuth(() => toggleFavorite.mutate(vehicle.id))} 
           style={[styles.hudButton, { backgroundColor: 'rgba(10, 14, 20, 0.6)', borderColor: colors.border }]}
         >
           <Ionicons 

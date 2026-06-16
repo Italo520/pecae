@@ -6,13 +6,13 @@ import {
   FlatList, 
   TouchableOpacity, 
   ActivityIndicator, 
-  Alert,
   RefreshControl
 } from 'react-native';
 import { PecaeBackground, PecaeGlassCard, PecaeScreenContainer } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
 import { Ionicons } from '@expo/vector-icons';
+import { useToast } from '../../src/context/ToastContext';
 
 interface Report {
   id: string;
@@ -49,6 +49,7 @@ const formatDate = (dateString: string) => {
 
 export default function ModerationReportsScreen() {
   const { colors, typography, effects } = usePecaeTheme();
+  const { showToast } = useToast();
   const [reports, setReports] = useState<Report[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -59,7 +60,7 @@ export default function ModerationReportsScreen() {
       setReports(response.data);
     } catch (error) {
       console.error('Erro ao buscar denúncias:', error);
-      Alert.alert('Erro', 'Não foi possível carregar a fila de moderação.');
+      showToast({ type: 'error', title: 'Erro', message: 'Não foi possível carregar a fila de moderação.', duration: 4000 });
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -74,10 +75,10 @@ export default function ModerationReportsScreen() {
     try {
       await api.patch(`/reports/${reportId}/status`, { status });
       setReports(prev => prev.map(r => r.id === reportId ? { ...r, status } : r));
-      Alert.alert('Sucesso', `Denúncia marcada como ${status === 'RESOLVED' ? 'Resolvida' : 'Rejeitada'}.`);
+      showToast({ type: 'success', title: 'Sucesso', message: `Denúncia marcada como ${status === 'RESOLVED' ? 'Resolvida' : 'Rejeitada'}.`, duration: 3000 });
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
-      Alert.alert('Erro', 'Não foi possível atualizar o status da denúncia.');
+      showToast({ type: 'error', title: 'Erro', message: 'Não foi possível atualizar o status da denúncia.', duration: 4000 });
     }
   };
 

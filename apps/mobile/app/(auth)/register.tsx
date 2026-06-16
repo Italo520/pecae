@@ -7,7 +7,6 @@ import {
   Platform,
   ScrollView,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 import { useRouter, useNavigation, useGlobalSearchParams } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
@@ -25,6 +24,7 @@ import { api } from "../../src/services/api";
 import { Ionicons } from "@expo/vector-icons";
 import { useResponsive } from "../../src/theme/breakpoints";
 import { useAuthStore } from "../../src/store/auth-store";
+import { useToast } from "../../src/context/ToastContext";
 
 const registerSchema = z.object({
   name: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
@@ -44,6 +44,7 @@ export default function RegisterScreen() {
   const returnUrl = params?.returnUrl as string | undefined;
   const { colors, typography, effects } = usePecaeTheme();
   const { isMobile, pick } = useResponsive();
+  const { showToast } = useToast();
 
   const {
     control,
@@ -102,18 +103,12 @@ export default function RegisterScreen() {
         }
       } catch (loginError) {
         // Fallback para tela de verificação se o login falhar
-        if (Platform.OS === "web") {
-          router.push("/(auth)/verify-email");
-        } else {
-          Alert.alert("Sucesso", "Cadastro realizado! Verifique seu e-mail.", [
-            { text: "OK", onPress: () => router.push("/(auth)/verify-email") },
-          ]);
-        }
+        router.push("/(auth)/verify-email");
       }
     } catch (error: any) {
       const message =
         error.response?.data?.message || "Erro ao realizar cadastro";
-      Alert.alert("Erro", message);
+      showToast({ type: 'error', title: 'Erro', message, duration: 5000 });
     }
   };
 

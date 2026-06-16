@@ -107,10 +107,14 @@ export default function SearchScreen() {
 
   // Lógica de Grid Responsivo
   const isWeb = width >= 768;
-  const columns = isWeb ? 4 : 2;
+  const columns = isWeb ? 4 : 1;
   const gap = 12;
-  const horizontalPadding = 20;
-  const itemWidth = (width - (horizontalPadding * 2) - (gap * (columns - 1))) / columns;
+  const scrollbarWidth = isWeb ? 16 : 0;
+  const screenWidth = width - scrollbarWidth;
+  const containerWidth = isDesktop ? Math.min(screenWidth, 1200) - 64 : screenWidth;
+  const gridPadding = isDesktop ? 0 : 20;
+  const itemWidth = Math.floor((containerWidth - (gridPadding * 2) - (gap * (columns - 1))) / columns) - 10;
+  const cardWidth = isWeb ? itemWidth : '100%';
 
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
@@ -301,14 +305,14 @@ export default function SearchScreen() {
         ) : results.length === 0 ? (
           renderEmptyState()
         ) : (
-          <View style={styles.resultsGrid}>
+          <View style={[styles.resultsGrid, { paddingHorizontal: gridPadding }]}>
             {results.map((vehicle: any, index: number) => {
               if (vehicle.isSponsored) {
                 return (
                   <SponsoredListingCard
                     key={`sponsored-${vehicle.id}`}
                     vehicle={vehicle}
-                    itemWidth={itemWidth}
+                    itemWidth={cardWidth}
                   />
                 );
               }
@@ -330,7 +334,7 @@ export default function SearchScreen() {
                   city={vehicle.city}
                   state={vehicle.state}
                   imageUrl={imageUrl}
-                  style={{ width: itemWidth, marginBottom: 24 }}
+                  style={{ width: cardWidth, marginBottom: 24 }}
                 />
               );
             })}
@@ -462,7 +466,6 @@ const styles = StyleSheet.create({
   resultsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: 20,
     gap: 12,
   },
   productCardWrapper: {

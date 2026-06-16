@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Alert,
   RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,9 +17,11 @@ import {
 } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
+import { useToast } from '../../src/context/ToastContext';
 
 export default function AdminAnalyticsScreen() {
   const { colors, typography } = usePecaeTheme();
+  const { showToast } = useToast();
 
   const { data: analytics, isLoading, refetch, isFetching } = useQuery({
     queryKey: ['admin-analytics'],
@@ -36,12 +37,12 @@ export default function AdminAnalyticsScreen() {
       return response.data;
     },
     onSuccess: (res) => {
-      Alert.alert('SUCESSO', res?.message || 'Recálculo agendado com sucesso!');
+      showToast({ type: 'success', title: 'SUCESSO', message: res?.message || 'Recálculo agendado com sucesso!', duration: 4000 });
       refetch();
     },
     onError: (err: any) => {
       const errMsg = err.response?.data?.message || err.message || 'Falha ao agendar recálculo.';
-      Alert.alert('ERRO', errMsg);
+      showToast({ type: 'error', title: 'ERRO', message: errMsg, duration: 5000 });
     }
   });
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Alert, Platform } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -8,11 +8,13 @@ import { usePecaeTheme } from '../../../src/theme';
 import { api } from '../../../src/services/api';
 import { Image } from 'react-native';
 import { useAuthStore } from '../../../src/store/auth-store';
+import { useToast } from '../../../src/context/ToastContext';
 
 export default function SellerProfileScreen() {
   const { colors, effects } = usePecaeTheme();
   const PecaeTokens = require('../../../src/theme/pecae-tokens').PecaeTokens;
   const user = useAuthStore((state) => state.user);
+  const { showToast } = useToast();
 
   const { data: seller, isLoading: isLoadingSeller } = useQuery({
     queryKey: ['seller-me'],
@@ -38,22 +40,16 @@ export default function SellerProfileScreen() {
   };
 
   const handleLogout = async () => {
-    Alert.alert(
-      'Sair da conta',
-      'Tem certeza que deseja sair?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { 
-          text: 'Sair', 
-          style: 'destructive',
-          onPress: async () => {
-            await clearAuth();
-            queryClient.clear();
-            router.replace('/login');
-          }
-        }
-      ]
-    );
+    showToast({
+      type: 'warning',
+      title: 'Sair da conta',
+      message: 'Tem certeza que deseja sair?',
+      duration: 0,
+      actions: [
+        { label: 'Cancelar', onPress: () => {} },
+        { label: 'Sair', primary: true, onPress: async () => { await clearAuth(); queryClient.clear(); router.replace('/login'); } },
+      ],
+    });
   };
 
   const menuItems = [

@@ -1,44 +1,36 @@
 import React from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Alert, Platform } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { PecaeBackground, PecaeGlassCard, PecaeButton } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
 import { useAuthStore } from '../../src/store/auth-store';
+import { useToast } from '../../src/context/ToastContext';
 
 export default function ModeratorProfileScreen() {
   const { colors } = usePecaeTheme();
   const PecaeTokens = require('../../src/theme/pecae-tokens').PecaeTokens;
   const user = useAuthStore((state) => state.user);
+  const { showToast } = useToast();
 
   const handleLogout = () => {
     const performLogout = () => {
-      // Redireciona para o login primeiro para desmontar o layout com segurança
       router.replace('/(auth)/login');
-      // Limpa o estado de autenticação depois
       setTimeout(() => {
         useAuthStore.getState().clearAuth();
       }, 100);
     };
 
-    if (Platform.OS === 'web') {
-      if (confirm('Deseja encerrar a sessão de moderação?')) {
-        performLogout();
-      }
-    } else {
-      Alert.alert(
-        'Sair da Conta',
-        'Deseja encerrar a sessão de moderação?',
-        [
-          { text: 'Cancelar', style: 'cancel' },
-          {
-            text: 'Sair',
-            style: 'destructive',
-            onPress: performLogout,
-          },
-        ],
-      );
-    }
+    showToast({
+      type: 'warning',
+      title: 'Sair da Conta',
+      message: 'Deseja encerrar a sessão de moderação?',
+      duration: 0,
+      actions: [
+        { label: 'Cancelar', onPress: () => {} },
+        { label: 'Sair', primary: true, onPress: performLogout },
+      ],
+    });
   };
 
   const roleLabel = user?.type === 'ADMIN' ? 'Administrador' : 'Moderador';

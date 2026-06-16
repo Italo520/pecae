@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
@@ -22,6 +21,7 @@ import {
 import { usePecaeTheme } from '../../src/theme';
 import { api } from '../../src/services/api';
 import { useAuthStore } from '../../src/store/auth-store';
+import { useToast } from '../../src/context/ToastContext';
 
 const phoneSchema = z.object({
   phone: z.string().min(10, 'Telefone inválido'),
@@ -38,6 +38,7 @@ export default function OtpLoginScreen() {
   const router = useRouter();
   const { colors, typography } = usePecaeTheme();
   const { setAuth } = useAuthStore();
+  const { showToast } = useToast();
   
   const [step, setStep] = useState<'phone' | 'code'>('phone');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -52,7 +53,7 @@ export default function OtpLoginScreen() {
       setStep('code');
     } catch (error: any) {
       const message = error.response?.data?.message || 'Erro ao enviar código';
-      Alert.alert('FALHA', message);
+      showToast({ type: 'error', title: 'FALHA', message, duration: 4000 });
     }
   };
 
@@ -67,7 +68,7 @@ export default function OtpLoginScreen() {
       router.replace('/(tabs)');
     } catch (error: any) {
       const message = error.response?.data?.message || 'Código inválido ou expirado';
-      Alert.alert('FALHA', message);
+      showToast({ type: 'error', title: 'FALHA', message, duration: 4000 });
     }
   };
 

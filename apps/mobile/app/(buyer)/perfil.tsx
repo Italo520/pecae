@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Image, Switch, Platform, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Image, Switch, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -9,6 +9,7 @@ import { useAuthStore } from '../../src/store/auth-store';
 import { useUIStore } from '../../src/store/ui-store';
 import { PecaeBackground } from '../../src/components/PecaeUI/PecaeBackground';
 import { PecaeGlassCard } from '../../src/components/PecaeUI/PecaeGlassCard';
+import { useToast } from '../../src/context/ToastContext';
 
 export default function PerfilCompradorMenu() {
   const { colors, typography, spacing, effects, isDark } = usePecaeTheme();
@@ -16,6 +17,7 @@ export default function PerfilCompradorMenu() {
   const { data: profile, isLoading } = useBuyerProfile();
   const { clearAuth, user } = useAuthStore();
   const { themeMode, setThemeMode } = useUIStore();
+  const { showToast } = useToast();
 
   const handleLogout = () => {
     const performLogout = () => {
@@ -25,24 +27,16 @@ export default function PerfilCompradorMenu() {
       }, 100);
     };
 
-    if (Platform.OS === 'web') {
-      if (confirm('Deseja encerrar a sua sessão?')) {
-        performLogout();
-      }
-    } else {
-      Alert.alert(
-        'Sair da Conta',
-        'Deseja encerrar a sua sessão?',
-        [
-          { text: 'Cancelar', style: 'cancel' },
-          {
-            text: 'Sair',
-            style: 'destructive',
-            onPress: performLogout,
-          },
-        ],
-      );
-    }
+    showToast({
+      type: 'warning',
+      title: 'Sair da Conta',
+      message: 'Deseja encerrar a sua sessão?',
+      duration: 0,
+      actions: [
+        { label: 'Cancelar', onPress: () => {} },
+        { label: 'Sair', primary: true, onPress: performLogout },
+      ],
+    });
   };
 
   const toggleTheme = async () => {

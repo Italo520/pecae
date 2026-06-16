@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
-  Alert,
   Modal,
   ScrollView,
   RefreshControl,
@@ -27,9 +26,11 @@ import {
   useRejectListing,
 } from '../../src/hooks/useModeration';
 import { PendingListing } from '../../src/services/moderation';
+import { useToast } from '../../src/context/ToastContext';
 
 export default function ModerationListingsScreen() {
   const { colors, typography, effects } = usePecaeTheme();
+  const { showToast } = useToast();
   const [selectedStatus, setSelectedStatus] = useState<string>('PENDING');
   const [selectedListing, setSelectedListing] = useState<PendingListing | null>(null);
   const [moderatorNote, setModeratorNote] = useState<string>('');
@@ -57,12 +58,12 @@ export default function ModerationListingsScreen() {
       { id: selectedListing.id, note: moderatorNote },
       {
         onSuccess: (res) => {
-          Alert.alert('SUCESSO', res?.message || 'Anúncio aprovado e publicado com sucesso!');
+          showToast({ type: 'success', title: 'SUCESSO', message: res?.message || 'Anúncio aprovado e publicado com sucesso!', duration: 4000 });
           closeDetails();
         },
         onError: (err: any) => {
           const errMsg = err.response?.data?.message || err.message || 'Falha ao aprovar anúncio.';
-          Alert.alert('FALHA NA APROVAÇÃO', errMsg);
+          showToast({ type: 'error', title: 'FALHA NA APROVAÇÃO', message: errMsg, duration: 5000 });
         },
       }
     );
@@ -71,19 +72,19 @@ export default function ModerationListingsScreen() {
   const handleReject = () => {
     if (!selectedListing) return;
     if (!rejectionReason.trim()) {
-      Alert.alert('ATENÇÃO', 'O motivo da rejeição é obrigatório.');
+      showToast({ type: 'warning', title: 'ATENÇÃO', message: 'O motivo da rejeição é obrigatório.', duration: 3000 });
       return;
     }
     rejectMutation.mutate(
       { id: selectedListing.id, reason: rejectionReason },
       {
         onSuccess: (res) => {
-          Alert.alert('SUCESSO', res?.message || 'Anúncio rejeitado.');
+          showToast({ type: 'success', title: 'SUCESSO', message: res?.message || 'Anúncio rejeitado.', duration: 4000 });
           closeDetails();
         },
         onError: (err: any) => {
           const errMsg = err.response?.data?.message || err.message || 'Falha ao rejeitar anúncio.';
-          Alert.alert('FALHA NA REJEIÇÃO', errMsg);
+          showToast({ type: 'error', title: 'FALHA NA REJEIÇÃO', message: errMsg, duration: 5000 });
         },
       }
     );

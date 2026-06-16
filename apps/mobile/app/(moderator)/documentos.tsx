@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
-  Alert,
   Modal,
   ScrollView,
   RefreshControl,
@@ -26,9 +25,11 @@ import {
   useRejectVerification,
 } from '../../src/hooks/useModeration';
 import { PendingVerification } from '../../src/services/moderation';
+import { useToast } from '../../src/context/ToastContext';
 
 export default function ModerationVerificationsScreen() {
   const { colors, typography } = usePecaeTheme();
+  const { showToast } = useToast();
   const [selectedVerification, setSelectedVerification] = useState<PendingVerification | null>(null);
   const [rejectionReason, setRejectionReason] = useState<string>('');
   const [isDetailVisible, setIsDetailVisible] = useState<boolean>(false);
@@ -42,12 +43,12 @@ export default function ModerationVerificationsScreen() {
     if (!selectedVerification) return;
     approveMutation.mutate(selectedVerification.id, {
       onSuccess: (res) => {
-        Alert.alert('SUCESSO', res?.message || 'Vendedor aprovado!');
+        showToast({ type: 'success', title: 'SUCESSO', message: res?.message || 'Vendedor aprovado!', duration: 4000 });
         closeDetails();
       },
       onError: (err: any) => {
         const errMsg = err.response?.data?.message || err.message || 'Falha ao aprovar verificação.';
-        Alert.alert('FALHA NA VERIFICAÇÃO', errMsg);
+        showToast({ type: 'error', title: 'FALHA NA VERIFICAÇÃO', message: errMsg, duration: 5000 });
       },
     });
   };
@@ -55,19 +56,19 @@ export default function ModerationVerificationsScreen() {
   const handleReject = () => {
     if (!selectedVerification) return;
     if (!rejectionReason.trim()) {
-      Alert.alert('ATENÇÃO', 'O motivo da rejeição é obrigatório.');
+      showToast({ type: 'warning', title: 'ATENÇÃO', message: 'O motivo da rejeição é obrigatório.', duration: 3000 });
       return;
     }
     rejectMutation.mutate(
       { id: selectedVerification.id, reason: rejectionReason },
       {
         onSuccess: (res) => {
-          Alert.alert('SUCESSO', res?.message || 'Verificação rejeitada.');
+          showToast({ type: 'success', title: 'SUCESSO', message: res?.message || 'Verificação rejeitada.', duration: 4000 });
           closeDetails();
         },
         onError: (err: any) => {
           const errMsg = err.response?.data?.message || err.message || 'Falha ao rejeitar verificação.';
-          Alert.alert('FALHA NA REJEIÇÃO', errMsg);
+          showToast({ type: 'error', title: 'FALHA NA REJEIÇÃO', message: errMsg, duration: 5000 });
         },
       }
     );

@@ -1,11 +1,12 @@
 import { useRouter, usePathname } from 'expo-router';
 import { useAuthStore } from '../store/auth-store';
-import { Alert } from 'react-native';
+import { useToast } from '../context/ToastContext';
 
 export function useAuthGuard() {
   const { isAuthenticated, user, isLoading } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
+  const { showToast } = useToast();
 
   const requireAuth = (
     action: () => void,
@@ -18,31 +19,39 @@ export function useAuthGuard() {
     if (isLoading) return;
 
     if (!isAuthenticated) {
-      Alert.alert(
-        'Acesso Restrito',
-        options?.message || 'Você precisa estar logado para realizar esta ação.',
-        [
-          { text: 'Cancelar', style: 'cancel' },
-          { 
-            text: 'Fazer Login', 
-            onPress: () => router.push({ 
-              pathname: '/(auth)/login', 
-              params: { returnUrl: pathname } 
-            }) 
+      showToast({
+        type: 'auth',
+        title: 'Acesso Restrito',
+        message: options?.message || 'Você precisa estar logado para realizar esta ação.',
+        duration: 0,
+        actions: [
+          {
+            label: 'Cancelar',
+            onPress: () => {},
           },
-        ]
-      );
+          {
+            label: 'Fazer Login',
+            primary: true,
+            onPress: () =>
+              router.push({
+                pathname: '/(auth)/login',
+                params: { returnUrl: pathname },
+              }),
+          },
+        ],
+      });
       return;
     }
 
     if (options?.allowedRoles && user) {
       const userRole = user.type || 'BUYER';
       if (!options.allowedRoles.includes(userRole)) {
-        Alert.alert(
-          'Acesso Negado',
-          'Você não tem permissão para realizar esta ação.',
-          [{ text: 'OK', style: 'default' }]
-        );
+        showToast({
+          type: 'error',
+          title: 'Acesso Negado',
+          message: 'Você não tem permissão para realizar esta ação.',
+          duration: 4000,
+        });
         return;
       }
     }

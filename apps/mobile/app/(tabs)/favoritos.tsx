@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, useWindowDimensions, FlatList, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions, FlatList, TouchableOpacity, Image, ActivityIndicator, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { PecaeBackground, PecaeGlassCard } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
@@ -7,20 +7,27 @@ import { useFavorites } from '../../src/hooks/useFavorites';
 import { useAuthGuard } from '../../src/hooks/useAuthGuard';
 import { useAuthStore } from '../../src/store/auth-store';
 import { Ionicons } from '@expo/vector-icons';
+import { useDeviceLayout } from '../../src/hooks/useDeviceLayout';
 
 export default function FavoritesScreen() {
   const { colors, typography, effects } = usePecaeTheme();
   const { isAuthenticated } = useAuthStore();
   const { getFavorites, toggleFavorite } = useFavorites();
   const { requireAuth } = useAuthGuard();
-  const { width } = useWindowDimensions();
+  const { width, isDesktop } = useDeviceLayout();
   const router = useRouter();
 
   const isWeb = width >= 768;
-  const columns = isWeb ? 4 : 2;
+  const columns = isWeb ? 4 : 1;
   const gap = 12;
   const sidePadding = 20;
-  const itemWidth = (width - (sidePadding * 2) - (gap * (columns - 1))) / columns;
+  
+  const scrollbarWidth = isWeb ? 16 : 0;
+  const screenWidth = width - scrollbarWidth;
+  const listMaxWidth = isWeb ? Math.min(screenWidth, 1200) : screenWidth;
+  const availableWidth = listMaxWidth - (sidePadding * 2);
+  const itemWidth = Math.floor((availableWidth - (gap * columns)) / columns) - 10;
+  const cardWidth = isWeb ? itemWidth : '100%';
 
   if (!isAuthenticated) {
     return (
@@ -102,7 +109,7 @@ export default function FavoritesScreen() {
         contentContainerStyle={[styles.listContent, isWeb && styles.webListContent]}
         ListEmptyComponent={renderEmptyState}
         renderItem={({ item }) => (
-          <View style={[styles.cardWrapper, { width: itemWidth }]}>
+          <View style={[styles.cardWrapper, { width: cardWidth, marginRight: columns === 1 ? 0 : 12 }]}>
             <TouchableOpacity 
               onPress={() => router.push(`/(tabs)/vehicle/${item.id}`)}
               activeOpacity={0.7}

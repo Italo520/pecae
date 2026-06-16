@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, ScrollView, Image, Alert, ActivityIndicator, Platform } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { usePecaeTheme } from '../../theme';
 import { PecaeGlassCard } from '../PecaeUI/PecaeGlassCard';
 import { PecaeButton } from '../PecaeUI/PecaeButton';
@@ -7,11 +7,14 @@ import { useVehicleWizardStore } from '../../store/vehicle-wizard-store';
 import { api } from '../../services/api';
 import { useRouter } from 'expo-router';
 
+import { useToast } from '../../context/ToastContext';
+
 export const Step5Review: React.FC = () => {
   const { colors, typography } = usePecaeTheme();
   const { data, prevStep, resetWizard } = useVehicleWizardStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { showToast } = useToast();
 
   const handleFinalize = async () => {
     setIsSubmitting(true);
@@ -96,20 +99,13 @@ export const Step5Review: React.FC = () => {
         });
       }
       
-      if (Platform.OS === 'web') {
-        alert('FORJA CONCLUÍDA!\n\nSeu veículo foi cadastrado e está em análise. Você será notificado assim que for publicado.');
-        resetWizard();
-        router.replace('/(seller)/(seller-tabs)/inventory');
-      } else {
-        Alert.alert(
-          'FORJA CONCLUÍDA!', 
-          'Seu veículo foi cadastrado e está em análise. Você será notificado assim que for publicado.',
-          [{ text: 'ENTENDIDO', onPress: () => {
-            resetWizard();
-            router.replace('/(seller)/(seller-tabs)/inventory');
-          }}]
-        );
-      }
+      showToast({
+        type: 'success',
+        title: 'FORJA CONCLUÍDA!',
+        message: 'Seu veículo foi cadastrado e está em análise. Você será notificado assim que for publicado.',
+        duration: 0,
+        actions: [{ label: 'ENTENDIDO', primary: true, onPress: () => { resetWizard(); router.replace('/(seller)/(seller-tabs)/inventory'); } }],
+      });
     } catch (error: any) {
       console.error('Erro detalhado da falha na submissão:', error);
       if (error.response?.data) {
@@ -121,14 +117,12 @@ export const Step5Review: React.FC = () => {
         ? apiMessage.join('\n')
         : apiMessage || 'Erro técnico ao processar cadastro.';
 
-      if (Platform.OS === 'web') {
-        alert(`FALHA NA FORJA\n\nDetalhes da validação:\n${formattedMessage}`);
-      } else {
-        Alert.alert(
-          'FALHA NA FORJA', 
-          `Detalhes da validação:\n${formattedMessage}`
-        );
-      }
+      showToast({
+        type: 'error',
+        title: 'FALHA NA FORJA',
+        message: `Detalhes: ${formattedMessage}`,
+        duration: 6000,
+      });
     } finally {
       setIsSubmitting(false);
     }
