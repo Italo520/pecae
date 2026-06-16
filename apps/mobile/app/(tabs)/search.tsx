@@ -37,7 +37,7 @@ const QUICK_FILTERS = [
 
 export default function SearchScreen() {
   const { colors, typography } = usePecaeTheme();
-  const { width, isDesktop } = useDeviceLayout();
+  const { width, isDesktop, cardWidth } = useDeviceLayout();
   const params = useLocalSearchParams();
   const router = useRouter();
   
@@ -105,16 +105,8 @@ export default function SearchScreen() {
     }
   };
 
-  // Lógica de Grid Responsivo
-  const isWeb = width >= 768;
-  const columns = isWeb ? 4 : 1;
-  const gap = 12;
-  const scrollbarWidth = isWeb ? 16 : 0;
-  const screenWidth = width - scrollbarWidth;
-  const containerWidth = isDesktop ? Math.min(screenWidth, 1200) - 64 : screenWidth;
+  // Lógica de Grid Responsivo Unificada via Hook
   const gridPadding = isDesktop ? 0 : 20;
-  const itemWidth = Math.floor((containerWidth - (gridPadding * 2) - (gap * (columns - 1))) / columns) - 10;
-  const cardWidth = isWeb ? itemWidth : '100%';
 
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
@@ -467,6 +459,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 12,
+    width: '100%',
   },
   productCardWrapper: {
     marginBottom: 24,

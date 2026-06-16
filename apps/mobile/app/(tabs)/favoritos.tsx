@@ -14,20 +14,8 @@ export default function FavoritesScreen() {
   const { isAuthenticated } = useAuthStore();
   const { getFavorites, toggleFavorite } = useFavorites();
   const { requireAuth } = useAuthGuard();
-  const { width, isDesktop } = useDeviceLayout();
+  const { width, isDesktop, cardWidth, gridColumns: columns } = useDeviceLayout();
   const router = useRouter();
-
-  const isWeb = width >= 768;
-  const columns = isWeb ? 4 : 1;
-  const gap = 12;
-  const sidePadding = 20;
-  
-  const scrollbarWidth = isWeb ? 16 : 0;
-  const screenWidth = width - scrollbarWidth;
-  const listMaxWidth = isWeb ? Math.min(screenWidth, 1200) : screenWidth;
-  const availableWidth = listMaxWidth - (sidePadding * 2);
-  const itemWidth = Math.floor((availableWidth - (gap * columns)) / columns) - 10;
-  const cardWidth = isWeb ? itemWidth : '100%';
 
   if (!isAuthenticated) {
     return (

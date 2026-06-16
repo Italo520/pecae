@@ -12,6 +12,7 @@ interface User {
   name?: string;
   type?: string;
   role?: string;
+  hasProfile?: boolean;
 }
 
 interface AuthState {

@@ -31,9 +31,9 @@ export default function BuyerHomeScreen() {
   const { data: searchResponse, isLoading } = useSearchVehicles({ 
     q: activeCategory
   });
-  const { createSavedSearch } = useSavedSearches();
+
   const listings = searchResponse?.data || [];
-  const { width, isDesktop } = useDeviceLayout();
+  const { width, isDesktop, cardWidth } = useDeviceLayout();
   const router = useRouter();
   const { showToast } = useToast();
 
@@ -53,31 +53,6 @@ export default function BuyerHomeScreen() {
   };
 
 
-
-  const isWeb = width >= 768;
-  const columns = isWeb ? 4 : 1;
-  const gap = 12;
-  const scrollbarWidth = isWeb ? 16 : 0;
-  const screenWidth = width - scrollbarWidth;
-  
-  // No desktop (isDesktop = true, width >= 1024), o PageContainer limita o maxWidth a 1200 
-  // e aplica um paddingHorizontal de 32 de cada lado (total de 64px). 
-  // Portanto, a largura útil real do container é Math.min(screenWidth, 1200) - 64.
-  const containerWidth = isDesktop ? Math.min(screenWidth, 1200) - 64 : screenWidth;
-  const gridPadding = isDesktop ? 0 : 20;
-
-  // Arredonda para baixo e adiciona uma folga maior (10px) para evitar quebras por scrollbar ou arredondamento de subpixel no navegador
-  const itemWidth = Math.floor((containerWidth - (gridPadding * 2) - (gap * (columns - 1))) / columns) - 10;
-
-  console.log("LAYOUT_DEBUG:", {
-    width,
-    isDesktop,
-    isWeb,
-    columns,
-    containerWidth,
-    gridPadding,
-    itemWidth
-  });
 
   return (
     <PecaeBackground>
@@ -200,7 +175,7 @@ export default function BuyerHomeScreen() {
                   city={vehicle.city || vehicle.seller?.city}
                   state={vehicle.state || vehicle.seller?.state}
                   imageUrl={vehicle.photos?.[0]?.url || vehicle.thumbnail || imageUrl}
-                  style={{ width: isWeb ? itemWidth : '100%', marginBottom: 24 }}
+                  style={{ width: cardWidth, marginBottom: 24 }}
                 />
               );
             })}
@@ -327,6 +302,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     paddingHorizontal: 20,
     gap: 12,
+    width: '100%',
   },
   productCardWrapper: {
     marginBottom: 12,
