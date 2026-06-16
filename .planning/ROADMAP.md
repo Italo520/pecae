@@ -61,3 +61,13 @@ Este documento detalha o roteiro cronológico de desenvolvimento estruturado por
 > As tarefas e estimativas originais desta Milestone foram arquivadas em [v8.0-ROADMAP.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v8.0/v8.0-ROADMAP.md) conforme o protocolo de compressão de contexto. (O módulo M10 foi adiado).
 
 ---
+
+## Milestone 9 (Manutenção Pós-Lançamento) — Acesso e Usabilidade
+
+### Fase 2: Navegação Deslogada (Guest Access)
+- **Objetivo:** Permitir que o cliente utilize o sistema em áreas públicas (pesquisa de sucatas, anúncios, navegação no catálogo) sem necessidade de login.
+- **Status:** `pending`
+- **Artefatos:**
+  - SPEC: [2-SPEC.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/phases/2-SPEC.md)
+  - PLAN: pendente
+  - VERIFICATION: pendente
