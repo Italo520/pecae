@@ -36,6 +36,7 @@ export default function BuyerHomeScreen() {
   const { width, isDesktop, cardWidth } = useDeviceLayout();
   const router = useRouter();
   const { showToast } = useToast();
+  const gridPadding = isDesktop ? 0 : 20;
 
 
 
