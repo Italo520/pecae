@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   StyleSheet, 
   View, 
@@ -6,9 +6,7 @@ import {
   TextInput, 
   TouchableOpacity, 
   ScrollView, 
-  Image, 
   ActivityIndicator, 
-  useWindowDimensions,
   Platform
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -37,7 +35,7 @@ const QUICK_FILTERS = [
 
 export default function SearchScreen() {
   const { colors, typography } = usePecaeTheme();
-  const { width, isDesktop, cardWidth } = useDeviceLayout();
+  const { isDesktop, cardWidth } = useDeviceLayout();
   const params = useLocalSearchParams();
   const router = useRouter();
   

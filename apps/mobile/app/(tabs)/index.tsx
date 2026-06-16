@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { StyleSheet, View, Text, ScrollView, Image, ActivityIndicator, TouchableOpacity, useWindowDimensions, TextInput, Animated, Platform } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, Image, ActivityIndicator, TouchableOpacity, TextInput, Animated, Platform } from 'react-native';
 import { PecaeBackground, PecaeGlassCard, PecaeImage } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
 import { useSearchVehicles } from '../../src/hooks/useVehicles';

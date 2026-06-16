@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, useWindowDimensions, FlatList, TouchableOpacity, Image, ActivityIndicator, Platform } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { PecaeBackground, PecaeGlassCard } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
@@ -14,7 +14,7 @@ export default function FavoritesScreen() {
   const { isAuthenticated } = useAuthStore();
   const { getFavorites, toggleFavorite } = useFavorites();
   const { requireAuth } = useAuthGuard();
-  const { width, isDesktop, cardWidth, gridColumns: columns } = useDeviceLayout();
+  const { cardWidth, gridColumns: columns } = useDeviceLayout();
   const router = useRouter();
 
   if (!isAuthenticated) {
