@@ -16,68 +16,88 @@ import {
 } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
 import { useSearchVehicles, useSearchSuggestions } from '../../src/hooks/useVehicles';
+import { useBrands, useModels, useVersions } from '../../src/hooks/useCatalog';
 import { useSavedSearches } from '../../src/hooks/useSavedSearches';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { SponsoredListingCard } from '../../src/components/Ads/SponsoredListingCard';
 import { VehicleCard } from '../../src/components/Vehicle';
 import { PageContainer } from '../../src/components/Layout/PageContainer';
 import { AppFooter } from '../../src/components/Layout/AppFooter';
 import { useDeviceLayout } from '../../src/hooks/useDeviceLayout';
+import { BottomSheetSelector, BottomSheetOption } from '../../src/components/Search/BottomSheetSelector';
+import { SearchSidebar } from '../../src/components/Search/SearchSidebar';
 
-const QUICK_FILTERS = [
-  { id: 'all', label: 'Todos', icon: 'apps-outline' },
-  { id: 'fiat', label: 'Fiat', icon: 'car-sport-outline' },
-  { id: 'vw', label: 'VW', icon: 'car-sport-outline' },
-  { id: 'chevrolet', label: 'GM', icon: 'car-sport-outline' },
-  { id: 'sucata', label: 'Sucata', icon: 'hammer-outline' },
-  { id: 'inteiro', label: 'Inteiro', icon: 'shield-checkmark-outline' },
+const FUEL_TYPES: BottomSheetOption[] = [
+  { id: 'FLEX', label: 'Flex' },
+  { id: 'GASOLINA', label: 'Gasolina' },
+  { id: 'ALCOOL', label: 'Álcool' },
+  { id: 'DIESEL', label: 'Diesel' },
+  { id: 'HIBRIDO', label: 'Híbrido' },
+  { id: 'ELETRICO', label: 'Elétrico' },
 ];
+
+const MILEAGE_OPTIONS: BottomSheetOption[] = [
+  { id: '10000', label: 'Até 10.000 km' },
+  { id: '30000', label: 'Até 30.000 km' },
+  { id: '50000', label: 'Até 50.000 km' },
+  { id: '80000', label: 'Até 80.000 km' },
+  { id: '100000', label: 'Até 100.000 km' },
+  { id: '150000', label: 'Até 150.000 km' },
+];
+
+type SheetType = 'brand' | 'model' | 'version' | 'fuel' | 'mileage' | null;
 
 export default function SearchScreen() {
   const { colors, typography } = usePecaeTheme();
-  const { isDesktop, cardWidth } = useDeviceLayout();
+  const { isDesktop } = useDeviceLayout();
   const params = useLocalSearchParams();
-  const router = useRouter();
   
-  const initialQ = params.q ? String(params.q) : 
-                   [params.marca, params.modelo].filter(Boolean).join(' ');
+  const initialQ = params.q ? String(params.q) : '';
   const [searchText, setSearchText] = useState(initialQ);
   const [debouncedSearchText, setDebouncedSearchText] = useState(initialQ);
   
-  // Maps params.marca to activeFilter if it matches a quick filter, otherwise 'all'
-  const initialFilter = params.marca ? String(params.marca).toLowerCase() : 'all';
-  const [activeFilter, setActiveFilter] = useState(initialFilter);
-  
+  // Advanced Filters State
+  const [brandId, setBrandId] = useState<string | undefined>(params.marca ? String(params.marca) : undefined);
+  const [modelId, setModelId] = useState<string | undefined>(params.modelo ? String(params.modelo) : undefined);
+  const [versionId, setVersionId] = useState<string | undefined>();
+  const [fuelType, setFuelType] = useState<string | undefined>();
+  const [mileageMax, setMileageMax] = useState<number | undefined>();
   const [city, setCity] = useState('');
   const [state, setState] = useState(params.state ? String(params.state) : '');
-  const [showFilters, setShowFilters] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  
+  // Mobile only state
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeSheet, setActiveSheet] = useState<SheetType>(null);
+
+  // Catalog Queries
+  const { data: brands = [], isLoading: isLoadingBrands } = useBrands();
+  const { data: models = [], isLoading: isLoadingModels } = useModels(brandId);
+  const { data: versions = [], isLoading: isLoadingVersions } = useVersions(modelId);
 
   // Hook de buscas salvas
   const { saveSearch } = useSavedSearches();
 
-  // Efeito de Debounce (300ms)
-  React.useEffect(() => {
+  // Debounce (300ms)
+  useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchText(searchText);
     }, 300);
-
     return () => clearTimeout(handler);
   }, [searchText]);
 
-  // Hook de Sugestões de Busca
   const { data: suggestions = [] } = useSearchSuggestions(searchText);
 
-  const yearNum = params.ano ? parseInt(String(params.ano), 10) : undefined;
-
-  // Integração com API (usando debouncedSearchText)
   const { data: searchResponse, isLoading } = useSearchVehicles({
     q: debouncedSearchText,
-    brandId: activeFilter !== 'all' ? activeFilter : undefined,
+    brandId,
+    modelId,
+    versionId,
     city: city || undefined,
     state: state || undefined,
-    yearMin: yearNum,
-    yearMax: yearNum,
+    fuelType,
+    mileageMax,
   });
 
   const results = searchResponse?.data || [];
@@ -87,7 +107,9 @@ export default function SearchScreen() {
       await saveSearch.mutateAsync({
         query: debouncedSearchText,
         filters: {
-          brandId: activeFilter !== 'all' ? activeFilter : undefined,
+          brandId,
+          modelId,
+          versionId,
           city: city || undefined,
           state: state || undefined,
         },
@@ -103,8 +125,11 @@ export default function SearchScreen() {
     }
   };
 
-  // Lógica de Grid Responsivo Unificada via Hook
-  const gridPadding = isDesktop ? 0 : 20;
+  const getBrandLabel = () => brands.find(b => b.id === brandId)?.name || brandId || 'Marca';
+  const getModelLabel = () => models.find(m => m.id === modelId)?.name || modelId || 'Modelo';
+  const getVersionLabel = () => versions.find(v => v.id === versionId)?.name || versionId || 'Versão';
+  const getFuelLabel = () => FUEL_TYPES.find(f => f.id === fuelType)?.label || 'Combustível';
+  const getMileageLabel = () => MILEAGE_OPTIONS.find(m => m.id === String(mileageMax))?.label || 'Quilometragem';
 
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
@@ -112,52 +137,31 @@ export default function SearchScreen() {
         <Ionicons name="search-outline" size={48} color={colors.border} />
       </View>
       <Text style={[styles.emptyTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>
-        {debouncedSearchText ? 'NENHUM RESULTADO' : 'EXPLORE A FORJA'}
+        {debouncedSearchText || brandId ? 'NENHUM RESULTADO' : 'EXPLORE A FORJA'}
       </Text>
       <Text style={[styles.emptySubtitle, { color: colors.textMuted, fontFamily: typography.body }]}>
-        {debouncedSearchText 
-          ? `Não encontramos nada para "${debouncedSearchText}". Tente termos mais genéricos.`
+        {debouncedSearchText || brandId
+          ? 'Não encontramos veículos com esses filtros. Tente termos mais genéricos.'
           : 'Busque por peças, modelos ou marcas específicas no inventário.'}
       </Text>
-      {debouncedSearchText && (
-        <TouchableOpacity 
-          style={[styles.saveSearchBtn, { backgroundColor: colors.brand, borderColor: colors.brand }]}
-          onPress={handleSaveSearch}
-          disabled={saveSearch.isPending}
-        >
-          {saveSearch.isPending ? (
-            <ActivityIndicator size="small" color="#000" />
-          ) : (
-            <>
-              <Ionicons name="notifications-outline" size={16} color="#000" style={{ marginRight: 8 }} />
-              <Text style={[styles.saveSearchBtnText, { fontFamily: typography.display }]}>
-                NOTIFICAR-ME SE CHEGAR
-              </Text>
-            </>
-          )}
-        </TouchableOpacity>
-      )}
     </View>
   );
 
   return (
     <PecaeBackground>
-      {/* Search Header HUD */}
+      {/* HEADER: Search Bar and (on mobile) Filter Toggle */}
       <View style={[styles.header, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
-        <View style={styles.searchRow}>
+        <View style={[styles.searchRow, isDesktop && styles.searchRowDesktop]}>
           <View style={[styles.searchBar, { backgroundColor: colors.surface, borderColor: colors.border, flex: 1 }]}>
             <Ionicons name="search" size={20} color={colors.brand} />
             <TextInput
               style={[styles.input, { color: colors.textPrimary, fontFamily: typography.body }]}
-              placeholder="O que você está procurando?"
+              placeholder="Digite o que procura (ex: Motor Gol 1.0)"
               placeholderTextColor={colors.textMuted}
               value={searchText}
               onChangeText={setSearchText}
               onFocus={() => setShowSuggestions(true)}
-              onBlur={() => {
-                setTimeout(() => setShowSuggestions(false), 200);
-              }}
-              autoFocus={false}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
             />
             {searchText.length > 0 && (
               <TouchableOpacity onPress={() => setSearchText('')}>
@@ -166,12 +170,14 @@ export default function SearchScreen() {
             )}
           </View>
           
-          <TouchableOpacity 
-            style={[styles.filterToggle, { borderColor: colors.border, backgroundColor: colors.surface }]}
-            onPress={() => setShowFilters(!showFilters)}
-          >
-            <Ionicons name="options-outline" size={24} color={showFilters ? colors.brand : colors.textPrimary} />
-          </TouchableOpacity>
+          {!isDesktop && (
+            <TouchableOpacity 
+              style={[styles.filterToggle, { borderColor: colors.border, backgroundColor: colors.surface }]}
+              onPress={() => setShowMobileFilters(!showMobileFilters)}
+            >
+              <Ionicons name="options-outline" size={24} color={showMobileFilters ? colors.brand : colors.textPrimary} />
+            </TouchableOpacity>
+          )}
         </View>
 
         {showSuggestions && suggestions.length > 0 && (
@@ -183,7 +189,9 @@ export default function SearchScreen() {
                   style={[styles.suggestionItem, { borderBottomColor: colors.border }]}
                   onPress={() => {
                     if (suggestion.type === 'BRAND') {
-                      setActiveFilter(suggestion.text.toLowerCase());
+                      setBrandId(suggestion.id);
+                      setModelId(undefined);
+                      setVersionId(undefined);
                       setSearchText('');
                     } else {
                       setSearchText(suggestion.text);
@@ -191,15 +199,9 @@ export default function SearchScreen() {
                     setShowSuggestions(false);
                   }}
                 >
-                  <Ionicons 
-                    name={suggestion.type === 'BRAND' ? 'car-sport-outline' : 'pricetag-outline'} 
-                    size={16} 
-                    color={colors.brand} 
-                  />
+                  <Ionicons name={suggestion.type === 'BRAND' ? 'car-sport-outline' : 'pricetag-outline'} size={16} color={colors.brand} />
                   <View style={styles.suggestionTextContainer}>
-                    <Text style={[styles.suggestionText, { color: colors.textPrimary, fontFamily: typography.medium }]}>
-                      {suggestion.text}
-                    </Text>
+                    <Text style={[styles.suggestionText, { color: colors.textPrimary, fontFamily: typography.medium }]}>{suggestion.text}</Text>
                     <Text style={[styles.suggestionType, { color: colors.textMuted, fontFamily: typography.body }]}>
                       {suggestion.type === 'BRAND' ? 'Marca' : 'Modelo'}
                     </Text>
@@ -210,18 +212,10 @@ export default function SearchScreen() {
           </PecaeGlassCard>
         )}
 
-        {showFilters && (
-          <View style={styles.advancedFilters}>
-            <View style={styles.filterRow}>
-              <View style={[styles.filterInput, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-                <TextInput
-                  style={{ color: colors.textPrimary, flex: 1, fontSize: 12 }}
-                  placeholder="Cidade"
-                  placeholderTextColor={colors.textMuted}
-                  value={city}
-                  onChangeText={setCity}
-                />
-              </View>
+        {/* Mobile Cascade Filters */}
+        {!isDesktop && showMobileFilters && (
+          <View style={styles.mobileFiltersRow}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
               <View style={[styles.filterInput, { backgroundColor: colors.surface, borderColor: colors.border, width: 60 }]}>
                 <TextInput
                   style={{ color: colors.textPrimary, flex: 1, fontSize: 12, textAlign: 'center' }}
@@ -232,116 +226,129 @@ export default function SearchScreen() {
                   maxLength={2}
                 />
               </View>
-              <TouchableOpacity onPress={() => { setCity(''); setState(''); }}>
-                <Text style={{ color: colors.brand, fontSize: 12 }}>Limpar</Text>
+
+              <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.surface, borderColor: brandId ? colors.brand : colors.border }]} onPress={() => setActiveSheet('brand')}>
+                <Text style={{ color: brandId ? colors.brand : colors.textPrimary, fontSize: 12 }}>{getBrandLabel()}</Text>
+                {brandId && <Ionicons name="close" size={14} color={colors.brand} onPress={() => { setBrandId(undefined); setModelId(undefined); setVersionId(undefined); }} />}
               </TouchableOpacity>
-            </View>
+
+              <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.surface, borderColor: modelId ? colors.brand : colors.border, opacity: brandId ? 1 : 0.5 }]} onPress={() => brandId && setActiveSheet('model')} disabled={!brandId}>
+                <Text style={{ color: modelId ? colors.brand : colors.textPrimary, fontSize: 12 }}>{getModelLabel()}</Text>
+                {modelId && <Ionicons name="close" size={14} color={colors.brand} onPress={() => { setModelId(undefined); setVersionId(undefined); }} />}
+              </TouchableOpacity>
+
+              <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.surface, borderColor: versionId ? colors.brand : colors.border, opacity: modelId ? 1 : 0.5 }]} onPress={() => modelId && setActiveSheet('version')} disabled={!modelId}>
+                <Text style={{ color: versionId ? colors.brand : colors.textPrimary, fontSize: 12 }}>{getVersionLabel()}</Text>
+                {versionId && <Ionicons name="close" size={14} color={colors.brand} onPress={() => setVersionId(undefined)} />}
+              </TouchableOpacity>
+
+              <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.surface, borderColor: fuelType ? colors.brand : colors.border }]} onPress={() => setActiveSheet('fuel')}>
+                <Text style={{ color: fuelType ? colors.brand : colors.textPrimary, fontSize: 12 }}>{getFuelLabel()}</Text>
+                {fuelType && <Ionicons name="close" size={14} color={colors.brand} onPress={() => setFuelType(undefined)} />}
+              </TouchableOpacity>
+
+              <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.surface, borderColor: mileageMax ? colors.brand : colors.border }]} onPress={() => setActiveSheet('mileage')}>
+                <Text style={{ color: mileageMax ? colors.brand : colors.textPrimary, fontSize: 12 }}>{getMileageLabel()}</Text>
+                {mileageMax && <Ionicons name="close" size={14} color={colors.brand} onPress={() => setMileageMax(undefined)} />}
+              </TouchableOpacity>
+            </ScrollView>
           </View>
         )}
-
-        {/* Filtros Rápidos Chips */}
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
-          contentContainerStyle={styles.filtersScroll}
-        >
-          {QUICK_FILTERS.map((filter) => {
-            const isSelected = activeFilter === filter.id;
-            return (
-              <TouchableOpacity
-                key={filter.id}
-                style={[
-                  styles.filterChip,
-                  { 
-                    backgroundColor: isSelected ? colors.brand : colors.surface,
-                    borderColor: isSelected ? colors.brand : colors.border
-                  }
-                ]}
-                onPress={() => setActiveFilter(filter.id)}
-              >
-                <Ionicons 
-                  name={filter.icon as any} 
-                  size={16} 
-                  color={isSelected ? '#000' : colors.textPrimary} 
-                />
-                <Text 
-                  style={[
-                    styles.filterLabel, 
-                    { 
-                      color: isSelected ? '#000' : colors.textPrimary,
-                      fontFamily: typography.medium
-                    }
-                  ]}
-                >
-                  {filter.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
       </View>
 
-      <PageContainer 
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {isLoading ? (
-          <View style={styles.loaderContainer}>
-            <ActivityIndicator size="large" color={colors.brand} />
-            <Text style={[styles.loaderText, { color: colors.textMuted, fontFamily: typography.body }]}>
-              VASCULHANDO O ESTOQUE...
-            </Text>
-          </View>
-        ) : results.length === 0 ? (
-          renderEmptyState()
-        ) : (
-          <View style={[styles.resultsGrid, { paddingHorizontal: gridPadding }]}>
-            {results.map((vehicle: any, index: number) => {
-              if (vehicle.isSponsored) {
+      {/* BODY */}
+      <View style={[styles.body, isDesktop && styles.bodyDesktop]}>
+        
+        {/* DESKTOP SIDEBAR */}
+        {isDesktop && (
+          <SearchSidebar
+            isCollapsed={!isSidebarOpen}
+            onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
+            brands={brands}
+            models={models}
+            versions={versions}
+            fuelTypes={FUEL_TYPES}
+            mileageOptions={MILEAGE_OPTIONS}
+            brandId={brandId}
+            modelId={modelId}
+            versionId={versionId}
+            fuelType={fuelType}
+            mileageMax={mileageMax}
+            state={state}
+            city={city}
+            setBrandId={setBrandId}
+            setModelId={setModelId}
+            setVersionId={setVersionId}
+            setFuelType={setFuelType}
+            setMileageMax={setMileageMax}
+            setState={setState}
+            setCity={setCity}
+          />
+        )}
+
+        {/* RESULTS AREA */}
+        <PageContainer contentContainerStyle={styles.scrollContent} style={{ flex: 1 }}>
+          {isLoading ? (
+            <View style={styles.loaderContainer}>
+              <ActivityIndicator size="large" color={colors.brand} />
+              <Text style={[styles.loaderText, { color: colors.textMuted, fontFamily: typography.body }]}>
+                VASCULHANDO O ESTOQUE...
+              </Text>
+            </View>
+          ) : results.length === 0 ? (
+            renderEmptyState()
+          ) : (
+            <View style={[styles.resultsGrid, { paddingHorizontal: isDesktop ? 40 : 20 }]}>
+              {results.map((vehicle: any) => {
+                if (vehicle.isSponsored) {
+                  return <SponsoredListingCard key={`sponsored-${vehicle.id}`} vehicle={vehicle} style={{ flex: 1, minWidth: 260 }} />;
+                }
+                const brand = vehicle.version?.model?.brand?.name || vehicle.brand || '';
+                const model = vehicle.version?.model?.name || vehicle.model || '';
+                const version = vehicle.version?.name || vehicle.version || '';
+                const imageUrl = vehicle.thumbnail || (vehicle.photos && vehicle.photos.length > 0 ? vehicle.photos[0] : null);
+
                 return (
-                  <SponsoredListingCard
-                    key={`sponsored-${vehicle.id}`}
-                    vehicle={vehicle}
-                    style={{ flex: 1, minWidth: 260 }}
+                  <VehicleCard
+                    key={vehicle.id}
+                    id={vehicle.id}
+                    brand={brand}
+                    model={model}
+                    version={version}
+                    year={vehicle.yearFab}
+                    mileage={vehicle.mileage}
+                    fuel={vehicle.fuelType}
+                    city={vehicle.city}
+                    state={vehicle.state}
+                    imageUrl={imageUrl}
+                    style={{ flex: 1, minWidth: 260, marginBottom: 24 }}
                   />
                 );
-              }
+              })}
+            </View>
+          )}
+          {isDesktop && <AppFooter />}
+        </PageContainer>
+      </View>
 
-              const brand = vehicle.version?.model?.brand?.name || '';
-              const model = vehicle.version?.model?.name || '';
-              const version = vehicle.version?.name || '';
-              const imageUrl = vehicle.thumbnail || (vehicle.photos && vehicle.photos.length > 0 ? vehicle.photos[0] : null);
-              const isMatch = index === 0 && searchText.length > 2; // Simulação de match destacado
+      {/* MOBILE BOTTOM SHEETS */}
+      {!isDesktop && (
+        <>
+          <BottomSheetSelector visible={activeSheet === 'brand'} onClose={() => setActiveSheet(null)} title="Marca" options={brands.map(b => ({ id: b.id, label: b.name }))} selectedValue={brandId} onSelect={(id) => { setBrandId(id); setModelId(undefined); setVersionId(undefined); }} />
+          <BottomSheetSelector visible={activeSheet === 'model'} onClose={() => setActiveSheet(null)} title="Modelo" options={models.map(m => ({ id: m.id, label: m.name }))} selectedValue={modelId} onSelect={(id) => { setModelId(id); setVersionId(undefined); }} />
+          <BottomSheetSelector visible={activeSheet === 'version'} onClose={() => setActiveSheet(null)} title="Versão" options={versions.map(v => ({ id: v.id, label: v.name }))} selectedValue={versionId} onSelect={(id) => setVersionId(id)} />
+          <BottomSheetSelector visible={activeSheet === 'fuel'} onClose={() => setActiveSheet(null)} title="Combustível" options={FUEL_TYPES} selectedValue={fuelType} onSelect={(id) => setFuelType(id)} searchable={false} />
+          <BottomSheetSelector visible={activeSheet === 'mileage'} onClose={() => setActiveSheet(null)} title="Quilometragem" options={MILEAGE_OPTIONS} selectedValue={String(mileageMax)} onSelect={(id) => setMileageMax(Number(id))} searchable={false} />
+        </>
+      )}
 
-              return (
-                <VehicleCard
-                  key={vehicle.id}
-                  id={vehicle.id}
-                  brand={brand}
-                  model={model}
-                  version={version}
-                  year={vehicle.year}
-                  mileage={vehicle.mileage}
-                  fuel={vehicle.fuelType}
-                  city={vehicle.city}
-                  state={vehicle.state}
-                  imageUrl={imageUrl}
-                  style={{ flex: 1, minWidth: 260, marginBottom: 24 }}
-                />
-              );
-            })}
-          </View>
-        )}
-        
-        {isDesktop && <AppFooter />}
-      </PageContainer>
     </PecaeBackground>
   );
 }
 
 const styles = StyleSheet.create({
   header: {
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+    paddingTop: Platform.OS === 'ios' ? 60 : 20,
     paddingBottom: 15,
     borderBottomWidth: 1,
     zIndex: 100,
@@ -351,38 +358,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 20,
     gap: 10,
-    marginBottom: 15,
+    marginBottom: 0,
+  },
+  searchRowDesktop: {
+    maxWidth: 800, // Limit width on desktop
+    alignSelf: 'center',
+    width: '100%',
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    height: 50,
-    borderRadius: 25,
+    height: 44,
+    borderRadius: 22,
     borderWidth: 1,
   },
   filterToggle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  advancedFilters: {
+  mobileFiltersRow: {
     marginHorizontal: 20,
-    marginBottom: 15,
-    padding: 12,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.03)',
-  },
-  filterRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
+    marginTop: 15,
   },
   filterInput: {
-    flex: 1,
     height: 35,
     borderRadius: 8,
     borderWidth: 1,
@@ -394,22 +397,20 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     fontSize: 14,
   },
-  filtersScroll: {
-    paddingHorizontal: 20,
-    gap: 10,
-  },
   filterChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: 8,
     borderWidth: 1,
     gap: 6,
   },
-  filterLabel: {
-    fontSize: 12,
-    letterSpacing: 0.5,
+  body: {
+    flex: 1,
+  },
+  bodyDesktop: {
+    flexDirection: 'row',
   },
   scrollContent: {
     paddingTop: 20,
@@ -461,108 +462,9 @@ const styles = StyleSheet.create({
     gap: 16,
     width: '100%',
   },
-  productCardWrapper: {
-    marginBottom: 24,
-  },
-  imageOverlapContainer: {
-    position: 'relative',
-    paddingTop: 40,
-  },
-  productCard: {
-    padding: 0,
-    overflow: 'hidden',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
-  },
-  imagePlaceholder: {
-    height: 100,
-  },
-  floatingImageContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 10,
-    right: 10,
-    height: 140,
-    zIndex: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  floatingImage: {
-    width: '100%',
-    height: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
-  },
-  badge: {
-    position: 'absolute',
-    top: 50,
-    right: 10,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-    zIndex: 20,
-  },
-  badgeText: {
-    color: '#000',
-    fontSize: 8,
-    fontWeight: 'bold',
-  },
-  productInfo: {
-    padding: 16,
-    paddingTop: 0,
-    gap: 4,
-  },
-  brandLabel: {
-    fontSize: 10,
-    letterSpacing: 2,
-    opacity: 0.7,
-  },
-  productTitle: {
-    fontSize: 16,
-    lineHeight: 22,
-    marginBottom: 8,
-  },
-  productFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginBottom: 12,
-  },
-  productLocation: {
-    fontSize: 10,
-  },
-  viewDetailsBtn: {
-    paddingVertical: 10,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  saveSearchBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 25,
-    borderWidth: 1,
-    marginTop: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-  },
-  saveSearchBtnText: {
-    color: '#000',
-    fontSize: 12,
-    letterSpacing: 1.5,
-  },
   suggestionsContainer: {
     position: 'absolute',
-    top: Platform.OS === 'ios' ? 110 : 90,
+    top: Platform.OS === 'ios' ? 110 : 70,
     left: 20,
     right: 80,
     maxHeight: 250,

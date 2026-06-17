@@ -1,12 +1,13 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CatalogService } from './catalog.service';
-
+import { Public } from '../auth/decorators/public.decorator';
 @ApiTags('Catalog')
 @Controller('catalog')
 export class CatalogController {
   constructor(private readonly catalogService: CatalogService) {}
 
+  @Public()
   @Get('brands')
   @ApiOperation({ summary: 'List all vehicle brands' })
   @ApiResponse({ status: 200, description: 'Return all brands' })
@@ -14,6 +15,7 @@ export class CatalogController {
     return this.catalogService.getBrands();
   }
 
+  @Public()
   @Get('brands/:brandId/models')
   @ApiOperation({ summary: 'List models for a specific brand' })
   @ApiResponse({ status: 200, description: 'Return all models for the brand' })
@@ -21,6 +23,7 @@ export class CatalogController {
     return this.catalogService.getModels(brandId);
   }
 
+  @Public()
   @Get('models/:modelId/versions')
   @ApiOperation({ summary: 'List versions for a specific model' })
   @ApiResponse({ status: 200, description: 'Return all versions for the model' })
@@ -28,6 +31,7 @@ export class CatalogController {
     return this.catalogService.getVersions(modelId);
   }
 
+  @Public()
   @Get('versions/:versionId/years')
   @ApiOperation({ summary: 'List years for a specific version' })
   @ApiResponse({ status: 200, description: 'Return all years for the version' })
@@ -35,6 +39,7 @@ export class CatalogController {
     return this.catalogService.getYears(versionId);
   }
 
+  @Public()
   @Get('part-categories')
   @ApiOperation({ summary: 'List all part categories' })
   @ApiResponse({ status: 200, description: 'Return all part categories' })
@@ -42,6 +47,7 @@ export class CatalogController {
     return this.catalogService.getPartCategories();
   }
 
+  @Public()
   @Get('brands/:brandId/years')
   @ApiOperation({ summary: 'List distinct years for a brand' })
   @ApiParam({ name: 'brandId', description: 'Unique identifier of the vehicle brand', type: 'string' })
@@ -50,6 +56,7 @@ export class CatalogController {
     return this.catalogService.getYearsByBrand(brandId);
   }
 
+  @Public()
   @Get('brands/:brandId/years/:yearFab/:yearModel/models')
   @ApiOperation({ summary: 'List models for a brand and specific years' })
   @ApiParam({ name: 'brandId', description: 'Unique identifier of the vehicle brand', type: 'string' })

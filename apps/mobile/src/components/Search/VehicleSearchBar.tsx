@@ -63,19 +63,19 @@ export function VehicleSearchBar() {
         <Ionicons name="chevron-down" size={14} color={colors.textMuted} />
       </TouchableOpacity>
 
-      {/* Input */}
-      <TextInput
-        style={[styles.input, { color: colors.textPrimary, fontFamily: typography.body }]}
-        placeholder="Estou procurando..."
-        placeholderTextColor={colors.textMuted}
-        value={searchText}
-        onChangeText={setSearchText}
-        onSubmitEditing={handleSearch}
-        returnKeyType="search"
-      />
+      {/* Input Placeholder (Redirects to Search Screen) */}
+      <TouchableOpacity 
+        style={[styles.input, { justifyContent: 'center' }]} 
+        onPress={() => router.push('/(tabs)/search')}
+        activeOpacity={0.7}
+      >
+        <Text style={{ color: colors.textMuted, fontFamily: typography.body }}>
+          Estou procurando...
+        </Text>
+      </TouchableOpacity>
 
       {/* Search Button */}
-      <TouchableOpacity style={[styles.searchBtn, { backgroundColor: colors.brand }]} onPress={handleSearch}>
+      <TouchableOpacity style={[styles.searchBtn, { backgroundColor: colors.brand }]} onPress={() => router.push('/(tabs)/search')}>
         <Ionicons name="search" size={18} color="#000" />
       </TouchableOpacity>
 

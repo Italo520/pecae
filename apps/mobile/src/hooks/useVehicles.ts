@@ -67,6 +67,8 @@ export const useSearchVehicles = (filters?: {
   q?: string;
   city?: string;
   state?: string;
+  fuelType?: string;
+  mileageMax?: number;
 }) => {
   return useQuery({
     queryKey: ['vehicles', 'search', filters],

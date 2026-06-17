@@ -50,6 +50,8 @@ export class SearchService {
       state,
       q,
       cursor,
+      fuelType,
+      mileageMax,
       limit = 10,
     } = filters;
 
@@ -85,6 +87,8 @@ export class SearchService {
       ...(versionId && { versionId }),
       ...(city && { city: { contains: city, mode: 'insensitive' } }),
       ...(state && { state: state.toUpperCase() }),
+      ...(fuelType && { fuelType: fuelType.toUpperCase() as any }),
+      ...(mileageMax !== undefined && { mileage: { lte: mileageMax } }),
     };
 
     if (yearMin || yearMax) {

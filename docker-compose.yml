@@ -55,7 +55,7 @@ services:
       context: .
       dockerfile: apps/mobile/Dockerfile
       args:
-        EXPO_PUBLIC_API_URL: https://api-pecae.italohub.cloud/api/v1
+        EXPO_PUBLIC_API_URL: ${EXPO_PUBLIC_API_URL:-https://api-pecae.italohub.cloud/api/v1}
         EXPO_PUBLIC_SUPABASE_URL: https://hsxeulvcfrbyvxehhhaj.supabase.co
         EXPO_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzeGV1bHZjZnJieXZ4ZWhoaGFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4OTU0NjQsImV4cCI6MjA5NjQ3MTQ2NH0.gl7nMqpNt-5-AQb39OogZUsTTzcoqtr0esoumTUu6c0
     restart: always

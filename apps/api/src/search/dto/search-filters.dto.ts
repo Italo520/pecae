@@ -39,7 +39,16 @@ export class SearchFiltersDto {
   @IsOptional()
   @IsString()
   q?: string;
-  
+
+  @IsOptional()
+  @IsString()
+  fuelType?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  mileageMax?: number;
 
   @IsOptional()
   @IsString()
