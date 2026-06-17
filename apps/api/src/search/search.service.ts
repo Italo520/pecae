@@ -220,6 +220,8 @@ export class SearchService {
         availableParts: partNames,
         seller: item.seller,
         isSponsored: false,
+        fuelType: item.fuelType,
+        mileage: item.mileage,
         createdAt: item.createdAt,
       };
     });
@@ -258,6 +260,8 @@ export class SearchService {
         isSponsored: true,
         campaignId: listing.campaignId,
         listingId: listing.id,
+        fuelType: item.fuelType,
+        mileage: item.mileage,
         createdAt: item.createdAt,
       };
     });
