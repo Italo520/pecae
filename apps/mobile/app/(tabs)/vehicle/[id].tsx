@@ -134,7 +134,7 @@ export default function VehicleDetailsScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.imageSection}>
           <PecaeImage 
-            path={vehicle.photos?.[0]?.url || vehicle.thumbnail}
+            path={vehicle.photos?.[0]?.url || vehicle.thumbnail || imageUrl}
             blurhash={vehicle.photos?.[0]?.blurhash}
             width={800}
             priority="high"

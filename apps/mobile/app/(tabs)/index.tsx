@@ -28,7 +28,8 @@ export default function BuyerHomeScreen() {
   const { colors, typography, effects } = usePecaeTheme();
   const [activeCategory, setActiveCategory] = useState<string | undefined>(undefined);
   const { data: searchResponse, isLoading } = useSearchVehicles({ 
-    type: activeCategory
+    type: activeCategory,
+    limit: 100,
   });
 
   const listings = searchResponse?.data || [];
@@ -151,7 +152,7 @@ export default function BuyerHomeScreen() {
               const brand = getSafeText(vehicle.brand);
               const model = getSafeText(vehicle.model);
               const version = getSafeText(vehicle.version?.name || vehicle.version);
-              const imageUrl = getVehicleImage(brand, model, vehicle.id);
+              const imageUrl = vehicle.thumbnail || (vehicle.photos && vehicle.photos.length > 0 ? vehicle.photos[0] : null) || getVehicleImage(brand, model, vehicle.id);
               
               const yearFab = vehicle.yearFab || '--';
               const yearModel = vehicle.yearModel || yearFab;
@@ -168,6 +169,7 @@ export default function BuyerHomeScreen() {
                   fuel={vehicle.fuelType}
                   city={vehicle.city || vehicle.seller?.city}
                   state={vehicle.state || vehicle.seller?.state}
+                  imageUrl={imageUrl}
                   style={[
                     { marginBottom: 24 },
                     isDesktop ? { width: 272 } : { flex: 1, minWidth: 260 }
