@@ -11,8 +11,8 @@ export class CatalogController {
   @Get('brands')
   @ApiOperation({ summary: 'List all vehicle brands' })
   @ApiResponse({ status: 200, description: 'Return all brands' })
-  async getBrands() {
-    return this.catalogService.getBrands();
+  async getBrands(@Query('type') type?: string) {
+    return this.catalogService.getBrands(type);
   }
 
   @Public()

@@ -18,18 +18,17 @@ import { VehicleCard } from '../../src/components/Vehicle/VehicleCard';
 import { useToast } from '../../src/context/ToastContext';
 
 const CATEGORIES = [
-  { id: '1', name: 'Carros Sucata', icon: 'car-outline' },
-  { id: '2', name: 'Motos Sucata', icon: 'bicycle-outline' },
-  { id: '3', name: 'Caminhões', icon: 'bus-outline' },
-  { id: '4', name: 'Maquinário', icon: 'construct-outline' },
-  { id: '5', name: 'Leilões', icon: 'hammer-outline' },
+  { id: '1', name: 'Carros', type: 'carro', icon: 'car-sport-outline' },
+  { id: '2', name: 'Motos', type: 'moto', icon: 'bicycle-outline' },
+  { id: '3', name: 'Caminhões', type: 'caminhao', icon: 'bus-outline' },
+  { id: '4', name: 'Outros', type: 'outro', icon: 'construct-outline' },
 ];
 
 export default function BuyerHomeScreen() {
   const { colors, typography, effects } = usePecaeTheme();
   const [activeCategory, setActiveCategory] = useState<string | undefined>(undefined);
   const { data: searchResponse, isLoading } = useSearchVehicles({ 
-    q: activeCategory
+    type: activeCategory
   });
 
   const listings = searchResponse?.data || [];
@@ -109,26 +108,20 @@ export default function BuyerHomeScreen() {
                 key={cat.id} 
                 style={[
                   styles.categoryItem,
-                  activeCategory === cat.name && { opacity: 0.7 }
+                  activeCategory === cat.type && { opacity: 0.7 }
                 ]}
-                onPress={() => {
-                  if (activeCategory === cat.name) {
-                    setActiveCategory(undefined);
-                  } else {
-                    setActiveCategory(cat.name);
-                  }
-                }}
+                onPress={() => setActiveCategory(activeCategory === cat.type ? undefined : cat.type)}
               >
                 <View style={[
                   styles.categoryCircle, 
                   { backgroundColor: colors.surface, shadowColor: '#000' },
-                  activeCategory === cat.name && { borderColor: colors.brand, borderWidth: 2 }
+                  activeCategory === cat.type && { borderColor: colors.brand, borderWidth: 2 }
                 ]}>
-                  <Ionicons name={cat.icon as any} size={28} color={activeCategory === cat.name ? colors.brand : colors.textMuted} />
+                  <Ionicons name={cat.icon as any} size={28} color={activeCategory === cat.type ? colors.brand : colors.textMuted} />
                 </View>
                 <Text style={[
                   styles.categoryLabel, 
-                  { color: activeCategory === cat.name ? colors.brand : colors.textPrimary, fontFamily: typography.medium }
+                  { color: activeCategory === cat.type ? colors.brand : colors.textPrimary, fontFamily: typography.medium }
                 ]}>
                   {cat.name}
                 </Text>
@@ -175,7 +168,10 @@ export default function BuyerHomeScreen() {
                   fuel={vehicle.fuelType}
                   city={vehicle.city || vehicle.seller?.city}
                   state={vehicle.state || vehicle.seller?.state}
-                  style={[{ flex: 1, minWidth: 260, marginBottom: 24 }, isDesktop && { maxWidth: 320 }]}
+                  style={[
+                    { marginBottom: 24 },
+                    isDesktop ? { width: 272 } : { flex: 1, minWidth: 260 }
+                  ]}
                 />
               );
             })}

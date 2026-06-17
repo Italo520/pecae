@@ -42,6 +42,10 @@ export class SearchFiltersDto {
 
   @IsOptional()
   @IsString()
+  type?: string;
+
+  @IsOptional()
+  @IsString()
   fuelType?: string;
 
   @IsOptional()

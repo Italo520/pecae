@@ -49,11 +49,26 @@ export class SearchService {
       city,
       state,
       q,
+      type,
       cursor,
       fuelType,
       mileageMax,
       limit = 10,
     } = filters;
+
+    let typeSegments: string[] = [];
+    if (type) {
+      const normalizedType = type.toLowerCase().replace(/s$/, ''); // 'motos' -> 'moto', 'carros' -> 'carro'
+      if (normalizedType === 'moto') {
+        typeSegments = ['MOTORCYCLE'];
+      } else if (normalizedType === 'caminhao' || normalizedType === 'truck' || normalizedType === 'caminhõe') {
+        typeSegments = ['TRUCK'];
+      } else if (normalizedType === 'outro' || normalizedType === 'other') {
+        typeSegments = ['OTHER'];
+      } else {
+        typeSegments = ['HATCH', 'SEDAN', 'SUV', 'PICKUP', 'VAN'];
+      }
+    }
 
     // Resolve brand name to UUID if not a valid UUID (resilient filters)
     let resolvedBrandId = brandId;
@@ -82,14 +97,32 @@ export class SearchService {
           status: 'PUBLISHED',
         },
       },
-      ...(resolvedBrandId && { version: { model: { brandId: resolvedBrandId } } }),
-      ...(modelId && { version: { modelId } }),
-      ...(versionId && { versionId }),
       ...(city && { city: { contains: city, mode: 'insensitive' } }),
       ...(state && { state: state.toUpperCase() }),
       ...(fuelType && { fuelType: fuelType.toUpperCase() as any }),
       ...(mileageMax !== undefined && { mileage: { lte: mileageMax } }),
     };
+
+    const versionCondition: any = {};
+    if (resolvedBrandId) {
+      versionCondition.model = { brandId: resolvedBrandId };
+    }
+    if (modelId) {
+      versionCondition.modelId = modelId;
+    }
+    if (versionId) {
+      versionCondition.id = versionId;
+    }
+    if (typeSegments.length > 0) {
+      versionCondition.model = {
+        ...(versionCondition.model || {}),
+        segment: { in: typeSegments },
+      };
+    }
+
+    if (Object.keys(versionCondition).length > 0) {
+      where.version = versionCondition;
+    }
 
     if (yearMin || yearMax) {
       where.yearFab = {

@@ -15,12 +15,35 @@ export class CatalogService {
   /**
    * List all vehicle brands with cache
    */
-  async getBrands() {
-    const cacheKey = 'catalog:brands';
+  async getBrands(type?: string) {
+    const cacheKey = `catalog:brands${type ? `:${type}` : ''}`;
     const cached = await this.redis.get<any[]>(cacheKey);
     if (cached) return cached;
 
+    let typeSegments: string[] = [];
+    if (type) {
+      const normalizedType = type.toLowerCase().replace(/s$/, ''); // 'motos' -> 'moto', 'carros' -> 'carro'
+      if (normalizedType === 'moto') {
+        typeSegments = ['MOTORCYCLE'];
+      } else if (normalizedType === 'caminhao' || normalizedType === 'truck' || normalizedType === 'caminhõe') {
+        typeSegments = ['TRUCK'];
+      } else if (normalizedType === 'outro' || normalizedType === 'other') {
+        typeSegments = ['OTHER'];
+      } else {
+        typeSegments = ['HATCH', 'SEDAN', 'SUV', 'PICKUP', 'VAN'];
+      }
+    }
+
+    const where = typeSegments.length > 0 ? {
+      models: {
+        some: {
+          segment: { in: typeSegments as any }
+        }
+      }
+    } : undefined;
+
     const brands = await this.prisma.vehicleBrand.findMany({
+      where,
       orderBy: { name: 'asc' },
     });
 

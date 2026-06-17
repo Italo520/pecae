@@ -18,11 +18,11 @@ export interface Version {
   modelId: string;
 }
 
-export const useBrands = () => {
+export const useBrands = (type?: string) => {
   return useQuery({
-    queryKey: ['catalog', 'brands'],
+    queryKey: ['catalog', 'brands', type],
     queryFn: async () => {
-      const { data } = await api.get<Brand[]>('/catalog/brands');
+      const { data } = await api.get<Brand[]>('/catalog/brands', { params: { type } });
       return data;
     },
   });

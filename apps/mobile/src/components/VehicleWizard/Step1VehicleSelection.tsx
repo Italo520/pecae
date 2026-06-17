@@ -1,10 +1,20 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { VehicleSelector } from '../Catalog/VehicleSelector';
 import { useVehicleWizardStore } from '../../store/vehicle-wizard-store';
+import { Ionicons } from '@expo/vector-icons';
+import { usePecaeTheme } from '../../theme';
+
+const TYPES = [
+  { id: 'carro', label: 'Carros', icon: 'car-sport-outline' as const },
+  { id: 'moto', label: 'Motos', icon: 'bicycle-outline' as const },
+  { id: 'caminhao', label: 'Caminhões', icon: 'bus-outline' as const },
+  { id: 'outro', label: 'Outros', icon: 'construct-outline' as const },
+];
 
 export const Step1VehicleSelection: React.FC = () => {
-  const { updateData, nextStep } = useVehicleWizardStore();
+  const { data, updateData, nextStep } = useVehicleWizardStore();
+  const { colors, typography } = usePecaeTheme();
 
   const handleSelect = (selection: any) => {
     const isCustomVersion = selection.version.id === 'custom';
@@ -29,7 +39,50 @@ export const Step1VehicleSelection: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <VehicleSelector onSelect={handleSelect} requireCompleteSelection={true} />
+      <View style={styles.typeContainer}>
+        <Text style={[styles.typeTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>
+          Selecione o Tipo
+        </Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.typeScroll}>
+          {TYPES.map((type) => {
+            const isSelected = data.vehicleType === type.id;
+            return (
+              <TouchableOpacity
+                key={type.id}
+                style={[
+                  styles.typeButton,
+                  { backgroundColor: colors.surface, borderColor: colors.border },
+                  isSelected && { borderColor: colors.brand, backgroundColor: 'rgba(63, 255, 139, 0.1)' }
+                ]}
+                onPress={() => updateData({ vehicleType: type.id, brandId: undefined, modelId: undefined, versionId: undefined, yearFabId: undefined })}
+              >
+                <Ionicons name={type.icon} size={24} color={isSelected ? colors.brand : colors.textMuted} />
+                <Text style={[
+                  styles.typeLabel,
+                  { color: isSelected ? colors.brand : colors.textPrimary, fontFamily: typography.medium }
+                ]}>
+                  {type.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </View>
+
+      {data.vehicleType ? (
+        <VehicleSelector 
+          onSelect={handleSelect} 
+          requireCompleteSelection={true} 
+          vehicleType={data.vehicleType} 
+        />
+      ) : (
+        <View style={styles.emptyContainer}>
+          <Ionicons name="car-outline" size={48} color={colors.textMuted} />
+          <Text style={[styles.emptyText, { color: colors.textMuted, fontFamily: typography.body }]}>
+            Selecione o tipo de veículo acima para continuar
+          </Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -37,5 +90,39 @@ export const Step1VehicleSelection: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  typeContainer: {
+    padding: 20,
+    paddingBottom: 10,
+  },
+  typeTitle: {
+    fontSize: 16,
+    marginBottom: 12,
+  },
+  typeScroll: {
+    gap: 12,
+  },
+  typeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    gap: 8,
+  },
+  typeLabel: {
+    fontSize: 15,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
+    gap: 16,
+  },
+  emptyText: {
+    fontSize: 15,
+    textAlign: 'center',
   },
 });

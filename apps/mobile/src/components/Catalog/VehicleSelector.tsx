@@ -17,12 +17,14 @@ interface VehicleSelectorProps {
     version: any;
     year: any;
   } | null) => void;
+  vehicleType?: string;
 }
 
 export const VehicleSelector: React.FC<VehicleSelectorProps> = ({ 
   resultsCount = 0, 
   requireCompleteSelection = false,
-  onSelect 
+  onSelect,
+  vehicleType
 }) => {
   const { colors, typography, effects } = usePecaeTheme();
   
@@ -35,7 +37,7 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
   const [selectedYear, setSelectedYear] = useState<any>(null);
 
   // Queries
-  const { data: brands, isLoading: loadingBrands } = useBrands();
+  const { data: brands, isLoading: loadingBrands } = useBrands(vehicleType);
   const { data: models, isLoading: loadingModels } = useModels(selectedBrand?.id);
   const { data: versions, isLoading: loadingVersions } = useVersions(selectedModel?.id);
   const { data: years, isLoading: loadingYears } = useYears(selectedVersion?.id);

@@ -45,7 +45,14 @@ const MILEAGE_OPTIONS: BottomSheetOption[] = [
   { id: '150000', label: 'Até 150.000 km' },
 ];
 
-type SheetType = 'brand' | 'model' | 'version' | 'fuel' | 'mileage' | null;
+const TYPE_OPTIONS: BottomSheetOption[] = [
+  { id: 'carro', label: 'Carros' },
+  { id: 'moto', label: 'Motos' },
+  { id: 'caminhao', label: 'Caminhões' },
+  { id: 'outro', label: 'Outros' },
+];
+
+type SheetType = 'type' | 'brand' | 'model' | 'version' | 'fuel' | 'mileage' | null;
 
 export default function SearchScreen() {
   const { colors, typography } = usePecaeTheme();
@@ -57,6 +64,7 @@ export default function SearchScreen() {
   const [debouncedSearchText, setDebouncedSearchText] = useState(initialQ);
   
   // Advanced Filters State
+  const [type, setType] = useState<string | undefined>(params.type ? String(params.type) : undefined);
   const [brandId, setBrandId] = useState<string | undefined>(params.marca ? String(params.marca) : undefined);
   const [modelId, setModelId] = useState<string | undefined>(params.modelo ? String(params.modelo) : undefined);
   const [versionId, setVersionId] = useState<string | undefined>();
@@ -72,7 +80,7 @@ export default function SearchScreen() {
   const [activeSheet, setActiveSheet] = useState<SheetType>(null);
 
   // Catalog Queries
-  const { data: brands = [], isLoading: isLoadingBrands } = useBrands();
+  const { data: brands = [], isLoading: isLoadingBrands } = useBrands(type);
   const { data: models = [], isLoading: isLoadingModels } = useModels(brandId);
   const { data: versions = [], isLoading: isLoadingVersions } = useVersions(modelId);
 
@@ -91,6 +99,7 @@ export default function SearchScreen() {
 
   const { data: searchResponse, isLoading } = useSearchVehicles({
     q: debouncedSearchText,
+    type,
     brandId,
     modelId,
     versionId,
@@ -107,6 +116,7 @@ export default function SearchScreen() {
       await saveSearch.mutateAsync({
         query: debouncedSearchText,
         filters: {
+          type,
           brandId,
           modelId,
           versionId,
@@ -125,6 +135,7 @@ export default function SearchScreen() {
     }
   };
 
+  const getTypeLabel = () => TYPE_OPTIONS.find(t => t.id === type)?.label || 'Tipo';
   const getBrandLabel = () => brands.find(b => b.id === brandId)?.name || brandId || 'Marca';
   const getModelLabel = () => models.find(m => m.id === modelId)?.name || modelId || 'Modelo';
   const getVersionLabel = () => versions.find(v => v.id === versionId)?.name || versionId || 'Versão';
@@ -227,6 +238,11 @@ export default function SearchScreen() {
                 />
               </View>
 
+              <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.surface, borderColor: type ? colors.brand : colors.border }]} onPress={() => setActiveSheet('type')}>
+                <Text style={{ color: type ? colors.brand : colors.textPrimary, fontSize: 12 }}>{getTypeLabel()}</Text>
+                {type && <Ionicons name="close" size={14} color={colors.brand} onPress={() => { setType(undefined); setBrandId(undefined); setModelId(undefined); setVersionId(undefined); }} />}
+              </TouchableOpacity>
+
               <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.surface, borderColor: brandId ? colors.brand : colors.border }]} onPress={() => setActiveSheet('brand')}>
                 <Text style={{ color: brandId ? colors.brand : colors.textPrimary, fontSize: 12 }}>{getBrandLabel()}</Text>
                 {brandId && <Ionicons name="close" size={14} color={colors.brand} onPress={() => { setBrandId(undefined); setModelId(undefined); setVersionId(undefined); }} />}
@@ -269,6 +285,7 @@ export default function SearchScreen() {
             versions={versions}
             fuelTypes={FUEL_TYPES}
             mileageOptions={MILEAGE_OPTIONS}
+            type={type}
             brandId={brandId}
             modelId={modelId}
             versionId={versionId}
@@ -276,6 +293,7 @@ export default function SearchScreen() {
             mileageMax={mileageMax}
             state={state}
             city={city}
+            setType={setType}
             setBrandId={setBrandId}
             setModelId={setModelId}
             setVersionId={setVersionId}
@@ -301,7 +319,10 @@ export default function SearchScreen() {
             <View style={[styles.resultsGrid, { paddingHorizontal: isDesktop ? 40 : 20 }]}>
               {results.map((vehicle: any) => {
                 if (vehicle.isSponsored) {
-                  return <SponsoredListingCard key={`sponsored-${vehicle.id}`} vehicle={vehicle} style={[{ flex: 1, minWidth: 260 }, isDesktop && { maxWidth: 320 }]} />;
+                  return <SponsoredListingCard key={`sponsored-${vehicle.id}`} vehicle={vehicle} style={[
+                    { marginBottom: 24 },
+                    isDesktop ? { width: 272 } : { flex: 1, minWidth: 260 }
+                  ]} />;
                 }
                 const brand = vehicle.version?.model?.brand?.name || vehicle.brand || '';
                 const model = vehicle.version?.model?.name || vehicle.model || '';
@@ -321,7 +342,10 @@ export default function SearchScreen() {
                     city={vehicle.city}
                     state={vehicle.state}
                     imageUrl={imageUrl}
-                    style={[{ flex: 1, minWidth: 260, marginBottom: 24 }, isDesktop && { maxWidth: 320 }]}
+                    style={[
+                      { marginBottom: 24 },
+                      isDesktop ? { width: 272 } : { flex: 1, minWidth: 260 }
+                    ]}
                   />
                 );
               })}
@@ -334,6 +358,7 @@ export default function SearchScreen() {
       {/* MOBILE BOTTOM SHEETS */}
       {!isDesktop && (
         <>
+          <BottomSheetSelector visible={activeSheet === 'type'} onClose={() => setActiveSheet(null)} title="Tipo" options={TYPE_OPTIONS} selectedValue={type} onSelect={(id) => { setType(id); setBrandId(undefined); setModelId(undefined); setVersionId(undefined); }} searchable={false} />
           <BottomSheetSelector visible={activeSheet === 'brand'} onClose={() => setActiveSheet(null)} title="Marca" options={brands.map(b => ({ id: b.id, label: b.name }))} selectedValue={brandId} onSelect={(id) => { setBrandId(id); setModelId(undefined); setVersionId(undefined); }} />
           <BottomSheetSelector visible={activeSheet === 'model'} onClose={() => setActiveSheet(null)} title="Modelo" options={models.map(m => ({ id: m.id, label: m.name }))} selectedValue={modelId} onSelect={(id) => { setModelId(id); setVersionId(undefined); }} />
           <BottomSheetSelector visible={activeSheet === 'version'} onClose={() => setActiveSheet(null)} title="Versão" options={versions.map(v => ({ id: v.id, label: v.name }))} selectedValue={versionId} onSelect={(id) => setVersionId(id)} />

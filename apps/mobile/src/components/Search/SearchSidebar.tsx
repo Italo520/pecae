@@ -17,6 +17,7 @@ interface SearchSidebarProps {
   mileageOptions: BottomSheetOption[];
 
   // Current State
+  type?: string;
   brandId?: string;
   modelId?: string;
   versionId?: string;
@@ -26,6 +27,7 @@ interface SearchSidebarProps {
   city: string;
 
   // Setters
+  setType: (type?: string) => void;
   setBrandId: (id?: string) => void;
   setModelId: (id?: string) => void;
   setVersionId: (id?: string) => void;
@@ -41,6 +43,7 @@ export function SearchSidebar({
   versions,
   fuelTypes,
   mileageOptions,
+  type,
   brandId,
   modelId,
   versionId,
@@ -48,6 +51,7 @@ export function SearchSidebar({
   mileageMax,
   state,
   city,
+  setType,
   setBrandId,
   setModelId,
   setVersionId,
@@ -125,18 +129,48 @@ export function SearchSidebar({
       contentContainerStyle={styles.content}
     >
       <View style={styles.headerRow}>
-        <Text style={[styles.mainTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>Filtros</Text>
-        {onToggle && (
-          <TouchableOpacity onPress={onToggle}>
-            <Ionicons name="chevron-back" size={24} color={colors.textMuted} />
-          </TouchableOpacity>
-        )}
+        <Text style={[styles.headerTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>Filtros</Text>
+        <TouchableOpacity style={styles.toggleBtn} onPress={onToggle}>
+          <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
+        </TouchableOpacity>
       </View>
 
-      {/* Localização */}
-      <View style={styles.filterGroup}>
-        <View style={styles.groupHeader}>
-          <Text style={[styles.groupTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>Localização</Text>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        
+        {/* Type Selection */}
+        <View style={styles.filterGroup}>
+          <Text style={[styles.groupTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>
+            Tipo de Veículo
+          </Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+            {[
+              { id: 'carro', label: 'Carros', icon: 'car-outline' },
+              { id: 'moto', label: 'Motos', icon: 'bicycle-outline' },
+              { id: 'caminhao', label: 'Caminhões', icon: 'bus-outline' },
+              { id: 'outro', label: 'Outros', icon: 'construct-outline' }
+            ].map(t => (
+              <TouchableOpacity
+                key={t.id}
+                style={[
+                  styles.typeButton,
+                  { borderColor: colors.border },
+                  type === t.id && { borderColor: colors.brand, backgroundColor: 'rgba(63, 255, 139, 0.1)' }
+                ]}
+                onPress={() => setType(type === t.id ? undefined : t.id)}
+              >
+                <Ionicons name={t.icon as any} size={16} color={type === t.id ? colors.brand : colors.textMuted} />
+                <Text style={{ color: type === t.id ? colors.brand : colors.textMuted, fontSize: 13, marginLeft: 4 }}>
+                  {t.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.filterGroup}>
+          <Text style={[styles.groupTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>
+            Localização
+          </Text>
           {(state || city) && (
             <TouchableOpacity onPress={() => { setState(''); setCity(''); }}>
               <Text style={{ color: colors.brand, fontSize: 12 }}>Limpar</Text>
@@ -164,7 +198,6 @@ export function SearchSidebar({
             />
           </View>
         </View>
-      </View>
 
       {/* Marca, Modelo, Versão */}
       {renderFilterList(
@@ -207,7 +240,7 @@ export function SearchSidebar({
         (id) => setMileageMax(Number(id)),
         () => setMileageMax(undefined)
       )}
-
+      </ScrollView>
     </ScrollView>
   );
 }
@@ -231,15 +264,28 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
   },
+  toggleBtn: {
+    padding: 4,
+  },
+  typeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginBottom: 4,
+  },
   content: {
-    padding: 20,
     paddingBottom: 100,
+  },
+  scrollContent: {
+    padding: 16,
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
   },
   mainTitle: {
     fontSize: 20,

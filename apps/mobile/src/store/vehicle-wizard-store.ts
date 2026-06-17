@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 interface WizardData {
   // Step 1: Vehicle selection
+  vehicleType?: string;
   brandId?: string;
   modelId?: string;
   versionId?: string;
