@@ -175,7 +175,7 @@ export default function BuyerHomeScreen() {
                   fuel={vehicle.fuelType}
                   city={vehicle.city || vehicle.seller?.city}
                   state={vehicle.state || vehicle.seller?.state}
-                  style={{ flex: 1, minWidth: 260, marginBottom: 24 }}
+                  style={[{ flex: 1, minWidth: 260, marginBottom: 24 }, isDesktop && { maxWidth: 320 }]}
                 />
               );
             })}

@@ -301,7 +301,7 @@ export default function SearchScreen() {
             <View style={[styles.resultsGrid, { paddingHorizontal: isDesktop ? 40 : 20 }]}>
               {results.map((vehicle: any) => {
                 if (vehicle.isSponsored) {
-                  return <SponsoredListingCard key={`sponsored-${vehicle.id}`} vehicle={vehicle} style={{ flex: 1, minWidth: 260 }} />;
+                  return <SponsoredListingCard key={`sponsored-${vehicle.id}`} vehicle={vehicle} style={[{ flex: 1, minWidth: 260 }, isDesktop && { maxWidth: 320 }]} />;
                 }
                 const brand = vehicle.version?.model?.brand?.name || vehicle.brand || '';
                 const model = vehicle.version?.model?.name || vehicle.model || '';
@@ -321,7 +321,7 @@ export default function SearchScreen() {
                     city={vehicle.city}
                     state={vehicle.state}
                     imageUrl={imageUrl}
-                    style={{ flex: 1, minWidth: 260, marginBottom: 24 }}
+                    style={[{ flex: 1, minWidth: 260, marginBottom: 24 }, isDesktop && { maxWidth: 320 }]}
                   />
                 );
               })}
