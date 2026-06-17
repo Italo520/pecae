@@ -157,26 +157,25 @@ export default function BuyerHomeScreen() {
               
               const brand = getSafeText(vehicle.brand);
               const model = getSafeText(vehicle.model);
+              const version = getSafeText(vehicle.version?.name || vehicle.version);
               const imageUrl = getVehicleImage(brand, model, vehicle.id);
               
-              // Título composto: marca - modelo - (ano fabricação/anomodelo)
               const yearFab = vehicle.yearFab || '--';
               const yearModel = vehicle.yearModel || yearFab;
-              const title = `${brand} - ${model} - (${yearFab}/${yearModel})`.trim() || 'Veículo sem título';
               
               return (
                 <VehicleCard
                   key={vehicle.id}
                   id={vehicle.id}
-                  title={title}
-                  price={vehicle.price}
+                  brand={brand}
+                  model={model}
+                  version={version}
                   year={`${yearFab}/${yearModel}`}
                   mileage={vehicle.mileage}
                   fuel={vehicle.fuelType}
                   city={vehicle.city || vehicle.seller?.city}
                   state={vehicle.state || vehicle.seller?.state}
-                  imageUrl={vehicle.photos?.[0]?.url || vehicle.thumbnail || imageUrl}
-                  style={{ width: cardWidth, marginBottom: 24 }}
+                  style={{ flex: 1, minWidth: 260, marginBottom: 24 }}
                 />
               );
             })}
@@ -302,7 +301,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     paddingHorizontal: 20,
-    gap: 12,
+    gap: 16,
     width: '100%',
   },
   productCardWrapper: {

@@ -5,19 +5,20 @@ import { VehicleCard } from '../Vehicle';
 
 interface SponsoredListingCardProps {
   vehicle: any;
-  itemWidth?: number | string;
+  style?: any;
   variant?: 'grid' | 'list';
 }
 
 export const SponsoredListingCard: React.FC<SponsoredListingCardProps> = ({ 
   vehicle, 
-  itemWidth,
+  style,
   variant = 'grid'
 }) => {
   const router = useRouter();
 
   const brand = vehicle.version?.model?.brand?.name || vehicle.brand || '';
   const model = vehicle.version?.model?.name || vehicle.model || '';
+  const version = vehicle.version?.name || '';
   const imageUrl = vehicle.thumbnail || (vehicle.photos && vehicle.photos.length > 0 ? vehicle.photos[0] : null);
   const campaignId = vehicle.campaignId;
   const listingId = vehicle.id;
@@ -53,8 +54,9 @@ export const SponsoredListingCard: React.FC<SponsoredListingCardProps> = ({
   return (
     <VehicleCard
       id={vehicle.vehicleId || vehicle.id}
-      title={`${brand} ${model}`.trim()}
-      price={vehicle.price}
+      brand={brand}
+      model={model}
+      version={version}
       year={vehicle.year}
       mileage={vehicle.mileage}
       fuel={vehicle.fuelType}
@@ -64,7 +66,7 @@ export const SponsoredListingCard: React.FC<SponsoredListingCardProps> = ({
       isSponsored={true}
       variant={variant}
       onPress={handlePress}
-      style={{ width: itemWidth, marginBottom: 24 }}
+      style={style || { marginBottom: 24 }}
     />
   );
 };

@@ -43,13 +43,14 @@ export default function CatalogScreen() {
   const renderVehicle = ({ item }: { item: any }) => {
     const brand = item.brand || item.version?.model?.brand?.name || '';
     const model = item.model || item.version?.model?.name || '';
-    const title = `${brand} ${model}`.trim();
+    const version = item.version?.name || '';
     
     return (
       <VehicleCard
         id={item.listingId || item.id}
-        title={title}
-        price={item.price}
+        brand={brand}
+        model={model}
+        version={version}
         year={item.year}
         mileage={item.mileage}
         fuel={item.fuelType}

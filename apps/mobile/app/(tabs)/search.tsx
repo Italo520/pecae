@@ -302,13 +302,14 @@ export default function SearchScreen() {
                   <SponsoredListingCard
                     key={`sponsored-${vehicle.id}`}
                     vehicle={vehicle}
-                    itemWidth={cardWidth}
+                    style={{ flex: 1, minWidth: 260 }}
                   />
                 );
               }
 
               const brand = vehicle.version?.model?.brand?.name || '';
               const model = vehicle.version?.model?.name || '';
+              const version = vehicle.version?.name || '';
               const imageUrl = vehicle.thumbnail || (vehicle.photos && vehicle.photos.length > 0 ? vehicle.photos[0] : null);
               const isMatch = index === 0 && searchText.length > 2; // Simulação de match destacado
 
@@ -316,15 +317,16 @@ export default function SearchScreen() {
                 <VehicleCard
                   key={vehicle.id}
                   id={vehicle.id}
-                  title={`${brand} ${model}`.trim()}
-                  price={vehicle.price}
+                  brand={brand}
+                  model={model}
+                  version={version}
                   year={vehicle.year}
                   mileage={vehicle.mileage}
                   fuel={vehicle.fuelType}
                   city={vehicle.city}
                   state={vehicle.state}
                   imageUrl={imageUrl}
-                  style={{ width: cardWidth, marginBottom: 24 }}
+                  style={{ flex: 1, minWidth: 260, marginBottom: 24 }}
                 />
               );
             })}
@@ -456,7 +458,7 @@ const styles = StyleSheet.create({
   resultsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: 16,
     width: '100%',
   },
   productCardWrapper: {

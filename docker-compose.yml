@@ -59,6 +59,8 @@ services:
         EXPO_PUBLIC_SUPABASE_URL: https://hsxeulvcfrbyvxehhhaj.supabase.co
         EXPO_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzeGV1bHZjZnJieXZ4ZWhoaGFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4OTU0NjQsImV4cCI6MjA5NjQ3MTQ2NH0.gl7nMqpNt-5-AQb39OogZUsTTzcoqtr0esoumTUu6c0
     restart: always
+    ports:
+      - "8080:80"
     labels:
       - traefik.enable=true
       - traefik.http.routers.pecae-mobile-web.rule=Host(`${SERVICE_FQDN_MOBILE_WEB:-pecae.italohub.cloud}`)
