@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 4-busca-aprimorada
 source: [4-SUMMARY.md]
 started: 2026-06-18T09:42:00-03:00
@@ -45,5 +45,14 @@ skipped: 0
   reason: "User reported: precisa melhora a ui e ux conforme os marketplaces mais renomados"
   severity: minor
   test: 4
-  artifacts: []
-  missing: []
+  root_cause: "Interface de filtros fragmentada por múltiplos modais de lista vertical simples de 70% de altura, gerando alta fricção de cliques e layout abaixo do padrão estético premium (Falta de grabber visual, grid de chips e sliders/campos numéricos)."
+  artifacts:
+    - path: "apps/mobile/src/components/Search/BottomSheetSelector.tsx"
+      issue: "Modal de seleção simples sem indicador visual de puxar (grabber), layout de lista vertical ineficiente para poucas opções."
+    - path: "apps/mobile/app/(tabs)/search.tsx"
+      issue: "Filtros de combustível e quilometragem disparados individualmente em vez de consolidados ou expostos em grids de chips rápidos."
+  missing:
+    - "Adicionar grabber/indicador de puxar (Drag Handle) no topo do modal em BottomSheetSelector.tsx"
+    - "Refatorar seleção de combustível para usar um grid de chips na UI"
+    - "Consolidar filtros em Bottom Sheet unificado ou aplicar estilização premium baseada em chips horizontais diretamente na barra"
+  debug_session: .planning/debug/ux-filters-improvement.md
