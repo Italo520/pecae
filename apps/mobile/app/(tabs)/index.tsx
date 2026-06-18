@@ -381,8 +381,8 @@ export default function BuyerHomeScreen() {
         // Infinite scroll: carrega mais quando chegar a 30% do fim
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.3}
-        // Evita re-renders desnecessários
-        removeClippedSubviews={true}
+        // Evita bugs de imagens sumindo ao rolar de volta
+        removeClippedSubviews={false}
         initialNumToRender={10}
         maxToRenderPerBatch={10}
         windowSize={5}

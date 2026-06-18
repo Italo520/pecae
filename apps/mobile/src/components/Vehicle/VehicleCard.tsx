@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
+import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../theme';
 import { useRouter } from 'expo-router';
@@ -77,7 +78,9 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
         <Image
           source={{ uri: imageUrl || 'https://images.unsplash.com/photo-1507136566006-cfc505b114fc?auto=format&fit=crop&w=600&q=80' }}
           style={styles.image}
-          resizeMode="cover"
+          contentFit="cover"
+          transition={200}
+          cachePolicy="memory-disk"
         />
         {isSponsored && (
           <View style={[styles.badge, { backgroundColor: colors.brand }]}>
