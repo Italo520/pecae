@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { api } from '../services/api';
 
 export interface VehiclePhoto {
@@ -77,6 +77,45 @@ export const useSearchVehicles = (filters?: {
       const { data } = await api.get<{ data: VehicleDonor[], hasMore: boolean, nextCursor: string | null }>('/search', { params: filters });
       return data;
     },
+  });
+};
+
+export interface InfiniteSearchFilters {
+  brandId?: string;
+  modelId?: string;
+  versionId?: string;
+  yearMin?: number;
+  yearMax?: number;
+  q?: string;
+  city?: string;
+  state?: string;
+  fuelType?: string;
+  mileageMax?: number;
+  type?: string;
+  limit?: number;
+}
+
+export const useInfiniteSearchVehicles = (filters?: InfiniteSearchFilters) => {
+  const limit = filters?.limit ?? 20;
+
+  return useInfiniteQuery({
+    queryKey: ['vehicles', 'search', 'infinite', { ...filters, limit }],
+    initialPageParam: null as string | null,
+    queryFn: async ({ pageParam }) => {
+      const params = {
+        ...filters,
+        limit,
+        ...(pageParam ? { cursor: pageParam } : {}),
+      };
+      const { data } = await api.get<{
+        data: VehicleDonor[];
+        hasMore: boolean;
+        nextCursor: string | null;
+      }>('/search', { params });
+      return data;
+    },
+    getNextPageParam: (lastPage) =>
+      lastPage.hasMore ? lastPage.nextCursor : undefined,
   });
 };
 
