@@ -64,6 +64,7 @@ export function BottomSheetSelector({
         </TouchableWithoutFeedback>
 
         <View style={[styles.sheet, { backgroundColor: colors.background, borderTopColor: colors.border }]}>
+          <View style={[styles.dragHandle, { backgroundColor: colors.border }]} />
           <View style={styles.header}>
             <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.display }]}>
               {title.toUpperCase()}
@@ -94,7 +95,11 @@ export function BottomSheetSelector({
               const isSelected = item.id === selectedValue;
               return (
                 <TouchableOpacity
-                  style={[styles.option, { borderBottomColor: colors.border }]}
+                  style={[
+                    styles.option, 
+                    { borderBottomColor: colors.border },
+                    isSelected && { backgroundColor: `${colors.brand}15` }
+                  ]}
                   onPress={() => {
                     onSelect(item.id);
                     onClose();
@@ -130,6 +135,15 @@ export function BottomSheetSelector({
 }
 
 const styles = StyleSheet.create({
+  dragHandle: {
+    width: 40,
+    height: 5,
+    borderRadius: 2.5,
+    alignSelf: 'center',
+    marginTop: 12,
+    marginBottom: 16,
+    opacity: 0.5,
+  },
   overlay: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -143,7 +157,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    paddingTop: 20,
+    paddingTop: 0,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -5 },
     shadowOpacity: 0.3,

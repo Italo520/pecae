@@ -238,33 +238,33 @@ export default function SearchScreen() {
                 />
               </View>
 
-              <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.surface, borderColor: type ? colors.brand : colors.border }]} onPress={() => setActiveSheet('type')}>
-                <Text style={{ color: type ? colors.brand : colors.textPrimary, fontSize: 12 }}>{getTypeLabel()}</Text>
+              <TouchableOpacity style={[styles.filterChip, { backgroundColor: type ? `${colors.brand}15` : colors.surface, borderColor: type ? colors.brand : colors.border }]} onPress={() => setActiveSheet('type')}>
+                <Text style={{ color: type ? colors.brand : colors.textPrimary, fontSize: 12, fontFamily: type ? typography.medium : typography.body }}>{getTypeLabel()}</Text>
                 {type && <Ionicons name="close" size={14} color={colors.brand} onPress={() => { setType(undefined); setBrandId(undefined); setModelId(undefined); setVersionId(undefined); }} />}
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.surface, borderColor: brandId ? colors.brand : colors.border }]} onPress={() => setActiveSheet('brand')}>
-                <Text style={{ color: brandId ? colors.brand : colors.textPrimary, fontSize: 12 }}>{getBrandLabel()}</Text>
+              <TouchableOpacity style={[styles.filterChip, { backgroundColor: brandId ? `${colors.brand}15` : colors.surface, borderColor: brandId ? colors.brand : colors.border }]} onPress={() => setActiveSheet('brand')}>
+                <Text style={{ color: brandId ? colors.brand : colors.textPrimary, fontSize: 12, fontFamily: brandId ? typography.medium : typography.body }}>{getBrandLabel()}</Text>
                 {brandId && <Ionicons name="close" size={14} color={colors.brand} onPress={() => { setBrandId(undefined); setModelId(undefined); setVersionId(undefined); }} />}
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.surface, borderColor: modelId ? colors.brand : colors.border, opacity: brandId ? 1 : 0.5 }]} onPress={() => brandId && setActiveSheet('model')} disabled={!brandId}>
-                <Text style={{ color: modelId ? colors.brand : colors.textPrimary, fontSize: 12 }}>{getModelLabel()}</Text>
+              <TouchableOpacity style={[styles.filterChip, { backgroundColor: modelId ? `${colors.brand}15` : colors.surface, borderColor: modelId ? colors.brand : colors.border, opacity: brandId ? 1 : 0.5 }]} onPress={() => brandId && setActiveSheet('model')} disabled={!brandId}>
+                <Text style={{ color: modelId ? colors.brand : colors.textPrimary, fontSize: 12, fontFamily: modelId ? typography.medium : typography.body }}>{getModelLabel()}</Text>
                 {modelId && <Ionicons name="close" size={14} color={colors.brand} onPress={() => { setModelId(undefined); setVersionId(undefined); }} />}
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.surface, borderColor: versionId ? colors.brand : colors.border, opacity: modelId ? 1 : 0.5 }]} onPress={() => modelId && setActiveSheet('version')} disabled={!modelId}>
-                <Text style={{ color: versionId ? colors.brand : colors.textPrimary, fontSize: 12 }}>{getVersionLabel()}</Text>
+              <TouchableOpacity style={[styles.filterChip, { backgroundColor: versionId ? `${colors.brand}15` : colors.surface, borderColor: versionId ? colors.brand : colors.border, opacity: modelId ? 1 : 0.5 }]} onPress={() => modelId && setActiveSheet('version')} disabled={!modelId}>
+                <Text style={{ color: versionId ? colors.brand : colors.textPrimary, fontSize: 12, fontFamily: versionId ? typography.medium : typography.body }}>{getVersionLabel()}</Text>
                 {versionId && <Ionicons name="close" size={14} color={colors.brand} onPress={() => setVersionId(undefined)} />}
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.surface, borderColor: fuelType ? colors.brand : colors.border }]} onPress={() => setActiveSheet('fuel')}>
-                <Text style={{ color: fuelType ? colors.brand : colors.textPrimary, fontSize: 12 }}>{getFuelLabel()}</Text>
+              <TouchableOpacity style={[styles.filterChip, { backgroundColor: fuelType ? `${colors.brand}15` : colors.surface, borderColor: fuelType ? colors.brand : colors.border }]} onPress={() => setActiveSheet('fuel')}>
+                <Text style={{ color: fuelType ? colors.brand : colors.textPrimary, fontSize: 12, fontFamily: fuelType ? typography.medium : typography.body }}>{getFuelLabel()}</Text>
                 {fuelType && <Ionicons name="close" size={14} color={colors.brand} onPress={() => setFuelType(undefined)} />}
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.filterChip, { backgroundColor: colors.surface, borderColor: mileageMax ? colors.brand : colors.border }]} onPress={() => setActiveSheet('mileage')}>
-                <Text style={{ color: mileageMax ? colors.brand : colors.textPrimary, fontSize: 12 }}>{getMileageLabel()}</Text>
+              <TouchableOpacity style={[styles.filterChip, { backgroundColor: mileageMax ? `${colors.brand}15` : colors.surface, borderColor: mileageMax ? colors.brand : colors.border }]} onPress={() => setActiveSheet('mileage')}>
+                <Text style={{ color: mileageMax ? colors.brand : colors.textPrimary, fontSize: 12, fontFamily: mileageMax ? typography.medium : typography.body }}>{getMileageLabel()}</Text>
                 {mileageMax && <Ionicons name="close" size={14} color={colors.brand} onPress={() => setMileageMax(undefined)} />}
               </TouchableOpacity>
             </ScrollView>
