@@ -51,3 +51,39 @@ export const useVersions = (modelId?: string) => {
     enabled: !!modelId,
   });
 };
+
+export interface Year {
+  id: string;
+  yearFab: number;
+  yearModel: number;
+  versionId: string;
+}
+
+export const useYears = (versionId?: string) => {
+  return useQuery({
+    queryKey: ['catalog', 'years', versionId],
+    queryFn: async () => {
+      if (!versionId) return [];
+      const { data } = await api.get<Year[]>(`/catalog/versions/${versionId}/years`);
+      return data;
+    },
+    enabled: !!versionId,
+  });
+};
+
+export interface PartCategory {
+  id: string;
+  name: string;
+  slug: string;
+  icon: string;
+}
+
+export const usePartCategories = () => {
+  return useQuery({
+    queryKey: ['catalog', 'part-categories'],
+    queryFn: async () => {
+      const { data } = await api.get<PartCategory[]>('/catalog/part-categories');
+      return data;
+    },
+  });
+};
