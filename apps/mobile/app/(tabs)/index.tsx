@@ -267,11 +267,6 @@ export default function BuyerHomeScreen() {
           >
             Recomendado para Você
           </Text>
-          {!isLoading && listings.length > 0 && (
-            <Text style={[styles.countText, { color: colors.textMuted, fontFamily: typography.regular }]}>
-              {listings.length} veículo{listings.length !== 1 ? 's' : ''} carregado{listings.length !== 1 ? 's' : ''}
-            </Text>
-          )}
         </View>
       </View>
     </>
@@ -499,13 +494,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     letterSpacing: 1,
   },
-  countText: {
-    fontSize: 12,
-  },
   productGridDesktop: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 16,
+    gap: 12,
     width: '100%',
   },
   cardWrapper: {
