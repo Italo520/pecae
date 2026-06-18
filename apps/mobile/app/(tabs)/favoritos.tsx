@@ -35,7 +35,7 @@ export default function FavoritesScreen() {
               Faça login para ver seus veículos favoritos e gerenciar sua lista de desejos.
             </Text>
             <TouchableOpacity 
-              onPress={() => router.push('/(auth)/login')}
+              onPress={() => router.push({ pathname: '/(auth)/login', params: { returnUrl: '/(tabs)/favoritos' } })}
               style={{ backgroundColor: colors.brand, paddingHorizontal: 24, paddingVertical: 12, borderRadius: effects.radius.sm }}
             >
               <Text style={{ fontFamily: typography.display, color: '#000' }}>FAZER LOGIN</Text>
