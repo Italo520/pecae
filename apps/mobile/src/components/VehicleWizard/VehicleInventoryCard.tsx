@@ -41,7 +41,7 @@ export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehi
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'ACTIVE': return 'ATIVO';
-      case 'PENDING': return 'EM REVISÃO';
+      case 'PENDING': return 'AGUARDANDO APROVAÇÃO';
       case 'DRAFT': return 'RASCUNHO';
       case 'SOLD': return 'VENDIDO';
       case 'INACTIVE': return 'RETIRADO';

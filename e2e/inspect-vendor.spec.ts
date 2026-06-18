@@ -144,11 +144,11 @@ test.describe('PECAÊ E2E - Vendor Vehicle Flow Verification', () => {
     runSqlQuery(`UPDATE vehicles SET plate = '${testPlate}' WHERE id = '${vehicleId}';`);
     console.log(`ℹ️ [DB] Placa do veículo ID ${vehicleId} updated para ${testPlate}.`);
 
-    // Recarregar o inventário e validar status "EM REVISÃO" (PENDING)
+    // Recarregar o inventário e validar status "AGUARDANDO APROVAÇÃO" (PENDING)
     await page.reload();
     await expect(page.locator(`text=Mareacustome2e`).first()).toBeVisible();
-    await expect(page.locator(`text=EM REVISÃO`).first()).toBeVisible();
-    console.log('✅ Status "EM REVISÃO" validado com sucesso no inventário.');
+    await expect(page.locator(`text=AGUARDANDO APROVAÇÃO`).first()).toBeVisible();
+    console.log('✅ Status "AGUARDANDO APROVAÇÃO" validado com sucesso no inventário.');
 
     // 8. Moderação (Aprovação via SQL/Simulação de Moderador para agilizar o teste)
     console.log('ℹ️ Simulando aprovação da listagem pelo Moderador...');
@@ -177,7 +177,7 @@ test.describe('PECAÊ E2E - Vendor Vehicle Flow Verification', () => {
     await card.getByText('REATIVAR', { exact: true }).first().click();
     await page.waitForTimeout(1000);
     await page.reload();
-    await expect(card.locator('text=EM REVISÃO').first()).toBeVisible();
+    await expect(card.locator('text=AGUARDANDO APROVAÇÃO').first()).toBeVisible();
     console.log('✅ Veículo reativado com sucesso (retornou para EM REVISÃO).');
 
     // Aprovar novamente para validar o fluxo de Edição
@@ -224,7 +224,7 @@ test.describe('PECAÊ E2E - Vendor Vehicle Flow Verification', () => {
 
     // Validar se o status retornou para "EM REVISÃO" e a cor foi alterada no banco
     await page.reload();
-    await expect(page.locator(`text=EM REVISÃO`).first()).toBeVisible();
+    await expect(page.locator(`text=AGUARDANDO APROVAÇÃO`).first()).toBeVisible();
     
     const dbColor = runSqlQuery(`SELECT color FROM vehicles WHERE id = '${vehicleId}';`);
     expect(dbColor).toBe('Preto');
