@@ -67,18 +67,37 @@ Este documento detalha o roteiro cronológico de desenvolvimento estruturado por
 ### Fase 2: Navegação Deslogada (Guest Access)
 - **Objetivo:** Permitir que o cliente utilize o sistema em áreas públicas (pesquisa de sucatas, anúncios, navegação no catálogo) sem necessidade de login.
 - **Status:** `completed` (2026-06-18)
-- **Artefatos:**
-  - SPEC: [2-SPEC.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/phases/2-SPEC.md)
-  - PLAN: [2-PLAN.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/phases/2-PLAN.md)
-  - SUMMARY: [2-SUMMARY.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/phases/2-SUMMARY.md)
+  - **Artefatos:**
+  - SPEC: [2-SPEC.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v9.0/v9.0-phases/2-SPEC.md)
+  - PLAN: [2-PLAN.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v9.0/v9.0-phases/2-PLAN.md)
+  - SUMMARY: [2-SUMMARY.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v9.0/v9.0-phases/2-SUMMARY.md)
   - VERIFICATION: `Verificado e concluído`
 
 ### Fase 4: Busca Aprimorada e Filtros
 - **Objetivo:** Implementação de busca com filtros avançados em cascata (Tipo, Marca, Modelo, Ano, Versão) integrados com a API FIPE, ordenação e detecção de Estado padrão.
 - **Status:** `executed` (2026-06-18)
 - **Artefatos:**
-  - SPEC: [4-SPEC.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/phases/4-SPEC.md)
-  - PLAN: [4-PLAN.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/phases/4-PLAN.md)
-  - CONTEXT: [4-CONTEXT.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/phases/4-CONTEXT.md)
-  - SUMMARY: [4-SUMMARY.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/phases/4-SUMMARY.md)
-  - VALIDATION: [4-VALIDATION.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/phases/4-VALIDATION.md)
+  - SPEC: [4-SPEC.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v9.0/v9.0-phases/4-SPEC.md)
+  - PLAN: [4-PLAN.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v9.0/v9.0-phases/4-PLAN.md)
+  - CONTEXT: [4-CONTEXT.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v9.0/v9.0-phases/4-CONTEXT.md)
+  - SUMMARY: [4-SUMMARY.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v9.0/v9.0-phases/4-SUMMARY.md)
+  - VALIDATION: [4-VALIDATION.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v9.0/v9.0-phases/4-VALIDATION.md)
+
+### Fase 1: Migração Completa do Backend NestJS → Java 25 (Spring Boot)
+- **Objetivo:** Reescrita integral do backend PECAÊ de NestJS/TypeScript + Prisma para Java 25 + Spring Boot 3.5+ + Spring Data JPA + Hibernate 7, usando arquitetura Package-by-Feature com 19 subfases.
+- **Status:** `in-progress` (Fase 01, Fase 02, Fase 03, Fase 04 e Fase 05 concluídas)
+- **Subfases Concluídas:**
+  - **Fase 01: Fundação e Infraestrutura** (concluída)
+  - **Fase 02: User + Auth** (concluída em 2026-06-22)
+  - **Fase 03: Buyer Profile** (concluída em 2026-06-22)
+  - **Fase 04: Seller Profile** (concluída em 2026-06-22)
+  - **Fase 05: Catalog** (concluída em 2026-06-22)
+- **Artefatos:**
+  - SPEC Geral: [1-SPEC.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/phases/1-SPEC.md)
+  - PLAN (Fase 02): [2-PLAN.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v9.0/v9.0-phases/2-PLAN.md)
+  - WALKTHROUGH (Fase 02): [walkthrough.md](file:///C:/Users/italo/.gemini/antigravity-ide/brain/1b3e6bf5-ac21-4459-a5c5-1f58fc803fc3/walkthrough.md)
+  - PLAN (Fase 03): [3-PLAN.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v9.0/v9.0-phases/3-PLAN.md)
+  - WALKTHROUGH (Fase 03): [walkthrough.md](file:///C:/Users/italo/.gemini/antigravity-ide/brain/b57986f7-9703-4791-b986-1c864211a21d/walkthrough.md)
+  - PLAN (Fase 04): [04-PLAN.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/phases/04-PLAN.md)
+  - PLAN (Fase 05): [05-PLAN.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/phases/05-PLAN.md)
+  - WALKTHROUGH (Fase 05): [walkthrough.md](file:///C:/Users/italo/.gemini/antigravity-ide/brain/b57986f7-9703-4791-b986-1c864211a21d/walkthrough.md)

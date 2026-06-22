@@ -1,0 +1,33 @@
+package com.pecae.api.comprador.dtos;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class RespostaPerfilComprador {
+
+    @JsonProperty("id")
+    private UUID id;
+
+    @JsonProperty("userId")
+    private UUID usuarioId;
+
+    @JsonProperty("name")
+    private String nome;
+
+    @JsonProperty("avatar")
+    private String avatar;
+
+    @JsonProperty("createdAt")
+    private LocalDateTime criadoEm;
+
+    @JsonProperty("updatedAt")
+    private LocalDateTime atualizadoEm;
+}
