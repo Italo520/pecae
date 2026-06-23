@@ -67,8 +67,4 @@ export class CreateCampaignDto {
   @IsOptional()
   notes?: string;
 
-  @ApiProperty({ example: 'pay_123456', description: 'ID do pagamento externo (opcional)' })
-  @IsString()
-  @IsOptional()
-  externalPaymentId?: string;
 }

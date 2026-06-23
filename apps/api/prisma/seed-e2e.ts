@@ -7,7 +7,7 @@ import {
   VehicleStatus,
   FuelType,
   TransmissionType,
-  PlanType,
+
   BudgetType,
   AdCampaignStatus,
 } from '@prisma/client';
@@ -135,7 +135,7 @@ async function main() {
     where: { userId: sellerE2E.id },
     update: {
       isVerified: true,
-      plan: PlanType.PRO,
+
     },
     create: {
       id: crypto.randomUUID(),
@@ -150,7 +150,7 @@ async function main() {
       whatsapp: '11988888888',
       isVerified: true,
       showContactInfo: true,
-      plan: PlanType.PRO,
+
     },
   });
 
@@ -158,7 +158,7 @@ async function main() {
     where: { userId: sellerFree.id },
     update: {
       isVerified: false,
-      plan: PlanType.FREE,
+
     },
     create: {
       id: crypto.randomUUID(),
@@ -172,7 +172,7 @@ async function main() {
       whatsapp: '11977777777',
       isVerified: false,
       showContactInfo: true,
-      plan: PlanType.FREE,
+
     },
   });
   console.log('✅ Perfis de vendedores E2E criados.');

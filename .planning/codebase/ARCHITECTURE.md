@@ -39,7 +39,7 @@ A API é organizada de forma totalmente modular. Cada domínio de negócio possu
 * **Catálogo e Estoque:** `catalog`, `vehicles`, `listings` - Gerenciam o inventário de autopeças de sucatas rastreadas.
 * **Usuários e Perfis:** `users`, `buyers`, `sellers`, `verifications` - Cuidam de perfis diferenciados de compradores e vendedores, além da verificação de KYC.
 * **Comunicação e Interação:** `chat`, `notifications`, `mail` - Viabilizam a troca de mensagens em tempo real e notificações push.
-* **Segurança e Faturamento:** `auth`, `billing`, `moderation`, `reports` - Garantem integridade, combate a abusos e faturamento via Stripe.
+* **Segurança:** `auth`, `moderation`, `reports` - Garantem integridade e combate a abusos.
 
 ### 2.2 Segurança e CASL (Controle de Acesso RBAC / ABAC)
 O PECAÊ implementa controle de acesso granular utilizando a biblioteca `@casl/ability`.
@@ -83,7 +83,7 @@ graph LR
 ### 4.1 Redis e BullMQ (Workers de Segundo Plano)
 * **BullMQ** gerencia filas assíncronas dedicadas para:
   - **Fila de Notificações:** Envio massivo e unitário de notificações push e e-mails transacionais.
-  - **Fila de Faturamento:** Processamento assíncrono de assinaturas e eventos do Stripe Webhooks.
+
   - **Fila de Catalogação:** Processamento secundário de dados de compatibilidade de peças e indexação de buscas.
 * **Anti-Fraude e Deduplicação:** O Redis monitora requisições de visualização de anúncios (`listing-views`). Um algoritmo baseado no IP e ID do usuário bloqueia a duplicação artificial de visualizações (limite de 1 visualização por usuário a cada 24 horas), mitigando fraudes em anúncios patrocinados.
 

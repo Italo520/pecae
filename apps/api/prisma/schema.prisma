@@ -398,11 +398,6 @@ model SellerProfile {
   updatedAt DateTime @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
-  // Billing (Fase 3 Wave 2)
-  stripeCustomerId String? @unique @map("stripe_customer_id")
-  plan             PlanType @default(FREE)
-  planExpiresAt    DateTime? @map("plan_expires_at")
-  
   // Reputation & Badges (Fase 3 Wave 3)
   badges           Json     @default("[]")
 
@@ -841,14 +836,7 @@ enum AdCampaignStatus {
   ACTIVE
   PAUSED
   EXPIRED
-  PENDING_PAYMENT
   CANCELLED
-}
-
-enum PlanType {
-  FREE
-  PRO
-  PREMIUM
 }
 
 enum BudgetType {
@@ -901,9 +889,7 @@ model AdCampaign {
   budgetType     BudgetType       @default(CPC) @map("budget_type")
   notes          String?          @db.Text
   
-  // Billing integration
-  externalPaymentId String?   @map("external_payment_id")
-  
+
   createdAt DateTime         @default(now()) @map("created_at")
   updatedAt DateTime         @updatedAt @map("updated_at")
 

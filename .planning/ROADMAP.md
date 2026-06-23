@@ -55,10 +55,10 @@ Este documento detalha o roteiro cronológico de desenvolvimento estruturado por
 
 ---
 
-## [CONCLUÍDA] Milestone 8 (Sprint 8) — Analytics, Dashboards & Assinaturas (Foco: M12)
+## [CONCLUÍDA] Milestone 8 (Sprint 8) — Analytics & Dashboards (Foco: M12)
 
 > [!NOTE]
-> As tarefas e estimativas originais desta Milestone foram arquivadas em [v8.0-ROADMAP.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v8.0/v8.0-ROADMAP.md) conforme o protocolo de compressão de contexto. (O módulo M10 foi adiado).
+> As tarefas e estimativas originais desta Milestone foram arquivadas em [v8.0-ROADMAP.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v8.0/v8.0-ROADMAP.md) conforme o protocolo de compressão de contexto.
 
 ---
 

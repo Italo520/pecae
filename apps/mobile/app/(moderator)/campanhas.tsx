@@ -49,7 +49,7 @@ export default function AdsCampaignScreen() {
     maxImpressions: '',
     budgetType: 'CPC' as 'CPC' | 'CPM' | 'FLAT_PERIOD',
     notes: '',
-    externalPaymentId: '',
+
   });
 
   const { data: campaigns = [], isLoading, refetch, isFetching } = useAllCampaigns();
@@ -80,7 +80,7 @@ export default function AdsCampaignScreen() {
     if (newCampaign.targetState) payload.targetState = newCampaign.targetState.toUpperCase().substring(0, 2);
     if (newCampaign.maxImpressions) payload.maxImpressions = parseInt(newCampaign.maxImpressions, 10);
     if (newCampaign.notes) payload.notes = newCampaign.notes;
-    if (newCampaign.externalPaymentId) payload.externalPaymentId = newCampaign.externalPaymentId;
+
 
     createMutation.mutate(
       payload,
@@ -101,7 +101,7 @@ export default function AdsCampaignScreen() {
             maxImpressions: '',
             budgetType: 'CPC',
             notes: '',
-            externalPaymentId: '',
+
           });
         },
         onError: (error: any) => {
@@ -429,14 +429,7 @@ export default function AdsCampaignScreen() {
                       </View>
                     </View>
 
-                    <Text style={[styles.label, { color: colors.textMuted }]}>ID PAGAMENTO EXTERNO (OPCIONAL)</Text>
-                    <TextInput
-                      style={[styles.input, { color: colors.textPrimary, borderColor: colors.border }]}
-                      placeholder="Identificador do pagamento externo"
-                      placeholderTextColor={colors.textMuted}
-                      value={newCampaign.externalPaymentId}
-                      onChangeText={(text) => setNewCampaign({ ...newCampaign, externalPaymentId: text })}
-                    />
+
 
                     <Text style={[styles.label, { color: colors.textMuted }]}>NOTAS ADMINISTRATIVAS / OBSERVAÇÕES</Text>
                     <TextInput

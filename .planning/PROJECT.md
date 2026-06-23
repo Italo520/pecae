@@ -20,10 +20,10 @@ O PECAÊ é uma plataforma de marketplace para comércio de peças automotivas o
 - **M07 - Busca e Descoberta** (P0): Módulo responsável pela busca e descoberta de sucatas no PECAÊ. Comprador pesquisa por veículo (marca → modelo → ano) e opcionalmente por localização e texto livre (nome da peça). Resultados retornam SEMPRE sucatas completas (veículos), nunca peças avulsas. Usa PostgreSQL Full-Text Search no MVP e migração para OpenSearch na Fase 2.
 - **M08 - Chat e Negociação** (P0): Módulo de comunicação em tempo real entre comprador e vendedor usando Supabase Realtime. Toda negociação ocorre exclusivamente via chat vinculado a um anúncio específico. Não há preços, transações financeiras ou pagamentos no chat — é apenas a interface de negociação textual. Chat só pode ser iniciado em anúncios com status PUBLISHED (RN11).
 - **M09 - Painel de Moderação** (P0): Painel de moderação exclusivo para Admins/Moderadores da equipe PECAÊ. Responsável pela aprovação ou rejeição de anúncios cadastrados pelos vendedores (RN14). Central de revisão de documentos de verificação (Selo Verificado, M03) e denúncias de usuários. Nenhum anúncio vai a público sem aprovação (RN14).
-- **M10 - Gestão de Assinaturas** (P3): Módulo de monetização do PECAÊ via assinaturas para vendedores. Define planos (Gratuito, Pro, Premium) com diferentes quotas de anúncios e features. Integração com Mercado Pago para pagamentos no Brasil. Webhooks para sincronização de status de assinatura. Toda transação financeira é externa — o PECAÊ não processa pagamentos diretamente.
+
 - **M11 - Notificações** (P0): Módulo centralizador de todas as notificações do PECAÊ: push notifications (via Expo/FCM/APNs), e-mails transacionais (via Resend API) e notificações in-app em tempo real (via Supabase Realtime). Outros módulos chamam NotificationService para disparar notificações. Respeita preferências de canal configuradas pelo usuário (M02).
 - **M12 - Analytics e Dashboard** (P2): Módulo de analytics e dashboards para vendedores e administradores. Vendedores visualizam métricas de seus anúncios (views, contatos, taxa de conversão chat/view). Admins visualizam métricas globais da plataforma (DAU, volume de anúncios, receita de assinaturas). Metrics calculadas de forma assíncrona via BullMQ para não impactar performance das queries principais.
-- **M13 - Anúncios e Publicidade In-App** (P1): Módulo de monetização via publicidade in-app do PECAÊ. Suporta dois tipos de anúncios: (1) Anúncios programáticos via Google AdMob (banners e intersticiais automáticos gerenciados pelo ecossistema Google), e (2) Anúncios Diretos — desmanches que pagam para ter seus anúncios destacados nas listagens de busca (Sponsored/Patrocinado). O módulo inclui painel admin para gestão de campanhas diretas, configuração de frequência e posicionamento de anúncios AdMob, e tracking de impressões e cliques para relatórios de performance.
+- **M13 - Anúncios e Publicidade In-App** (P1): Módulo de monetização via publicidade in-app do PECAÊ. Suporta dois tipos de anúncios: (1) Anúncios programáticos via Google AdMob (banners e intersticiais automáticos gerenciados pelo ecossistema Google), e (2) Anúncios Diretos — desmanches que têm seus anúncios destacados nas listagens de busca (Sponsored/Patrocinado). A ativação e pagamento das campanhas diretas ocorrem fora do aplicativo (mediante contato com o suporte), e o módulo inclui painel admin para a ativação manual das campanhas pela equipe, configuração de frequência de AdMob e tracking de impressões/cliques para relatórios.
 - **M_favoritos_alertas - Favoritos e Alertas de Busca** (P1): Módulo que gerencia a lista de anúncios favoritados pelo comprador e as buscas salvas com alertas. Quando um novo anúncio é publicado (após aprovação da moderação no M09), o sistema verifica todas as SavedSearches com alertActive=true e notifica compradores com filtros compatíveis via push notification e in-app.
 
 ### Pilha Tecnológica Consolidada
@@ -32,7 +32,7 @@ O PECAÊ é uma plataforma de marketplace para comércio de peças automotivas o
 - **Database:** Supabase (PostgreSQL Full-Text Search — MVP) + Prisma ORM, Supabase (PostgreSQL) + Prisma ORM
 - **Auth:** CASL (NestJS) para controle de permissões baseado em Role, Supabase Auth + JWT custom + refresh token rotativo
 - **Cache:** Redis via Upstash, Redis via Upstash (cache agressivo — dados raramente mudam), Redis via Upstash (cache de configuração de anúncios e frequência por usuário), Redis via Upstash (cache de resultados de busca frequentes)
-- **Queue:** BullMQ, BullMQ (jobs de renovação e expiração de assinatura), BullMQ (jobs pós-moderação: alertas, notificações, expiração), BullMQ (processamento assíncrono de fotos e notificações), BullMQ (processamento de alertas ao publicar novo anúncio), BullMQ (processamento e envio de notificações), BullMQ (recálculo de rating médio do vendedor), BullMQ (recálculo periódico de aggregates — cron a cada 6h), BullMQ (registro assíncrono de impressões e cliques — tracking de métricas)
+- **Queue:** BullMQ, BullMQ (jobs pós-moderação: alertas, notificações, expiração), BullMQ (processamento assíncrono de fotos e notificações), BullMQ (processamento de alertas ao publicar novo anúncio), BullMQ (processamento e envio de notificações), BullMQ (recálculo de rating médio do vendedor), BullMQ (recálculo periódico de aggregates — cron a cada 6h), BullMQ (registro assíncrono de impressões e cliques — tracking de métricas)
 - **Email:** Resend / SendGrid, Resend API (e-mails transacionais)
 - **Push:** Expo Notifications + FCM + APNs, Expo Push Notifications (FCM + APNs), Expo Push Notifications (FCM + APNs) via BullMQ, Expo Push Notifications via BullMQ
 - **Storage:** Supabase Storage (avatar do comprador), Supabase Storage (banners e imagens de anúncios diretos), Supabase Storage / AWS S3/R2 (fotos do veículo), Supabase Storage / S3/R2, Supabase Storage / S3/R2 (logo do vendedor)
@@ -40,8 +40,7 @@ O PECAÊ é uma plataforma de marketplace para comércio de peças automotivas o
 - **Search_phase2:** OpenSearch (Fase 2)
 - **Realtime:** Supabase Realtime (WebSocket — PostgreSQL CDC), Supabase Realtime (notificações in-app em tempo real)
 - **Mobile_admin:** React Native + Expo SDK 51 (ou Web Admin em Next.js via Expo Router)
-- **Payment:** Mercado Pago Checkout Pro (checkout externo via WebView) ou Apple IAP e Google Play Billing (MVP mobile-only)
-- **Webhook:** POST /webhooks/mercadopago (ingestão de eventos de pagamento)
+
 - **Charts:** Victory Native (React Native charts) para gráficos no app
 - **Aggregation:** PostgreSQL window functions + materialized views para performance
 - **Ad_network:** Google Mobile Ads SDK (AdMob) para anúncios programáticos + sistema próprio para anúncios diretos (desmanches patrocinados)
@@ -62,7 +61,7 @@ O PECAÊ é uma plataforma de marketplace para comércio de peças automotivas o
 - Comprador (visualiza perfil público)
 - Google AdMob (fornece anúncios programáticos automaticamente)
 - M09 (dispara evento ao publicar novo anúncio)
-- Mercado Pago (processa pagamentos)
+
 - Moderador (aprova/rejeita anúncios via M09)
 - Moderador (concede/revoga Selo Verificado)
 - Moderador (revisa e aprova/rejeita anúncios e documentos)
@@ -87,10 +86,10 @@ O PECAÊ é uma plataforma de marketplace para comércio de peças automotivas o
 - Vendedor
 - Vendedor (PF ou PJ)
 - Vendedor (acessa métricas dos seus anúncios e perfil)
-- Vendedor (assina plano e gerencia assinatura)
+
 - Vendedor (recebe avaliação — leitura apenas)
 - Vendedor (recebe feedback de aprovação/rejeição)
 - Vendedor (responde ao interesse)
 - Vendedor (seleção no formulário de cadastro de sucata)
-- Vendedor/Desmanche Anunciante (paga para ter Listing em destaque — Sponsored)
+- Vendedor/Desmanche Anunciante (tem Listing em destaque — Sponsored via liberação do administrador)
 - Visitante (busca sem autenticação)

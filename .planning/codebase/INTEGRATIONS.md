@@ -25,20 +25,7 @@ O PECAÊ utiliza uma estratégia híbrida e segura para gestão de usuários, in
 * **Função:** Requisito crucial para dispositivos iOS, permitindo login social seguro e direto usando a conta Apple do usuário.
 * **Dependência:** Fluxo nativo no aplicativo Expo validado via tokens seguros de assinatura com a API do Supabase Auth.
 
----
 
-## 💳 2. Faturamento e Assinaturas (Payment Gateways)
-
-O módulo de cobrança (`apps/api/src/billing/`) é totalmente integrado ao **Stripe** para monetização dos perfis de vendedores profissionais e impulsão de anúncios.
-
-### 2.1 Stripe Core Integration
-* **Função:** Gateway de pagamento oficial para gestão de assinaturas recorrentes dos planos de lojistas (Free, Starter, Pro) e impulsão de anúncios patrocinados (Ads).
-* **Componentes:**
-  - **Stripe Provider** (`stripe.provider.ts`): Inicializa e gerencia a conexão SDK com o Stripe.
-  - **Billing Service** (`billing.service.ts`): Sincroniza perfis de lojistas com clientes do Stripe (`stripeCustomerId`), gera sessões de Checkout, cria Portais de Faturamento do Cliente para autoatendimento e cancelamentos.
-  - **Webhooks do Stripe**: Trata eventos assíncronos cruciais como `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_succeeded` e `invoice.payment_failed` para garantir sincronia em tempo real do estado da assinatura do lojista no banco PostgreSQL local.
-
----
 
 ## 📁 3. Armazenamento de Arquivos e Mídia (Cloud Storage)
 

@@ -28,7 +28,6 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { SmsModule } from './common/sms/sms.module';
 import { ReportsModule } from './reports/reports.module';
 import { SavedSearchesModule } from './saved-searches/saved-searches.module';
-import { BillingModule } from './billing/billing.module';
 
 
 
@@ -94,7 +93,6 @@ import { BillingModule } from './billing/billing.module';
     SmsModule,
     ReportsModule,
     SavedSearchesModule,
-    BillingModule,
   ],
   providers: [
     // Register ThrottlerGuard globally so @Throttle() decorators are enforced

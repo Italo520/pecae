@@ -65,7 +65,7 @@ export class AdsService {
         maxImpressions: dto.maxImpressions || null,
         budgetType: dto.budgetType || BudgetType.CPC,
         notes: dto.notes || null,
-        externalPaymentId: dto.externalPaymentId || null,
+
       },
     });
 

@@ -45,7 +45,7 @@ apps/api/
 │   ├── ads/                    # Módulo de Anúncios Patrocinados (Ads)
 │   ├── analytics/              # Métricas, visualizações únicas e contadores
 │   ├── auth/                   # Autenticação (Passport, JWT, OAuth, OTP e Guards)
-│   ├── billing/                # Integração de Faturamento e Assinaturas (Stripe SDK)
+
 │   ├── buyers/                 # Gestão de perfis e garagens de Compradores
 │   ├── catalog/                # Catálogo global de compatibilidade de Peças e Veículos
 │   ├── chat/                   # Mapeamentos e WebSockets de Chat (Socket.io Gateway)

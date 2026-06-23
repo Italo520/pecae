@@ -77,7 +77,7 @@ describe('AdsService', () => {
       targetState: 'SP',
       maxImpressions: 10000,
       notes: 'Notas de teste',
-      externalPaymentId: 'pay_123',
+
     };
 
     it('should throw NotFoundException if listing not found', async () => {
@@ -120,7 +120,7 @@ describe('AdsService', () => {
           maxImpressions: dto.maxImpressions,
           budgetType: 'CPC',
           notes: dto.notes,
-          externalPaymentId: dto.externalPaymentId,
+
         },
       });
       expect(mockPrisma.listing.update).toHaveBeenCalledWith({
