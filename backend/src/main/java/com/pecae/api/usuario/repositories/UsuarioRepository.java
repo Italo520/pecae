@@ -44,4 +44,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
      * @return True se existir, false caso contrário.
      */
     boolean existsByTelefone(String telefone);
+
+    /**
+     * Conta usuários ativos cujo último acesso ocorreu no intervalo informado.
+     */
+    long countByUltimoAcessoEmBetween(java.time.LocalDateTime inicio, java.time.LocalDateTime fim);
 }

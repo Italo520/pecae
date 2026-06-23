@@ -50,4 +50,8 @@ public interface RepositorioAnuncio extends JpaRepository<Anuncio, UUID> {
     @Modifying
     @Query("UPDATE Anuncio a SET a.visualizacoes = a.visualizacoes + 1 WHERE a.id = :id")
     void incrementarVisualizacoes(@Param("id") UUID id);
+
+    long countByCriadoEmBetween(java.time.LocalDateTime inicio, java.time.LocalDateTime fim);
+
+    long countByStatus(StatusAnuncio status);
 }

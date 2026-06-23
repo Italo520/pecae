@@ -43,4 +43,7 @@ public interface RepositorioSalaChat extends JpaRepository<SalaChat, UUID> {
         @Param("usuarioId") UUID usuarioId,
         @Param("leuEm") LocalDateTime leuEm
     );
+
+    // Contar chats iniciados de um vendedor no período
+    long countByVendedorIdAndCriadaEmBetween(UUID vendedorId, LocalDateTime inicio, LocalDateTime fim);
 }

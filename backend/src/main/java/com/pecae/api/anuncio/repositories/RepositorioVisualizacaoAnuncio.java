@@ -13,4 +13,7 @@ public interface RepositorioVisualizacaoAnuncio extends JpaRepository<Visualizac
 
     // Contar views no período para cálculo de stats
     long countByAnuncioIdAndVistoAfter(UUID anuncioId, LocalDateTime desde);
+
+    // Contar views totais de um vendedor no período
+    long countByAnuncioPerfilVendedorIdAndVistoBetween(UUID perfilVendedorId, LocalDateTime inicio, LocalDateTime fim);
 }
