@@ -137,7 +137,7 @@ test.describe('PECAÊ E2E - Fluxo 2: Chat, Negociação e Avaliação', () => {
     await expect(page).toHaveURL(/.*(\(tabs\)|\/$)/);
 
     // 10. Acessar a tela de avaliação diretamente (rota interna do app)
-    const sellerProfileId = runSqlQuery("SELECT id FROM seller_profiles WHERE store_name = 'Sucatão E2E Principal';").trim();
+    const sellerProfileId = runSqlQuery("SELECT id FROM seller_profiles WHERE name = 'Sucatão E2E Principal';").trim();
     const storeName = 'Sucatão E2E Principal';
     console.log(`ℹ️ Navegando diretamente para a tela de avaliação. SellerProfile=${sellerProfileId}`);
     await page.goto(`/chat/${preExistingChatId}/avaliar?sellerId=${sellerProfileId}&storeName=${encodeURIComponent(storeName)}`);

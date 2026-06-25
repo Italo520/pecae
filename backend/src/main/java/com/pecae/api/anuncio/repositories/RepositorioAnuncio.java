@@ -25,8 +25,8 @@ public interface RepositorioAnuncio extends JpaRepository<Anuncio, UUID> {
           AND a.perfilVendedor.deletadoEm IS NULL
           AND (:marcaId IS NULL OR ma.id = :marcaId)
           AND (:modeloId IS NULL OR mo.id = :modeloId)
-          AND (:cidade IS NULL OR LOWER(v.cidade) = LOWER(:cidade))
-          AND (:estado IS NULL OR LOWER(v.estado) = LOWER(:estado))
+          AND (:cidade IS NULL OR LOWER(v.cidade) = LOWER(CAST(:cidade AS String)))
+          AND (:estado IS NULL OR LOWER(v.estado) = LOWER(CAST(:estado AS String)))
         ORDER BY a.publicadoEm DESC
     """)
     Page<Anuncio> buscarPublicados(

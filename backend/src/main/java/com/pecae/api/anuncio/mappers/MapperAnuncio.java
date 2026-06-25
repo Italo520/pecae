@@ -25,6 +25,7 @@ public interface MapperAnuncio {
     @Mapping(target = "vendedorVerificado", expression = "java(isVendedorVerificado(anuncio))")
     @Mapping(target = "urlFotoPrincipal", expression = "java(extrairFotoPrincipal(anuncio))")
     @Mapping(source = "status", target = "status")
+    @Mapping(source = "patrocinadoAtivo", target = "patrocinadoAtivo")
     RespostaAnuncio paraResposta(Anuncio anuncio);
 
     // Detalhe completo

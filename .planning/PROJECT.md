@@ -1,8 +1,8 @@
 # PROJECT.md
 
-> **Versão Expedida:** v8.0 (Milestone 8)  
-> **Status Geral:** Todas as Milestones de 1 a 8 foram concluídas e arquivadas com sucesso. O MVP + Analytics foram finalizados.  
-> **Foco Atual:** Próximos passos e encerramento (Post-MVP).
+> **Versão Expedida:** v9.0 (Milestone 9)  
+> **Status Geral:** Todas as Milestones de 1 a 9 foram concluídas e arquivadas com sucesso. A migração total do backend para Java e a validação ponta a ponta (E2E) no Frontend foram finalizadas com sucesso. O backend legado em Node.js foi inteiramente removido.  
+> **Foco Atual:** Preparação para Milestone 10 (Funcionalidades adicionais, OpenSearch, etc) e deploy de produção em nuvem.
 
 
 ## Visão Geral do Sistema PECAÊ

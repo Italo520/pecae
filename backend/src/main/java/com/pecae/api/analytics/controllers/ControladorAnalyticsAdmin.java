@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/api/v1/analytics/admin")
+@RequestMapping("/analytics/admin")
 @RequiredArgsConstructor
 @Tag(name = "Admin Analytics", description = "Endpoints de estatísticas globais para administradores")
 @SecurityRequirement(name = "bearerAuth")

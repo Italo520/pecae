@@ -13,9 +13,18 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RespostaAutenticacao {
-    private String accessToken;
-    private String refreshToken;
+    private TokensResponse tokens;
 
     @JsonProperty("user")
     private UsuarioResponse usuario;
+
+    @Getter
+    @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TokensResponse {
+        private String accessToken;
+        private String refreshToken;
+    }
 }

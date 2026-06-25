@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/buscas-salvas")
+@RequestMapping("/buscas-salvas")
 @RequiredArgsConstructor
 @Tag(name = "Buscas Salvas", description = "Endpoints para gerenciamento de buscas salvas e alertas")
 @SecurityRequirement(name = "bearerAuth")

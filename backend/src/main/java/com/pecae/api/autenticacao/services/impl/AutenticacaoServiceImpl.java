@@ -110,8 +110,10 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
         String tokenAtualizacao = criarESalvarTokenAtualizacao(usuarioSalvo.getId(), ip, userAgent);
 
         return RespostaAutenticacao.builder()
-                .accessToken(tokenAcesso)
-                .refreshToken(tokenAtualizacao)
+                .tokens(RespostaAutenticacao.TokensResponse.builder()
+                        .accessToken(tokenAcesso)
+                        .refreshToken(tokenAtualizacao)
+                        .build())
                 .usuario(usuarioMapper.toResponse(usuarioSalvo))
                 .build();
     }
@@ -150,8 +152,10 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
         String tokenAtualizacao = criarESalvarTokenAtualizacao(usuario.getId(), ip, userAgent);
 
         return RespostaAutenticacao.builder()
-                .accessToken(tokenAcesso)
-                .refreshToken(tokenAtualizacao)
+                .tokens(RespostaAutenticacao.TokensResponse.builder()
+                        .accessToken(tokenAcesso)
+                        .refreshToken(tokenAtualizacao)
+                        .build())
                 .usuario(usuarioMapper.toResponse(usuario))
                 .build();
     }
@@ -208,8 +212,10 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
         String novoTokenAtualizacao = criarESalvarTokenAtualizacao(usuario.getId(), ip, userAgent);
 
         return RespostaToken.builder()
-                .accessToken(novoTokenAcesso)
-                .refreshToken(novoTokenAtualizacao)
+                .tokens(RespostaToken.TokensResponse.builder()
+                        .accessToken(novoTokenAcesso)
+                        .refreshToken(novoTokenAtualizacao)
+                        .build())
                 .build();
     }
 

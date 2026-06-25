@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/moderacao")
+@RequestMapping("/moderacao")
 @RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('ADMIN', 'MODERADOR')")
 @SecurityRequirement(name = "bearerAuth")

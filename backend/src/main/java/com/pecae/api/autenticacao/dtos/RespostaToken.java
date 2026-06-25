@@ -11,6 +11,15 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RespostaToken {
-    private String accessToken;
-    private String refreshToken;
+    private TokensResponse tokens;
+
+    @Getter
+    @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TokensResponse {
+        private String accessToken;
+        private String refreshToken;
+    }
 }

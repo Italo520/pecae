@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/avaliacoes")
+@RequestMapping("/avaliacoes")
 @RequiredArgsConstructor
 @Tag(name = "Avaliações", description = "Endpoints para gerenciamento de avaliações de vendedores")
 public class ControladorAvaliacao {

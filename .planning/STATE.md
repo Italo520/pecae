@@ -1,3 +1,17 @@
+---
+gsd_state_version: 1.0
+milestone: v9.0
+milestone_name: milestone
+status: unknown
+stopped_at: Sessão retomada via /gsd-resume-work — HANDOFF.json consumido (Post-Billing Cleanup concluído)
+last_updated: "2026-06-25T18:31:06.044Z"
+progress:
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+---
+
 # STATE.md
 
 ## Estado Atual do Projeto
@@ -25,13 +39,14 @@
   - *Fluxo 5 (RBAC/CASL)*: ✅ Aprovado.
 
 ### Próxima Etapa Ativa:
-- **Milestones 1 a 8 concluídas**. MVP e escopos adicionais entregues com sucesso.
+
+- **2026-06-25:** Migração backend concluída. Frontend E2E testado com sucesso. Extrato de aprendizados da Fase 16 gerado e diretórios root refatorados (`apps/mobile` movido para `frontend`).
 - **Milestone 9 - Fase 2 (Navegação Deslogada)**: `completed` (2026-06-18)
 - **Milestone 9 - Fase 4 (Busca Aprimorada e Filtros)**: `executed` (2026-06-18)
 - **Próximos Passos**: Continuar Manutenção, deploy em produção, monitoramento e novas fases da Milestone 9.
 
 ## Session Continuity
 
-Last session: 2026-06-18
-Stopped at: Executed Phase 4 (Busca Aprimorada e Filtros)
+Last session: 2026-06-25
+Stopped at: Sessão retomada via /gsd-resume-work — HANDOFF.json consumido (Post-Billing Cleanup concluído)
 Resume file: None

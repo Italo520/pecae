@@ -4,7 +4,7 @@ import com.pecae.api.compartilhado.excecao.ExcecaoNegocio;
 import com.pecae.api.mail.services.IServicoEmail;
 import com.pecae.api.notificacao.entities.LogNotificacao;
 import com.pecae.api.notificacao.entities.Notificacao;
-import com.pecae.api.notificacao.entities.TokenPush;
+import com.pecae.api.usuario.entities.TokenPush;
 import com.pecae.api.notificacao.entities.enums.CanalNotificacao;
 import com.pecae.api.notificacao.entities.enums.StatusNotificacao;
 import com.pecae.api.notificacao.entities.enums.TipoNotificacao;

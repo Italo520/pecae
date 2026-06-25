@@ -18,7 +18,7 @@ import java.util.UUID;
  * Controller público (sem autenticação) para servir anúncios/banners aos usuários e registrar métricas (visualizações/cliques).
  */
 @RestController
-@RequestMapping("/api/v1/ads")
+@RequestMapping("/ads")
 @RequiredArgsConstructor
 @Tag(name = "Ads Públicos", description = "Endpoints públicos para servir banners e rastrear visualizações e cliques de forma não autenticada")
 public class ControladorAdPublico {

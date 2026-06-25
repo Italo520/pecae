@@ -56,7 +56,7 @@ test.describe('PECAÊ E2E - Fluxo 4: Monetização, Quotas e Analytics', () => {
 
     // 1. Login do Vendedor Gratuito (cota cheia de 3 anúncios no seed)
     await page.goto('/(auth)/login');
-    await page.locator('input[type="email"]').fill('seller-free@pecae.com.br');
+    await page.locator('input[type="email"]').fill('seller-quota-e2e@pecae.com.br');
     await page.locator('input[type="password"]').fill('Pecae@E2e123');
     await page.getByText('ENTRAR', { exact: true }).click();
     await expect(page).toHaveURL(/.*(\(seller\)|\/$)/);
@@ -64,9 +64,9 @@ test.describe('PECAÊ E2E - Fluxo 4: Monetização, Quotas e Analytics', () => {
 
     // 2. Obter token JWT do Vendedor Gratuito via API
     console.log('ℹ️ Efetuando login do Vendedor Gratuito via API...');
-    const loginResponse = await page.request.post('http://localhost:3001/api/v1/auth/login', {
+    const loginResponse = await page.request.post('http://localhost:8080/api/v1/auth/login', {
       data: {
-        email: 'seller-free@pecae.com.br',
+        email: 'seller-quota-e2e@pecae.com.br',
         password: 'Pecae@E2e123'
       }
     });
@@ -79,14 +79,14 @@ test.describe('PECAÊ E2E - Fluxo 4: Monetização, Quotas e Analytics', () => {
     const modelId = runSqlQuery(`SELECT id FROM vehicle_models WHERE name = 'Gol' AND brand_id = '${brandId}' LIMIT 1;`);
     const versionId = runSqlQuery(`SELECT id FROM vehicle_versions WHERE model_id = '${modelId}' LIMIT 1;`);
     const yearFabId = runSqlQuery(`SELECT id FROM vehicle_years WHERE version_id = '${versionId}' LIMIT 1;`);
-    const partIdsRaw = runSqlQuery("SELECT id FROM part_catalog LIMIT 5;");
+    const partIdsRaw = runSqlQuery("SELECT id FROM part_catalogs LIMIT 5;");
     const partIds = partIdsRaw.split('\n').map(id => id.trim()).filter(id => id !== '');
 
-    // 3. Fazer requisição POST /vehicles que deve retornar 403 Forbidden (bloqueio de cota grátis)
+    // 3. Fazer requisição POST /listings/me que deve retornar 403 Forbidden (bloqueio de cota grátis)
     console.log('ℹ️ Validando bloqueio de cota grátis via requisição direta à API (Mockada)...');
     
-    await page.route('**/api/v1/vehicles', async route => {
-      console.log('⚡ [MOCK API] Interceptado POST /vehicles - Retornando 403 Forbidden');
+    await page.route('**/api/v1/listings/me', async route => {
+      console.log('⚡ [MOCK API] Interceptado POST /listings/me - Retornando 403 Forbidden');
       await route.fulfill({
         status: 403,
         contentType: 'application/json',
@@ -99,7 +99,7 @@ test.describe('PECAÊ E2E - Fluxo 4: Monetização, Quotas e Analytics', () => {
     });
 
     const responseStatus = await page.evaluate(async ({ token, data }) => {
-      const res = await fetch('/api/v1/vehicles', {
+      const res = await fetch('/api/v1/listings/me', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -111,7 +111,7 @@ test.describe('PECAÊ E2E - Fluxo 4: Monetização, Quotas e Analytics', () => {
     }, {
       token: access_token,
       data: {
-        versionId,
+        veiculoId: '00000000-0000-0000-0000-000000000000', // Fake ID just to hit the endpoint
         yearFabId,
         color: 'Azul',
         plate: 'EAE-4444',
@@ -127,7 +127,7 @@ test.describe('PECAÊ E2E - Fluxo 4: Monetização, Quotas e Analytics', () => {
     console.log('✅ Validação RN-M10-01: Bloqueio de cota grátis ativo e verificado (status 403).');
 
     // Desativar o mock da API
-    await page.unroute('**/api/v1/vehicles');
+    await page.unroute('**/api/v1/listings/me');
 
     // 5. Logout do Vendedor Gratuito
     await page.goto('/(seller)/(seller-tabs)/perfil');
@@ -151,8 +151,11 @@ test.describe('PECAÊ E2E - Fluxo 4: Monetização, Quotas e Analytics', () => {
 
     // 7. Acessar busca e verificar o patrocinado
     await page.goto('/(tabs)/search');
-    // Clicar no chip "GM" para filtrar os carros da Chevrolet e carregar o Onix Patrocinado de forma robusta e garantida no catálogo do comprador
-    await page.getByText('GM', { exact: true }).click();
+    // O Onix patrocinado já deve aparecer nos resultados iniciais da busca
+    await page.waitForTimeout(3000); // Wait for results to load
+    await page.screenshot({ path: 'test-results/debug-flow4-search.png' });
+    const innerText = await page.evaluate(() => document.body.innerText);
+    console.log('DOM innerText excerpt:', innerText.substring(0, 500));
     
     const sponsoredBadge = page.getByText(/patrocinado|sponsored/i).first();
     await expect(sponsoredBadge).toBeVisible({ timeout: 15000 });
@@ -180,7 +183,7 @@ test.describe('PECAÊ E2E - Fluxo 4: Monetização, Quotas e Analytics', () => {
     await page.locator('input[type="password"]').fill('Pecae@E2e123');
     await page.getByText('ENTRAR', { exact: true }).click();
     await expect(page).toHaveURL(/.*(\(seller\)|\/$)/);
-    await expect(page.locator('text=/Olá, Vendedor!|Inventário|Início/').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('text=/Cadastrar Sucata|Aumente sua confiança|Últimas Mensagens/').first()).toBeVisible({ timeout: 10000 });
     console.log('✅ Login do Vendedor E2E Principal realizado com sucesso.');
 
     // 11. Verificar Analytics no dashboard do vendedor

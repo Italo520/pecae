@@ -19,5 +19,6 @@ public record RespostaAnuncio(
     UUID perfilVendedorId,
     String nomeVendedor,
     Boolean vendedorVerificado,
-    LocalDateTime publicadoEm
+    LocalDateTime publicadoEm,
+    Boolean patrocinadoAtivo
 ) {}

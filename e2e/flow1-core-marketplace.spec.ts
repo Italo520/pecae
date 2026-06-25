@@ -53,8 +53,8 @@ test.describe('PECAÊ E2E - Fluxo 1: Core do Marketplace', () => {
 
     // 2. Salvar busca com alerta ativo para "Gol"
     await page.goto('/(tabs)/search');
-    await page.getByPlaceholder('O que você está procurando?').fill('Gol');
-    await page.getByPlaceholder('O que você está procurando?').press('Enter');
+    await page.getByPlaceholder('Digite o que procura').fill('Gol');
+    await page.getByPlaceholder('Digite o que procura').press('Enter');
     
     // Simula salvamento de busca
     const saveSearchBtn = page.getByRole('button', { name: /Salvar Busca|Salvar Alerta/i }).first();
@@ -64,8 +64,8 @@ test.describe('PECAÊ E2E - Fluxo 1: Core do Marketplace', () => {
       // Cria a busca salva via SQL caso o botão não esteja renderizado na build web do Expo
       const buyerId = runSqlQuery("SELECT id FROM users WHERE email = 'buyer-e2e@pecae.com.br';");
       runSqlQuery(`
-        INSERT INTO saved_searches (id, user_id, query, filters, alert_active, created_at, updated_at)
-        VALUES ('${crypto.randomUUID()}', '${buyerId}', 'Gol', '{"brandId":"${modelGol.brandId}","modelId":"${modelGol.id}"}', true, NOW(), NOW())
+        INSERT INTO saved_searches (id, user_id, nome, filters, is_active, created_at)
+        VALUES ('${crypto.randomUUID()}', '${buyerId}', 'Gol', '{"brandId":"${modelGol.brandId}","modelId":"${modelGol.id}"}', true, NOW())
         ON CONFLICT DO NOTHING;
       `);
     }
@@ -94,7 +94,7 @@ test.describe('PECAÊ E2E - Fluxo 1: Core do Marketplace', () => {
 
     // 5. Cadastrar Sucata (Placa: EEE-9999) via API REST (Bypass UI Wizard)
     console.log('ℹ️ Efetuando login do Vendedor via API para obter token JWT...');
-    const loginResponse = await page.request.post('http://localhost:3001/api/v1/auth/login', {
+    const loginResponse = await page.request.post('http://localhost:8080/api/v1/auth/login', {
       data: {
         email: 'seller-e2e@pecae.com.br',
         password: 'Pecae@E2e123'
@@ -108,27 +108,25 @@ test.describe('PECAÊ E2E - Fluxo 1: Core do Marketplace', () => {
     // Obter versionId, yearFabId e peças via SQL
     const versionId = runSqlQuery(`SELECT id FROM vehicle_versions WHERE model_id = '${modelGol.id}' LIMIT 1;`).trim();
     const yearFabId = runSqlQuery(`SELECT id FROM vehicle_years WHERE version_id = '${versionId}' LIMIT 1;`).trim();
-    const partIdsRaw = runSqlQuery("SELECT id FROM part_catalog LIMIT 5;");
+    const partIdsRaw = runSqlQuery("SELECT id FROM part_catalogs LIMIT 5;");
     const partIds = partIdsRaw.split('\n').map(id => id.trim()).filter(id => id !== '');
 
     console.log(`ℹ️ [FLOW 1] VersionId=${versionId}, YearFabId=${yearFabId}, Parts=${partIds.join(', ')}`);
 
     console.log('ℹ️ Cadastrando veículo via POST /api/v1/vehicles...');
-    const createResponse = await page.request.post('http://localhost:3001/api/v1/vehicles', {
+    const createResponse = await page.request.post('http://localhost:8080/api/v1/vehicles', {
       headers: {
         'Authorization': `Bearer ${access_token}`
       },
       data: {
-        versionId,
-        yearFabId,
-        color: 'Azul',
-        plate: 'EEE-9999',
-        city: 'São Paulo',
-        state: 'SP',
-        observations: 'Sucata de Gol cadastrada no fluxo 1 E2E.',
-        title: 'Gol 1.0 E2E - Pronto para Negociar',
-        description: 'Sucata de Gol cadastrada no fluxo 1 E2E.',
-        availableParts: partIds
+        versaoId: versionId,
+        anoId: yearFabId,
+        cor: 'Azul',
+        placa: 'EEE-9999',
+        cidade: 'São Paulo',
+        estado: 'SP',
+        observacoes: 'Sucata de Gol cadastrada no fluxo 1 E2E.',
+        pecasDisponiveis: partIds
       }
     });
 

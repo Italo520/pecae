@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/admin/ads")
+@RequestMapping("/admin/ads")
 @RequiredArgsConstructor
 @Tag(name = "Admin Ads", description = "Endpoints administrativos para gerenciamento do sistema de publicidade (anunciantes, campanhas e banners)")
 @SecurityRequirement(name = "bearerAuth")

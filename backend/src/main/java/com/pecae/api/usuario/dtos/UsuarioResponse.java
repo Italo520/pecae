@@ -49,4 +49,7 @@ public class UsuarioResponse {
 
     @JsonProperty("updatedAt")
     private LocalDateTime atualizadoEm;
+
+    @JsonProperty("hasProfile")
+    private boolean hasProfile;
 }

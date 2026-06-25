@@ -28,7 +28,7 @@ const envTestPath = path.resolve(__dirname, '../../apps/api/.env.test');
 loadEnvFile(envTestPath);
 
 const host = process.env.REDIS_HOST || 'localhost';
-const port = parseInt(process.env.REDIS_PORT || '6380', 10);
+const port = parseInt(process.env.REDIS_PORT || '6379', 10);
 
 function flushall() {
   return new Promise((resolve, reject) => {

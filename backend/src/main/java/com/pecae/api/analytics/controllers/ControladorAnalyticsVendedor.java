@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/api/v1/analytics/vendedor")
+@RequestMapping("/sellers/me")
 @RequiredArgsConstructor
 @Tag(name = "Vendedor Analytics", description = "Endpoints de estatísticas e métricas para o vendedor")
 @SecurityRequirement(name = "bearerAuth")
@@ -28,7 +28,7 @@ public class ControladorAnalyticsVendedor {
 
     private final IServicoAnalytics servicoAnalytics;
 
-    @GetMapping("/dashboard")
+    @GetMapping("/stats")
     @Operation(summary = "Obter dashboard de métricas do vendedor", description = "Retorna métricas consolidadas e histórico de visualizações/contatos do vendedor.")
     public ResponseEntity<RespostaAnalyticsVendedor> obterDashboard(
             @UsuarioAtual PrincipalUsuario usuario,

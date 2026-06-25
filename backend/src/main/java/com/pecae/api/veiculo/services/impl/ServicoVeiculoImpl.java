@@ -132,6 +132,14 @@ public class ServicoVeiculoImpl implements IServicoVeiculo {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public RespostaDetalheVeiculo buscarDetalhesPublico(UUID veiculoId) {
+        Veiculo veiculo = repositorioVeiculo.findById(veiculoId)
+                .orElseThrow(() -> new ExcecaoRecursoNaoEncontrado("Veículo não encontrado."));
+        return mapperVeiculo.paraRespostaDetalhe(veiculo);
+    }
+
+    @Override
     @Transactional
     public void deletar(UUID usuarioId, UUID veiculoId) {
         log.info("Iniciando exclusão lógica do veículo: {} para o usuário: {}", veiculoId, usuarioId);

@@ -1,309 +1,139 @@
 # PECAÊ - Manual Técnico e Arquitetural (Developer Guide)
 
-Este é o **Manual Técnico Definitivo** do monorepo PECAÊ. Este documento detalha a arquitetura, as escolhas tecnológicas, os fluxos de todos os módulos implementados (M01 ao M13), e fornece guias operacionais para manutenção e resolução de problemas (troubleshooting).
+Este é o **Manual Técnico Definitivo** do monorepo PECAÊ. Este documento detalha a arquitetura, as escolhas tecnológicas e fornece guias operacionais para rodar e manter a plataforma.
 
-> **Status do Projeto:** MVP e módulos adicionais (Milestones 1 a 8) 100% concluídos. A arquitetura de Analytics (M12) e Ads (M13) estão ativas e em pleno funcionamento. O módulo de assinaturas (M10) encontra-se estrategicamente adiado em prol do ecossistema de publicidade direta.
+> **Status do Projeto:** Milestone 9 Concluída. O projeto concluiu com êxito a migração total do seu backend legado em Node.js (NestJS) para uma robusta arquitetura **Java 25 (Spring Boot)**. Todas as validações E2E estão aprovadas.
 
 ---
 
 ## Índice
 
-1. [Visão Geral e Arquitetura](#1-visão-geral-e-arquitetura)
-2. [Infraestrutura e Tecnologias](#2-infraestrutura-e-tecnologias)
-3. [Módulos Implementados (Visão Detalhada)](#3-módulos-implementados-visão-detalhada)
-   - [M01: Autenticação e Cadastro](#m01-autenticação-e-cadastro)
-   - [M02: Perfil do Comprador](#m02-perfil-do-comprador)
-   - [M03: Perfil do Vendedor e KYC](#m03-perfil-do-vendedor-e-kyc)
-   - [M04 e M05: Catálogo Automotivo e Anúncios](#m04-e-m05-catálogo-automotivo-e-anúncios)
-   - [M06: Avaliações e Reputação](#m06-avaliações-e-reputação)
-   - [M07: Busca e Descoberta](#m07-busca-e-descoberta)
-   - [M08: Chat em Tempo Real](#m08-chat-em-tempo-real)
-   - [M09: Painel de Moderação e Segurança](#m09-painel-de-moderação-e-segurança)
-   - [M11: Notificações](#m11-notificações)
-   - [M12: Analytics Dashboard](#m12-analytics-dashboard)
-   - [M13: Ads e Monetização](#m13-ads-e-monetização)
-4. [Gerenciamento de Filas e Processos Assíncronos (BullMQ)](#4-gerenciamento-de-filas-e-processos-assíncronos)
-5. [Guia de Troubleshooting Avançado](#5-guia-de-troubleshooting-avançado)
-6. [Contratos de Configuração (.env)](#6-contratos-de-configuração)
-7. [Referência da API (Rotas Swagger)](#7-referência-da-api-rotas-swagger)
+1. [Visão Geral e Estrutura do Monorepo](#1-visão-geral-e-estrutura-do-monorepo)
+2. [Infraestrutura e Tecnologias (A Nova Stack)](#2-infraestrutura-e-tecnologias-a-nova-stack)
+3. [Mapeamento dos Módulos Funcionais](#3-mapeamento-dos-módulos-funcionais)
+4. [Como Executar o Projeto (Guia de Setup)](#4-como-executar-o-projeto-guia-de-setup)
+5. [Contratos de Configuração (.env)](#5-contratos-de-configuração-env)
+6. [Referência da API (Swagger UI)](#6-referência-da-api-swagger-ui)
 
 ---
 
-## 1. Visão Geral e Arquitetura
+## 1. Visão Geral e Estrutura do Monorepo
 
-O PECAÊ é uma plataforma focada na conexão entre vendedores de autopeças (sucatas) e compradores, utilizando uma interface pautada pelo design system **The Digital Forge** (focado em Glassmorphism e alta performance). 
+O PECAÊ é uma plataforma focada na conexão entre vendedores de autopeças (sucatas) e compradores, utilizando uma interface moderna pautada pelo design system **The Digital Forge** (Glassmorphism e alta performance). 
 
-O projeto é estruturado em um **Monorepo (Turborepo)**:
-- **`apps/api`**: Backend em NestJS. Concentra toda a lógica de negócio, autenticação (Passport, JWT), controle de acesso (CASL), filas (BullMQ) e persistência de dados (Prisma).
-- **`apps/mobile`**: Frontend em React Native (Expo Router), consumindo a API RESTful. Possui forte gerenciamento de estado client-side via Zustand (`auth-store`, `vehicle-wizard-store`).
+A estrutura de diretórios foi rigorosamente desenhada em formato de **Monorepo** orquestrado pelo Turborepo:
+
+```text
+pecae/
+├── backend/            # Aplicação Server-side (Java 25, Spring Boot 3.5+, Hibernate 7)
+├── frontend/           # Aplicação Client-side e App Mobile (React Native + Expo Router)
+├── packages/           # Pacotes compartilhados (TS Configs, ESLint, Shared Types)
+├── e2e/                # Suíte de testes ponta-a-ponta (Playwright)
+├── docs/               # Documentações, Guias de Setup (SETUP.md) e Regras de Negócio (PRD)
+├── scripts/            # Scripts de automação (E2E setup, Patching do Metro Bundler)
+├── docker-compose.yml  # Orquestração do Banco de Dados e Cache locais
+├── package.json        # Gerenciador de Workspaces NPM
+└── turbo.json          # Orquestrador de Tarefas e Pipelines (Build, Lint, Dev)
+```
 
 ---
 
-## 2. Infraestrutura e Tecnologias
+## 2. Infraestrutura e Tecnologias (A Nova Stack)
 
-- **Banco de Dados Relacional:** PostgreSQL 16 (Gerenciado via Prisma ORM). Mantém integridade referencial forte para todos os domínios.
-- **Cache e Mensageria:** Redis. Usado intensivamente em três frentes principais:
-  1. Hashes para buscas otimizadas no catálogo.
-  2. Deduplicação temporal de acessos e cliques (evitando fraude).
-  3. Motor principal para a estrutura de filas do BullMQ.
-- **Armazenamento de Arquivos:** Supabase Storage para armazenamento em nuvem de fotos de peças e documentos de verificação de lojas (CNH, Alvará).
-- **Dockerização:** Multi-stage builds definidos em `apps/api/Dockerfile` e `apps/mobile/Dockerfile`.
+Após a migração e estabilização (Milestone 9), a stack técnica oficial do PECAÊ está estabelecida da seguinte forma:
 
-### 2.1. Como Executar (Ambiente Docker)
+### Backend (Core API)
+- **Linguagem / Framework:** Java 25 + Spring Boot 3.5+
+- **Acesso a Dados:** Spring Data JPA + Hibernate 7
+- **Arquitetura:** Package-by-Feature (separação forte de domínios)
+- **Assincronia:** Uso intensivo de mensageria via Redis e `@Async` do Spring para processamento em background (Analytics, Notificações, e Processamento Financeiro).
 
-Para subir o ecossistema completo (API + Mobile Web + Banco/Cache), siga os passos abaixo:
+### Frontend (Mobile & Web)
+- **Ecossistema:** React Native gerenciado pelo Expo (SDK 51) + Expo Router
+- **Estado Local:** Zustand (ex: `auth-store`, `vehicle-wizard`) e Zustand Persist
+- **Estilização:** NativeWind / TailwindCSS adaptados para regras do The Digital Forge
 
-**Pré-requisitos:** Docker & Docker Compose instalados.
+### Nuvem e Serviços Integrados
+- **Banco de Dados Relacional:** PostgreSQL 16 hospedado via Supabase. Implementação de Full-Text Search e CTEs avançadas.
+- **Cache de Alta Performance:** Redis (Upstash) utilizado para cache de Catálogo, rate-limiting e deduplicação LUA.
+- **Storage:** Supabase Storage (Fotos de veículos, avatares, Alvarás).
+- **Notificações:** Integração multi-canal (Expo Push Notifications e Resend API para e-mails).
 
-1. Configure os arquivos `.env` na raiz ou nas respectivas pastas conforme a seção [Contratos de Configuração](#6-contratos-de-configuração).
-2. Execute o build e inicialização dos containers:
+---
+
+## 3. Mapeamento dos Módulos Funcionais
+
+A regra de negócio do PECAÊ é fatiada em 13 módulos operacionais. Abaixo a matriz de operação:
+
+- **M01 & M03 (Identidade e KYC):** Cadastro de Compradores e processo de aprovação de Lojistas com checagem de CNPJ/Alvará.
+- **M04, M05 & M07 (Inventário e Descoberta):** O coração transacional. Lojistas cadastram veículos (sucatas) baseados na Tabela FIPE (M04). Compradores navegam utilizando o M07 (Search Engine em Postgres) com filtros de estado, montadora e compatibilidade.
+- **M08 (Comunicação):** Negociação ocorre no módulo de Chat em tempo real (Supabase Realtime / SSE).
+- **M09 (Moderação):** Motor de segurança. Nenhum lojista e nenhum veículo entra na plataforma sem aprovação manual de um Admin no Backoffice.
+- **M12 & M13 (Dados e AdTech):** Motor de Ads gerando relatórios de visualização (Views) e CTR em tempo real de forma assíncrona, além de integração de publicidade direta no App.
+
+---
+
+## 4. Como Executar o Projeto (Guia de Setup)
+
+> **Nota:** Para um roteiro passo-a-passo e dicas aprofundadas de instalação, consulte o [SETUP.md](./docs/SETUP.md).
+
+**Pré-requisitos:**
+- Docker e Docker Compose
+- JDK 25 e Maven
+- Node.js 20+ e NPM 10+
+
+1. **Subir Serviços Base (PostgreSQL + Redis):**
    ```bash
-   # Build das imagens
-   docker compose build
-
-   # Inicialização em segundo plano
-   docker compose up -d
+   docker-compose up -d
    ```
-
-*Nota: O backend estará disponível em `http://localhost:3000` e o mobile web no proxy configurado.*
-
----
-
-## 3. Módulos Implementados (Visão Detalhada)
-
-Abaixo, o fluxo arquitetural de cada módulo documentado nas especificações e implementado no código.
-
-### M01: Autenticação e Cadastro
-- **Conceito:** Entrada segura e fluida de usuários.
-- **Implementação Backend:** Autenticação multicanal no `AuthController`. Estratégias JWT, OAuth2 (Google) via `@nestjs/passport`, e OTP via SMS/E-mail. 
-- **Implementação Mobile:** Gerenciamento da sessão no `auth-store.ts` (Zustand), persistindo no `expo-secure-store`. Interceptors do Axios automatizam renovação (refresh token) e interceptam retornos `401 Unauthorized` forçando logout silencioso.
-
-### M02: Perfil do Comprador
-- **Conceito:** Hub de informações para o cliente (Buyer).
-- **Implementação:** Relacionamento na tabela `User` com o schema de Garagem (meus carros cadastrados para busca fácil) e Endereços salvos (para cálculo de frete rápido).
-
-### M03: Perfil do Vendedor e KYC
-- **Conceito:** O Lojista (Seller) precisa de um processo de auditoria (Conheça Seu Cliente).
-- **Implementação:** Criação de `SellerProfile` atrelado ao `User`. Upload de documentos gera entradas em `SellerVerification`. O perfil permanece com a flag `isVerified=false` até que o M09 (Moderação) altere o status para `APPROVED`. Somente vendedores verificados recebem o selo "Verified Badge" na interface pública.
-
-### M04 e M05: Catálogo Automotivo e Anúncios
-- **Conceito:** Organização de marcas/modelos e listagem transacional de peças.
-- **Fluxo Mobile:** `vehicle-wizard-store.ts` no Zustand gerencia o funil de criação de anúncio em 4 passos (Seleção de Fipe, Dados da Sucata, Inserção de Fotos da Peça, Confirmação de Inventário). Impede requisições HTTP massivas até o submit final.
-- **Fluxo Backend:** O Prisma executa transações encadeadas (adicionando veículo, listagem, vinculação ao seller, e links do Supabase das fotos). Ciclo de vida do anúncio transita via enum `VehicleStatus` (`Draft` -> `Active` -> `Sold`).
-
-### M06: Avaliações e Reputação
-- **Conceito:** Transparência de qualidade.
-- **Implementação:** Compradores podem registrar `Review` atrelado a um `SellerProfile`. Gatilhos no Prisma atualizam dinamicamente a métrica de 5 estrelas agregada no próprio Seller Profile para evitar lentidão com agregação contínua no momento da busca.
-
-### M07: Busca e Descoberta
-- **Conceito:** Filtros ultra-rápidos de peças.
-- **Implementação Backend:** `SearchService` recebe Query Params, compila um json com os dados de busca, gera um hash `SHA256` e consulta o Redis. Se há "Cache Hit", retorna imediato. Se "Cache Miss", pesquisa no PostgreSQL, salva no Redis com TTL específico, e retorna paginado.
-
-### M08: Chat em Tempo Real
-- **Conceito:** Negociação direta entre as partes.
-- **Implementação:** Arquitetura RESTful otimizada associada a conexões SSE (Server-Sent Events) no Controller de Chat para emitir novas mensagens a clientes conectados sem depender do overhead do WebSocket.
-
-### M09: Painel de Moderação e Segurança
-- **Conceito:** Controle de qualidade do conteúdo e verificação de fraude.
-- **Implementação Backend:** Rotas restritas no `ModerationController`.
-- **Controle de Acesso:** Implementado pesadamente via biblioteca `CASL`. A `CaslAbilityFactory` mapeia a role `MODERATOR/ADMIN`. Uma regra crítica impede que Moderadores alterem o status dos *próprios* itens (evita auto-aprovação de lojistas-moderadores).
-
-### M11: Notificações
-- **Conceito:** Engajamento do usuário.
-- **Implementação:** Schema de notificação transacional vinculada ao `userId`. Canais implementados: Push Notifications (usando tokens do Expo) e in-app bell (sininho).
-
-### M12: Analytics Dashboard
-- **Conceito:** Visão financeira e de conversão para o lojista.
-- **Implementação:** Agregação pesada. Acesso via `/analytics` e endpoints de reconciliação de dados. Retorna contagem diária/semanal de visualizações de sucatas (views), cliques e conversas geradas.
-
-### M13: Ads e Monetização
-- **Conceito:** Pulsionamento de sucatas na busca mediante saldo.
-- **Implementação Frontend:** Interleaving de listagens (1 anúncio patrocinado a cada N resultados).
-- **Implementação Backend:** Processadores do BullMQ (`AdsProcessor`) consomem disparos assíncronos (`track-impression`, `track-click`). Um IP_Hash no Redis garante deduplicação temporária. Os balanços e orçamentos (impressions) são abatidos periodicamente da `AdCampaign` do vendedor.
+2. **Dependências do Monorepo (Instalar na raiz):**
+   ```bash
+   npm install
+   ```
+3. **Iniciar o Ambiente Dev Completo (Turborepo):**
+   ```bash
+   npm run dev
+   ```
+   *(Este comando iniciará simultaneamente o Metro Bundler no `/frontend` e o ambiente de desenvolvimento, caso o backend Spring esteja encapsulado em script wrapper, ou você pode rodar o Java via sua IDE preferida).*
 
 ---
 
-## 4. Gerenciamento de Filas e Processos Assíncronos
+## 5. Contratos de Configuração (.env)
 
-Muitas operações de atualização concorrente foram transferidas do Event Loop (HTTP) do NestJS para o **BullMQ**, aumentando escalabilidade.
+O monorepo faz uso inteligente de variáveis locais de ambiente. Você deve criar `.env` nas respectivas subpastas.
 
-### Arquitetura de Filas:
-- **`listings` Queue:** Gerenciada pelo `ListingsProcessor`.
-  - **Uso:** Atualiza o contador de visualizações (`views: { increment: 1 }`).
-  - **Prevenção de Flood:** O Job é enviado, mas o Worker só executa a query no Prisma após confirmar que a chave `view:{listingId}:{ip}` não existe no Redis.
-- **`ads` Queue:** Gerenciada pelo `AdsProcessor`.
-  - **Uso:** Contabilidade financeira da plataforma (cliques e impressões patrocinadas).
-  - **Tolerância:** Processamento de jobs retryáveis garantindo que, caso a transação de balanço financeiro falhe por colisão, ela seja repetida de forma segura.
+### Backend (`/backend/src/main/resources/application.properties` ou `.env`)
+| Chave | Descrição |
+|-------|-----------|
+| `SPRING_DATASOURCE_URL` | URI de conexão ao PostgreSQL (Ex: `jdbc:postgresql://localhost:5433/pecae`) |
+| `SPRING_DATA_REDIS_URL` | URI do Redis (Ex: `redis://localhost:6379`) |
+| `JWT_SECRET` / `EXPIRATION` | Segredo de 256bits para assinatura dos tokens das sessões. |
+| `SUPABASE_URL` / `KEY` | Credenciais da Role segura do Storage na nuvem. |
 
----
-
-## 5. Guia de Troubleshooting Avançado
-
-Este guia serve como base para problemas em produção ou homologação.
-
-### 🔴 Problema: Erro de Build do Docker / Espaço Insuficiente
-- **Sintoma:** O build trava na compilação do TypeScript ou acusa falta de espaço em disco.
-- **Resolução:**
-  1. Limpe o cache do Docker builder:
-     ```bash
-     docker builder prune -a
-     docker system prune -a
-     ```
-  2. Verifique se há erros estritos de tipagem rodando localmente antes do build:
-     ```bash
-     npx tsc --noEmit
-     ```
-
-### 🔴 Problema: Métricas não estão atualizando (Search, Analytics ou Dashboard)
-- **Sintoma:** Um Lojista não vê os acessos do anúncio subirem no seu Dashboard, ou sucatas deletadas continuam sendo exibidas no App.
-- **Causa:** O Redis está segurando chaves obsoletas por mais tempo que o TTL esperado, ou a fila do BullMQ está em estado de pausa/bloqueada.
-- **Resolução:**
-  1. Force a sincronização manual pelo painel administrativo usando a rota `POST /analytics/trigger-recalc`. Isso re-agrega as informações contábeis e de reviews pelo PostgreSQL ignorando o Redis.
-  2. Limpe o redis (apenas DEV/STAGING): `docker exec -it pecae-redis redis-cli FLUSHALL`.
-  3. Verifique nos logs `docker logs pecae-api` se existem exceções relacionadas ao `ListingsProcessor` falhando com `RedisConnectionError`.
-
-### 🔴 Problema: App Mobile travado na Splash Screen / Erro de Rede Contínuo
-- **Sintoma:** App não passa do Login com mensagem de `Network Error`.
-- **Causa:** A constante `EXPO_PUBLIC_API_URL` não alcança o servidor ou há um loop de interceptor Axios re-fazendo chamadas `401`.
-- **Resolução:**
-  1. Revise o `.env` na pasta `apps/mobile`. **Atenção:** Emuladores Android mapeiam localhost para `10.0.2.2`. Em celulares via LAN (Expo Go), não use `localhost`, use `192.168.x.x:3000`.
-  2. Apague o cache do Expo local: `npx expo start -c`.
-  3. Em caso de loop infinito de refresh token, faça logout manual da `auth-store` limpando o armazenamento nativo e forçando Zustand persist reset.
-
-### 🔴 Problema: Moderador não consegue aprovar (Erro 403 Forbidden)
-- **Sintoma:** Requisição de moderação falha com status 403 mesmo logado como moderador.
-- **Causa:** O CASL Ability factory restringe edição caso o moderador esteja tentando avaliar seu próprio perfil, ou token JWT com Payload desatualizado sobre Roles.
-- **Resolução:** Verifique na tabela `User` as Roles atribuídas a este usuário. Teste se as `policies` no arquivo `casl-ability.factory.ts` estão colidindo na verificação do ID da request com o `ownerId` da `SellerVerification`.
-
-### 🔴 Problema: Jobs Ads caindo no Evento de "Stalled/Failed"
-- **Sintoma:** `AdsProcessor` joga dezenas de `Exceptions` no console "Transaction failed".
-- **Causa:** Lock de concorrência massiva no PostgreSQL na atualização do Budget ou erro LUA no lado do Redis.
-- **Resolução:** A classe `AdsProcessor` realiza retry automático. Monitore as transações Prisma via logs ativados (`new PrismaClient({ log: ['query'] })`). O BullMQ necessita de Redis versão >= 6.2; valide a versão da imagem do Redis no docker-compose.
+### Frontend (`/frontend/.env`)
+| Chave | Descrição |
+|-------|-----------|
+| `EXPO_PUBLIC_API_URL` | Rota apontando para a API local ou produção (Ex: `http://192.168.1.X:8080/api/v1`). |
 
 ---
 
-## 6. Contratos de Configuração
+## 6. Referência da API (Swagger UI)
 
-Abaixo a documentação exaustiva do arquivo `.env` para orquestração da plataforma.
+Com a migração para o Spring Boot, a documentação viva e interativa da API RESTful fica encarregada ao `springdoc-openapi`.
+Quando o servidor Java estiver rodando localmente, a documentação da API pode ser acessada visualmente através da UI:
 
-| Nome da Variável | Escopo | Descrição / Valor Típico |
-|------------------|--------|--------------------------|
-| `PORT` | API | Porta da API Node.js (Ex: `3000`) |
-| `DATABASE_URL` | API | URI de conexão ao PostgreSQL (Ex: `postgresql://user:pass@localhost:5433/pecae`) |
-| `REDIS_URL` | API | URI de conexão ao Redis (Ex: `redis://localhost:6379`) |
-| `JWT_SECRET` | API | Segredo seguro de 256bits para assinatura simétrica das sessões. |
-| `JWT_EXPIRES_IN` | API | Tempo de vida do Token. Recomenda-se curtos ciclos (Ex: `1h` ou `15m`). |
-| `SUPABASE_URL` | API | Endereço da API do Supabase para o Bucket (S3/Storage). |
-| `SUPABASE_KEY` | API | Chave da Service Role do Supabase. |
-| `EXPO_PUBLIC_API_URL`| Mobile | Utilizada estaticamente durante o build para compilar a rota do Axios no React Native (Ex: `http://192.168.x.x:3000/api/v1`). |
+👉 **[http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)**
 
----
+### Mapeamento das Rotas Principais (Prefixo `/api/v1`)
 
-## 7. Referência da API (Rotas Swagger)
-
-Abaixo estão as rotas completas do backend implementadas via Decorators (`@Controller`) do NestJS e documentadas para acesso rápido (disponíveis de forma interativa via rota Swagger `/api/docs` no servidor):
-
-### 🔑 Autenticação (`/auth`)
-- `POST /auth/register`: Cadastro de novo usuário.
-- `POST /auth/login`: Login e obtenção de JWT.
-- `POST /auth/google`: Login via Google OAuth.
-- `POST /auth/phone/send-otp`: Envio de OTP SMS.
-- `POST /auth/phone/verify-otp`: Confirmação do OTP.
-- `POST /auth/refresh`: Atualização de token JWT expirado.
-- `POST /auth/logout`: Invalidação de sessão.
-- `POST /auth/verify-email`: Verificação de e-mail KYC básico.
-- `POST /auth/forgot-password` / `POST /auth/reset-password`: Fluxo de redefinição de senha.
-
-### 👤 Perfil de Comprador (`/buyers`)
-- `GET /buyers/me`: Recupera o perfil do comprador logado.
-- `PUT /buyers/me`: Atualiza informações.
-- `DELETE /buyers/me`: Exclusão da conta.
-- `GET /buyers/favorites/favorites`: Lista anúncios favoritados.
-- `POST /buyers/favorites/:listingId`: Favorita um anúncio.
-- `GET /buyers/saved-searches`: Lista buscas salvas.
-- `POST /buyers/saved-searches`: Registra uma nova busca.
-- `DELETE /buyers/saved-searches/:id`: Remove uma busca salva.
-- `PATCH /buyers/saved-searches/:id/alert`: Configura alertas.
-
-### 🏪 Perfil de Vendedor (`/sellers`)
-- `GET /sellers/me` / `PUT /sellers/me`: Recupera/Edita dados da loja do usuário ativo.
-- `GET /sellers/me/stats`: Estatísticas públicas e dashboard básico.
-- `POST /sellers`: Cria perfil de vendedor para um usuário.
-- `GET /sellers/:id`: Recupera perfil público da loja.
-- `GET /sellers/:id/listings`: Lista de todos anúncios ativos da loja.
-- `POST /sellers/me/logo`: Solícita URL de envio para logo.
-- `POST /sellers/me/logo/confirm`: Confirma o envio e processamento do logo.
-- `GET /sellers/verification/status`: Visualiza etapa de verificação.
-- `POST /sellers/verification/request`: Inicia o envio de documentação (Alvará/CNH).
-- `POST /sellers/verification/confirm`: Envia requisição para moderação.
-
-### 🚘 Catálogo Automotivo (`/catalog`)
-- `GET /catalog/brands`: Busca de montadoras (Fiat, Ford, etc.).
-- `GET /catalog/brands/:brandId/years`: Anos disponíveis (Fabricação/Modelo) para uma marca.
-- `GET /catalog/brands/:brandId/years/:yearFab/:yearModel/models`: Modelos de uma marca em anos específicos.
-- `GET /catalog/brands/:brandId/models`: Modelos associados à marca.
-- `GET /catalog/models/:modelId/versions`: Versões específicas de um modelo.
-- `GET /catalog/versions/:versionId/years`: Anos de fabricação de uma versão.
-- `GET /catalog/part-categories`: Busca de categorias de autopeças.
-- `POST /admin/catalog/cache/invalidate`: Invalida cache estático (Admin).
-
-### 🛠️ Anúncios e Inventário de Peças (`/vehicles`, `/listings`)
-- `GET /listings`: Busca paginada global do inventário.
-- `GET /listings/:id`: Recupera anúncio isolado.
-- `POST /vehicles`: Wizard do catálogo - cria uma nova sucata (Draft).
-- `GET /vehicles/me`: Retorna apenas os veículos do seller.
-- `GET /vehicles/:id`: Busca informações detalhadas e gerenciáveis.
-- `PUT /vehicles/:id`: Atualização completa.
-- `PATCH /vehicles/:id/parts`: Modifica a lista de "peças disponíveis".
-- `PATCH /vehicles/:id/sold`: Altera Lifecycle de um veículo para Vendido.
-- `POST /vehicles/:id/photos/upload-url`: Request para URLs assinadas do Bucket.
-- `POST /vehicles/:id/photos/confirm`: Persiste as imagens enviadas.
-
-### 🔍 Busca, Descoberta e Filtros (`/search`)
-- `GET /search`: Motor de busca centralizado com leitura otimizada no Cache (Redis SHA256).
-- `GET /search/suggestions`: Auto-completar e sugestões rápidas de busca.
-
-### 💬 Chat (Tempo Real) (`/chat`)
-- `POST /chat/rooms`: Abre/Recupera uma sala com um Seller.
-- `GET /chat/rooms`: Lista de salas que o usuário participa.
-- `GET /chat/rooms/:id`: Detalhes da sala (meta-dados e status do vendedor).
-- `GET /chat/rooms/:id/messages`: Paginação das mensagens textuais de uma conversa.
-- `POST /chat/rooms/:id/messages`: Envia mensagem nova na sala (emite SSE).
-- `PUT /chat/rooms/:id/read`: Atualiza a flag indicando marcação de leitura (Read Receipts).
-
-### 📢 Notificações (`/notifications`)
-- `GET /notifications`: Feed de notificações ativas para o usuário logado.
-- `GET /notifications/unread-count`: Retorna badge badge (número de sinalizadores não-lidos).
-- `PUT /notifications/read-all`: Marca tudo como lido em lote.
-- `PUT /notifications/:id/read`: Confirmação isolada.
-
-### ⭐ Avaliações e Reputação (`/reviews`)
-- `POST /reviews`: Comprador avalia a compra feita com um seller (1 a 5 estrelas).
-- `GET /sellers/:id/reviews`: Histórico aberto das avaliações do lojista.
-
-### 🛡️ Moderação (`/moderation`, `/verifications`, `/admin/users`)
-- `GET /moderation/listings`: Traz lista de todos anúncios submetidos pendentes.
-- `GET /moderation/listings/:id`: Detalhes avançados sobre o conteúdo do anúncio.
-- `POST /moderation/listings/:id/approve` / `POST /moderation/listings/:id/reject`: Painel de deferimento.
-- `GET /moderation/verifications`: Trilha de auditoria pendente de novos vendedores.
-- `POST /moderation/verifications/:id/approve` / `POST /moderation/verifications/:id/reject`: Verificação manual de Alvará.
-- `GET /verifications/pending`: Status rápido para Admins logados.
-- `PUT /verifications/:id/resolve`: Resolve denúncia manual ou caso reaberto.
-- `POST /admin/users/:id/role`: Força atribuição de Roles (`BUYER`, `SELLER`, `MODERATOR`).
-
-### 📊 Painel Analytics (`/analytics`)
-- `POST /analytics/listings/:id/view`: Rota engatilhada passivamente (via Interceptor) para notificar View Increment (BullMQ `listings` queue).
-- `GET /analytics/seller/me`: Dashboards financeiros, CTR e Pageviews agregados.
-- `GET /analytics/admin`: Métricas de saude global do sistema (Total Usuários, Lojas Ativas).
-- `POST /analytics/trigger-recalc`: Acesso de emergência que re-calcula as views estagnadas lendo o DB primário.
-
-### 🎯 Patrocínios e Monetização (`/ads`)
-- `POST /ads/campaigns`: Seller reserva uma quantia (Pacing) para bombar a visibilidade do item.
-- `GET /ads/campaigns`: Painel das campanhas atuais.
-- `PATCH /ads/campaigns/:id/pause` / `resume` / `cancel`: Lifecycle do Patrocínio (Ativo, Pausado, Encerrado).
-- `GET /ads/sponsored`: Retorna peças esporádicas alavancadas via busca.
-- `POST /ads/track/impression` / `POST /ads/track/click`: Injeção de engajamento assíncrono tratada com deduplicação nativa LUA+Redis via Fila BullMQ.
-- `GET /ads/interstitial/status/:userId`: Checagem programática do Ad Interstitial State.
+- **`/auth`**: Endpoints de Registro, Login (Custom JWT e OAuth), Atualização de Sessões e Gestão de OTP.
+- **`/buyers` e `/sellers`**: Perfis de usuário, favoritação de itens (Wishlist), buscas salvas, e o fluxo rigoroso de verificação de loja (Upload de CNH/Alvará).
+- **`/catalog`**: Dados imutáveis e abertos. Consultas de marcas, modelos e anos derivadas da FIPE.
+- **`/vehicles` e `/listings`**: CRUD de sucatas, delegação do inventário de peças integradas e endpoints exclusivos para links temporários de fotos (Signed URLs Supabase).
+- **`/search`**: Rota hiper-otimizada de paginação e filtragem Full-Text Search de sucatas (integra camadas de Cache com Redis).
+- **`/chat`**: Iniciação e histórico de mensagens das salas de negociação (as entregas em realtime ocorrem via SSE/Realtime listeners).
+- **`/moderation`**: *(Admin Only)* Rotas exclusivas de painel para bater o martelo na aprovação/recusa de anúncios e perfis.
+- **`/analytics`**: Injeção e consumo de contadores financeiros (Impressões e Cliques para Ads).
 
 ---
-**PECAÊ Development Team - Documentação técnica sujeita a atualizações contínuas de Módulo.**
+**PECAÊ Development Team | 2026**

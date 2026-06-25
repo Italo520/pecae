@@ -7,7 +7,7 @@ test.describe('PECAÊ E2E - Fluxo 5: Controle de Acesso RBAC/CASL', () => {
 
     // 1. Login do Comprador Malicioso (Hacker - tipo BUYER)
     await page.goto('/(auth)/login');
-    await page.locator('input[type="email"]').fill('hacker@pecae.com.br');
+    await page.locator('input[type="email"]').fill('malicious-e2e@pecae.com.br');
     await page.locator('input[type="password"]').fill('Pecae@E2e123');
     await page.getByText('ENTRAR', { exact: true }).click();
     await expect(page).toHaveURL(/.*(\(tabs\)|\/$)/);
@@ -27,10 +27,10 @@ test.describe('PECAÊ E2E - Fluxo 5: Controle de Acesso RBAC/CASL', () => {
     });
 
     const apiCalls = [
-      { url: 'http://localhost:3001/api/v1/moderation/listings', method: 'GET' },
-      { url: 'http://localhost:3001/api/v1/moderation/listings/some-id/approve', method: 'POST' },
-      { url: 'http://localhost:3001/api/v1/analytics/admin', method: 'GET' },
-      { url: 'http://localhost:3001/api/v1/admin/users/some-id/role', method: 'POST' }
+      { url: 'http://localhost:8080/api/v1/moderation/listings', method: 'GET' },
+      { url: 'http://localhost:8080/api/v1/moderation/listings/some-id/approve', method: 'POST' },
+      { url: 'http://localhost:8080/api/v1/analytics/admin', method: 'GET' },
+      { url: 'http://localhost:8080/api/v1/admin/users/some-id/role', method: 'POST' }
     ];
 
     console.log('🔒 Disparando chamadas diretas de API para validar o CASL de back-end...');

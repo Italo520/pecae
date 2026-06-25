@@ -37,8 +37,11 @@ public class TokenPush {
     private String token;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "platform", nullable = false)
+    @Column(name = "platform")
     private PlataformaPush plataforma;
+
+    @Column(name = "device_info")
+    private String infoDispositivo;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

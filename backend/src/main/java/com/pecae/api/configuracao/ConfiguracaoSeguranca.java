@@ -48,12 +48,16 @@ public class ConfiguracaoSeguranca {
             "/sellers/*/public",
             "/listings",
             "/listings/*",
+            "/vehicles/public/*",
             "/api/v1/avaliacoes/vendedor/*"
     };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // Habilitar CORS explicitamente na cadeia do Spring Security
+                .cors(org.springframework.security.config.Customizer.withDefaults())
+
                 // Desabilitar CSRF (API stateless com JWT)
                 .csrf(csrf -> csrf.disable())
 

@@ -20,8 +20,10 @@ test.describe('PECAÊ E2E - Fluxo 3: Identidade, Onboarding e Verificação', ()
 
   test.beforeEach(async () => {
     // Limpar registros de testes anteriores de forma completa para permitir re-cadastro e evitar conflitos de CNPJ/StoreName
-    runSqlQuery("DELETE FROM seller_verifications WHERE seller_profile_id IN (SELECT id FROM seller_profiles WHERE store_name = 'Sucatão do Novo Vendedor');");
-    runSqlQuery("DELETE FROM seller_profiles WHERE store_name = 'Sucatão do Novo Vendedor';");
+    runSqlQuery("DELETE FROM seller_verifications WHERE seller_profile_id IN (SELECT id FROM seller_profiles WHERE name = 'Sucatão do Novo Vendedor');");
+    runSqlQuery("DELETE FROM seller_profiles WHERE name = 'Sucatão do Novo Vendedor';");
+    runSqlQuery("DELETE FROM refresh_tokens WHERE user_id = (SELECT id FROM users WHERE email = 'novo-vendedor-e2e@pecae.com.br');");
+    runSqlQuery("DELETE FROM email_verification_tokens WHERE user_id = (SELECT id FROM users WHERE email = 'novo-vendedor-e2e@pecae.com.br');");
     runSqlQuery("DELETE FROM users WHERE email = 'novo-vendedor-e2e@pecae.com.br';");
   });
 
@@ -41,7 +43,7 @@ test.describe('PECAÊ E2E - Fluxo 3: Identidade, Onboarding e Verificação', ()
     // Portanto, criamos o usuário via API REST diretamente
     const registerResponse = await page.evaluate(async () => {
       try {
-        const res = await fetch('http://localhost:3001/api/v1/auth/register', {
+        const res = await fetch('http://localhost:8080/api/v1/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -61,7 +63,7 @@ test.describe('PECAÊ E2E - Fluxo 3: Identidade, Onboarding e Verificação', ()
     console.log(`ℹ️ Registro via API: status=${registerResponse.status}`);
 
     // 2. Bypass da verificação de e-mail (API envia email, mas nos testes usamos SQL)
-    runSqlQuery("UPDATE users SET email_verified = true, status = 'ACTIVE' WHERE email = 'novo-vendedor-e2e@pecae.com.br';");
+    runSqlQuery("UPDATE users SET email_verified = true, status = 'ATIVO' WHERE email = 'novo-vendedor-e2e@pecae.com.br';");
     
     // Verificar se o usuário foi criado com sucesso
     const userId = runSqlQuery("SELECT id FROM users WHERE email = 'novo-vendedor-e2e@pecae.com.br';");
@@ -130,7 +132,7 @@ test.describe('PECAÊ E2E - Fluxo 3: Identidade, Onboarding e Verificação', ()
     });
 
     // Obter o ID do perfil de vendedor recém-criado do banco de dados
-    const newSellerProfileId = runSqlQuery("SELECT id FROM seller_profiles WHERE store_name = 'Sucatão do Novo Vendedor';");
+    const newSellerProfileId = runSqlQuery("SELECT id FROM seller_profiles WHERE name = 'Sucatão do Novo Vendedor';");
     console.log(`ℹ️ Seller Profile ID: ${newSellerProfileId}`);
 
     // 5. Solicitar Verificação de Selo (via SQL pois upload de arquivo não é trivial no web build)

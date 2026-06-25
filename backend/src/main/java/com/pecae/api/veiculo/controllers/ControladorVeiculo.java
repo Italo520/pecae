@@ -30,7 +30,7 @@ public class ControladorVeiculo {
 
     private final IServicoVeiculo servicoVeiculo;
 
-    @PostMapping("/me")
+    @PostMapping
     @PreAuthorize("hasAnyRole('VENDEDOR', 'AMBOS')")
     @Operation(summary = "Cadastrar um novo veículo", description = "Cadastra um veículo/sucata no catálogo do vendedor.")
     public ResponseEntity<RespostaDetalheVeiculo> criar(
@@ -50,7 +50,7 @@ public class ControladorVeiculo {
         return ResponseEntity.ok(resposta);
     }
 
-    @GetMapping("/me/{veiculoId}")
+    @GetMapping("/{veiculoId}")
     @PreAuthorize("hasAnyRole('VENDEDOR', 'AMBOS')")
     @Operation(summary = "Obter detalhes do veículo", description = "Retorna os detalhes completos de um veículo do vendedor autenticado.")
     public ResponseEntity<RespostaDetalheVeiculo> obterDetalhes(
@@ -60,7 +60,15 @@ public class ControladorVeiculo {
         return ResponseEntity.ok(resposta);
     }
 
-    @PatchMapping("/me/{veiculoId}")
+    @GetMapping("/public/{veiculoId}")
+    @Operation(summary = "Obter detalhes públicos do veículo", description = "Retorna os detalhes completos de um veículo sem exigir autenticação.")
+    public ResponseEntity<RespostaDetalheVeiculo> obterDetalhesPublico(
+            @PathVariable UUID veiculoId) {
+        RespostaDetalheVeiculo resposta = servicoVeiculo.buscarDetalhesPublico(veiculoId);
+        return ResponseEntity.ok(resposta);
+    }
+
+    @PatchMapping("/{veiculoId}")
     @PreAuthorize("hasAnyRole('VENDEDOR', 'AMBOS')")
     @Operation(summary = "Atualizar veículo", description = "Atualiza parcialmente os dados de um veículo do vendedor autenticado.")
     public ResponseEntity<RespostaDetalheVeiculo> atualizar(

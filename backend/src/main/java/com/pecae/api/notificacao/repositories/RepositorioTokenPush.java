@@ -1,6 +1,6 @@
 package com.pecae.api.notificacao.repositories;
 
-import com.pecae.api.notificacao.entities.TokenPush;
+import com.pecae.api.usuario.entities.TokenPush;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

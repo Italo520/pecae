@@ -24,7 +24,7 @@ import java.util.UUID;
  * Controlador REST para gerenciar notificações e tokens de push.
  */
 @RestController
-@RequestMapping("/api/v1/notificacoes")
+@RequestMapping("/notificacoes")
 @RequiredArgsConstructor
 @Tag(name = "Notificações", description = "Endpoints para gerenciamento de notificações e tokens push")
 public class ControladorNotificacao {

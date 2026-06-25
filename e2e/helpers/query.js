@@ -1,57 +1,24 @@
-const { PrismaClient } = require('@prisma/client');
+const { Client } = require('pg');
 const fs = require('fs');
 const path = require('path');
 
-// Carregador manual e resiliente de arquivo .env (evita dependência direta do dotenv na raiz)
-function loadEnvFile(filePath) {
-  if (fs.existsSync(filePath)) {
-    const content = fs.readFileSync(filePath, 'utf-8');
-    content.split(/\r?\n/).forEach(line => {
-      const trimmed = line.trim();
-      if (trimmed && !trimmed.startsWith('#')) {
-        const index = trimmed.indexOf('=');
-        if (index !== -1) {
-          const key = trimmed.substring(0, index).trim();
-          let value = trimmed.substring(index + 1).trim();
-          // Remove aspas
-          if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-            value = value.substring(1, value.length - 1);
-          }
-          process.env[key] = value;
-        }
-      }
-    });
-  }
-}
+// Tenta pegar a URL do BD. 
+// A nova API Java roda localmente o postgres na porta 5432, banco pecae, user postgres, senha postgres
+let dbUrl = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/pecae';
 
-// Carregar variáveis de ambiente do banco de testes da API
-const envTestPath = path.resolve(__dirname, '../../apps/api/.env.test');
-loadEnvFile(envTestPath);
-
-let dbUrl = process.env.DATABASE_URL;
-
-// Resolver IP interno do docker no WSL para evitar falha no localhost
-if (dbUrl && (dbUrl.includes('localhost:5433') || dbUrl.includes('127.0.0.1:5433'))) {
+// No WSL ou docker, se precisar redirecionar o IP:
+if (dbUrl && (dbUrl.includes('localhost') || dbUrl.includes('127.0.0.1'))) {
   try {
     const { execSync } = require('child_process');
-    const containerIp = execSync("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' pecae-postgres-test 2>/dev/null").toString().trim();
+    const containerIp = execSync("docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' pecae-postgres 2>/dev/null").toString().trim();
     if (containerIp) {
-      dbUrl = `postgresql://postgres:test123@${containerIp}:5432/pecae_test_db`;
+      dbUrl = `postgresql://postgres:postgres@${containerIp}:5432/pecae`;
       console.error(`ℹ️ [SQL BRIDGE] Redirecionando conexão para IP do container no WSL: ${dbUrl}`);
     }
   } catch (e) {
-    // Silently fallback to default URL if docker is not available
+    // Silently fallback to default URL
   }
 }
-
-// Configurar o Prisma Client para usar a URL carregada
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: dbUrl,
-    },
-  },
-});
 
 async function main() {
   // Ler SQL da entrada padrão (stdin)
@@ -65,11 +32,21 @@ async function main() {
     process.exit(0);
   }
 
+  const client = new Client({ connectionString: dbUrl });
+
   try {
-    const result = await prisma.$queryRawUnsafe(sql);
+    await client.connect();
     
-    if (Array.isArray(result)) {
-      result.forEach(row => {
+    // Suporte para múltiplos comandos separados por ponto e vírgula, opcionalmente
+    const result = await client.query(sql);
+    
+    // pg retorna um objeto ou array de objetos se houver múltiplos statements
+    const rows = Array.isArray(result) 
+      ? result.flatMap(r => r.rows) 
+      : result.rows;
+
+    if (rows && rows.length > 0) {
+      rows.forEach(row => {
         const values = Object.values(row).map(val => {
           if (val === null || val === undefined) return '';
           if (val instanceof Date) return val.toISOString();
@@ -77,14 +54,15 @@ async function main() {
         });
         console.log(values.join('|'));
       });
-    } else if (result !== null && result !== undefined) {
-      console.log(String(result));
+    } else if (result.rowCount !== undefined) {
+      // Caso seja um UPDATE/INSERT/DELETE, opcional logar linhas afetadas
+      // console.log(`Linhas afetadas: ${result.rowCount}`);
     }
   } catch (error) {
     console.error(`[BRIDGE SQL ERROR]: ${error.message}`);
     process.exit(1);
   } finally {
-    await prisma.$disconnect();
+    await client.end();
   }
 }
 

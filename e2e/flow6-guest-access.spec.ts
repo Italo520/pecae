@@ -70,39 +70,32 @@ test.describe('PECAÊ E2E - Fluxo 6: Acesso Deslogado (Guest Access)', () => {
     await page.goto(`/(tabs)/vehicle/${publishedVehicleId}`);
     await page.waitForLoadState('domcontentloaded');
 
-    // Configurar listener para o diálogo nativo do navegador (window.confirm)
-    let dialogTriggered = false;
-    let dialogMessage = '';
-    
-    page.on('dialog', async (dialog) => {
-      dialogTriggered = true;
-      dialogMessage = dialog.message();
-      console.log(`ℹ️ [DIALOG] Capturado diálogo: "${dialogMessage}"`);
-      await dialog.accept(); // Aceita/Clica em "OK/Fazer Login"
-    });
-
     // Clicar em "INICIAR NEGOCIAÇÃO"
     const contactBtn = page.getByRole('button', { name: /INICIAR NEGOCIAÇÃO/i }).first();
     await expect(contactBtn).toBeVisible({ timeout: 10000 });
     await contactBtn.click();
 
-    // Aguardar o diálogo ser exibido e aceito
-    await page.waitForTimeout(1000);
-    expect(dialogTriggered).toBe(true);
-    expect(dialogMessage).toMatch(/logado|login/i);
-    console.log('✅ Alerta de autenticação necessária exibido e aceito.');
+    // Aguardar o Toast de Acesso Restrito ser exibido e clicar em Fazer Login
+    const toastTitle = page.locator('text=/Acesso Restrito/i').first();
+    await expect(toastTitle).toBeVisible({ timeout: 5000 });
+    
+    const fazerLoginBtn = page.locator('text=/Fazer Login/i').first();
+    await expect(fazerLoginBtn).toBeVisible();
+    await fazerLoginBtn.evaluate((node) => (node as HTMLElement).click());
+
+    console.log('✅ Alerta de autenticação necessária exibido e clicado.');
 
     // Deve redirecionar para a tela de login contendo o parâmetro returnUrl
     await expect(page).toHaveURL(/.*login.*returnUrl.*/);
     console.log('✅ Redirecionado para a tela de login contendo returnUrl.');
 
     // Efetuar login com as credenciais do comprador do seed
-    await page.locator('input[type="email"]').fill('comprador@pecae.com.br');
-    await page.locator('input[type="password"]').fill('Pecae@123');
+    await page.locator('input[type="email"]').fill('buyer-e2e@pecae.com.br');
+    await page.locator('input[type="password"]').fill('Pecae@E2e123');
     await page.getByText('ENTRAR', { exact: true }).click();
 
     // Deve redirecionar de volta para a tela de detalhes do veículo original
-    await expect(page).toHaveURL(new RegExp(`.*vehicle/${publishedVehicleId}`));
+    await expect(page).toHaveURL(new RegExp(`.*vehicle/${publishedVehicleId}`), { timeout: 15000 });
     console.log('✅ Login bem-sucedido e redirecionamento de volta à página do veículo verificado.');
   });
 

@@ -14,5 +14,6 @@ public interface IServicoVeiculo {
     RespostaDetalheVeiculo atualizar(UUID usuarioId, UUID veiculoId, AtualizarVeiculoRequest request);
     Page<RespostaVeiculo> listarMeusVeiculos(UUID usuarioId, Pageable pageable);
     RespostaDetalheVeiculo buscarDetalhes(UUID usuarioId, UUID veiculoId);
+    RespostaDetalheVeiculo buscarDetalhesPublico(UUID veiculoId);
     void deletar(UUID usuarioId, UUID veiculoId);
 }
