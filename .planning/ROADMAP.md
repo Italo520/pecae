@@ -104,3 +104,12 @@ Este documento detalha o roteiro cronológico de desenvolvimento estruturado por
   - SPEC Geral: [1-SPEC.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/phases/1-SPEC.md)
   - PLAN (Fase 13): [13-PLAN.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/phases/13-PLAN.md)
   - WALKTHROUGH (Fase 13): [walkthrough.md](file:///C:/Users/italo/.gemini/antigravity-ide/brain/b57986f7-9703-4791-b986-1c864211a21d/walkthrough.md)
+
+### Fase 16: Validação E2E Frontend e Remoção do Legado NestJS
+- **Objetivo:** Testar e validar a integração completa do Frontend (Mobile) com o novo Backend Java. Caso haja sucesso total, excluir permanentemente a aplicação legada em NestJS do repositório, marcando o fim definitivo da migração.
+- **Status:** `completed` (2026-06-25)
+- **Artefatos:**
+  - SPEC: [16-SPEC.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/phases/16-SPEC.md)
+  - PLAN: [16-PLAN.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/phases/16-PLAN.md)
+  - SUMMARY: [16-SUMMARY.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/phases/16-SUMMARY.md)
+

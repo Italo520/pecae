@@ -3,6 +3,7 @@ import { renderHook, waitFor, act } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFavorites } from '../useFavorites';
 import { api } from '../../services/api';
+import { useAuthStore } from '../../store/auth-store';
 
 jest.mock('../../services/api', () => ({
   api: {
@@ -27,6 +28,7 @@ const createWrapper = () => {
 describe('useFavorites', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    useAuthStore.setState({ token: 'mock-token', isAuthenticated: true });
   });
 
   it('fetches favorites successfully', async () => {

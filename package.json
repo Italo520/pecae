@@ -12,9 +12,6 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "db:migrate": "turbo run db:migrate --filter=@pecae/api",
-    "db:seed": "turbo run db:seed --filter=@pecae/api",
-    "db:studio": "turbo run db:studio --filter=@pecae/api",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "postinstall": "node scripts/patch-metro.js"
@@ -31,7 +28,6 @@
     "picomatch": "^4.0.4",
     "tmp": "^0.2.4",
     "@tootallnate/once": "^3.0.1",
-    "@nestjs/common": "^11.1.19",
     "tar": "^6.2.1",
     "@mapbox/node-pre-gyp": {
       "tar": "^6.2.1"
@@ -65,7 +61,8 @@
     "metro-source-map": "0.80.9",
     "metro-symbolicate": "0.80.9",
     "metro-transform-plugins": "0.80.9",
-    "metro-transform-worker": "0.80.9"
+    "metro-transform-worker": "0.80.9",
+    "@types/react": "~18.2.79"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
@@ -78,13 +75,7 @@
     "npm": ">=10.0.0"
   },
   "dependencies": {
-    "@nestjs/bullmq": "^11.0.4",
-    "@nestjs/mapped-types": "^2.1.1",
-    "bullmq": "^5.74.1",
     "react": "18.2.0",
     "react-dom": "18.2.0"
-  },
-  "overrides": {
-    "@types/react": "~18.2.79"
   }
 }
