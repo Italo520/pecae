@@ -4,7 +4,7 @@ import com.pecae.api.compartilhado.AbstractIntegrationTest;
 import com.pecae.api.usuario.entities.Usuario;
 import com.pecae.api.usuario.repositories.UsuarioRepository;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
