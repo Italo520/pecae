@@ -10,7 +10,7 @@ description = "PECAÊ — Backend API (Java 25 + Spring Boot)"
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(25)
+		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
 
