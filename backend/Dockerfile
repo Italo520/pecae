@@ -7,8 +7,8 @@ COPY gradle gradle
 COPY build.gradle.kts .
 COPY settings.gradle.kts .
 
-# Garantir que o gradlew tenha permissão de execução
-RUN chmod +x gradlew
+# Garantir que o gradlew tenha permissão de execução e corrigir quebras de linha do Windows (CRLF para LF)
+RUN chmod +x gradlew && sed -i 's/\r$//' gradlew
 
 # Baixar dependências
 RUN ./gradlew dependencies --no-daemon
