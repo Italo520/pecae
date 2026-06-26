@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../theme';
 import { useRouter } from 'expo-router';
+
+// Imagem de fallback confiável para quando a URL principal falha
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=800&q=80';
 
 export interface VehicleCardProps {
   id: string;
@@ -40,6 +43,8 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
 }) => {
   const { colors, typography } = usePecaeTheme();
   const router = useRouter();
+  const [imgError, setImgError] = useState(false);
+  const [isImgLoading, setIsImgLoading] = useState(true);
 
   const handlePress = () => {
     if (onPress) {
@@ -75,12 +80,27 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
       ]}
     >
       <View style={[styles.imageContainer, isList && styles.imageContainerList]}>
+        {/* Skeleton de carregamento enquanto a imagem não aparece */}
+        {isImgLoading && (
+          <View
+            style={[
+              styles.imgSkeleton,
+              isList && styles.imageContainerList,
+              { backgroundColor: colors.surface },
+            ]}
+          />
+        )}
         <Image
-          source={{ uri: imageUrl || 'https://images.unsplash.com/photo-1507136566006-cfc505b114fc?auto=format&fit=crop&w=600&q=80' }}
-          style={styles.image}
+          source={{ uri: imgError ? FALLBACK_IMAGE : (imageUrl || FALLBACK_IMAGE) }}
+          style={[styles.image, isImgLoading && styles.imageHidden]}
           contentFit="cover"
-          transition={200}
+          transition={300}
           cachePolicy="memory-disk"
+          onLoad={() => setIsImgLoading(false)}
+          onError={() => {
+            setImgError(true);
+            setIsImgLoading(false);
+          }}
         />
         {isSponsored && (
           <View style={[styles.badge, { backgroundColor: colors.brand }]}>
@@ -169,6 +189,18 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     aspectRatio: 4 / 3,
+  },
+  imgSkeleton: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    aspectRatio: 4 / 3,
+    opacity: 0.5,
+  },
+  imageHidden: {
+    opacity: 0,
   },
   badge: {
     position: 'absolute',

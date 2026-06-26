@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Platform,
+  Animated,
 } from 'react-native';
 import { PecaeBackground } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
@@ -24,6 +25,51 @@ import { FipeSearchForm } from '../../src/components/Search/FipeSearchForm';
 import { VehicleCard } from '../../src/components/Vehicle/VehicleCard';
 import { useToast } from '../../src/context/ToastContext';
 import { useState } from 'react';
+
+// Componente de esqueleto (placeholder) para cards de veículo durante carregamento
+function VehicleCardSkeleton({ colors }: { colors: any }) {
+  const shimmer = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(shimmer, { toValue: 1, duration: 900, useNativeDriver: true }),
+        Animated.timing(shimmer, { toValue: 0, duration: 900, useNativeDriver: true }),
+      ])
+    ).start();
+  }, [shimmer]);
+
+  const opacity = shimmer.interpolate({ inputRange: [0, 1], outputRange: [0.4, 0.85] });
+
+  return (
+    <Animated.View
+      style={[
+        skeletonStyles.card,
+        { backgroundColor: colors.surface, opacity },
+      ]}
+    >
+      <View style={[skeletonStyles.image, { backgroundColor: colors.border }]} />
+      <View style={skeletonStyles.content}>
+        <View style={[skeletonStyles.line, { width: '40%', backgroundColor: colors.border }]} />
+        <View style={[skeletonStyles.line, { width: '70%', backgroundColor: colors.border, marginTop: 8 }]} />
+        <View style={[skeletonStyles.line, { width: '90%', backgroundColor: colors.border, marginTop: 4 }]} />
+        <View style={{ flexDirection: 'row', gap: 8, marginTop: 16 }}>
+          <View style={[skeletonStyles.chip, { backgroundColor: colors.border }]} />
+          <View style={[skeletonStyles.chip, { backgroundColor: colors.border }]} />
+        </View>
+      </View>
+    </Animated.View>
+  );
+}
+
+const skeletonStyles = StyleSheet.create({
+  card: { borderRadius: 12, overflow: 'hidden', marginBottom: 16 },
+  image: { width: '100%', aspectRatio: 4 / 3 },
+  content: { padding: 16 },
+  line: { height: 12, borderRadius: 6 },
+  chip: { height: 20, width: 80, borderRadius: 10 },
+});
+
 
 const CATEGORIES = [
   { id: '1', name: 'Carros', type: 'carro', icon: 'car-sport-outline' },
@@ -314,11 +360,16 @@ export default function BuyerHomeScreen() {
           {renderHeader()}
 
           {isLoading ? (
-            <ActivityIndicator
-              size="large"
-              color={colors.brand}
-              style={{ marginTop: 40 }}
-            />
+            // Skeletons de carregamento: mostrados enquanto os dados chegam
+            <View style={[styles.innerDesktop, { paddingBottom: 80 }]}>
+              <View style={styles.productGridDesktop}>
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <View key={`skel-${i}`} style={{ width: cardWidth as any }}>
+                    <VehicleCardSkeleton colors={colors} />
+                  </View>
+                ))}
+              </View>
+            </View>
           ) : (
             <View style={[styles.innerDesktop, { paddingBottom: 80 }]}>
               <View style={styles.productGridDesktop}>
@@ -371,11 +422,12 @@ export default function BuyerHomeScreen() {
         ListFooterComponent={renderFooter}
         ListEmptyComponent={
           isLoading ? (
-            <ActivityIndicator
-              size="large"
-              color={colors.brand}
-              style={{ marginTop: 40 }}
-            />
+            // Skeletons no mobile durante o carregamento inicial
+            <View style={{ paddingHorizontal: 20 }}>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <VehicleCardSkeleton key={`skel-mob-${i}`} colors={colors} />
+              ))}
+            </View>
           ) : null
         }
         contentContainerStyle={styles.scrollContent}

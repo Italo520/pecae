@@ -20,7 +20,7 @@ export const vehicleImages: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1619682817481-e994891cd1f5?auto=format&fit=crop&w=800&q=80', // Yaris
   ],
   honda: [
-    'https://images.unsplash.com/photo-160357860188d-8a716dfecf1f?auto=format&fit=crop&w=800&q=80', // Civic
+    'https://images.unsplash.com/photo-1607853202273-797f1c22a38e?auto=format&fit=crop&w=800&q=80', // Civic
     'https://images.unsplash.com/photo-1617531653332-bd46c24f2068?auto=format&fit=crop&w=800&q=80', // Fit
   ],
 };
@@ -28,8 +28,8 @@ export const vehicleImages: Record<string, string[]> = {
 export const fallbackImages = [
   'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=800&q=80',
   'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-149214453877b-2237f7980731?auto=format&fit=crop&w=800&q=80',
   'https://images.unsplash.com/photo-1553440569-bcc63803a83d?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=800&q=80',
 ];
 
 export const getVehicleImage = (brand?: string, model?: string, id?: string): string => {
