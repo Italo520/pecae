@@ -40,9 +40,16 @@ public class DatabaseConfig {
                 }
             }
 
+            String query = dbUri.getQuery();
+            if (query == null) {
+                query = "prepareThreshold=0";
+            } else if (!query.contains("prepareThreshold")) {
+                query += "&prepareThreshold=0";
+            }
+
             String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + 
                            (dbUri.getPort() != -1 ? dbUri.getPort() : 5432) + 
-                           dbUri.getPath() + (dbUri.getQuery() != null ? "?" + dbUri.getQuery() : "");
+                           dbUri.getPath() + "?" + query;
 
             return DataSourceBuilder.create()
                     .url(dbUrl)
