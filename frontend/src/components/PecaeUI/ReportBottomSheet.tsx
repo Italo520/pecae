@@ -71,12 +71,21 @@ export const ReportBottomSheet: React.FC<ReportBottomSheetProps> = ({
 
     setIsSubmitting(true);
     try {
-      await api.post('/reports', {
-        category,
-        reason,
-        listingId,
-        reportedUserId,
-        chatRoomId
+      const tipoAlvo = listingId ? 'ANUNCIO' : 'USUARIO';
+      const idAlvo = listingId || reportedUserId;
+      
+      let backendCategory = 'OUTRO';
+      if (category === ReportCategory.FRAUD) backendCategory = 'FRAUDE';
+      else if (category === ReportCategory.SPAM) backendCategory = 'SPAM';
+      else if (category === ReportCategory.INAPPROPRIATE_CONTENT) backendCategory = 'CONTEUDO_INADEQUADO';
+      else if (category === ReportCategory.OTHER) backendCategory = 'OUTRO';
+      else if (category === ReportCategory.OFFENSIVE_BEHAVIOR) backendCategory = 'OUTRO';
+
+      await api.post('/denuncias', {
+        tipoAlvo,
+        idAlvo,
+        categoria: backendCategory,
+        descricao: reason
       });
       
       showToast({ type: 'success', title: 'Denúncia Enviada', message: 'Sua denúncia será analisada por nossa equipe.', duration: 4000 });

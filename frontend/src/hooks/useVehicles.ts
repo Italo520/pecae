@@ -25,6 +25,7 @@ export interface VehicleListing {
 
 export interface VehicleDonor {
   id: string;
+  listingId?: string;
   brand: string;
   model: string;
   version: string;
@@ -38,6 +39,7 @@ export interface VehicleDonor {
   availableParts: string[];
   seller: {
     id: string;
+    userId?: string;
     storeName: string;
     city: string;
     state: string;
@@ -193,8 +195,38 @@ export const useVehicleDetails = (id: string) => {
   return useQuery({
     queryKey: ['vehicles', id],
     queryFn: async () => {
-      const { data } = await api.get<VehicleDonor>(`/vehicles/public/${id}`);
-      return data;
+      const { data } = await api.get<any>(`/listings/${id}`);
+      
+      const mapped: VehicleDonor = {
+        id: data.veiculoId || data.id,
+        listingId: data.id,
+        brand: data.marcaNome || '',
+        model: data.modeloNome || '',
+        version: data.versaoNome || '',
+        yearFab: data.anoFabricacao || 0,
+        color: data.cor || '',
+        city: data.cidade || '',
+        state: data.estado || '',
+        thumbnail: data.fotos && data.fotos.length > 0 ? data.fotos[0].url : null,
+        photos: (data.fotos || []).map((f: any) => ({
+          url: f.url,
+          blurhash: f.blurhash
+        })),
+        availablePartsCount: data.pecasDisponiveis ? data.pecasDisponiveis.length : 0,
+        availableParts: data.pecasDisponiveis || [],
+        seller: {
+          id: data.perfilVendedorId || '',
+          userId: data.perfilVendedorId || '',
+          storeName: data.nomeVendedor || 'Vendedor',
+          city: data.cidade || '',
+          state: data.estado || '',
+          isVerified: data.vendedorVerificado || false,
+        },
+        isSponsored: data.patrocinadoAtivo || false,
+        createdAt: data.publicadoEm || data.criadoEm || '',
+        observations: data.observacoes || data.descricao || '',
+      };
+      return mapped;
     },
     enabled: !!id,
   });
