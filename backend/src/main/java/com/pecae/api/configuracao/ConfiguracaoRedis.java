@@ -53,14 +53,14 @@ public class ConfiguracaoRedis {
                 .build();
     }
 
-    @Bean
-    public RedisMessageListenerContainer containerListenerRedis(
-            RedisConnectionFactory connectionFactory,
-            ListenerMensagemChatRedis listenerMensagemChatRedis
-    ) {
-        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(listenerMensagemChatRedis, new PatternTopic("chat:room:*"));
-        return container;
-    }
+//    @Bean
+//    public RedisMessageListenerContainer containerListenerRedis(
+//            RedisConnectionFactory connectionFactory,
+//            ListenerMensagemChatRedis listenerMensagemChatRedis
+//    ) {
+//        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+//        container.setConnectionFactory(connectionFactory);
+//        container.addMessageListener(listenerMensagemChatRedis, new PatternTopic("chat:room:*"));
+//        return container;
+//    }
 }

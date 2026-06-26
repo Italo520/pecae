@@ -8,6 +8,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Entidade que representa um Anunciante (patrocinador externo) na plataforma.
@@ -23,6 +25,8 @@ public class Anunciante {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+
     private UUID id;
 
     @Column(name = "nome_empresa", nullable = false)

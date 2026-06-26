@@ -8,6 +8,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Entidade que representa as notificações in-app enviadas aos usuários.
@@ -23,6 +25,8 @@ public class Notificacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)

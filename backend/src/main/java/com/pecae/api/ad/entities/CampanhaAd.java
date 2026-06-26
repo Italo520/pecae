@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Entidade que representa uma Campanha de anúncios no sistema.
@@ -26,6 +28,8 @@ public class CampanhaAd {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+
     private UUID id;
 
     @Column(nullable = false)

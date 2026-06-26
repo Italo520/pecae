@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * DTO de resposta contendo os detalhes de uma notificação in-app.
@@ -15,6 +17,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RespostaNotificacao {
+
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+
 
     private UUID id;
     private String titulo;

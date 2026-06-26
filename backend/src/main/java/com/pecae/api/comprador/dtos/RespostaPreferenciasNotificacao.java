@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @Setter
@@ -14,9 +16,11 @@ import java.util.UUID;
 public class RespostaPreferenciasNotificacao {
 
     @JsonProperty("id")
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
 
     @JsonProperty("userId")
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID usuarioId;
 
     @JsonProperty("pushEnabled")

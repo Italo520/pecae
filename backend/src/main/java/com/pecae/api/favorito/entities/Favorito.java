@@ -8,6 +8,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "favorites", uniqueConstraints = {
@@ -22,6 +24,8 @@ public class Favorito {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)

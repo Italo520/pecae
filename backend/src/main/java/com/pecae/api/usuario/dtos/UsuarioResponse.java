@@ -7,6 +7,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * DTO de resposta contendo os dados públicos e básicos do perfil do usuário.
@@ -17,6 +19,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UsuarioResponse {
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+
     private UUID id;
 
     @JsonProperty("name")

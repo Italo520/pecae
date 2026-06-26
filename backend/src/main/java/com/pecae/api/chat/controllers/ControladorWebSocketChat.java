@@ -23,6 +23,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Controller
 @RequiredArgsConstructor
@@ -125,6 +127,9 @@ public class ControladorWebSocketChat {
     }
 
     // ── Helpers privados ────────────────────────────────────────────────────
+
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+
 
     private UUID obterUsuarioId(Principal principal) {
         if (principal instanceof UsernamePasswordAuthenticationToken auth) {

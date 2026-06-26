@@ -6,6 +6,8 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "chat_reads",
@@ -19,6 +21,8 @@ public class LeituraSala {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)

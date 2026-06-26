@@ -8,6 +8,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Entidade que registra logs de auditoria para ações de moderação.
@@ -23,6 +25,8 @@ public class LogAuditoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+
     private UUID id;
 
     // Moderador que tomou a ação
@@ -38,6 +42,7 @@ public class LogAuditoria {
     private String tipoEntidade;
 
     @Column(name = "entity_id", nullable = false)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID idEntidade;
 
     @Column(name = "reason", columnDefinition = "TEXT")

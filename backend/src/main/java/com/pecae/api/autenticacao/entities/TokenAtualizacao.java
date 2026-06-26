@@ -7,6 +7,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Entidade que representa os tokens de refresh ativos para controle de sessão do usuário.
@@ -22,9 +24,12 @@ public class TokenAtualizacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+
     private UUID id;
 
     @Column(name = "user_id", nullable = false)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID usuarioId;
 
     @Column(name = "token_hash", columnDefinition = "TEXT", nullable = false)

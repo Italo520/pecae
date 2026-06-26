@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @Setter
@@ -13,6 +15,7 @@ import java.util.UUID;
 public class RespostaCompradorMe {
 
     @JsonProperty("id")
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID id;
 
     @JsonProperty("email")

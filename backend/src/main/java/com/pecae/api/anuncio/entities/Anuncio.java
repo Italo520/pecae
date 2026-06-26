@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "listings")
@@ -29,6 +31,8 @@ public class Anuncio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -63,6 +67,7 @@ public class Anuncio {
     private Boolean duplicado = false;
 
     @Column(name = "duplicate_of_id")
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID duplicadoDeId;
 
     @Column(name = "is_sponsored_active", nullable = false)

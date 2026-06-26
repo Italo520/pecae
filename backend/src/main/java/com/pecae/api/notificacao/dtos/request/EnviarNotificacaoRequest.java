@@ -9,6 +9,8 @@ import lombok.*;
 
 import java.util.Set;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * DTO para solicitação de envio de uma notificação (normalmente via chamadas internas ou administrativas).
@@ -21,6 +23,8 @@ import java.util.UUID;
 public class EnviarNotificacaoRequest {
 
     @NotNull(message = "O ID do usuário destinatário é obrigatório")
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+
     private UUID usuarioId;
 
     @NotBlank(message = "O título da notificação não pode estar vazio")

@@ -7,6 +7,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Entidade que audita a aceitação dos Termos de Uso e Política de Privacidade do usuário (LGPD).
@@ -22,9 +24,12 @@ public class AceiteTermos {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+
     private UUID id;
 
     @Column(name = "user_id", nullable = false)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID usuarioId;
 
     @Column(nullable = false, length = 20)

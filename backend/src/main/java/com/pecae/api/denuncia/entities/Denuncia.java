@@ -11,6 +11,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Entidade que representa uma denúncia feita no sistema.
@@ -26,6 +28,8 @@ public class Denuncia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+
     private UUID id;
 
     // Usuário que fez a denúncia
@@ -38,6 +42,7 @@ public class Denuncia {
     private TipoAlvoDenuncia tipoAlvo;
 
     @Column(name = "target_id", nullable = false)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private UUID idAlvo;
 
     @Enumerated(EnumType.STRING)
