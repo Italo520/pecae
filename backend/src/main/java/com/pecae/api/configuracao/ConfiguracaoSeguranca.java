@@ -38,7 +38,8 @@ public class ConfiguracaoSeguranca {
             "/actuator/health",
             "/actuator/info",
             "/ws/**",
-            "/api/v1/ads/**"
+            "/api/v1/ads/**",
+            "/ads/**"
     };
 
     // Endpoints de leitura pública (apenas GET)
