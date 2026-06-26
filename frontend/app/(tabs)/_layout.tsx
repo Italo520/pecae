@@ -19,9 +19,10 @@ export default function TabLayout() {
   const isOnlyBuyer = user?.type === 'BUYER';
 
   return (
-    <>
+    <View style={styles.container}>
       {isDesktop && <AppHeader />}
-      <Tabs
+      <View style={styles.content}>
+        <Tabs
         initialRouteName="index"
         screenOptions={{
           headerShown: false,
@@ -121,11 +122,18 @@ export default function TabLayout() {
           options={{ href: null }}
         />
       </Tabs>
-    </>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+  },
   sellIconContainer: {
     width: 56,
     height: 56,
