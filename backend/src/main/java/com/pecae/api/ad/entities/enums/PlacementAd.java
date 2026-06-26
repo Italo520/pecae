@@ -5,6 +5,7 @@ package com.pecae.api.ad.entities.enums;
  */
 public enum PlacementAd {
     HOME_HERO,             // Banner principal no topo da Home
+    HOME_TOP,              // Alias do banner do topo da Home (compatibilidade com frontend)
     HOME_MID,              // Banner no meio da Home
     SEARCH_TOP,            // Acima dos resultados de busca
     SEARCH_SIDEBAR,        // Lateral nos resultados de busca
