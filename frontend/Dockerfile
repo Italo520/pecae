@@ -9,7 +9,7 @@ RUN npm install -g turbo@2.0.0
 # Cache breaker
 # Timestamp: 2026-06-03T16:19
 COPY . .
-RUN turbo prune @pecae/mobile --docker
+RUN turbo prune @pecae/frontend --docker
 
 # Stage 2: Dependencies
 FROM node:22-slim AS installer
@@ -41,14 +41,14 @@ ENV EXPO_PUBLIC_SUPABASE_URL=$EXPO_PUBLIC_SUPABASE_URL
 ARG EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzeGV1bHZjZnJieXZ4ZWhoaGFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4OTU0NjQsImV4cCI6MjA5NjQ3MTQ2NH0.gl7nMqpNt-5-AQb39OogZUsTTzcoqtr0esoumTUu6c0
 ENV EXPO_PUBLIC_SUPABASE_ANON_KEY=$EXPO_PUBLIC_SUPABASE_ANON_KEY
 
-RUN cd apps/mobile && npx expo export --platform web
+RUN cd frontend && npx expo export --platform web
 
 # Stage 4: Runner (Nginx com proxy reverso para a API)
 FROM nginx:alpine AS runner
 WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
-COPY --from=builder /app/apps/mobile/dist .
-COPY apps/mobile/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/frontend/dist .
+COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
