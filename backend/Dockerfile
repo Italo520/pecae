@@ -24,7 +24,7 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Copia o jar gerado do Stage 1
-COPY --from=builder /app/build/libs/*.jar app.jar
+COPY --from=builder /app/build/libs/*-SNAPSHOT.jar app.jar
 
 EXPOSE 8080
 
