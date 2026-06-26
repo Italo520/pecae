@@ -33,24 +33,25 @@ export function FipeSearchForm({ hasBanner = true }: { hasBanner?: boolean }) {
   const [selectedModel, setSelectedModel] = useState<string>('');
   const [selectedModelLabel, setSelectedModelLabel] = useState<string>('');
 
-  useEffect(() => {
-    async function fetchBrands() {
-      setIsLoadingBrands(true);
-      try {
-        const res = await fetch(`${FIPE_BASE_URL}/brands`);
-        const data = await res.json();
-        setBrands(data.map((item: any) => ({
-          value: item.code,
-          label: item.name
-        })));
-      } catch (err) {
-        console.error('Failed to fetch brands:', err);
-      } finally {
-        setIsLoadingBrands(false);
-      }
+  const [brandsFetched, setBrandsFetched] = useState(false);
+
+  const handleOpenBrands = async () => {
+    if (brandsFetched || isLoadingBrands) return;
+    setIsLoadingBrands(true);
+    try {
+      const res = await fetch(`${FIPE_BASE_URL}/brands`);
+      const data = await res.json();
+      setBrands(data.map((item: any) => ({
+        value: item.code,
+        label: item.name
+      })));
+      setBrandsFetched(true);
+    } catch (err) {
+      console.error('Failed to fetch brands:', err);
+    } finally {
+      setIsLoadingBrands(false);
     }
-    fetchBrands();
-  }, []);
+  };
 
   useEffect(() => {
     if (selectedBrand) {
@@ -113,6 +114,7 @@ export function FipeSearchForm({ hasBanner = true }: { hasBanner?: boolean }) {
             placeholder="Ex: Fiat"
             searchPlaceholder="Buscar marca..."
             isLoading={isLoadingBrands}
+            onOpen={handleOpenBrands}
           />
         </View>
 

@@ -16,6 +16,7 @@ interface ComboboxProps {
   searchPlaceholder?: string;
   disabled?: boolean;
   isLoading?: boolean;
+  onOpen?: () => void;
 }
 
 export function Combobox({ 
@@ -25,7 +26,8 @@ export function Combobox({
   placeholder = 'Selecione...', 
   searchPlaceholder = 'Buscar...',
   disabled = false,
-  isLoading = false
+  isLoading = false,
+  onOpen
 }: ComboboxProps) {
   const { colors, typography } = usePecaeTheme();
   const [modalVisible, setModalVisible] = useState(false);
@@ -49,7 +51,12 @@ export function Combobox({
             backgroundColor: disabled ? colors.surface + '80' : colors.surface 
           }
         ]}
-        onPress={() => !disabled && setModalVisible(true)}
+        onPress={() => {
+          if (!disabled) {
+            setModalVisible(true);
+            onOpen?.();
+          }
+        }}
         disabled={disabled}
       >
         <Text 
