@@ -207,9 +207,9 @@ export const useVehicleDetails = (id: string) => {
         color: data.cor || '',
         city: data.cidade || '',
         state: data.estado || '',
-        thumbnail: data.fotos && data.fotos.length > 0 ? data.fotos[0].url : null,
+        thumbnail: data.fotos && data.fotos.length > 0 ? (data.fotos[0].urlFoto || data.fotos[0].url) : null,
         photos: (data.fotos || []).map((f: any) => ({
-          url: f.url,
+          url: f.urlFoto || f.url,
           blurhash: f.blurhash
         })),
         availablePartsCount: data.pecasDisponiveis ? data.pecasDisponiveis.length : 0,
