@@ -16,7 +16,7 @@ public interface MapperAnuncio {
     @Mapping(source = "veiculo.versao.modelo.marca.nome", target = "marcaNome")
     @Mapping(source = "veiculo.versao.modelo.nome", target = "modeloNome")
     @Mapping(source = "veiculo.versao.nome", target = "versaoNome")
-    @Mapping(source = "veiculo.anoFabricacao.ano", target = "anoFabricacao")
+    @Mapping(target = "anoFabricacao", expression = "java(extrairAnoFabricacao(anuncio))")
     @Mapping(source = "veiculo.cor", target = "cor")
     @Mapping(source = "veiculo.cidade", target = "cidade")
     @Mapping(source = "veiculo.estado", target = "estado")
@@ -33,7 +33,7 @@ public interface MapperAnuncio {
     @Mapping(source = "veiculo.versao.modelo.marca.nome", target = "marcaNome")
     @Mapping(source = "veiculo.versao.modelo.nome", target = "modeloNome")
     @Mapping(source = "veiculo.versao.nome", target = "versaoNome")
-    @Mapping(source = "veiculo.anoFabricacao.ano", target = "anoFabricacao")
+    @Mapping(target = "anoFabricacao", expression = "java(extrairAnoFabricacao(anuncio))")
     @Mapping(source = "veiculo.cor", target = "cor")
     @Mapping(source = "veiculo.observacoes", target = "observacoes")
     @Mapping(source = "veiculo.quilometragem", target = "quilometragem")
@@ -48,8 +48,8 @@ public interface MapperAnuncio {
     @Mapping(source = "perfilVendedor.telefone", target = "telefoneVendedor")
     @Mapping(source = "perfilVendedor.urlLogo", target = "urlLogoVendedor")
     @Mapping(target = "vendedorVerificado", expression = "java(isVendedorVerificado(anuncio))")
-    @Mapping(source = "perfilVendedor.estatisticas.mediaAvaliacao", target = "ratingVendedor")
-    @Mapping(source = "perfilVendedor.estatisticas.totalAvaliacoes", target = "totalAvaliacoesVendedor")
+    @Mapping(target = "ratingVendedor", expression = "java(extrairRatingVendedor(anuncio))")
+    @Mapping(target = "totalAvaliacoesVendedor", expression = "java(extrairTotalAvaliacoesVendedor(anuncio))")
     @Mapping(source = "status", target = "status")
     RespostaDetalheAnuncio paraRespostaDetalhe(Anuncio anuncio);
 
@@ -74,5 +74,26 @@ public interface MapperAnuncio {
             return false;
         }
         return anuncio.getPerfilVendedor().getVerificacao().getStatus() == com.pecae.api.vendedor.entities.enums.StatusVerificacao.APROVADO;
+    }
+
+    default Integer extrairAnoFabricacao(Anuncio anuncio) {
+        if (anuncio.getVeiculo() == null || anuncio.getVeiculo().getAnoFabricacao() == null) {
+            return null;
+        }
+        return anuncio.getVeiculo().getAnoFabricacao().getAno();
+    }
+
+    default Double extrairRatingVendedor(Anuncio anuncio) {
+        if (anuncio.getPerfilVendedor() == null || anuncio.getPerfilVendedor().getEstatisticas() == null) {
+            return 0.0;
+        }
+        return anuncio.getPerfilVendedor().getEstatisticas().getMediaAvaliacao();
+    }
+
+    default Integer extrairTotalAvaliacoesVendedor(Anuncio anuncio) {
+        if (anuncio.getPerfilVendedor() == null || anuncio.getPerfilVendedor().getEstatisticas() == null) {
+            return 0;
+        }
+        return anuncio.getPerfilVendedor().getEstatisticas().getTotalAvaliacoes();
     }
 }
