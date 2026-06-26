@@ -13,7 +13,7 @@ interface Banner {
   title?: string;
 }
 
-export function BannerCarousel() {
+export function BannerCarousel({ onBannersLoaded }: { onBannersLoaded?: (hasBanners: boolean) => void }) {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { colors } = usePecaeTheme();
@@ -31,15 +31,19 @@ export function BannerCarousel() {
             linkUrl: ad.urlDestino,
             title: ad.titulo
           }]);
+          onBannersLoaded?.(true);
+        } else {
+          onBannersLoaded?.(false);
         }
       } catch (error) {
         console.warn('Failed to load banners', error);
+        onBannersLoaded?.(false);
       } finally {
         setIsLoading(false);
       }
     };
     fetchBanners();
-  }, []);
+  }, [onBannersLoaded]);
 
   const handleBannerPress = async (banner: Banner) => {
     try {

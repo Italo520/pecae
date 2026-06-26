@@ -58,6 +58,7 @@ function WebScrollSentinel({ onVisible }: { onVisible: () => void }) {
 export default function BuyerHomeScreen() {
   const { colors, typography } = usePecaeTheme();
   const [activeCategory, setActiveCategory] = useState<string | undefined>(undefined);
+  const [hasBanners, setHasBanners] = useState(true);
   const { width, isDesktop, cardWidth } = useDeviceLayout();
   const router = useRouter();
   const { showToast } = useToast();
@@ -203,8 +204,8 @@ export default function BuyerHomeScreen() {
 
       {/* Conteúdo estático acima da grade */}
       <View style={isDesktop ? styles.innerDesktop : undefined}>
-        <BannerCarousel />
-        <FipeSearchForm />
+        <BannerCarousel onBannersLoaded={setHasBanners} />
+        <FipeSearchForm hasBanner={hasBanners} />
 
         {/* Categorias */}
         <View style={styles.categoriesSection}>
