@@ -1,0 +1,34 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-06-29T12:44:02-03:00",
+  "phase": "v10.0",
+  "phase_name": "Milestone 10: Separação do Frontend Web e Mobile",
+  "phase_dir": ".planning/milestones/v10.0",
+  "plan": 1,
+  "task": 1,
+  "total_tasks": 7,
+  "status": "paused",
+  "completed_tasks": [],
+  "remaining_tasks": [
+    {"id": 1, "name": "Fase 1 — Evolução do packages/shared", "status": "in_progress"},
+    {"id": 2, "name": "Fase 2 — Renomear frontend/ → mobile-frontend/", "status": "not_started"},
+    {"id": 3, "name": "Fase 3 — Limpeza do mobile-frontend", "status": "not_started"},
+    {"id": 4, "name": "Fase 3b — Modernização do mobile-frontend", "status": "not_started"},
+    {"id": 5, "name": "Fase 4 — Setup web-frontend Next.js 15", "status": "not_started"},
+    {"id": 6, "name": "Fase 5 — Páginas Core Web", "status": "not_started"},
+    {"id": 7, "name": "Fase 6 — Autenticação Web", "status": "not_started"},
+    {"id": 8, "name": "Fase 7 — Turborepo, Docker e Documentação", "status": "not_started"}
+  ],
+  "blockers": [],
+  "human_actions_pending": [],
+  "decisions": [
+    {"decision": "Adicionar Fase 3b", "rationale": "Garantir otimizações no app mobile (FlashList, Pressable, cache) antes de considerar o projeto separado pronto.", "phase": "v10.0"},
+    {"decision": "Padronização UX de Marketplace", "rationale": "UX de alto nível é fundamental (Marketplace-like, ex: OLX/Mercado Livre). Filtros como chips, schema.org Vehicle, social proof (visualizações).", "phase": "v10.0"}
+  ],
+  "uncommitted_files": [
+    "packages/shared/package.json",
+    "packages/shared/package-lock.json"
+  ],
+  "next_action": "Continuar execução da Fase 1, que exige criar schemas e mapeamentos no pacote @pecae/shared.",
+  "context_notes": "Acabamos de gerar e aprovar as atualizações de UX de todas as SPECs da Milestone 10 e adicionamos a Fase 3b ao ROADMAP e v10.0-SPEC. Instalamos a lib zod em packages/shared. Pronto para continuar implementando a Fase 1."
+}
