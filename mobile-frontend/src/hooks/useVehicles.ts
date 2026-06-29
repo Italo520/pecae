@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { api } from '../services/api';
+import { paginatedListingsSchema, QUERY_DEFAULTS } from '@pecae/shared';
 
 export interface VehiclePhoto {
   url: string;
@@ -54,9 +55,10 @@ export const useVehicles = () => {
   return useQuery({
     queryKey: ['vehicles', 'me'],
     queryFn: async () => {
-      const { data } = await api.get<any>('/vehicles/me');
+      const { data } = await api.get('/vehicles/me');
       return Array.isArray(data) ? data : (data?.items || []);
     },
+    staleTime: QUERY_DEFAULTS.staleTime.LISTINGS,
   });
 };
 
@@ -76,8 +78,12 @@ export const useSearchVehicles = (filters?: {
   return useQuery({
     queryKey: ['vehicles', 'search', filters],
     queryFn: async () => {
-      const { data } = await api.get<any>('/listings', { params: { ...filters, size: filters?.limit || 20 } });
-      const mappedData = (data.content || []).map((item: any) => ({
+      const { data } = await api.get('/listings', { params: { ...filters, size: filters?.limit || 20 } });
+      
+      // Parse with Zod
+      const parsed = paginatedListingsSchema.parse(data);
+      
+      const mappedData = parsed.data.map(item => ({
         id: item.id,
         title: item.titulo,
         status: item.status,
@@ -100,10 +106,11 @@ export const useSearchVehicles = (filters?: {
       }));
       return {
         data: mappedData,
-        hasMore: !data.last,
-        nextCursor: !data.last ? String((data.number || 0) + 1) : null
+        hasMore: !parsed.meta.isLast,
+        nextCursor: !parsed.meta.isLast ? String(parsed.meta.currentPage + 1) : null
       };
     },
+    staleTime: QUERY_DEFAULTS.staleTime.LISTINGS,
   });
 };
 
@@ -134,8 +141,11 @@ export const useInfiniteSearchVehicles = (filters?: InfiniteSearchFilters) => {
         size: limit,
         ...(pageParam ? { page: pageParam } : { page: 0 }),
       };
-      const { data } = await api.get<any>('/listings', { params });
-      const mappedData = (data.content || []).map((item: any) => ({
+      const { data } = await api.get('/listings', { params });
+      
+      const parsed = paginatedListingsSchema.parse(data);
+
+      const mappedData = parsed.data.map(item => ({
         id: item.id,
         title: item.titulo,
         status: item.status,
@@ -158,12 +168,13 @@ export const useInfiniteSearchVehicles = (filters?: InfiniteSearchFilters) => {
       }));
       return {
         data: mappedData,
-        hasMore: !data.last,
-        nextCursor: !data.last ? String((data.number || 0) + 1) : null
+        hasMore: !parsed.meta.isLast,
+        nextCursor: !parsed.meta.isLast ? String(parsed.meta.currentPage + 1) : null
       };
     },
     getNextPageParam: (lastPage) =>
       lastPage.hasMore ? lastPage.nextCursor : undefined,
+    staleTime: QUERY_DEFAULTS.staleTime.LISTINGS,
   });
 };
 
@@ -229,6 +240,7 @@ export const useVehicleDetails = (id: string) => {
       return mapped;
     },
     enabled: !!id,
+    staleTime: QUERY_DEFAULTS.staleTime.LISTINGS,
   });
 };
 

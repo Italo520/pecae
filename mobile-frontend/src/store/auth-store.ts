@@ -5,6 +5,7 @@ import * as Notifications from 'expo-notifications';
 import axios from 'axios';
 import { queryClient } from '../lib/queryClient';
 import Constants from 'expo-constants';
+import { logger } from '../utils/logger';
 
 interface User {
   id: string;
@@ -65,13 +66,13 @@ export const useAuthStore = create<AuthState>((set) => ({
           }, {
             headers: { Authorization: `Bearer ${accessToken}` }
           });
-          console.log('[AuthStore] Push token registered successfully');
+          logger.log('[AuthStore] Push token registered successfully');
         }
       } catch (pushErr) {
-        console.error('[AuthStore] Failed to register push token:', pushErr);
+        logger.error('[AuthStore] Failed to register push token:', pushErr);
       }
     } catch (error) {
-      console.error('Error saving auth state:', error);
+      logger.error('Error saving auth state:', error);
     }
   },
 
@@ -82,7 +83,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       
       set({ token: accessToken, refreshToken });
     } catch (error) {
-      console.error('Error updating tokens:', error);
+      logger.error('Error updating tokens:', error);
     }
   },
 
@@ -95,7 +96,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       queryClient.clear(); // Clear React Query cache!
       set({ user: null, token: null, refreshToken: null, isAuthenticated: false, isLoading: false });
     } catch (error) {
-      console.error('Error clearing auth state:', error);
+      logger.error('Error clearing auth state:', error);
     }
   },
 
@@ -103,11 +104,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     // Evita re-inicialização e flashes de loading se já estiver logado
     const state = useAuthStore.getState();
     if (state.isAuthenticated && state.user && state.token) {
-      console.log('[AuthStore] ℹ️ Auth already initialized, skipping...');
+      logger.log('[AuthStore] ℹ️ Auth already initialized, skipping...');
       return;
     }
     
-    console.log('[AuthStore] 🔄 Initializing Auth...');
+    logger.log('[AuthStore] 🔄 Initializing Auth...');
     set({ isLoading: true });
 
     try {
@@ -119,7 +120,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       refreshToken = await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
       userData = await SecureStore.getItemAsync(USER_KEY);
 
-      console.log(`[AuthStore] 🔍 Persistence: token=${!!token}, user=${!!userData}`);
+      logger.log(`[AuthStore] 🔍 Persistence: token=${!!token}, user=${!!userData}`);
 
       if (token && userData && userData !== 'undefined' && userData !== 'null') {
         try {
@@ -131,17 +132,17 @@ export const useAuthStore = create<AuthState>((set) => ({
             isAuthenticated: true, 
             isLoading: false 
           });
-          console.log('[AuthStore] ✅ Session restored:', parsedUser.email);
+          logger.log('[AuthStore] ✅ Session restored:', parsedUser.email);
         } catch (e) {
-          console.error('[AuthStore] ❌ Error parsing user data:', e);
+          logger.error('[AuthStore] ❌ Error parsing user data:', e);
           set({ isLoading: false, isAuthenticated: false });
         }
       } else {
-        console.log('[AuthStore] ℹ️ No session found in storage');
+        logger.log('[AuthStore] ℹ️ No session found in storage');
         set({ isLoading: false, isAuthenticated: false });
       }
     } catch (error) {
-      console.error('[AuthStore] 🚨 Critical error during auth initialization:', error);
+      logger.error('[AuthStore] 🚨 Critical error during auth initialization:', error);
       set({ isLoading: false, isAuthenticated: false });
     }
   },

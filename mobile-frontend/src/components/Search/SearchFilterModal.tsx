@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Modal, ScrollView, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Text, Pressable, Modal, ScrollView, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../theme';
 import { PecaeButton } from '../PecaeUI/PecaeButton';
@@ -54,9 +54,9 @@ export function SearchFilterModal({ visible, onClose, onApply, initialFilters }:
             <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.display }]}>
               FILTROS AVANÇADOS
             </Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+            <Pressable onPress={onClose} style={({ pressed }) => [styles.closeBtn, pressed && { opacity: 0.7 }]}>
               <Ionicons name="close" size={24} color={colors.textPrimary} />
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -67,7 +67,7 @@ export function SearchFilterModal({ visible, onClose, onApply, initialFilters }:
                 <ActivityIndicator color={colors.brand} />
               ) : (
                 brands?.map((brand) => (
-                  <TouchableOpacity
+                  <Pressable
                     key={brand.id}
                     onPress={() => {
                       setSelectedBrand(brand.id);
@@ -87,7 +87,7 @@ export function SearchFilterModal({ visible, onClose, onApply, initialFilters }:
                     ]}>
                       {brand.name}
                     </Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 ))
               )}
             </View>
@@ -103,7 +103,7 @@ export function SearchFilterModal({ visible, onClose, onApply, initialFilters }:
                     <Text style={{ color: colors.textMuted, fontSize: 12 }}>Nenhum modelo disponível</Text>
                   ) : (
                     models?.map((model) => (
-                      <TouchableOpacity
+                      <Pressable
                         key={model.id}
                         onPress={() => setSelectedModel(model.id)}
                         style={[
@@ -119,7 +119,7 @@ export function SearchFilterModal({ visible, onClose, onApply, initialFilters }:
                         ]}>
                           {model.name}
                         </Text>
-                      </TouchableOpacity>
+                      </Pressable>
                     ))
                   )}
                 </View>
@@ -135,7 +135,7 @@ export function SearchFilterModal({ visible, onClose, onApply, initialFilters }:
                     <ActivityIndicator color={colors.brand} />
                   ) : (
                     years?.map((y) => (
-                      <TouchableOpacity
+                      <Pressable
                         key={y.id}
                         onPress={() => setSelectedYear(y.id)}
                         style={[
@@ -151,7 +151,7 @@ export function SearchFilterModal({ visible, onClose, onApply, initialFilters }:
                         ]}>
                           {y.year}
                         </Text>
-                      </TouchableOpacity>
+                      </Pressable>
                     ))
                   )}
                 </View>
@@ -162,9 +162,9 @@ export function SearchFilterModal({ visible, onClose, onApply, initialFilters }:
           </ScrollView>
 
           <View style={styles.footer}>
-            <TouchableOpacity onPress={handleClear} style={styles.clearBtn}>
+            <Pressable onPress={handleClear} style={({ pressed }) => [styles.clearBtn, pressed && { opacity: 0.7 }]}>
               <Text style={[styles.clearBtnText, { color: colors.textMuted, fontFamily: typography.bold }]}>LIMPAR TUDO</Text>
-            </TouchableOpacity>
+            </Pressable>
             <PecaeButton 
               title="APLICAR FILTROS" 
               onPress={handleApply}

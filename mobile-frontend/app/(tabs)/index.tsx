@@ -4,7 +4,6 @@ import {
   View,
   Text,
   ScrollView,
-  FlatList,
   ActivityIndicator,
   TouchableOpacity,
   Platform,
@@ -25,6 +24,7 @@ import { FipeSearchForm } from '../../src/components/Search/FipeSearchForm';
 import { VehicleCard } from '../../src/components/Vehicle/VehicleCard';
 import { useToast } from '../../src/context/ToastContext';
 import { useState } from 'react';
+import { FlashList } from '@shopify/flash-list';
 
 // Componente de esqueleto (placeholder) para cards de veículo durante carregamento
 function VehicleCardSkeleton({ colors }: { colors: any }) {
@@ -410,14 +410,15 @@ export default function BuyerHomeScreen() {
     );
   }
 
-  // ===== MOBILE: FlatList com infinite scroll automático no fim =====
+  // ===== MOBILE: FlashList com infinite scroll automático no fim =====
   return (
     <PecaeBackground>
-      <FlatList
+      <FlashList
         data={listings}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         numColumns={1}
+        estimatedItemSize={300}
         ListHeaderComponent={renderHeader}
         ListFooterComponent={renderFooter}
         ListEmptyComponent={
@@ -435,13 +436,10 @@ export default function BuyerHomeScreen() {
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.3}
         // Evita bugs de imagens sumindo ao rolar de volta
-        removeClippedSubviews={false}
         initialNumToRender={10}
-        maxToRenderPerBatch={10}
         windowSize={5}
         // Espaçamento entre cards
         ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
-        style={styles.container}
       />
     </PecaeBackground>
   );

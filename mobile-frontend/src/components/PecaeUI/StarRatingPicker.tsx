@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Animated, Text } from 'react-native';
+import { View, StyleSheet, Pressable, Animated, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../theme';
 
@@ -47,7 +47,7 @@ export const StarRatingPicker: React.FC<StarRatingPickerProps> = ({
         const scale = animations[index];
 
         return (
-          <TouchableOpacity
+          <Pressable
             key={index}
             onPress={() => handlePress(index)}
             activeOpacity={0.7}
@@ -61,7 +61,7 @@ export const StarRatingPicker: React.FC<StarRatingPickerProps> = ({
                 color={isFilled ? colors.brand : colors.textMuted}
               />
             </Animated.View>
-          </TouchableOpacity>
+          </Pressable>
         );
       })}
     </View>

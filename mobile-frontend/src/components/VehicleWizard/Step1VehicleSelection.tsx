@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, Pressable, ScrollView } from 'react-native';
 import { VehicleSelector } from '../Catalog/VehicleSelector';
 import { useVehicleWizardStore } from '../../store/vehicle-wizard-store';
 import { Ionicons } from '@expo/vector-icons';
@@ -47,11 +47,11 @@ export const Step1VehicleSelection: React.FC = () => {
           {TYPES.map((type) => {
             const isSelected = data.vehicleType === type.id;
             return (
-              <TouchableOpacity
+              <Pressable
                 key={type.id}
-                style={[
+                style={({ pressed }) => [[
                   styles.typeButton,
-                  { backgroundColor: colors.surface, borderColor: colors.border },
+                  { backgroundColor: colors.surface, borderColor: colors.border , pressed && { opacity: 0.7 }]},
                   isSelected && { borderColor: colors.brand, backgroundColor: 'rgba(63, 255, 139, 0.1)' }
                 ]}
                 onPress={() => updateData({ vehicleType: type.id, brandId: undefined, modelId: undefined, versionId: undefined, yearFabId: undefined })}
@@ -63,7 +63,7 @@ export const Step1VehicleSelection: React.FC = () => {
                 ]}>
                   {type.label}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
         </ScrollView>

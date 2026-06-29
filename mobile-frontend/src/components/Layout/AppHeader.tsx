@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
 import { usePecaeTheme } from '../../theme';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -23,40 +23,40 @@ export function AppHeader() {
   return (
     <View style={[styles.header, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
       <View style={styles.container}>
-        <TouchableOpacity style={styles.logoContainer} onPress={() => router.push('/(tabs)/')}>
+        <Pressable style={({ pressed }) => [styles.logoContainer, pressed && { opacity: 0.7 }]} onPress={() => router.push('/(tabs)/')}>
           <View style={[styles.logoIcon, { backgroundColor: colors.brand }]} />
           <Text style={[styles.logoText, { color: colors.textPrimary, fontFamily: typography.display }]}>PEÇAÊ</Text>
-        </TouchableOpacity>
+        </Pressable>
 
         <View style={styles.navContainer}>
-          <TouchableOpacity onPress={() => router.push('/(tabs)/')} style={styles.navItem}>
+          <Pressable onPress={() => router.push('/(tabs)/')} style={styles.navItem}>
             <Text style={[styles.navText, { color: colors.textPrimary, fontFamily: typography.medium }]}>Início</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push('/(tabs)/search')} style={styles.navItem}>
+          </Pressable>
+          <Pressable onPress={() => router.push('/(tabs)/search')} style={styles.navItem}>
             <Text style={[styles.navText, { color: colors.textPrimary, fontFamily: typography.medium }]}>Buscar Veículos</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push('/(tabs)/favoritos')} style={styles.navItem}>
+          </Pressable>
+          <Pressable onPress={() => router.push('/(tabs)/favoritos')} style={styles.navItem}>
             <Text style={[styles.navText, { color: colors.textPrimary, fontFamily: typography.medium }]}>Favoritos</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push('/(tabs)/mensagens')} style={styles.navItem}>
+          </Pressable>
+          <Pressable onPress={() => router.push('/(tabs)/mensagens')} style={styles.navItem}>
             <Text style={[styles.navText, { color: colors.textPrimary, fontFamily: typography.medium }]}>Mensagens</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         <View style={styles.actionsContainer}>
           {isAuthenticated ? (
-            <TouchableOpacity onPress={() => router.push('/(buyer)/perfil')} style={styles.profileBtn}>
+            <Pressable onPress={() => router.push('/(buyer)/perfil')} style={styles.profileBtn}>
               <Ionicons name="person-circle-outline" size={24} color={colors.textPrimary} />
               <Text style={{ color: colors.textPrimary, marginLeft: 8 }}>{user?.name || 'Perfil'}</Text>
-            </TouchableOpacity>
+            </Pressable>
           ) : (
-            <TouchableOpacity onPress={handleAuthAction} style={[styles.loginBtn, { borderColor: colors.brand }]}>
+            <Pressable onPress={handleAuthAction} style={({ pressed }) => [[styles.loginBtn, { borderColor: colors.brand , pressed && { opacity: 0.7 }]}]}>
               <Text style={[styles.loginText, { color: colors.brand, fontFamily: typography.medium }]}>ENTRAR</Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
-          <TouchableOpacity onPress={() => requireAuth(() => router.push('/(seller)/'))} style={[styles.sellBtn, { backgroundColor: colors.brand }]}>
+          <Pressable onPress={() => requireAuth(() => router.push('/(seller)/'))} style={[styles.sellBtn, { backgroundColor: colors.brand }]}>
             <Text style={[styles.sellText, { color: '#000', fontFamily: typography.medium }]}>ANUNCIAR PEÇAS</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
     </View>

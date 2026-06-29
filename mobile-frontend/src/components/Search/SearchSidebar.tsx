@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView } from 'react-native';
+import { View, Text, Pressable, StyleSheet, TextInput, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../theme';
 import { Brand, Model, Version } from '../../hooks/useCatalog';
@@ -84,27 +84,27 @@ export function SearchSidebar({
             {title}
           </Text>
           {selectedValue && onClear && (
-            <TouchableOpacity onPress={onClear}>
+            <Pressable onPress={onClear}>
               <Text style={{ color: colors.brand, fontSize: 12 }}>Limpar</Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
 
         {selectedValue ? (
-          <TouchableOpacity style={styles.activeFilter} onPress={onClear}>
+          <Pressable style={({ pressed }) => [styles.activeFilter, pressed && { opacity: 0.7 }]} onPress={onClear}>
             <Ionicons name="close" size={14} color={colors.textPrimary} style={{ marginRight: 6 }} />
             <Text style={[styles.activeFilterText, { color: colors.textPrimary, fontFamily: typography.medium }]}>
               {selectedLabel}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         ) : (
           <View style={styles.optionsList}>
             {visibleOptions.map((opt) => (
-              <TouchableOpacity key={opt.id} style={styles.optionRow} onPress={() => onSelect?.(opt.id)}>
+              <Pressable key={opt.id} style={({ pressed }) => [styles.optionRow, pressed && { opacity: 0.7 }]} onPress={() => onSelect?.(opt.id)}>
                 <Text style={[styles.optionText, { color: colors.textMuted, fontFamily: typography.body }]}>
                   {opt.label}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             ))}
           </View>
         )}
@@ -115,9 +115,9 @@ export function SearchSidebar({
   if (isCollapsed) {
     return (
       <View style={[styles.containerCollapsed, { borderRightColor: colors.border }]}>
-        <TouchableOpacity style={styles.toggleBtnCollapsed} onPress={onToggle}>
+        <Pressable style={({ pressed }) => [styles.toggleBtnCollapsed, pressed && { opacity: 0.7 }]} onPress={onToggle}>
           <Ionicons name="options-outline" size={24} color={colors.textPrimary} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
     );
   }
@@ -130,9 +130,9 @@ export function SearchSidebar({
     >
       <View style={styles.headerRow}>
         <Text style={[styles.headerTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>Filtros</Text>
-        <TouchableOpacity style={styles.toggleBtn} onPress={onToggle}>
+        <Pressable style={({ pressed }) => [styles.toggleBtn, pressed && { opacity: 0.7 }]} onPress={onToggle}>
           <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -149,11 +149,11 @@ export function SearchSidebar({
               { id: 'caminhao', label: 'Caminhões', icon: 'bus-outline' },
               { id: 'outro', label: 'Outros', icon: 'construct-outline' }
             ].map(t => (
-              <TouchableOpacity
+              <Pressable
                 key={t.id}
-                style={[
+                style={({ pressed }) => [[
                   styles.typeButton,
-                  { borderColor: colors.border },
+                  { borderColor: colors.border , pressed && { opacity: 0.7 }]},
                   type === t.id && { borderColor: colors.brand, backgroundColor: 'rgba(63, 255, 139, 0.1)' }
                 ]}
                 onPress={() => setType(type === t.id ? undefined : t.id)}
@@ -162,7 +162,7 @@ export function SearchSidebar({
                 <Text style={{ color: type === t.id ? colors.brand : colors.textMuted, fontSize: 13, marginLeft: 4 }}>
                   {t.label}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             ))}
           </View>
         </View>
@@ -172,9 +172,9 @@ export function SearchSidebar({
             Localização
           </Text>
           {(state || city) && (
-            <TouchableOpacity onPress={() => { setState(''); setCity(''); }}>
+            <Pressable onPress={() => { setState(''); setCity(''); }}>
               <Text style={{ color: colors.brand, fontSize: 12 }}>Limpar</Text>
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
         <View style={styles.locationRow}>

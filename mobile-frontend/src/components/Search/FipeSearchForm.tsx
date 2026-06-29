@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Text, Pressable, ActivityIndicator } from 'react-native';
 import { Combobox } from './Combobox';
 import { useRouter } from 'expo-router';
 import { usePecaeTheme } from '../../theme';
@@ -146,13 +146,13 @@ export function FipeSearchForm({ hasBanner = true }: { hasBanner?: boolean }) {
         </View>
 
         <View style={[styles.buttonGroup, isTablet && styles.buttonGroupTablet]}>
-          <TouchableOpacity 
-            style={[styles.searchButton, { backgroundColor: colors.brand }]} 
+          <Pressable 
+            style={({ pressed }) => [[styles.searchButton, { backgroundColor: colors.brand , pressed && { opacity: 0.7 }]}]} 
             onPress={handleSearch}
           >
             <Ionicons name="search" size={20} color="#000" />
             <Text style={[styles.searchButtonText, { fontFamily: typography.bold }]}>BUSCAR</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
     </View>

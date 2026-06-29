@@ -1,14 +1,5 @@
 import React, { useRef } from 'react';
-import {
-  View,
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  ViewStyle,
-  TextStyle,
-  Animated,
-} from 'react-native';
+import { View, Pressable, Text, StyleSheet, ActivityIndicator, ViewStyle, TextStyle, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { usePecaeTheme } from '../../theme';
 
@@ -61,14 +52,13 @@ export const PecaeButton: React.FC<PecaeButtonProps> = ({
 
   return (
     <Animated.View style={{ transform: [{ scale: scaleAnim }], opacity: disabled ? 0.6 : 1 }}>
-      <TouchableOpacity
+      <Pressable
         onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         disabled={disabled || loading}
-        activeOpacity={1}
         accessibilityRole="button"
-        style={[styles.button, { borderRadius: effects.radius.md }, style]}
+        style={({ pressed }) => [[styles.button, { borderRadius: effects.radius.md , pressed && { opacity: 0.7 }]}, style]}
         testID={testID}
       >
         <LinearGradient
@@ -118,7 +108,7 @@ export const PecaeButton: React.FC<PecaeButtonProps> = ({
             </View>
           )}
         </LinearGradient>
-      </TouchableOpacity>
+      </Pressable>
     </Animated.View>
   );
 };

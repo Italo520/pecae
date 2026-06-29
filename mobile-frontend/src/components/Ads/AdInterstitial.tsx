@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { Modal, View, Text, StyleSheet, Pressable, Image, Dimensions } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -207,9 +207,9 @@ export const AdInterstitial: React.FC<AdInterstitialProps> = ({ visible, userId,
                   <Text style={styles.timerText}>Fechar em {countdown}s</Text>
                 </View>
               ) : (
-                <TouchableOpacity style={styles.closeButton} onPress={handleCloseSimulated}>
+                <Pressable style={({ pressed }) => [styles.closeButton, pressed && { opacity: 0.7 }]} onPress={handleCloseSimulated}>
                   <Feather name="x" size={24} color="#F1F3FC" />
-                </TouchableOpacity>
+                </Pressable>
               )}
             </View>
 
@@ -226,10 +226,10 @@ export const AdInterstitial: React.FC<AdInterstitialProps> = ({ visible, userId,
                 Desbloqueie recursos avançados de análise, cotações automáticas e suporte prioritário na forja.
               </Text>
 
-              <TouchableOpacity style={styles.ctaButton} onPress={handleCloseSimulated}>
+              <Pressable style={({ pressed }) => [styles.ctaButton, pressed && { opacity: 0.7 }]} onPress={handleCloseSimulated}>
                 <Text style={styles.ctaText}>CONHECER AGORA</Text>
                 <Feather name="arrow-right" size={18} color="#0a0e14" />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         </BlurView>

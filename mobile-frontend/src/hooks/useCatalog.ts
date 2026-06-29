@@ -1,22 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../services/api';
-
-export interface Brand {
-  id: string;
-  name: string;
-}
-
-export interface Model {
-  id: string;
-  name: string;
-  brandId: string;
-}
-
-export interface Version {
-  id: string;
-  name: string;
-  modelId: string;
-}
+import { Brand, Model, Version, Year, PartCategory, QUERY_DEFAULTS } from '@pecae/shared';
 
 export const useBrands = (type?: string) => {
   return useQuery({
@@ -25,6 +9,7 @@ export const useBrands = (type?: string) => {
       const { data } = await api.get<Brand[]>('/catalog/brands', { params: { type } });
       return data;
     },
+    staleTime: QUERY_DEFAULTS.staleTime.STATIC,
   });
 };
 
@@ -37,6 +22,7 @@ export const useModels = (brandId?: string) => {
       return data;
     },
     enabled: !!brandId,
+    staleTime: QUERY_DEFAULTS.staleTime.STATIC,
   });
 };
 
@@ -49,15 +35,9 @@ export const useVersions = (modelId?: string) => {
       return data;
     },
     enabled: !!modelId,
+    staleTime: QUERY_DEFAULTS.staleTime.STATIC,
   });
 };
-
-export interface Year {
-  id: string;
-  yearFab: number;
-  yearModel: number;
-  versionId: string;
-}
 
 export const useYears = (versionId?: string) => {
   return useQuery({
@@ -68,15 +48,9 @@ export const useYears = (versionId?: string) => {
       return data;
     },
     enabled: !!versionId,
+    staleTime: QUERY_DEFAULTS.staleTime.STATIC,
   });
 };
-
-export interface PartCategory {
-  id: string;
-  name: string;
-  slug: string;
-  icon: string;
-}
 
 export const usePartCategories = () => {
   return useQuery({
@@ -85,5 +59,6 @@ export const usePartCategories = () => {
       const { data } = await api.get<PartCategory[]>('/catalog/part-categories');
       return data;
     },
+    staleTime: QUERY_DEFAULTS.staleTime.STATIC,
   });
 };

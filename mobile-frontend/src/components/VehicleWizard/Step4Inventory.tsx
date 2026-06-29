@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../theme';
 import { PecaeGlassCard } from '../PecaeUI/PecaeGlassCard';
@@ -70,16 +70,16 @@ export const Step4Inventory: React.FC<Step4InventoryProps> = ({ isInline }) => {
       )}
 
       <View style={styles.bulkActions}>
-        <TouchableOpacity onPress={selectAll}>
+        <Pressable onPress={selectAll}>
           <Text style={[styles.actionText, { color: colors.brand, fontFamily: typography.bold }]}>
             MARCAR TODOS
           </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={deselectAll}>
+        </Pressable>
+        <Pressable onPress={deselectAll}>
           <Text style={[styles.actionText, { color: colors.textMuted, fontFamily: typography.bold }]}>
             LIMPAR SELEÇÃO
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
       
       {isLoading ? (
@@ -103,9 +103,9 @@ export const Step4Inventory: React.FC<Step4InventoryProps> = ({ isInline }) => {
                   {groupParts.map((cat) => {
                     const isSelected = data.availableParts.includes(cat.id);
                     return (
-                      <TouchableOpacity 
+                      <Pressable 
                         key={cat.id} 
-                        style={styles.partCardWrapper}
+                        style={({ pressed }) => [styles.partCardWrapper, pressed && { opacity: 0.7 }]}
                         onPress={() => togglePart(cat.id)}
                         activeOpacity={0.7}
                       >
@@ -139,7 +139,7 @@ export const Step4Inventory: React.FC<Step4InventoryProps> = ({ isInline }) => {
                             {cat.name}
                           </Text>
                         </PecaeGlassCard>
-                      </TouchableOpacity>
+                      </Pressable>
                     );
                   })}
                 </View>

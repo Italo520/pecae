@@ -1,16 +1,5 @@
 import React from 'react';
-import { 
-  Modal, 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  StyleSheet, 
-  FlatList,
-  TouchableWithoutFeedback,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform
-} from 'react-native';
+import { Modal, View, Text, Pressable, StyleSheet, FlatList, TouchableWithoutFeedback, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../theme';
 
@@ -69,9 +58,9 @@ export function BottomSheetSelector({
             <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.display }]}>
               {title.toUpperCase()}
             </Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+            <Pressable onPress={onClose} style={({ pressed }) => [styles.closeBtn, pressed && { opacity: 0.7 }]}>
               <Ionicons name="close" size={24} color={colors.textPrimary} />
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {searchable && (
@@ -94,10 +83,10 @@ export function BottomSheetSelector({
             renderItem={({ item }) => {
               const isSelected = item.id === selectedValue;
               return (
-                <TouchableOpacity
-                  style={[
+                <Pressable
+                  style={({ pressed }) => [[
                     styles.option, 
-                    { borderBottomColor: colors.border },
+                    { borderBottomColor: colors.border , pressed && { opacity: 0.7 }]},
                     isSelected && { backgroundColor: `${colors.brand}15` }
                   ]}
                   onPress={() => {
@@ -117,7 +106,7 @@ export function BottomSheetSelector({
                   {isSelected && (
                     <Ionicons name="checkmark" size={20} color={colors.brand} />
                   )}
-                </TouchableOpacity>
+                </Pressable>
               );
             }}
             ListEmptyComponent={() => (

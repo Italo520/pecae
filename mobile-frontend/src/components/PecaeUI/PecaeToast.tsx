@@ -1,13 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  Animated,
-  TouchableOpacity,
-  Dimensions,
-  Platform,
-} from 'react-native';
+import { StyleSheet, View, Text, Animated, Pressable, Dimensions, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../theme';
 import { PecaeGlassCard } from './PecaeGlassCard';
@@ -160,9 +152,9 @@ export const PecaeToast: React.FC<PecaeToastProps> = ({
 
           {/* Fechar (quando sem ações) */}
           {actions.length === 0 && (
-            <TouchableOpacity onPress={hide} style={styles.closeBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <Pressable onPress={hide} style={({ pressed }) => [styles.closeBtn, pressed && { opacity: 0.7 }]} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
               <Ionicons name="close" size={18} color={colors.textMuted} />
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
 
@@ -170,12 +162,12 @@ export const PecaeToast: React.FC<PecaeToastProps> = ({
         {actions.length > 0 && (
           <View style={styles.actionsRow}>
             {actions.map((action, idx) => (
-              <TouchableOpacity
+              <Pressable
                 key={idx}
-                style={[
+                style={({ pressed }) => [[
                   styles.actionBtn,
                   action.primary
-                    ? { backgroundColor: config.color }
+                    ? { backgroundColor: config.color , pressed && { opacity: 0.7 }]}
                     : { backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.12)', borderWidth: 1 },
                 ]}
                 onPress={() => {
@@ -194,7 +186,7 @@ export const PecaeToast: React.FC<PecaeToastProps> = ({
                 >
                   {action.label}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             ))}
           </View>
         )}

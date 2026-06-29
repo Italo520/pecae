@@ -1,16 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  StyleSheet, 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  Modal, 
-  TouchableWithoutFeedback, 
-  KeyboardAvoidingView, 
-  Platform,
-  ScrollView,
-  ActivityIndicator
-} from 'react-native';
+import { StyleSheet, View, Text, Pressable, Modal, TouchableWithoutFeedback, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator } from 'react-native';
 import { usePecaeTheme } from '../../theme';
 import { PecaeGlassCard } from './PecaeGlassCard';
 import { PecaeInput } from './PecaeInput';
@@ -132,7 +121,7 @@ export const ReportBottomSheet: React.FC<ReportBottomSheetProps> = ({
                   </Text>
                   <View style={styles.categoryGrid}>
                     {categories.map((cat) => (
-                      <TouchableOpacity
+                      <Pressable
                         key={cat.value}
                         onPress={() => setCategory(cat.value)}
                         style={[
@@ -152,7 +141,7 @@ export const ReportBottomSheet: React.FC<ReportBottomSheetProps> = ({
                         ]}>
                           {cat.label}
                         </Text>
-                      </TouchableOpacity>
+                      </Pressable>
                     ))}
                   </View>
 
@@ -176,11 +165,11 @@ export const ReportBottomSheet: React.FC<ReportBottomSheetProps> = ({
                     style={{ marginTop: 24 }}
                   />
                   
-                  <TouchableOpacity onPress={onClose} style={styles.cancelButton}>
+                  <Pressable onPress={onClose} style={({ pressed }) => [styles.cancelButton, pressed && { opacity: 0.7 }]}>
                     <Text style={[styles.cancelText, { color: colors.textMuted, fontFamily: typography.medium }]}>
                       CANCELAR
                     </Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 </ScrollView>
               </KeyboardAvoidingView>
             </View>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, Pressable, Image, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../theme';
@@ -128,46 +128,46 @@ export const Step3Photos: React.FC = () => {
                 </View>
 
                 {/* Remover Foto */}
-                <TouchableOpacity 
-                  style={styles.removeBtn} 
+                <Pressable 
+                  style={({ pressed }) => [styles.removeBtn, pressed && { opacity: 0.7 }]} 
                   onPress={() => removeImage(index)}
                   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
                   <Ionicons name="close" size={14} color="white" />
-                </TouchableOpacity>
+                </Pressable>
 
                 {/* Barra de Ações (Bottom) */}
                 <View style={styles.actionRow}>
-                  <TouchableOpacity 
-                    style={[styles.actionIconBtn, isCover && { backgroundColor: colors.brand }]} 
+                  <Pressable 
+                    style={({ pressed }) => [[styles.actionIconBtn, isCover && { backgroundColor: colors.brand , pressed && { opacity: 0.7 }]}]} 
                     onPress={() => setAsCover(photo.uri)}
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                   >
                     <Ionicons name={isCover ? "star" : "star-outline"} size={10} color={isCover ? '#000' : '#fff'} />
-                  </TouchableOpacity>
+                  </Pressable>
 
                   <View style={{ flex: 1 }} />
 
                   {/* Mover para Trás */}
                   {index > 0 && (
-                    <TouchableOpacity 
-                      style={styles.actionIconBtn} 
+                    <Pressable 
+                      style={({ pressed }) => [styles.actionIconBtn, pressed && { opacity: 0.7 }]} 
                       onPress={() => moveImage(index, 'prev')}
                       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                     >
                       <Ionicons name="chevron-back" size={11} color="white" />
-                    </TouchableOpacity>
+                    </Pressable>
                   )}
 
                   {/* Mover para Frente */}
                   {index < data.photos.length - 1 && (
-                    <TouchableOpacity 
-                      style={styles.actionIconBtn} 
+                    <Pressable 
+                      style={({ pressed }) => [styles.actionIconBtn, pressed && { opacity: 0.7 }]} 
                       onPress={() => moveImage(index, 'next')}
                       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                     >
                       <Ionicons name="chevron-forward" size={11} color="white" />
-                    </TouchableOpacity>
+                    </Pressable>
                   )}
                 </View>
 
@@ -182,12 +182,12 @@ export const Step3Photos: React.FC = () => {
         })}
 
         {data.photos.length < 10 && (
-          <TouchableOpacity style={styles.slotWrapper} onPress={pickImage}>
+          <Pressable style={({ pressed }) => [styles.slotWrapper, pressed && { opacity: 0.7 }]} onPress={pickImage}>
             <PecaeGlassCard intensity={5} style={[styles.photoSlot, styles.addBtn]}>
               <Ionicons name="camera-outline" size={32} color={colors.textMuted} />
               <Text style={{ color: colors.textMuted, fontSize: 10, fontFamily: typography.bold, marginTop: 4 }}>Adicionar</Text>
             </PecaeGlassCard>
-          </TouchableOpacity>
+          </Pressable>
         )}
       </View>
 

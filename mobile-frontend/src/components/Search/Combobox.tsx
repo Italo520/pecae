@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, FlatList, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Modal, FlatList, TextInput, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../theme';
 
@@ -43,13 +43,13 @@ export function Combobox({
 
   return (
     <>
-      <TouchableOpacity 
-        style={[
+      <Pressable 
+        style={({ pressed }) => [[
           styles.trigger, 
           { 
             borderColor: colors.border, 
             backgroundColor: disabled ? colors.surface + '80' : colors.surface 
-          }
+          , pressed && { opacity: 0.7 }]}
         ]}
         onPress={() => {
           if (!disabled) {
@@ -72,15 +72,15 @@ export function Combobox({
           {isLoading ? 'Carregando...' : (selectedOption ? selectedOption.label : placeholder)}
         </Text>
         <Ionicons name="chevron-down" size={16} color={colors.textMuted} />
-      </TouchableOpacity>
+      </Pressable>
 
       <Modal visible={modalVisible} animationType="slide" transparent={true}>
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
             <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
-              <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeBtn}>
+              <Pressable onPress={() => setModalVisible(false)} style={styles.closeBtn}>
                 <Ionicons name="close" size={24} color={colors.textPrimary} />
-              </TouchableOpacity>
+              </Pressable>
               <Text style={[styles.modalTitle, { color: colors.textPrimary, fontFamily: typography.heading }]}>
                 {placeholder}
               </Text>
@@ -102,10 +102,10 @@ export function Combobox({
               data={filteredOptions}
               keyExtractor={(item) => item.value}
               renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={[
+                <Pressable
+                  style={({ pressed }) => [[
                     styles.optionItem, 
-                    { borderBottomColor: colors.border },
+                    { borderBottomColor: colors.border , pressed && { opacity: 0.7 }]},
                     item.value === value && { backgroundColor: colors.surface }
                   ]}
                   onPress={() => {
@@ -126,7 +126,7 @@ export function Combobox({
                   {item.value === value && (
                     <Ionicons name="checkmark" size={20} color={colors.brand} />
                   )}
-                </TouchableOpacity>
+                </Pressable>
               )}
               ListEmptyComponent={
                 <View style={styles.emptyContainer}>

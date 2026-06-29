@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, TextInput, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, TextInput, FlatList } from 'react-native';
 import { usePecaeTheme } from '../../theme';
 import { PecaeGlassCard } from '../PecaeUI/PecaeGlassCard';
 import { useBrands, useModels, useVersions, useYears } from '../../hooks/useCatalog';
@@ -263,8 +263,7 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
       else if (level === 'year') customLabel = `+ Cadastrar Ano: ${item.yearFab}/${item.yearModel}`;
 
       return (
-        <TouchableOpacity 
-          activeOpacity={0.7} 
+        <Pressable 
           onPress={() => handleSelect(item)}
           style={styles.itemContainer}
         >
@@ -282,7 +281,7 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
               <Ionicons name="add-circle" size={22} color={colors.brand} />
             </View>
           </PecaeGlassCard>
-        </TouchableOpacity>
+        </Pressable>
       );
     }
 
@@ -298,8 +297,7 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
       (level === 'year' && selectedYear?.id === item.id);
 
     return (
-      <TouchableOpacity 
-        activeOpacity={0.7} 
+      <Pressable 
         onPress={() => handleSelect(item)}
         style={styles.itemContainer}
       >
@@ -321,7 +319,7 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
             )}
           </View>
         </PecaeGlassCard>
-      </TouchableOpacity>
+      </Pressable>
     );
   }, [level, colors, typography, selectedBrand, selectedModel, selectedVersion, selectedYear]);
 
@@ -329,18 +327,18 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
     <View style={styles.container}>
       {/* Breadcrumbs */}
       <View style={styles.breadcrumbs}>
-        <TouchableOpacity 
+        <Pressable 
           onPress={() => { setLevel('brand'); }} 
           style={[styles.breadcrumbItem, level === 'brand' && styles.activeBreadcrumb]}
         >
           <Text style={[styles.breadcrumbText, { color: selectedBrand ? colors.brand : colors.textMuted, fontFamily: typography.body }]}>
             {selectedBrand ? selectedBrand.name : 'Marca'}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
         
         <Ionicons name="chevron-forward" size={12} color={colors.textMuted} style={styles.crumbSeparator} />
         
-        <TouchableOpacity 
+        <Pressable 
           onPress={() => { if (selectedBrand) setLevel('model'); }} 
           style={[styles.breadcrumbItem, level === 'model' && styles.activeBreadcrumb]}
           disabled={!selectedBrand}
@@ -348,11 +346,11 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
           <Text style={[styles.breadcrumbText, { color: selectedModel ? colors.brand : colors.textMuted, fontFamily: typography.body }]}>
             {selectedModel ? selectedModel.name : 'Modelo'}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
 
         <Ionicons name="chevron-forward" size={12} color={colors.textMuted} style={styles.crumbSeparator} />
 
-        <TouchableOpacity 
+        <Pressable 
           onPress={() => { if (selectedModel) setLevel('version'); }} 
           style={[styles.breadcrumbItem, level === 'version' && styles.activeBreadcrumb]}
           disabled={!selectedModel}
@@ -360,11 +358,11 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
           <Text style={[styles.breadcrumbText, { color: selectedVersion ? colors.brand : colors.textMuted, fontFamily: typography.body }]}>
             {selectedVersion ? selectedVersion.name : 'Versão'}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
         
         <Ionicons name="chevron-forward" size={12} color={colors.textMuted} style={styles.crumbSeparator} />
 
-        <TouchableOpacity 
+        <Pressable 
           onPress={() => { if (selectedVersion) setLevel('year'); }} 
           style={[styles.breadcrumbItem, level === 'year' && styles.activeBreadcrumb]}
           disabled={!selectedVersion}
@@ -372,15 +370,15 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
           <Text style={[styles.breadcrumbText, { color: selectedYear ? colors.brand : colors.textMuted, fontFamily: typography.body }]}>
             {selectedYear ? (selectedYear.isCustom ? `${selectedYear.yearFab}/${selectedYear.yearModel}` : `${selectedYear.yearFab}/${selectedYear.yearModel}`) : 'Ano'}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* Header */}
       <View style={styles.header}>
         {level !== 'brand' && (
-          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+          <Pressable onPress={handleBack} style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.7 }]}>
             <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-          </TouchableOpacity>
+          </Pressable>
         )}
         <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.display }]}>
           {level === 'brand' ? 'Selecione a Marca' : 
@@ -404,9 +402,9 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
           style={[styles.searchInput, { color: colors.textPrimary, fontFamily: typography.body }]}
         />
         {search.length > 0 && (
-          <TouchableOpacity onPress={() => setSearch('')}>
+          <Pressable onPress={() => setSearch('')}>
             <Ionicons name="close-circle" size={18} color={colors.textMuted} />
-          </TouchableOpacity>
+          </Pressable>
         )}
       </View>
 
@@ -433,20 +431,20 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
 
       {/* Action Footer */}
       <View style={[styles.footer, { borderTopColor: colors.border }]}>
-        <TouchableOpacity 
+        <Pressable 
           onPress={clearSelection} 
-          style={[styles.clearButton, { borderColor: colors.border }]}
+          style={({ pressed }) => [[styles.clearButton, { borderColor: colors.border , pressed && { opacity: 0.7 }]}]}
         >
           <Text style={[styles.clearButtonText, { color: colors.textPrimary, fontFamily: typography.body }]}>
             Limpar
           </Text>
-        </TouchableOpacity>
+        </Pressable>
 
-        <TouchableOpacity 
+        <Pressable 
           onPress={handleApply} 
-          style={[
+          style={({ pressed }) => [[
             styles.applyButton, 
-            { backgroundColor: (requireCompleteSelection ? (selectedBrand && selectedModel && selectedVersion && selectedYear) : selectedBrand) ? colors.brand : colors.surface }
+            { backgroundColor: (requireCompleteSelection ? (selectedBrand && selectedModel && selectedVersion && selectedYear) : selectedBrand) ? colors.brand : colors.surface , pressed && { opacity: 0.7 }]}
           ]}
           disabled={requireCompleteSelection ? !(selectedBrand && selectedModel && selectedVersion && selectedYear) : !selectedBrand}
         >
@@ -456,7 +454,7 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
           ]}>
             {requireCompleteSelection ? "Confirmar Veículo" : `Ver Resultados (${resultsCount})`}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );

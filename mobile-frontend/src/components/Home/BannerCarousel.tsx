@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Dimensions, Image, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Dimensions, Image, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { api } from '../../services/api';
 import { usePecaeTheme } from '../../theme';
 import { useDeviceLayout } from '../../hooks/useDeviceLayout';
@@ -85,10 +85,9 @@ export function BannerCarousel({ onBannersLoaded }: { onBannersLoaded?: (hasBann
         contentContainerStyle={{ gap: 16, paddingHorizontal: isTablet ? 32 : 20 }}
       >
         {banners.map((banner) => (
-          <TouchableOpacity 
+          <Pressable 
             key={banner.id} 
-            activeOpacity={0.9} 
-            style={[styles.bannerWrapper, { width: bannerWidth, height: bannerHeight }]}
+            style={({ pressed }) => [[styles.bannerWrapper, { width: bannerWidth, height: bannerHeight , pressed && { opacity: 0.7 }]}]}
             onPress={() => handleBannerPress(banner)}
           >
             <Image 
@@ -96,7 +95,7 @@ export function BannerCarousel({ onBannersLoaded }: { onBannersLoaded?: (hasBann
               style={styles.bannerImage} 
               resizeMode="cover" 
             />
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </ScrollView>
     </View>

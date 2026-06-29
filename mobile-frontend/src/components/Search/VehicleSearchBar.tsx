@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, Modal, FlatList } from 'react-native';
+import { View, TextInput, Pressable, Text, StyleSheet, Modal, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../theme';
 import { useRouter } from 'expo-router';
@@ -52,8 +52,8 @@ export function VehicleSearchBar() {
   return (
     <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       {/* State Dropdown */}
-      <TouchableOpacity 
-        style={[styles.stateSelector, { borderRightColor: colors.border }]} 
+      <Pressable 
+        style={({ pressed }) => [[styles.stateSelector, { borderRightColor: colors.border , pressed && { opacity: 0.7 }]}]} 
         onPress={() => setShowStateModal(true)}
       >
         <Ionicons name="location-outline" size={16} color={colors.brand} />
@@ -61,27 +61,27 @@ export function VehicleSearchBar() {
           {selectedState}
         </Text>
         <Ionicons name="chevron-down" size={14} color={colors.textMuted} />
-      </TouchableOpacity>
+      </Pressable>
 
       {/* Input Placeholder (Redirects to Search Screen) */}
-      <TouchableOpacity 
-        style={[styles.input, { justifyContent: 'center' }]} 
+      <Pressable 
+        style={({ pressed }) => [[styles.input, { justifyContent: 'center' , pressed && { opacity: 0.7 }]}]} 
         onPress={() => router.push('/(tabs)/search')}
         activeOpacity={0.7}
       >
         <Text style={{ color: colors.textMuted, fontFamily: typography.body }}>
           Estou procurando...
         </Text>
-      </TouchableOpacity>
+      </Pressable>
 
       {/* Search Button */}
-      <TouchableOpacity style={[styles.searchBtn, { backgroundColor: colors.brand }]} onPress={() => router.push('/(tabs)/search')}>
+      <Pressable style={({ pressed }) => [[styles.searchBtn, { backgroundColor: colors.brand , pressed && { opacity: 0.7 }]}]} onPress={() => router.push('/(tabs)/search')}>
         <Ionicons name="search" size={18} color="#000" />
-      </TouchableOpacity>
+      </Pressable>
 
       {/* State Modal */}
       <Modal visible={showStateModal} transparent animationType="fade">
-        <TouchableOpacity style={styles.modalOverlay} onPress={() => setShowStateModal(false)} activeOpacity={1}>
+        <Pressable style={({ pressed }) => [styles.modalOverlay, pressed && { opacity: 0.7 }]} onPress={() => setShowStateModal(false)} activeOpacity={1}>
           <View style={[styles.modalContent, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Text style={[styles.modalTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>
               Selecione o Estado
@@ -90,8 +90,8 @@ export function VehicleSearchBar() {
               data={STATES}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
-                <TouchableOpacity 
-                  style={[styles.stateItem, { borderBottomColor: colors.border }]}
+                <Pressable 
+                  style={({ pressed }) => [[styles.stateItem, { borderBottomColor: colors.border , pressed && { opacity: 0.7 }]}]}
                   onPress={() => {
                     setSelectedState(item.id);
                     setShowStateModal(false);
@@ -107,11 +107,11 @@ export function VehicleSearchBar() {
                   {selectedState === item.id && (
                     <Ionicons name="checkmark" size={18} color={colors.brand} />
                   )}
-                </TouchableOpacity>
+                </Pressable>
               )}
             />
           </View>
-        </TouchableOpacity>
+        </Pressable>
       </Modal>
     </View>
   );

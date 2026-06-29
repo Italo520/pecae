@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../services/api';
+import * as Haptics from 'expo-haptics';
 
 export interface ChatRoom {
   id: string;
@@ -22,6 +23,7 @@ export function useChat() {
 
   const createRoom = useMutation({
     mutationFn: async ({ listingId, vehicleId }: { listingId?: string, vehicleId?: string }) => {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       const response = await api.post<ChatRoom>('/chat/rooms', { listingId, vehicleId });
       return response.data;
     },

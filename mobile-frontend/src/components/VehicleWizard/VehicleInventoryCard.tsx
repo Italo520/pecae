@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 import { usePecaeTheme } from '../../theme';
 import { PecaeGlassCard } from '../PecaeUI/PecaeGlassCard';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,6 +7,7 @@ import { useVehicleActions, VehicleListing } from '../../hooks/useVehicles';
 import { useVehicleWizardStore } from '../../store/vehicle-wizard-store';
 import { useRouter } from 'expo-router';
 import { useToast } from '../../context/ToastContext';
+import * as Haptics from 'expo-haptics';
 
 interface VehicleInventoryCardProps {
   vehicle: VehicleListing;
@@ -50,6 +51,7 @@ export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehi
   };
 
   const handleSold = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     showToast({
       type: 'warning',
       title: 'Confirmar Venda',
@@ -57,12 +59,16 @@ export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehi
       duration: 0,
       actions: [
         { label: 'Cancelar', onPress: () => {} },
-        { label: 'Confirmar', primary: true, onPress: () => markAsSold.mutate(vehicle.id) },
+        { label: 'Confirmar', primary: true, onPress: async () => {
+            await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            markAsSold.mutate(vehicle.id);
+        } },
       ],
     });
   };
 
   const handleDelete = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     showToast({
       type: 'error',
       title: 'Excluir Registro',
@@ -70,7 +76,10 @@ export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehi
       duration: 0,
       actions: [
         { label: 'Cancelar', onPress: () => {} },
-        { label: 'Excluir', primary: true, onPress: () => deleteVehicle.mutate(vehicle.id) },
+        { label: 'Excluir', primary: true, onPress: async () => {
+            await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            deleteVehicle.mutate(vehicle.id);
+        } },
       ],
     });
   };
@@ -115,27 +124,27 @@ export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehi
       </View>
 
       <View style={[styles.actions, { borderTopColor: colors.border + '20' }]}>
-        <TouchableOpacity style={styles.actionBtn} onPress={handleEdit}>
+        <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.7 }]} onPress={handleEdit}>
           <Ionicons name="create-outline" size={18} color={colors.textPrimary} />
           <Text style={[styles.actionText, { color: colors.textPrimary, fontFamily: typography.medium }]}>EDITAR</Text>
-        </TouchableOpacity>
+        </Pressable>
 
         {vehicle.status === 'ACTIVE' ? (
-          <TouchableOpacity style={styles.actionBtn} onPress={handleSold}>
+          <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.7 }]} onPress={handleSold}>
             <Ionicons name="checkmark-done" size={18} color={colors.brand} />
             <Text style={[styles.actionText, { color: colors.brand, fontFamily: typography.medium }]}>VENDIDO</Text>
-          </TouchableOpacity>
+          </Pressable>
         ) : (
-           <TouchableOpacity style={styles.actionBtn} onPress={() => reactivateVehicle.mutate(vehicle.id)}>
+           <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.7 }]} onPress={() => reactivateVehicle.mutate(vehicle.id)}>
             <Ionicons name="refresh-outline" size={18} color={colors.brand} />
             <Text style={[styles.actionText, { color: colors.brand, fontFamily: typography.medium }]}>REATIVAR</Text>
-          </TouchableOpacity>
+          </Pressable>
         )}
 
-        <TouchableOpacity style={styles.actionBtn} onPress={handleDelete}>
+        <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.7 }]} onPress={handleDelete}>
           <Ionicons name="trash-outline" size={18} color={colors.error} />
           <Text style={[styles.actionText, { color: colors.error, fontFamily: typography.medium }]}>EXCLUIR</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </PecaeGlassCard>
   );

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, Animated, Dimensions, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Animated, Dimensions, Image, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../theme';
 import { PecaeGlassCard } from './PecaeGlassCard';
@@ -81,7 +81,7 @@ export const PecaeMatchToast: React.FC<PecaeMatchToastProps> = ({
         { transform: [{ translateY: slideAnim }] }
       ]}
     >
-      <TouchableOpacity activeOpacity={0.9} onPress={onPress}>
+      <Pressable onPress={onPress}>
         <Animated.View style={{ 
           shadowColor: colors.brand,
           shadowOffset: { width: 0, height: 0 },
@@ -114,13 +114,13 @@ export const PecaeMatchToast: React.FC<PecaeMatchToastProps> = ({
                 </Text>
               </View>
   
-              <TouchableOpacity onPress={hide} style={styles.closeButton}>
+              <Pressable onPress={hide} style={({ pressed }) => [styles.closeButton, pressed && { opacity: 0.7 }]}>
                 <Ionicons name="close" size={20} color={colors.textMuted} />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </PecaeGlassCard>
         </Animated.View>
-      </TouchableOpacity>
+      </Pressable>
     </Animated.View>
   );
 };

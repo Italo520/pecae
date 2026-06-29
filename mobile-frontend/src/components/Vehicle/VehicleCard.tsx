@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
+import { View, Text, StyleSheet, Pressable, StyleProp, ViewStyle } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../theme';
@@ -25,7 +25,18 @@ export interface VehicleCardProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export const VehicleCard: React.FC<VehicleCardProps> = ({
+const formatMileage = (mil?: string | number) => {
+  if (!mil) return '--';
+  return `${Number(mil).toLocaleString('pt-BR')} km`;
+};
+
+const formatLocation = (city?: string, state?: string) => {
+  if (!city && !state) return 'Local não info.';
+  if (city && state) return `${city} - ${state}`;
+  return city || state;
+};
+
+export const VehicleCard = React.memo<VehicleCardProps>(({
   id,
   brand,
   model,
@@ -46,35 +57,23 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
   const [imgError, setImgError] = useState(false);
   const [isImgLoading, setIsImgLoading] = useState(true);
 
-  const handlePress = () => {
+  const handlePress = React.useCallback(() => {
     if (onPress) {
       onPress();
     } else {
       router.push(`/(tabs)/vehicle/${id}`);
     }
-  };
+  }, [onPress, router, id]);
 
   const isList = variant === 'list';
 
-  const formatMileage = (mil?: string | number) => {
-    if (!mil) return '--';
-    return `${Number(mil).toLocaleString('pt-BR')} km`;
-  };
-
-  const formatLocation = () => {
-    if (!city && !state) return 'Local não info.';
-    if (city && state) return `${city} - ${state}`;
-    return city || state;
-  };
-
   return (
-    <TouchableOpacity
-      activeOpacity={0.9}
+    <Pressable
       onPress={handlePress}
-      style={[
+      style={({ pressed }) => [[
         styles.container,
         isList ? styles.containerList : styles.containerGrid,
-        { backgroundColor: colors.surface },
+        { backgroundColor: colors.surface , pressed && { opacity: 0.7 }]},
         isSponsored && { borderColor: colors.brand, borderWidth: 1 },
         style
       ]}
@@ -149,14 +148,14 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
           <View style={styles.specItem}>
             <Ionicons name="location-outline" size={14} color={colors.textMuted} />
             <Text style={[styles.specText, { color: colors.textPrimary, fontFamily: typography.body }]} numberOfLines={1}>
-              {formatLocation()}
+              {formatLocation(city, state)}
             </Text>
           </View>
         </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

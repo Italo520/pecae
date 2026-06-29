@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Linking } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Feather } from '@expo/vector-icons';
 
@@ -57,7 +57,7 @@ export const AdBanner: React.FC<AdBannerProps> = ({ size = 'banner' }) => {
   return (
     <View style={[styles.container, { height }]}>
       <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill}>
-        <TouchableOpacity style={styles.content} onPress={handlePressSimulated} activeOpacity={0.85}>
+        <Pressable style={({ pressed }) => [styles.content, pressed && { opacity: 0.7 }]} onPress={handlePressSimulated}>
           <View style={styles.adBadge}>
             <Text style={styles.adBadgeText}>Patrocinado</Text>
           </View>
@@ -68,7 +68,7 @@ export const AdBanner: React.FC<AdBannerProps> = ({ size = 'banner' }) => {
             </Text>
           </View>
           <Feather name="external-link" size={14} color="#D4AF37" style={styles.icon} />
-        </TouchableOpacity>
+        </Pressable>
       </BlurView>
     </View>
   );

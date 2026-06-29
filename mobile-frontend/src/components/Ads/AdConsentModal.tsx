@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { Modal, View, Text, StyleSheet, Pressable, Dimensions } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Feather } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
@@ -59,19 +59,19 @@ export const AdConsentModal: React.FC<AdConsentModalProps> = ({ onConsentGiven }
             </Text>
 
             <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={[styles.button, styles.acceptButton]}
+              <Pressable
+                style={({ pressed }) => [[styles.button, styles.acceptButton], pressed && { opacity: 0.7 }]}
                 onPress={() => handleConsent(true)}
               >
                 <Text style={styles.acceptButtonText}>Permitir personalizados</Text>
-              </TouchableOpacity>
+              </Pressable>
 
-              <TouchableOpacity
-                style={[styles.button, styles.rejectButton]}
+              <Pressable
+                style={({ pressed }) => [[styles.button, styles.rejectButton], pressed && { opacity: 0.7 }]}
                 onPress={() => handleConsent(false)}
               >
                 <Text style={styles.rejectButtonText}>Não personalizar</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
 
             <Text style={styles.footer}>
