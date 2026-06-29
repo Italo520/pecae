@@ -77,7 +77,7 @@ services:
   mobile-web:
     build:
       context: .
-      dockerfile: frontend/Dockerfile
+      dockerfile: mobile-frontend/Dockerfile
       args:
         EXPO_PUBLIC_API_URL: ${EXPO_PUBLIC_API_URL:-https://api-pecae.italohub.cloud/api/v1}
         EXPO_PUBLIC_SUPABASE_URL: https://hsxeulvcfrbyvxehhhaj.supabase.co

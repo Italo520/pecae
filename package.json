@@ -4,7 +4,7 @@
   "packageManager": "npm@10.8.2",
   "private": true,
   "workspaces": [
-    "frontend",
+    "mobile-frontend",
     "packages/*"
   ],
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@pecae/frontend",
+  "name": "@pecae/mobile-frontend",
   "private": true,
   "main": "index.js",
   "scripts": {
