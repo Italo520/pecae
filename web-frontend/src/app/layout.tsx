@@ -3,6 +3,8 @@ import React from 'react';
 import { Space_Grotesk, Manrope } from 'next/font/google';
 import './globals.css';
 import Providers from '@/lib/providers';
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -31,9 +33,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning className={`${spaceGrotesk.variable} ${manrope.variable}`}>
-      <body>
+      <body className="flex flex-col min-h-screen bg-[var(--background)]">
         <Providers>
-          {children}
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            {children}
+            <Footer />
+          </div>
         </Providers>
       </body>
     </html>
