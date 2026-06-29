@@ -20,11 +20,7 @@ export const useUIStore = create<UIState>((set) => ({
 
   setViewMode: async (mode) => {
     try {
-      if (Platform.OS !== 'web') {
-        await SecureStore.setItemAsync(VIEW_MODE_KEY, mode);
-      } else {
-        localStorage.setItem(VIEW_MODE_KEY, mode);
-      }
+      await SecureStore.setItemAsync(VIEW_MODE_KEY, mode);
       set({ viewMode: mode });
     } catch (error) {
       console.error('Error saving view mode:', error);
@@ -33,11 +29,7 @@ export const useUIStore = create<UIState>((set) => ({
 
   setThemeMode: async (mode) => {
     try {
-      if (Platform.OS !== 'web') {
-        await SecureStore.setItemAsync(THEME_MODE_KEY, mode);
-      } else {
-        localStorage.setItem(THEME_MODE_KEY, mode);
-      }
+      await SecureStore.setItemAsync(THEME_MODE_KEY, mode);
       set({ themeMode: mode });
     } catch (error) {
       console.error('Error saving theme mode:', error);
@@ -49,17 +41,10 @@ export const useUIStore = create<UIState>((set) => ({
       let viewMode: 'grid' | 'list' = 'grid';
       let themeMode: 'light' | 'dark' = 'dark';
 
-      if (Platform.OS !== 'web') {
-        const storedView = await SecureStore.getItemAsync(VIEW_MODE_KEY);
-        const storedTheme = await SecureStore.getItemAsync(THEME_MODE_KEY);
-        if (storedView === 'grid' || storedView === 'list') viewMode = storedView;
-        if (storedTheme === 'light' || storedTheme === 'dark') themeMode = storedTheme;
-      } else if (typeof window !== 'undefined') {
-        const storedView = localStorage.getItem(VIEW_MODE_KEY);
-        const storedTheme = localStorage.getItem(THEME_MODE_KEY);
-        if (storedView === 'grid' || storedView === 'list') viewMode = storedView;
-        if (storedTheme === 'light' || storedTheme === 'dark') themeMode = storedTheme;
-      }
+      const storedView = await SecureStore.getItemAsync(VIEW_MODE_KEY);
+      const storedTheme = await SecureStore.getItemAsync(THEME_MODE_KEY);
+      if (storedView === 'grid' || storedView === 'list') viewMode = storedView;
+      if (storedTheme === 'light' || storedTheme === 'dark') themeMode = storedTheme;
 
       set({ viewMode, themeMode });
     } catch (error) {

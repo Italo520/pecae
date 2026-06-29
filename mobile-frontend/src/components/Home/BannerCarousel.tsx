@@ -71,9 +71,7 @@ export function BannerCarousel({ onBannersLoaded }: { onBannersLoaded?: (hasBann
   }
 
   const bannerHeight = isDesktop ? 300 : 150;
-  // Account for browser scrollbar on web
-  const scrollbarWidth = Platform.OS === 'web' ? 16 : 0;
-  const screenWidth = width - scrollbarWidth;
+  const screenWidth = width;
 
   // No desktop, o PageContainer limita a área útil a 1200px com 32px de padding em cada lado (total de 64px de recuo).
   // A largura máxima do banner deve ser a largura calculada para este container.

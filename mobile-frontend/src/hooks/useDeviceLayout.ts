@@ -13,18 +13,17 @@ export function useDeviceLayout() {
   
   if (isDesktop) {
     gridColumns = 4;
-    // No web, usar calc garante o preenchimento exato descontando o gap, ignorando problemas de scrollbar
-    cardWidth = Platform.OS === 'web' ? 'calc(25% - 9px)' : (width - 64 - 36) / 4;
+    cardWidth = (width - 64 - 36) / 4;
   } else if (isTablet) {
     gridColumns = 2;
-    cardWidth = Platform.OS === 'web' ? 'calc(50% - 6px)' : (width - 40 - 12) / 2;
+    cardWidth = (width - 40 - 12) / 2;
   }
   
   return {
     isMobile,
     isTablet,
     isDesktop,
-    isWeb: Platform.OS === 'web',
+    isWeb: false,
     width,
     height,
     gridColumns,

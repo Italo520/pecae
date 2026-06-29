@@ -59,7 +59,7 @@ export const PecaeToast: React.FC<PecaeToastProps> = ({
   const show = () => {
     Animated.parallel([
       Animated.spring(slideAnim, {
-        toValue: Platform.OS === 'web' ? 20 : 60,
+        toValue: 60,
         useNativeDriver: true,
         tension: 60,
         friction: 9,

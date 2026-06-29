@@ -11,9 +11,7 @@ interface PecaeGlassCardProps {
   pulse?: boolean;
 }
 
-// Fallback to regular View on web to avoid unmount crashes with expo-blur
-const BaseBlurView = Platform.OS === 'web' ? View : BlurView;
-const AnimatedBlurView = Animated.createAnimatedComponent(BaseBlurView as any);
+const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
 export const PecaeGlassCard: React.FC<PecaeGlassCardProps> = ({
   children,
@@ -79,18 +77,16 @@ export const PecaeGlassCard: React.FC<PecaeGlassCardProps> = ({
       ]}
     >
       <AnimatedBlurView
-        {...(Platform.OS !== 'web' ? { intensity, tint: isDark ? 'dark' : 'light' } : {})}
+        intensity={intensity}
+        tint={isDark ? 'dark' : 'light'}
         style={[
           styles.blur,
           {
             borderRadius: effects.radius.md,
-            backgroundColor: Platform.OS === 'web' 
-              ? (isDark ? `rgba(18, 18, 18, ${intensity / 100})` : `rgba(255, 255, 255, ${intensity / 100})`) 
-              : colors.surface,
+            backgroundColor: colors.surface,
             borderColor: pulse ? animatedBorderColor : colors.border,
             borderTopColor: isDark ? 'rgba(63, 255, 139, 0.3)' : 'rgba(255, 255, 255, 0.6)',
             borderLeftColor: isDark ? 'rgba(63, 255, 139, 0.3)' : 'rgba(255, 255, 255, 0.6)',
-            ...(Platform.OS === 'web' ? { backdropFilter: `blur(${intensity / 2}px)` } : {}) as any
           },
         ]}
       >
