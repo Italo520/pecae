@@ -17,7 +17,7 @@ const YEARS_OPTIONS = Array.from({ length: 40 }, (_, i) => ({
 export function FipeSearchForm({ hasBanner = true }: { hasBanner?: boolean }) {
   const { colors, typography, effects } = usePecaeTheme();
   const router = useRouter();
-  const { isDesktop } = useDeviceLayout();
+  const { isTablet } = useDeviceLayout();
 
   const [brands, setBrands] = useState<{value: string, label: string}[]>([]);
   const [models, setModels] = useState<{value: string, label: string}[]>([]);
@@ -92,7 +92,7 @@ export function FipeSearchForm({ hasBanner = true }: { hasBanner?: boolean }) {
   return (
     <View style={[
       styles.container, 
-      isDesktop && { marginHorizontal: 0 }, 
+      isTablet && { marginHorizontal: 32 }, 
       { backgroundColor: colors.surface }, 
       effects.cardShadow,
       !hasBanner && { marginTop: 24 }
@@ -101,7 +101,7 @@ export function FipeSearchForm({ hasBanner = true }: { hasBanner?: boolean }) {
         Busque a peça certa para o seu veículo
       </Text>
       
-      <View style={[styles.formContent, isDesktop && styles.formContentDesktop]}>
+      <View style={[styles.formContent, isTablet && styles.formContentTablet]}>
         <View style={styles.inputGroup}>
           <Text style={[styles.label, { color: colors.textMuted, fontFamily: typography.medium }]}>Marca</Text>
           <Combobox
@@ -145,7 +145,7 @@ export function FipeSearchForm({ hasBanner = true }: { hasBanner?: boolean }) {
           />
         </View>
 
-        <View style={[styles.buttonGroup, isDesktop && styles.buttonGroupDesktop]}>
+        <View style={[styles.buttonGroup, isTablet && styles.buttonGroupTablet]}>
           <TouchableOpacity 
             style={[styles.searchButton, { backgroundColor: colors.brand }]} 
             onPress={handleSearch}
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     gap: 16,
   },
-  formContentDesktop: {
+  formContentTablet: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     flexWrap: 'wrap',
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   buttonGroup: {
     marginTop: 8,
   },
-  buttonGroupDesktop: {
+  buttonGroupTablet: {
     marginTop: 0,
     flex: 0,
     minWidth: 140,

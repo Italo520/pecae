@@ -17,7 +17,7 @@ export function BannerCarousel({ onBannersLoaded }: { onBannersLoaded?: (hasBann
   const [banners, setBanners] = useState<Banner[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { colors } = usePecaeTheme();
-  const { isDesktop, width } = useDeviceLayout();
+  const { isTablet, width } = useDeviceLayout();
 
   useEffect(() => {
     const fetchBanners = async () => {
@@ -60,7 +60,7 @@ export function BannerCarousel({ onBannersLoaded }: { onBannersLoaded?: (hasBann
 
   if (isLoading) {
     return (
-      <View style={[styles.loadingContainer, isDesktop && { marginHorizontal: 0 }, { backgroundColor: colors.surface }]}>
+      <View style={[styles.loadingContainer, isTablet && { marginHorizontal: 32 }, { backgroundColor: colors.surface }]}>
         <ActivityIndicator color={colors.brand} />
       </View>
     );
@@ -70,12 +70,11 @@ export function BannerCarousel({ onBannersLoaded }: { onBannersLoaded?: (hasBann
     return null;
   }
 
-  const bannerHeight = isDesktop ? 300 : 150;
+  const bannerHeight = isTablet ? 250 : 150;
   const screenWidth = width;
 
-  // No desktop, o PageContainer limita a área útil a 1200px com 32px de padding em cada lado (total de 64px de recuo).
   // A largura máxima do banner deve ser a largura calculada para este container.
-  const bannerWidth = isDesktop ? Math.min(screenWidth, 1200) - 64 : screenWidth - 40;
+  const bannerWidth = isTablet ? width - 64 : screenWidth - 40;
 
   return (
     <View style={styles.container}>
@@ -83,7 +82,7 @@ export function BannerCarousel({ onBannersLoaded }: { onBannersLoaded?: (hasBann
         horizontal 
         pagingEnabled 
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 16, paddingHorizontal: isDesktop ? 0 : 20 }}
+        contentContainerStyle={{ gap: 16, paddingHorizontal: isTablet ? 32 : 20 }}
       >
         {banners.map((banner) => (
           <TouchableOpacity 
