@@ -69,24 +69,8 @@ Este documento detalha o roteiro cronológico de desenvolvimento estruturado por
 
 ---
 
-## [EM ANDAMENTO] Milestone 10 (Sprint 10) — Separação Frontend: Web (Next.js) e Mobile (React Native)
+## [CONCLUÍDA] Milestone 10 (Sprint 10) — Separação Frontend: Web (Next.js) e Mobile (React Native)
 
 > [!NOTE]
-> Detalhes completos, requisitos e SPECs de cada fase desta Milestone estão em:
-> - [v10.0-ROADMAP.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v10.0/v10.0-ROADMAP.md)
-> - [v10.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v10.0/v10.0-REQUIREMENTS.md)
->
-> **Branch ativa:** `refactor-frontend`
-
-### Phase 5d: Página de Detalhe de Veículo (SSG + generateStaticParams)
-- **Goal:** Implementar a página de detalhe de veículo web com SSG, carrossel de fotos e ações de contato.
-
-### Phase 6: Autenticação Web e Área Logada Básica
-- **Goal:** Implementar fluxo de autenticação via cookies HttpOnly com Next.js API Routes, Middleware e telas de login/registro.
-
-## [EM ANDAMENTO] Milestone 10 (Sprint 10) — Separação Frontend Web e Mobile
-
-> [!NOTE]
-> Detalhes, requisitos e fases desta Milestone estão documentados em
-> [v10.0-ROADMAP.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v10.0/v10.0-ROADMAP.md)
+> As tarefas e estimativas originais desta Milestone foram arquivadas em [v10.0-ROADMAP.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v10.0/v10.0-ROADMAP.md) conforme o protocolo de compressão de contexto.
 
