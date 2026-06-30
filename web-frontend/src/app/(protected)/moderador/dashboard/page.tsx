@@ -5,18 +5,51 @@ import {
   Car, 
   FileText, 
   AlertTriangle,
-  TrendingUp,
   ArrowUpRight
 } from 'lucide-react';
 import Link from 'next/link';
+import { useQuery } from '@tanstack/react-query';
+import api from '@/lib/api';
+import { StatsCard } from '@/components/ui/StatsCard';
+import { SkeletonKPI } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 export default function ModeradorDashboard() {
-  const kpis = [
-    { label: 'Usuários Ativos', value: '45.2k', icon: Users, change: '+12%', color: 'text-blue-400', bg: 'bg-blue-400/20' },
-    { label: 'Anúncios Ativos', value: '12.4k', icon: Car, change: '+5%', color: 'text-[var(--color-primary)]', bg: 'bg-[var(--color-primary)]/20' },
-    { label: 'Documentos Pendentes', value: '142', icon: FileText, change: '-2%', color: 'text-orange-400', bg: 'bg-orange-400/20' },
-    { label: 'Denúncias Abertas', value: '28', icon: AlertTriangle, change: '+1%', color: 'text-red-400', bg: 'bg-red-400/20' },
-  ];
+  // Fetch overview stats
+  const { data: stats, isLoading: loadingStats } = useQuery({
+    queryKey: ['admin', 'stats'],
+    queryFn: async () => {
+      try {
+        const { data } = await api.get('/admin/stats');
+        return data;
+      } catch (err) {
+        // Fallback for when endpoint is not ready
+        return { activeUsers: 0, activeListings: 0, pendingDocs: 0, openReports: 0 };
+      }
+    }
+  });
+
+  // Fetch pending docs
+  const { data: pendingDocs, isLoading: loadingDocs } = useQuery({
+    queryKey: ['admin', 'kyc', 'pending', 'preview'],
+    queryFn: async () => {
+      try {
+        const { data } = await api.get('/admin/kyc/pending?limit=5');
+        return data;
+      } catch (err) { return []; }
+    }
+  });
+
+  // Fetch recent reports
+  const { data: recentReports, isLoading: loadingReports } = useQuery({
+    queryKey: ['admin', 'reports', 'recent'],
+    queryFn: async () => {
+      try {
+        const { data } = await api.get('/admin/reports?limit=5');
+        return data;
+      } catch (err) { return []; }
+    }
+  });
 
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -34,28 +67,37 @@ export default function ModeradorDashboard() {
 
         {/* KPIs */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {kpis.map((kpi, idx) => {
-            const Icon = kpi.icon;
-            const isPositive = kpi.change.startsWith('+');
-            return (
-              <div key={idx} className="bg-white/5 border border-white/10 rounded-2xl p-6 relative overflow-hidden group">
-                <div className={`absolute -right-4 -top-4 w-24 h-24 ${kpi.bg} rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity`} />
-                <div className="relative z-10">
-                  <div className={`w-10 h-10 rounded-xl ${kpi.bg} ${kpi.color} flex items-center justify-center mb-4`}>
-                    <Icon className="w-5 h-5" />
-                  </div>
-                  <h3 className="text-sm font-medium text-white/50 mb-1">{kpi.label}</h3>
-                  <div className="flex items-end justify-between">
-                    <p className="text-2xl font-semibold text-white">{kpi.value}</p>
-                    <div className={`flex items-center text-xs font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
-                      {kpi.change}
-                      {isPositive ? <TrendingUp className="w-3 h-3 ml-1" /> : <TrendingUp className="w-3 h-3 ml-1 rotate-180" />}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          {loadingStats ? (
+            <>
+              <SkeletonKPI />
+              <SkeletonKPI />
+              <SkeletonKPI />
+              <SkeletonKPI />
+            </>
+          ) : (
+            <>
+              <StatsCard 
+                title="Usuários Ativos" 
+                value={stats?.activeUsers || 0} 
+                icon={<Users className="w-5 h-5 text-blue-400" />} 
+              />
+              <StatsCard 
+                title="Anúncios Ativos" 
+                value={stats?.activeListings || 0} 
+                icon={<Car className="w-5 h-5 text-[var(--color-primary)]" />} 
+              />
+              <StatsCard 
+                title="Documentos Pendentes" 
+                value={stats?.pendingDocs || 0} 
+                icon={<FileText className="w-5 h-5 text-orange-400" />} 
+              />
+              <StatsCard 
+                title="Denúncias Abertas" 
+                value={stats?.openReports || 0} 
+                icon={<AlertTriangle className="w-5 h-5 text-red-400" />} 
+              />
+            </>
+          )}
         </div>
 
         {/* Action Required Sections */}
@@ -70,13 +112,28 @@ export default function ModeradorDashboard() {
               </Link>
             </div>
             
-            <div className="flex-1 flex flex-col justify-center items-center text-center py-8">
-              <FileText className="w-12 h-12 text-white/20 mb-4" />
-              <p className="text-white/60 mb-2">Existem 142 documentos aguardando validação manual de CNPJ e Fotos.</p>
-              <Link href="/moderador/documentos" className="mt-4 px-6 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium transition-colors">
-                Iniciar Validação
-              </Link>
-            </div>
+            {loadingDocs ? (
+              <div className="animate-pulse space-y-4">
+                {[1,2,3].map(i => <div key={i} className="h-16 bg-white/5 rounded-xl shimmer" />)}
+              </div>
+            ) : !pendingDocs?.length ? (
+              <div className="flex-1 flex flex-col justify-center items-center text-center py-8">
+                <FileText className="w-12 h-12 text-white/20 mb-4" />
+                <p className="text-white/60 mb-2">Nenhum documento pendente no momento.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {pendingDocs.map((doc: any) => (
+                  <div key={doc.id} className="flex items-start gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+                     <FileText className="w-5 h-5 text-orange-400" />
+                     <div>
+                       <h4 className="text-sm font-medium text-white mb-1">{doc.user?.name || 'Usuário'}</h4>
+                       <p className="text-xs text-white/50">{doc.documentType}</p>
+                     </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Recent Reports */}
@@ -88,19 +145,30 @@ export default function ModeradorDashboard() {
               </Link>
             </div>
             
-            <div className="space-y-4">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="flex items-start gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors cursor-pointer">
-                  <div className="w-10 h-10 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center flex-shrink-0">
-                    <AlertTriangle className="w-5 h-5" />
+            {loadingReports ? (
+              <div className="animate-pulse space-y-4">
+                {[1,2,3].map(i => <div key={i} className="h-16 bg-white/5 rounded-xl shimmer" />)}
+              </div>
+            ) : !recentReports?.length ? (
+              <div className="flex-1 flex flex-col justify-center items-center text-center py-8">
+                <AlertTriangle className="w-12 h-12 text-white/20 mb-4" />
+                <p className="text-white/60 mb-2">Nenhuma denúncia aberta.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {recentReports.map((rep: any) => (
+                  <div key={rep.id} className="flex items-start gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors cursor-pointer">
+                    <div className="w-10 h-10 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center flex-shrink-0">
+                      <AlertTriangle className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-white mb-1">Suspeita #{rep.id?.slice(-4) || 'N/A'}</h4>
+                      <p className="text-xs text-white/50 line-clamp-1">{rep.reason || 'Sem descrição'}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-white mb-1">Suspeita de Fraude #{1000 + i}</h4>
-                    <p className="text-xs text-white/50 line-clamp-1">Usuário reportou que o vendedor está exigindo pagamento por fora da plataforma.</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
         </div>
