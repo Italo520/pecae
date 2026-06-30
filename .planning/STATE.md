@@ -42,7 +42,8 @@ progress:
 ### Próxima Etapa Ativa:
 
 - **2026-06-30:** Milestone 10 concluída com sucesso. Web-frontend e Mobile separados.
-- **Milestone 10 (Sprint 10)**: Plataforma Web Next.js independente, e deploy de produção — Status: `completed`
+- **2026-06-30:** Iniciando o planejamento da Milestone 10.1 (Web: Painel do Vendedor e Chat em Nuvem).
+- **Milestone 10.1 (Sprint 11)**: Gestão de anúncios e mensageria no Web-frontend (API Prod) — Status: `planning`
 
 ## Session Continuity
 

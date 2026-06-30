@@ -1,8 +1,8 @@
 # PROJECT.md
 
-> **Versão Expedida:** v9.0 (Milestone 9)  
-> **Status Geral:** Todas as Milestones de 1 a 9 foram concluídas e arquivadas com sucesso. A migração total do backend para Java e a validação ponta a ponta (E2E) no Frontend foram finalizadas com sucesso. O backend legado em Node.js foi inteiramente removido.  
-> **Foco Atual:** Preparação para Milestone 10 (Funcionalidades adicionais, OpenSearch, etc) e deploy de produção em nuvem.
+> **Versão Expedida:** v10.0 (Milestone 10)  
+> **Status Geral:** Milestones 1 a 10 concluídas. Frontend Web separado com sucesso via Next.js e Turborepo.  
+> **Foco Atual:** Milestone 10.1 — Implantação de Painel de Vendedor (Cadastro de Anúncios via Stepper) e Chat em Tempo Real na Web, consumindo a API de Produção.
 
 
 ## Visão Geral do Sistema PECAÊ

@@ -74,3 +74,21 @@ Este documento detalha o roteiro cronológico de desenvolvimento estruturado por
 > [!NOTE]
 > As tarefas e estimativas originais desta Milestone foram arquivadas em [v10.0-ROADMAP.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v10.0/v10.0-ROADMAP.md) conforme o protocolo de compressão de contexto.
 
+---
+
+## [EM ANDAMENTO] Milestone 10.1 (Sprint 11) — Painel do Vendedor Web e Chat em Tempo Real
+
+> [!NOTE]
+> Detalhes, requisitos e fases desta Milestone estão documentados em:
+> - [v10.1-ROADMAP.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v10.1/v10.1-ROADMAP.md)
+> - [v10.1-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v10.1/v10.1-REQUIREMENTS.md)
+>
+> **Branch ativa:** `feat/web-seller-chat`
+
+### Fases Ativas
+- **Fase 1:** Setup de Variáveis e Dashboard do Vendedor (Lista de Anúncios)
+- **Fase 2:** Cadastro de Anúncios Web (Stepper UI - Passos Iniciais)
+- **Fase 3:** Cadastro de Anúncios Web (Upload Drag&Drop e Envio da Sucata)
+- **Fase 4:** Interface Inbox do Chat Web (Layout Base)
+- **Fase 5:** Mensageria Real-Time e Ação "Falar com Vendedor"
+
