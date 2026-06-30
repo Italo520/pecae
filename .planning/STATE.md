@@ -41,11 +41,11 @@ progress:
 
 ### Próxima Etapa Ativa:
 
-- **2026-06-29:** Milestone 9 oficialmente fechada com sucesso. Iniciando o planejamento da Milestone 10.
-- **Milestone 10 (Sprint 10)**: Funcionalidades adicionais, OpenSearch e deploy de produção em nuvem — Status: `planning`
+- **2026-06-30:** Milestone 10 em andamento (Separação Frontend Web e Mobile, integração Turborepo e Docker finalizada).
+- **Milestone 10 (Sprint 10)**: Plataforma Web Next.js independente, e deploy de produção — Status: `in_progress`
 
 ## Session Continuity
 
-Last session: 2026-06-29
-Stopped at: Transição concluída para a Milestone 10
-Resume file: None
+Last session: 2026-06-30
+Stopped at: Session resumed, proceeding to Fase 5d
+Resume file: .planning/HANDOFF.json

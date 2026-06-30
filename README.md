@@ -26,12 +26,13 @@ A estrutura de diretórios foi rigorosamente desenhada em formato de **Monorepo*
 ```text
 pecae/
 ├── backend/            # Aplicação Server-side (Java 25, Spring Boot 3.5+, Hibernate 7)
-├── frontend/           # Aplicação Client-side e App Mobile (React Native + Expo Router)
+├── web-frontend/       # Plataforma Web Next.js 15 App Router
+├── mobile-frontend/    # App iOS e Android (React Native + Expo Router)
 ├── packages/           # Pacotes compartilhados (TS Configs, ESLint, Shared Types)
 ├── e2e/                # Suíte de testes ponta-a-ponta (Playwright)
 ├── docs/               # Documentações, Guias de Setup (SETUP.md) e Regras de Negócio (PRD)
-├── scripts/            # Scripts de automação (E2E setup, Patching do Metro Bundler)
-├── docker-compose.yml  # Orquestração do Banco de Dados e Cache locais
+├── scripts/            # Scripts de automação
+├── docker-compose.yml  # Orquestração local (PostgreSQL, Redis, API, Web)
 ├── package.json        # Gerenciador de Workspaces NPM
 └── turbo.json          # Orquestrador de Tarefas e Pipelines (Build, Lint, Dev)
 ```
@@ -78,24 +79,46 @@ A regra de negócio do PECAÊ é fatiada em 13 módulos operacionais. Abaixo a m
 > **Nota:** Para um roteiro passo-a-passo e dicas aprofundadas de instalação, consulte o [SETUP.md](./docs/SETUP.md).
 
 **Pré-requisitos:**
-- Docker e Docker Compose
-- JDK 25 e Maven
-- Node.js 20+ e NPM 10+
+- Node.js ≥ 20 e npm ≥ 10
+- Java 25 (para o backend)
+- Docker (para banco de dados, Redis, API e Web locais)
 
-1. **Subir Serviços Base (PostgreSQL + Redis):**
-   ```bash
-   docker-compose up -d
-   ```
-2. **Dependências do Monorepo (Instalar na raiz):**
+### Setup Inicial
+1. **Instalar dependências do Monorepo:**
    ```bash
    npm install
    ```
-3. **Iniciar o Ambiente Dev Completo (Turborepo):**
+2. **Subir Serviços Locais via Docker Compose:**
+   ```bash
+   docker compose up -d
+   ```
+   *(Isto levantará o Postgres, Redis, a API Java e o Web Frontend Next.js na porta 3001)*
+
+3. **Iniciar Ambiente de Desenvolvimento Paralelo (Turborepo):**
    ```bash
    npm run dev
    ```
-   *(Este comando iniciará simultaneamente o Metro Bundler no `/frontend` e o ambiente de desenvolvimento, caso o backend Spring esteja encapsulado em script wrapper, ou você pode rodar o Java via sua IDE preferida).*
 
+### Rodando Individualmente
+```bash
+# Apenas o app mobile
+npx expo start --prefix mobile-frontend
+
+# Apenas o web-frontend (sem Docker)
+npm run dev --workspace=web-frontend
+
+# Apenas o backend Java
+cd backend && ./mvnw spring-boot:run
+```
+
+### Builds de Produção
+```bash
+# Build web-frontend e shared
+npm run build
+
+# Build mobile (requer Expo EAS CLI)
+cd mobile-frontend && npx eas build --platform all
+```
 ---
 
 ## 5. Contratos de Configuração (.env)

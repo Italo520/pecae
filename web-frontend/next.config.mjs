@@ -6,6 +6,7 @@ const nextConfig = {
       { hostname: 'images.pexels.com' },
     ],
   },
+  output: 'standalone',
 };
 
 export default nextConfig;

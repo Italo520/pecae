@@ -74,24 +74,24 @@ services:
       - pecae-network
       - coolify
 
-  mobile-web:
+  web-frontend:
     build:
       context: .
-      dockerfile: mobile-frontend/Dockerfile
-      args:
-        EXPO_PUBLIC_API_URL: ${EXPO_PUBLIC_API_URL:-https://api-pecae.italohub.cloud/api/v1}
-        EXPO_PUBLIC_SUPABASE_URL: https://hsxeulvcfrbyvxehhhaj.supabase.co
-        EXPO_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzeGV1bHZjZnJieXZ4ZWhoaGFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4OTU0NjQsImV4cCI6MjA5NjQ3MTQ2NH0.gl7nMqpNt-5-AQb39OogZUsTTzcoqtr0esoumTUu6c0
+      dockerfile: web-frontend/Dockerfile
     restart: always
-    # ports:
-    #   - "8080:80"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-https://api-pecae.italohub.cloud/api/v1}
+      - API_URL=${API_URL:-http://api:3000/api/v1}
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
     labels:
       - traefik.enable=true
-      - traefik.http.routers.pecae-mobile-web.rule=Host(`${SERVICE_FQDN_MOBILE_WEB:-pecae.italohub.cloud}`)
-      - traefik.http.routers.pecae-mobile-web.entrypoints=https
-      - traefik.http.routers.pecae-mobile-web.tls=true
-      - traefik.http.routers.pecae-mobile-web.tls.certresolver=letsencrypt
-      - traefik.http.services.pecae-mobile-web.loadbalancer.server.port=80
+      - traefik.http.routers.pecae-web.rule=Host(`${SERVICE_FQDN_WEB:-web.pecae.italohub.cloud}`)
+      - traefik.http.routers.pecae-web.entrypoints=https
+      - traefik.http.routers.pecae-web.tls=true
+      - traefik.http.routers.pecae-web.tls.certresolver=letsencrypt
+      - traefik.http.services.pecae-web.loadbalancer.server.port=3001
       - traefik.docker.network=coolify
     depends_on:
       - api
