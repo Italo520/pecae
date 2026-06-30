@@ -26,3 +26,25 @@ export function useDeleteVehicle() {
     },
   });
 }
+
+export function useCreateVehicle() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: VehicleCreateInput & { photos?: File[] }) => {
+      // In a real scenario with multipart, we would construct a FormData here:
+      // const formData = new FormData();
+      // formData.append('data', JSON.stringify(data));
+      // data.photos?.forEach(file => formData.append('photos', file));
+      // await api.post(API_ENDPOINTS.VEHICLES.CREATE, formData, { headers: { 'Content-Type': 'multipart/form-data' }});
+      
+      // For now, assuming API accepts JSON as in schema (and we mock the photos or upload to a separate endpoint later)
+      const { photos, ...payload } = data;
+      const response = await api.post(API_ENDPOINTS.VEHICLES.CREATE, payload);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-vehicles'] });
+    },
+  });
+}
