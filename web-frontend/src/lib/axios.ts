@@ -73,7 +73,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        useAuthStore.getState().clearAuth();
+        useAuthStore.getState().logout();
         
         // Optional: Redirect to login
         if (typeof window !== 'undefined') {
