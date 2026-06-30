@@ -69,3 +69,15 @@ Este documento detalha o roteiro cronológico de desenvolvimento estruturado por
 
 ---
 
+## [EM ANDAMENTO] Milestone 10 (Sprint 10) — Separação Frontend: Web (Next.js) e Mobile (React Native)
+
+> [!NOTE]
+> Detalhes completos, requisitos e SPECs de cada fase desta Milestone estão em:
+> - [v10.0-ROADMAP.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v10.0/v10.0-ROADMAP.md)
+> - [v10.0-REQUIREMENTS.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v10.0/v10.0-REQUIREMENTS.md)
+>
+> **Branch ativa:** `refactor-frontend`
+
+### Phase 5d: Página de Detalhe de Veículo (SSG + generateStaticParams)
+- **Goal:** Implementar a página de detalhe de veículo web com SSG, carrossel de fotos e ações de contato.
+

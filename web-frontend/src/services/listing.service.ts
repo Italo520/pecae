@@ -1,5 +1,12 @@
 import { z } from 'zod';
-import { ListingCard, VehicleCategory, listingCardSchema, vehicleCategorySchema } from '@/types/listing.types';
+import { 
+  ListingCard, 
+  VehicleCategory, 
+  ListingDetail,
+  listingCardSchema, 
+  vehicleCategorySchema,
+  listingDetailSchema
+} from '@/types/listing.types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api';
 
@@ -41,3 +48,23 @@ export async function fetchVehicleCategories(): Promise<VehicleCategory[]> {
   }
 }
 
+export async function fetchListingById(id: string): Promise<ListingDetail | null> {
+  try {
+    const res = await fetch(`${API_URL}/listings/${id}`, {
+      // Usaremos no ISR. Revalida a cada 5 minutos
+      next: { revalidate: 300 },
+    });
+    
+    if (!res.ok) {
+      if (res.status === 404) return null;
+      console.error(`Failed to fetch listing ${id}: ${res.statusText}`);
+      return null;
+    }
+    
+    const data = await res.json();
+    return listingDetailSchema.parse(data);
+  } catch (error) {
+    console.error(`Error in fetchListingById(${id}):`, error);
+    return null;
+  }
+}
