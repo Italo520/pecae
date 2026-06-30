@@ -128,7 +128,7 @@ public class ControladorWebSocketChat {
 
     // ── Helpers privados ────────────────────────────────────────────────────
 
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
 
 
     private UUID obterUsuarioId(Principal principal) {

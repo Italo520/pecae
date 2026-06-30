@@ -9,6 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface CategoriaPecaRepository extends JpaRepository<CategoriaPeca, UUID> {
-    List<CategoriaPeca> findAllByPaiIsNullAndAtivoTrueOrderByNomeAsc();
-    List<CategoriaPeca> findAllByPaiIdAndAtivoTrueOrderByNomeAsc(UUID paiId);
+    List<CategoriaPeca> findAllByOrderByNomeAsc();
 }

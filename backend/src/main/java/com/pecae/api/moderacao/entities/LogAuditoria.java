@@ -25,24 +25,24 @@ public class LogAuditoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
 
     private UUID id;
 
     // Moderador que tomou a ação
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "moderator_id", nullable = false)
+    @JoinColumn(name = "actor_id", nullable = false)
     private Usuario moderador;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "action", nullable = false)
     private AcaoModeracao acao;
 
-    @Column(name = "entity_type", nullable = false)
+    @Column(name = "entity", nullable = false)
     private String tipoEntidade;
 
     @Column(name = "entity_id", nullable = false)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
     private UUID idEntidade;
 
     @Column(name = "reason", columnDefinition = "TEXT")

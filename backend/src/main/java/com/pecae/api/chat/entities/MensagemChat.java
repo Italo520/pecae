@@ -21,7 +21,7 @@ public class MensagemChat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
 
     private UUID id;
 

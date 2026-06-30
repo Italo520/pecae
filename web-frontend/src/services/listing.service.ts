@@ -13,7 +13,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api';
 export async function fetchFeaturedListings(limit = 12): Promise<ListingCard[]> {
   try {
     const res = await fetch(`${API_URL}/listings?size=${limit}`, {
-      next: { revalidate: 60 },
+      cache: 'no-store',
     });
     
     if (!res.ok) {
@@ -81,8 +81,7 @@ export async function fetchVehicleCategories(): Promise<VehicleCategory[]> {
 export async function fetchListingById(id: string): Promise<ListingDetail | null> {
   try {
     const res = await fetch(`${API_URL}/listings/${id}`, {
-      // Usaremos no ISR. Revalida a cada 5 minutos
-      next: { revalidate: 300 },
+      cache: 'no-store',
     });
     
     if (!res.ok) {

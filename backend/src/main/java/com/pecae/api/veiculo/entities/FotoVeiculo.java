@@ -22,7 +22,7 @@ public class FotoVeiculo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
 
     private UUID id;
 

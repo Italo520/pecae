@@ -15,7 +15,7 @@ import org.hibernate.type.SqlTypes;
 public class RespostaCompradorMe {
 
     @JsonProperty("id")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
     private UUID id;
 
     @JsonProperty("email")

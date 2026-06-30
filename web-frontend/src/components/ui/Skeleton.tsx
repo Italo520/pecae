@@ -43,9 +43,53 @@ export function Skeleton({
 
   return (
     <div
-      className={`bg-[var(--border)] animate-pulse ${variantClasses[variant]} ${className}`}
+      className={`bg-[var(--border)] shimmer ${variantClasses[variant]} ${className}`}
       style={baseStyle}
       {...props}
     />
+  );
+}
+
+export function SkeletonCard() {
+  return (
+    <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl overflow-hidden shadow-sm">
+      <Skeleton className="w-full h-48 rounded-none" />
+      <div className="p-4 space-y-4">
+        <div className="space-y-2">
+          <Skeleton className="h-6 w-3/4" />
+          <Skeleton className="h-4 w-1/2" />
+        </div>
+        <div className="flex justify-between items-center pt-2">
+          <Skeleton className="h-4 w-1/3" />
+          <Skeleton variant="circle" className="h-8 w-8" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function SkeletonRow() {
+  return (
+    <div className="flex items-center space-x-4 p-4 border-b border-[var(--color-border)]">
+      <Skeleton className="h-12 w-12 rounded-lg" />
+      <div className="flex-1 space-y-2">
+        <Skeleton className="h-4 w-1/3" />
+        <Skeleton className="h-3 w-1/4" />
+      </div>
+      <Skeleton className="h-8 w-24 rounded-lg" />
+    </div>
+  );
+}
+
+export function SkeletonKPI() {
+  return (
+    <div className="bg-[var(--color-surface)] border border-[var(--color-border)] p-6 rounded-2xl shadow-sm space-y-4">
+      <div className="flex justify-between items-start">
+        <Skeleton className="h-5 w-1/2" />
+        <Skeleton variant="circle" className="h-10 w-10" />
+      </div>
+      <Skeleton className="h-8 w-3/4" />
+      <Skeleton className="h-4 w-1/3" />
+    </div>
   );
 }

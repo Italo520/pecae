@@ -23,7 +23,7 @@ import org.hibernate.type.SqlTypes;
 public class EnviarNotificacaoRequest {
 
     @NotNull(message = "O ID do usuário destinatário é obrigatório")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
 
     private UUID usuarioId;
 

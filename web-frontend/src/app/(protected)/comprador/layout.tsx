@@ -9,15 +9,17 @@ import { LayoutDashboard, Heart, Search, MessageCircle, User } from 'lucide-reac
 export default function CompradorLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, isInitialized } = useAuthStore();
 
   useEffect(() => {
+    if (!isInitialized) return;
+    
     if (!isAuthenticated) {
       router.replace('/login');
     }
-  }, [isAuthenticated, router]);
+  }, [isInitialized, isAuthenticated, router]);
 
-  if (!isAuthenticated) {
+  if (!isInitialized || !isAuthenticated) {
     return null; // Return null while redirecting
   }
 

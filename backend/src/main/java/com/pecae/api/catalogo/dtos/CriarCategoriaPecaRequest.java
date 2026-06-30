@@ -9,10 +9,10 @@ public record CriarCategoriaPecaRequest(
         @JsonProperty("name")
         String nome,
 
-        @JsonProperty("iconUrl")
-        String urlIcone,
+        @JsonProperty("slug")
+        String slug,
 
-        @JsonProperty("parentId")
-        UUID paiId
+        @JsonProperty("icon")
+        String urlIcone
 ) {
 }

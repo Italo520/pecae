@@ -16,11 +16,11 @@ import org.hibernate.type.SqlTypes;
 public class RespostaPerfilComprador {
 
     @JsonProperty("id")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
     private UUID id;
 
     @JsonProperty("userId")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
     private UUID usuarioId;
 
     @JsonProperty("name")

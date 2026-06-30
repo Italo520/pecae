@@ -26,8 +26,6 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
-
     private UUID id;
 
     @Column(name = "name", nullable = false)
@@ -40,19 +38,17 @@ public class Usuario {
     private String senhaHash;
 
     @Column(name = "google_id", unique = true)
-    private String googleId;
+    private UUID googleId;
 
     @Column(name = "apple_id", unique = true)
-    private String appleId;
+    private UUID appleId;
 
     @Column(name = "phone", unique = true)
     private String telefone;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private TipoUsuario tipo;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private StatusUsuario status;
 

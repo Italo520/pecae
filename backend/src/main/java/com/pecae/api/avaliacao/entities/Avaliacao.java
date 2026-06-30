@@ -28,7 +28,7 @@ public class Avaliacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
 
     private UUID id;
 

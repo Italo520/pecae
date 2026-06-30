@@ -20,7 +20,7 @@ public class VerificacaoVendedor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
 
     private UUID id;
 

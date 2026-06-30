@@ -19,7 +19,7 @@ import org.hibernate.type.SqlTypes;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UsuarioResponse {
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
 
     private UUID id;
 

@@ -7,15 +7,19 @@ import Link from 'next/link';
 
 export default function VendedorLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, isInitialized } = useAuthStore();
 
   useEffect(() => {
-    if (isAuthenticated && user?.role === 'BUYER') {
+    if (!isInitialized) return;
+
+    if (!isAuthenticated) {
+      router.replace('/login');
+    } else if (user?.type === 'BUYER') {
       router.replace('/acesso-negado');
     }
-  }, [user, isAuthenticated, router]);
+  }, [user, isAuthenticated, isInitialized, router]);
 
-  if (!isAuthenticated || user?.role === 'BUYER') {
+  if (!isInitialized || !isAuthenticated || user?.type === 'BUYER') {
     return null; // Return null while redirecting
   }
 

@@ -31,7 +31,7 @@ public class Anuncio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
 
     private UUID id;
 
@@ -67,7 +67,7 @@ public class Anuncio {
     private Boolean duplicado = false;
 
     @Column(name = "duplicate_of_id")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
     private UUID duplicadoDeId;
 
     @Column(name = "is_sponsored_active", nullable = false)

@@ -9,17 +9,23 @@ import { LayoutDashboard, Megaphone, FileText, AlertTriangle, User } from 'lucid
 export default function ModeradorLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, isInitialized } = useAuthStore();
 
   useEffect(() => {
+    console.log('ModeradorLayout Mount/Update:', { isInitialized, isAuthenticated, userType: user?.type, userRole: (user as any)?.role });
+    
+    if (!isInitialized) return;
+    
     if (!isAuthenticated) {
+      console.log('ModeradorLayout Redirecting to /login because !isAuthenticated');
       router.replace('/login');
-    } else if (user?.role !== 'MODERATOR' && user?.role !== 'ADMIN') {
+    } else if (user?.type !== 'MODERATOR' && user?.type !== 'ADMIN') {
+      console.log('ModeradorLayout Redirecting to /acesso-negado because type is not MODERATOR/ADMIN');
       router.replace('/acesso-negado');
     }
-  }, [isAuthenticated, user, router]);
+  }, [isInitialized, isAuthenticated, user, router]);
 
-  if (!isAuthenticated || (user?.role !== 'MODERATOR' && user?.role !== 'ADMIN')) {
+  if (!isInitialized || !isAuthenticated || (user?.type !== 'MODERATOR' && user?.type !== 'ADMIN')) {
     return null; 
   }
 

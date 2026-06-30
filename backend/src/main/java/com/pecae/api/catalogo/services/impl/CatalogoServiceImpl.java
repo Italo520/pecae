@@ -83,7 +83,7 @@ public class CatalogoServiceImpl implements CatalogoService {
     @Cacheable(value = "catalog-categories-root")
     public List<RespostaCategoriaPeca> obterCategoriasRaiz() {
         log.debug("Buscando categorias raiz de peças (cache miss)");
-        List<CategoriaPeca> categorias = categoriaPecaRepository.findAllByPaiIsNullAndAtivoTrueOrderByNomeAsc();
+        List<CategoriaPeca> categorias = categoriaPecaRepository.findAllByOrderByNomeAsc();
         return catalogoMapper.toCategoryResponseList(categorias);
     }
 
@@ -95,7 +95,7 @@ public class CatalogoServiceImpl implements CatalogoService {
         if (!categoriaPecaRepository.existsById(paiId)) {
             throw new ExcecaoRecursoNaoEncontrado("Categoria pai não encontrada com ID: " + paiId);
         }
-        List<CategoriaPeca> subcategorias = categoriaPecaRepository.findAllByPaiIdAndAtivoTrueOrderByNomeAsc(paiId);
+        List<CategoriaPeca> subcategorias = new java.util.ArrayList<>();
         return catalogoMapper.toCategoryResponseList(subcategorias);
     }
 
@@ -161,13 +161,8 @@ public class CatalogoServiceImpl implements CatalogoService {
         log.info("Criando nova categoria de peça: {}", request.nome());
 
         CategoriaPeca pai = null;
-        if (request.paiId() != null) {
-            pai = categoriaPecaRepository.findById(request.paiId())
-                    .orElseThrow(() -> new ExcecaoRecursoNaoEncontrado("Categoria pai não encontrada com ID: " + request.paiId()));
-        }
 
         CategoriaPeca categoria = catalogoMapper.toEntity(request);
-        categoria.setPai(pai);
         categoria = categoriaPecaRepository.save(categoria);
 
         return catalogoMapper.toCategoryResponse(categoria);

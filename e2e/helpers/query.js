@@ -1,10 +1,11 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const { Client } = require('pg');
 const fs = require('fs');
 const path = require('path');
 
 // Tenta pegar a URL do BD. 
 // A nova API Java roda localmente o postgres na porta 5432, banco pecae, user postgres, senha postgres
-let dbUrl = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/pecae';
+let dbUrl = process.env.DATABASE_URL || 'postgres://postgres.hsxeulvcfrbyvxehhhaj:db_coolify_pecae@aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0';
 
 // No WSL ou docker, se precisar redirecionar o IP:
 if (dbUrl && (dbUrl.includes('localhost') || dbUrl.includes('127.0.0.1'))) {

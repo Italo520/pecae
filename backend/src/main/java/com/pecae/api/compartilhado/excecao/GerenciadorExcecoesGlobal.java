@@ -69,14 +69,17 @@ public class GerenciadorExcecoesGlobal {
     /**
      * Credenciais inválidas (login falho).
      */
-    @ExceptionHandler(BadCredentialsException.class)
+    /**
+     * Falhas de Autenticação (credenciais inválidas, usuário não encontrado).
+     */
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
     public ResponseEntity<RespostaErro> tratarCredenciaisInvalidas(
-            BadCredentialsException ex, HttpServletRequest request) {
+            org.springframework.security.core.AuthenticationException ex, HttpServletRequest request) {
 
         var resposta = new RespostaErro(
                 HttpStatus.UNAUTHORIZED.value(),
                 "Nao Autorizado",
-                "Credenciais inválidas.",
+                "Credenciais inválidas ou usuário não encontrado.",
                 request.getRequestURI()
         );
 

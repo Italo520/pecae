@@ -78,7 +78,7 @@ export default function VehicleWizardClient() {
       // Redirect on success
       router.push('/vendedor/dashboard');
     } catch (error) {
-      console.error('Failed to create vehicle:', error);
+      console.error('Failed to create vehicle:', error, (error as any).response?.data);
       alert('Erro ao criar anúncio. Verifique os dados ou tente novamente mais tarde.');
     }
   };
@@ -170,6 +170,7 @@ export default function VehicleWizardClient() {
             
             {currentStep < steps.length ? (
               <button
+                key="btn-next"
                 type="button"
                 onClick={nextStep}
                 className="inline-flex items-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-black font-semibold px-6 py-3 rounded-xl transition-all shadow-[0_0_20px_rgba(20,241,149,0.3)] hover:shadow-[0_0_25px_rgba(20,241,149,0.5)]"
@@ -179,6 +180,7 @@ export default function VehicleWizardClient() {
               </button>
             ) : (
               <button
+                key="btn-submit"
                 type="submit"
                 form="wizard-form"
                 disabled={isPending}

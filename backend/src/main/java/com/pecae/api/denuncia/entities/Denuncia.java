@@ -28,7 +28,7 @@ public class Denuncia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
 
     private UUID id;
 
@@ -42,7 +42,7 @@ public class Denuncia {
     private TipoAlvoDenuncia tipoAlvo;
 
     @Column(name = "target_id", nullable = false)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
     private UUID idAlvo;
 
     @Enumerated(EnumType.STRING)

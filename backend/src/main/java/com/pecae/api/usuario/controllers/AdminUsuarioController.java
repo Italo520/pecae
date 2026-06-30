@@ -68,7 +68,7 @@ public class AdminUsuarioController {
     @Getter
     @Builder
     public static class AdminResumoUsuario {
-        @JdbcTypeCode(SqlTypes.VARCHAR)
+        
 
         private UUID id;
         private String email;

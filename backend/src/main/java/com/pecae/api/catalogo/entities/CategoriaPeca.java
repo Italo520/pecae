@@ -22,27 +22,18 @@ public class CategoriaPeca {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
 
     private UUID id;
 
     @Column(name = "name", nullable = false, unique = true)
     private String nome;
 
-    @Column(name = "icon_url")
+    @Column(name = "slug")
+    private String slug;
+
+    @Column(name = "icon")
     private String urlIcone;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
-    private CategoriaPeca pai;
-
-    @OneToMany(mappedBy = "pai", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Builder.Default
-    private List<CategoriaPeca> subcategorias = new ArrayList<>();
-
-    @Column(name = "active", nullable = false)
-    @Builder.Default
-    private Boolean ativo = true;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

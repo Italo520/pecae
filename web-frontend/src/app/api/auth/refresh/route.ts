@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
 export async function POST(request: NextRequest) {
   try {
     // Read the HttpOnly cookie
     const refreshToken = request.cookies.get('refresh_token')?.value;
+    console.log(`Proxy Refresh: Token vindo do Cookie: ${refreshToken ? refreshToken.substring(0, 10) + '...' : 'Nulo'}`);
     
     if (!refreshToken) {
+      console.log('Proxy Refresh: Nenhum refresh token fornecido nos cookies.');
       return NextResponse.json({ message: 'No refresh token provided' }, { status: 401 });
     }
 
@@ -20,15 +23,17 @@ export async function POST(request: NextRequest) {
     const data = await res.json();
     
     if (!res.ok) {
-      // If refresh fails, it means session expired or token revoked.
+      console.log(`Proxy Refresh: Backend retornou erro ${res.status}:`, data.message || data);
       return NextResponse.json(data, { status: res.status });
     }
+
+    console.log(`Proxy Refresh: Sucesso! Novo AccessToken gerado. Novo RefreshToken retornado: ${data.tokens?.refreshToken ? data.tokens.refreshToken.substring(0, 10) + '...' : 'Não'}`);
 
     const response = NextResponse.json({ 
       accessToken: data.tokens.accessToken 
     });
-    
-    // Refresh the HttpOnly token
+
+    // Refresh the HttpOnly token directly on response
     if (data.tokens.refreshToken) {
       response.cookies.set({
         name: 'refresh_token',
@@ -36,9 +41,10 @@ export async function POST(request: NextRequest) {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        path: '/api/auth',
+        path: '/',
         maxAge: 604800,
       });
+      console.log('Proxy Refresh: Novo cookie refresh_token setado diretamente no NextResponse.');
       
       // If the backend returns user role on refresh, update it too, though it's optional
       if (data.user?.type || data.user?.role) {

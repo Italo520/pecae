@@ -22,7 +22,6 @@ public interface ICatalogoMapper {
     @Mapping(target = "versaoId", source = "versao.id")
     RespostaAno toYearResponse(AnoVeiculo entity);
 
-    @Mapping(target = "paiId", source = "pai.id")
     RespostaCategoriaPeca toCategoryResponse(CategoriaPeca entity);
 
     @Mapping(target = "versaoId", source = "versao.id")
@@ -52,9 +51,6 @@ public interface ICatalogoMapper {
     VersaoVeiculo toEntity(CriarVersaoRequest request);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "ativo", constant = "true")
-    @Mapping(target = "pai", ignore = true)
-    @Mapping(target = "subcategorias", ignore = true)
     @Mapping(target = "criadoEm", ignore = true)
     CategoriaPeca toEntity(CriarCategoriaPecaRequest request);
 

@@ -30,12 +30,12 @@ public class TokenPush {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
 
     private UUID id;
 
     @Column(name = "user_id", nullable = false)
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
     private UUID usuarioId;
 
     @Column(nullable = false)

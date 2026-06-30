@@ -16,7 +16,7 @@ export const modelSchema = z.object({
 export const versionSchema = z.object({
   id: z.string(),
   modelId: z.string(),
-  year: z.number(),
+  year: z.number().optional(),
   name: z.string(),
 });
 

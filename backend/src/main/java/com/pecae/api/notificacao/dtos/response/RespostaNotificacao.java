@@ -18,7 +18,7 @@ import org.hibernate.type.SqlTypes;
 @AllArgsConstructor
 public class RespostaNotificacao {
 
-    @JdbcTypeCode(SqlTypes.VARCHAR)
+    
 
 
     private UUID id;

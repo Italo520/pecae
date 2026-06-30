@@ -6,6 +6,8 @@ import Providers from '@/lib/providers';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 
+import { Toaster } from 'sonner';
+
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   variable: '--font-display',
@@ -35,6 +37,7 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning className={`${spaceGrotesk.variable} ${manrope.variable}`}>
       <body className="flex flex-col min-h-screen bg-[var(--background)]">
         <Providers>
+          <Toaster position="bottom-right" richColors theme="dark" />
           <div className="flex flex-col min-h-screen">
             <Header />
             {children}
