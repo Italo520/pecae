@@ -47,7 +47,7 @@ export function RegisterForm() {
       setApiError(null);
       // Fora do escopo mobile M02/M03, mas aqui assumiremos um registro simples
       // O tipo de conta (Comprador/Vendedor) poderia ser um terceiro step. Por ora: COMPRADOR.
-      await authService.register({ ...data, type: 'COMPRADOR' });
+      await authService.register({ ...data, type: 'COMPRADOR', termsAccepted: true });
       router.push('/');
     } catch (err: any) {
       setApiError(err.response?.data?.message || 'Ocorreu um erro ao criar a conta.');
