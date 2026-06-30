@@ -3,15 +3,50 @@
 import { User, Lock, Mail, Bell, Shield, LogOut } from 'lucide-react';
 import { useAuthStore } from '@/store/auth-store';
 import { useRouter } from 'next/navigation';
+import { useBuyer } from '@/hooks/useBuyer';
+import { toast } from 'sonner';
+import { useState, useEffect } from 'react';
 
 export default function PerfilCompradorPage() {
-  const { user, logout } = useAuthStore();
+  const { logout } = useAuthStore();
   const router = useRouter();
+  
+  const { getBuyerProfile, updateBuyerProfile, updateNotificationPreferences } = useBuyer();
+  const { data: profile, isLoading } = getBuyerProfile;
+
+  const [name, setName] = useState('');
+  
+  useEffect(() => {
+    if (profile?.name) {
+      setName(profile.name);
+    }
+  }, [profile]);
 
   const handleLogout = () => {
     logout();
     router.replace('/');
   };
+
+  const handleSaveProfile = () => {
+    updateBuyerProfile.mutate({ name }, {
+      onSuccess: () => toast.success('Perfil atualizado com sucesso!'),
+      onError: () => toast.error('Erro ao atualizar perfil.'),
+    });
+  };
+
+  const handleToggleNotification = (type: 'email' | 'push' | 'inApp', currentVal: boolean) => {
+    const prefs = profile?.notificationPreferences || { email: true, push: true, inApp: true };
+    updateNotificationPreferences.mutate({ ...prefs, [type]: !currentVal }, {
+      onSuccess: () => toast.success('Preferência de notificação salva.'),
+      onError: () => toast.error('Erro ao salvar preferência.'),
+    });
+  };
+
+  if (isLoading) {
+    return <div className="flex-1 flex items-center justify-center text-white/50">Carregando perfil...</div>;
+  }
+
+  const prefs = profile?.notificationPreferences || { email: true, push: true, inApp: true };
 
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -46,7 +81,8 @@ export default function PerfilCompradorPage() {
                 <label className="block text-xs font-medium text-white/50 mb-1.5">Nome Completo</label>
                 <input 
                   type="text" 
-                  defaultValue={user?.name || ''}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[var(--color-primary)]/50 focus:ring-1 focus:ring-[var(--color-primary)]/50 transition-all"
                 />
               </div>
@@ -56,7 +92,7 @@ export default function PerfilCompradorPage() {
                   <Mail className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
                   <input 
                     type="email" 
-                    defaultValue={user?.email || ''}
+                    value={profile?.email || ''}
                     disabled
                     className="w-full bg-black/40 border border-white/5 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white/50 cursor-not-allowed"
                   />
@@ -64,7 +100,7 @@ export default function PerfilCompradorPage() {
               </div>
             </div>
             <div className="mt-6 flex justify-end">
-              <button className="px-6 py-2.5 rounded-xl bg-[var(--color-primary)] text-black font-semibold hover:bg-[var(--color-primary-dark)] transition-colors">
+              <button onClick={handleSaveProfile} className="px-6 py-2.5 rounded-xl bg-[var(--color-primary)] text-black font-semibold hover:bg-[var(--color-primary-dark)] transition-colors">
                 Salvar Alterações
               </button>
             </div>
@@ -121,7 +157,12 @@ export default function PerfilCompradorPage() {
                   <h4 className="text-sm font-medium text-white">Notificações por E-mail</h4>
                   <p className="text-xs text-white/50">Receber alertas de buscas e mensagens.</p>
                 </div>
-                <input type="checkbox" className="w-5 h-5 rounded border-white/20 bg-black/50 text-[var(--color-primary)] focus:ring-[var(--color-primary)]/50" defaultChecked />
+                <input 
+                  type="checkbox" 
+                  checked={prefs.email}
+                  onChange={() => handleToggleNotification('email', prefs.email)}
+                  className="w-5 h-5 rounded border-white/20 bg-black/50 text-[var(--color-primary)] focus:ring-[var(--color-primary)]/50" 
+                />
               </label>
             </div>
           </div>

@@ -32,7 +32,7 @@ export default function CompradorLayout({ children }: { children: ReactNode }) {
   ];
 
   return (
-    <div className="flex min-h-screen bg-[var(--color-surface)]">
+    <div className="flex flex-1 h-full overflow-hidden bg-[var(--color-surface)] relative z-0">
       {/* Sidebar Desktop */}
       <aside className="hidden md:flex flex-col w-64 border-r border-white/5 bg-black/40 backdrop-blur-xl">
         <div className="p-6">
