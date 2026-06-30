@@ -41,8 +41,8 @@ progress:
 
 ### Próxima Etapa Ativa:
 
-- **2026-06-30:** Milestone 10 em andamento (Separação Frontend Web e Mobile, integração Turborepo e Docker finalizada).
-- **Milestone 10 (Sprint 10)**: Plataforma Web Next.js independente, e deploy de produção — Status: `in_progress`
+- **2026-06-30:** Milestone 10 concluída com sucesso. Web-frontend e Mobile separados.
+- **Milestone 10 (Sprint 10)**: Plataforma Web Next.js independente, e deploy de produção — Status: `completed`
 
 ## Session Continuity
 
