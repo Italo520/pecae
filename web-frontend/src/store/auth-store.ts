@@ -8,7 +8,7 @@ interface AuthState {
   isAuthenticated: boolean;
   setAuth: (user: UserPublic, token: string) => void;
   updateToken: (token: string) => void;
-  clearAuth: () => void;
+  logout: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -22,7 +22,7 @@ export const useAuthStore = create<AuthState>()(
       
       updateToken: (token) => set({ accessToken: token, isAuthenticated: true }),
       
-      clearAuth: () => set({ user: null, accessToken: null, isAuthenticated: false }),
+      logout: () => set({ user: null, accessToken: null, isAuthenticated: false }),
     }),
     {
       name: 'pecae-web-auth',
