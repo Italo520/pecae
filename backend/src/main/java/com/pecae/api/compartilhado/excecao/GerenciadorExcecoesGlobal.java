@@ -129,7 +129,7 @@ public class GerenciadorExcecoesGlobal {
         var resposta = new RespostaErro(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Erro Interno do Servidor",
-                "Erro interno do servidor. Tente novamente mais tarde.",
+                ex.getMessage() != null ? "Erro Interno: " + ex.getMessage() : "Erro interno do servidor sem mensagem.",
                 request.getRequestURI()
         );
 
