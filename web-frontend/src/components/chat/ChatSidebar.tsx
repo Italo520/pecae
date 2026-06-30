@@ -8,7 +8,11 @@ import { useChats } from '@/hooks/useChat';
 import { format, isToday, isYesterday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-export default function ChatSidebar() {
+interface ChatSidebarProps {
+  context?: 'buyer' | 'seller';
+}
+
+export default function ChatSidebar({ context = 'seller' }: ChatSidebarProps) {
   const pathname = usePathname();
   const [search, setSearch] = useState('');
   
@@ -27,13 +31,16 @@ export default function ChatSidebar() {
     return format(date, 'dd/MM', { locale: ptBR });
   };
 
+  const backLink = context === 'buyer' ? '/comprador/dashboard' : '/vendedor/dashboard';
+  const chatPrefix = context === 'buyer' ? '/comprador/negociacoes' : '/vendedor/chat';
+
   return (
     <div className="flex flex-col h-full bg-black/40">
       {/* Header */}
       <div className="p-4 border-b border-white/5 flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <Link 
-            href="/vendedor/dashboard" 
+            href={backLink} 
             className="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center text-white/70 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -81,14 +88,14 @@ export default function ChatSidebar() {
         )}
 
         {filteredChats.map(chat => {
-          const isActive = pathname === `/vendedor/chat/${chat.id}`;
+          const isActive = pathname === `${chatPrefix}/${chat.id}`;
           const lastMsg = chat.ultimaMensagem?.conteudo || 'Nova conversa iniciada';
           const timeStr = formatTime(chat.ultimaMensagem?.criadaEm || chat.atualizadaEm);
           
           return (
             <Link 
               key={chat.id}
-              href={`/vendedor/chat/${chat.id}`}
+              href={`${chatPrefix}/${chat.id}`}
               className={`flex items-center gap-3 p-3 rounded-xl transition-all cursor-pointer group ${
                 isActive ? 'bg-white/10' : 'hover:bg-white/5'
               }`}

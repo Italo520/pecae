@@ -9,7 +9,7 @@ export default function NegociacoesLayout({ children }: { children: React.ReactN
     <div className="flex h-full w-full bg-[var(--color-surface)] overflow-hidden">
       {/* Sidebar de Chats */}
       <div className="w-full md:w-[320px] lg:w-[350px] h-full border-r border-white/5 bg-black/20 backdrop-blur-xl flex-shrink-0 flex flex-col hidden md:flex">
-        <ChatSidebar />
+        <ChatSidebar context="buyer" />
       </div>
 
       {/* Main Content Area */}
