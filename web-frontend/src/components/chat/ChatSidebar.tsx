@@ -1,26 +1,31 @@
 'use client';
 
-import { Search, ArrowLeft, MoreVertical, Filter } from 'lucide-react';
+import { Search, ArrowLeft, MoreVertical, Filter, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-
-// Mocks
-const MOCK_CHATS = [
-  { id: '1', user: 'Carlos Silva', vehicle: 'Gol G4 2008', lastMessage: 'Bom dia, o motor ainda está disponível?', time: '10:45', unread: 2, online: true },
-  { id: '2', user: 'Auto Peças Rápido', vehicle: 'Civic EXS 2012', lastMessage: 'Faço R$ 500 no farol direito, fecha?', time: 'Ontem', unread: 0, online: false },
-  { id: '3', user: 'Mariana Costa', vehicle: 'HB20 2018', lastMessage: 'Certo, vou confirmar com meu mecânico e aviso.', time: 'Ontem', unread: 0, online: true },
-  { id: '4', user: 'Oficina Central', vehicle: 'S10 Advantage 2010', lastMessage: 'Tem o retrovisor elétrico?', time: 'Segunda', unread: 1, online: false },
-];
+import { useChats } from '@/hooks/useChat';
+import { format, isToday, isYesterday } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 export default function ChatSidebar() {
   const pathname = usePathname();
   const [search, setSearch] = useState('');
+  
+  const { data: chats, isLoading, isError } = useChats();
 
-  const filteredChats = MOCK_CHATS.filter(c => 
-    c.user.toLowerCase().includes(search.toLowerCase()) || 
-    c.vehicle.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredChats = chats?.filter(c => 
+    c.interlocutor.nome.toLowerCase().includes(search.toLowerCase()) || 
+    c.tituloDaConversa.toLowerCase().includes(search.toLowerCase())
+  ) || [];
+
+  const formatTime = (isoString?: string) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    if (isToday(date)) return format(date, 'HH:mm');
+    if (isYesterday(date)) return 'Ontem';
+    return format(date, 'dd/MM', { locale: ptBR });
+  };
 
   return (
     <div className="flex flex-col h-full bg-black/40">
@@ -57,8 +62,28 @@ export default function ChatSidebar() {
 
       {/* Chat List */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 space-y-1 custom-scrollbar">
+        {isLoading && (
+          <div className="flex items-center justify-center p-8 text-white/40">
+            <Loader2 className="w-6 h-6 animate-spin" />
+          </div>
+        )}
+        
+        {isError && (
+          <div className="p-4 text-center text-red-400 text-sm">
+            Erro ao carregar conversas.
+          </div>
+        )}
+
+        {!isLoading && !isError && filteredChats.length === 0 && (
+          <div className="p-4 text-center text-white/40 text-sm">
+            Nenhuma conversa encontrada.
+          </div>
+        )}
+
         {filteredChats.map(chat => {
           const isActive = pathname === `/vendedor/chat/${chat.id}`;
+          const lastMsg = chat.ultimaMensagem?.conteudo || 'Nova conversa iniciada';
+          const timeStr = formatTime(chat.ultimaMensagem?.criadaEm || chat.atualizadaEm);
           
           return (
             <Link 
@@ -69,31 +94,36 @@ export default function ChatSidebar() {
               }`}
             >
               <div className="relative flex-shrink-0">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center text-white font-medium text-lg shadow-inner">
-                  {chat.user.charAt(0)}
-                </div>
-                {chat.online && (
+                {chat.interlocutor.avatar ? (
+                  <img src={chat.interlocutor.avatar} alt="Avatar" className="w-12 h-12 rounded-full object-cover" />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center text-white font-medium text-lg shadow-inner">
+                    {chat.interlocutor.nome.charAt(0)}
+                  </div>
+                )}
+                {/* Online indicator mock for now */}
+                {chat.naoLidos > 0 && (
                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-[var(--color-primary)] border-2 border-black rounded-full" />
                 )}
               </div>
 
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-center mb-0.5">
-                  <h3 className="text-sm font-semibold text-white truncate pr-2">{chat.user}</h3>
-                  <span className={`text-xs flex-shrink-0 ${chat.unread > 0 ? 'text-[var(--color-primary)] font-medium' : 'text-white/40'}`}>
-                    {chat.time}
+                  <h3 className="text-sm font-semibold text-white truncate pr-2">{chat.interlocutor.nome}</h3>
+                  <span className={`text-xs flex-shrink-0 ${chat.naoLidos > 0 ? 'text-[var(--color-primary)] font-medium' : 'text-white/40'}`}>
+                    {timeStr}
                   </span>
                 </div>
                 <p className="text-xs text-white/60 truncate mb-1">
-                  Interesse: <span className="text-white/80">{chat.vehicle}</span>
+                  Interesse: <span className="text-white/80">{chat.tituloDaConversa}</span>
                 </p>
                 <div className="flex justify-between items-center">
-                  <p className={`text-sm truncate pr-2 ${chat.unread > 0 ? 'text-white font-medium' : 'text-white/50'}`}>
-                    {chat.lastMessage}
+                  <p className={`text-sm truncate pr-2 ${chat.naoLidos > 0 ? 'text-white font-medium' : 'text-white/50'}`}>
+                    {lastMsg}
                   </p>
-                  {chat.unread > 0 && (
+                  {chat.naoLidos > 0 && (
                     <div className="w-5 h-5 rounded-full bg-[var(--color-primary)] text-black text-[10px] font-bold flex items-center justify-center flex-shrink-0 shadow-[0_0_10px_rgba(20,241,149,0.3)]">
-                      {chat.unread}
+                      {chat.naoLidos}
                     </div>
                   )}
                 </div>

@@ -12,3 +12,4 @@ export * from './constants/query';
 export * from './schemas/auth.schema';
 export * from './schemas/listing.schema';
 export * from './schemas/vehicle.schema';
+export * from './schemas/chat.schema';
