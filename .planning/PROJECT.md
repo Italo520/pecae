@@ -2,7 +2,8 @@
 
 > **Versão Expedida:** v10.0 (Milestone 10)  
 > **Status Geral:** Milestones 1 a 10 concluídas. Frontend Web separado com sucesso via Next.js e Turborepo.  
-> **Foco Atual:** Milestone 10.1 — Implantação de Painel de Vendedor (Cadastro de Anúncios via Stepper) e Chat em Tempo Real na Web, consumindo a API de Produção.
+> **Foco Atual:** Milestone 10.2 — Web Comprador e Moderador
+> **Diretriz Global Web:** O frontend web deve ser feito baseado nas features e fluxos do mobile, porém adaptado com as características modernas de ambientes web (grids, data-tables, sidebars, navegação otimizada), enquanto utilizam o mesmo backend.
 
 
 ## Visão Geral do Sistema PECAÊ
