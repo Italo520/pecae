@@ -43,7 +43,7 @@ export default function VendedorLayout({ children }: { children: ReactNode }) {
             <span className="font-medium text-sm">Novo Anúncio</span>
           </Link>
           <Link 
-            href="/chat"
+            href="/vendedor/chat"
             className="flex items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:bg-white/5 hover:text-white transition-colors"
           >
             <span className="font-medium text-sm">Mensagens</span>
@@ -52,7 +52,7 @@ export default function VendedorLayout({ children }: { children: ReactNode }) {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col h-screen overflow-hidden">
         {children}
       </main>
 
@@ -64,7 +64,7 @@ export default function VendedorLayout({ children }: { children: ReactNode }) {
         <Link href="/vendedor/anunciar" className="p-2 text-white/70">
           <span className="text-xs font-medium">Vender</span>
         </Link>
-        <Link href="/chat" className="p-2 text-white/70">
+        <Link href="/vendedor/chat" className="p-2 text-white/70">
           <span className="text-xs font-medium">Chat</span>
         </Link>
       </nav>
