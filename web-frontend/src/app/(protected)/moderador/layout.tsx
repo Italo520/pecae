@@ -31,8 +31,9 @@ export default function ModeradorLayout({ children }: { children: ReactNode }) {
 
   const navItems = [
     { name: 'Analytics', href: '/moderador/dashboard', icon: LayoutDashboard },
-    { name: 'Campanhas', href: '/moderador/campanhas', icon: Megaphone },
     { name: 'Documentos', href: '/moderador/documentos', icon: FileText },
+    { name: 'Anúncios', href: '/moderador/anuncios', icon: Megaphone },
+    { name: 'Campanhas', href: '/moderador/campanhas', icon: Megaphone },
     { name: 'Denúncias', href: '/moderador/reports', icon: AlertTriangle },
     { name: 'Meu Perfil', href: '/moderador/perfil', icon: User },
   ];

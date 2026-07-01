@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import api from '@/lib/api';
+import { api } from '@/lib/axios';
 import { StatsCard } from '@/components/ui/StatsCard';
 import { SkeletonKPI } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';

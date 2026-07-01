@@ -68,7 +68,7 @@ export default function DenunciasPage() {
                   
                   <h3 className="text-lg font-semibold text-white mb-2">{report.reason || 'Denúncia Padrão'}</h3>
                   <p className="text-sm text-white/70 mb-4 bg-black/20 p-4 rounded-xl border border-white/5">
-                    "{report.description || 'Sem descrição detalhada fornecida pelo usuário.'}"
+                    &quot;{report.description || 'Sem descrição detalhada fornecida pelo usuário.'}&quot;
                   </p>
                   
                   <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">

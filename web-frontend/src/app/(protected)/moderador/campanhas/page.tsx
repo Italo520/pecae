@@ -3,7 +3,7 @@
 import { Megaphone, Plus, ExternalLink, Activity, Target, PauseCircle, PlayCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '@/lib/api';
+import { api } from '@/lib/axios';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import { toast } from 'sonner';
 import { EmptyState } from '@/components/ui/EmptyState';
