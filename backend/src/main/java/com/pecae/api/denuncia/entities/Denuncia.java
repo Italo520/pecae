@@ -45,7 +45,6 @@ public class Denuncia {
     
     private UUID idAlvo;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
     private CategoriaDenuncia categoria;
 
@@ -53,7 +52,6 @@ public class Denuncia {
     private String descricao;
 
     @Builder.Default
-    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private StatusDenuncia status = StatusDenuncia.PENDENTE;
 
