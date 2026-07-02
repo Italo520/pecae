@@ -36,7 +36,7 @@ export function useVehicles() {
         color: v.cor || v.color || '',
         status: v.status || '',
         price: v.preco || v.price || null,
-        mainImage: v.imagemPrincipal || v.mainImage || null,
+        mainImage: v.urlFotoPrincipal || v.imagemPrincipal || v.mainImage || (v.fotos && v.fotos.length > 0 ? v.fotos[0].url : null),
       })) as Vehicle[];
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -61,10 +61,26 @@ export function useCreateVehicle() {
 
   return useMutation({
     mutationFn: async (data: any & { photos?: File[] }) => {
-      // For now, assuming API accepts JSON as in schema (and we mock the photos or upload to a separate endpoint later)
+      // Create vehicle first
       const { photos, ...payload } = data;
       const response = await api.post(API_ENDPOINTS.VEHICLES.CREATE, payload);
       const vehicle = response.data;
+
+      // Upload photos if any
+      if (photos && photos.length > 0) {
+        for (const photo of photos) {
+          const formData = new FormData();
+          formData.append('file', photo);
+          formData.append('type', 'EXTERIOR'); // default to EXTERIOR
+          try {
+            await api.post(`/vehicles/me/${vehicle.id}/photos`, formData, {
+              headers: { 'Content-Type': 'multipart/form-data' }
+            });
+          } catch(e) {
+            console.error('Failed to upload photo', e);
+          }
+        }
+      }
 
       // Criar o anúncio correspondente para o veículo
       const title = `Sucata de veículo doador - Cor ${data.cor || 'Preta'} - Placa ${data.placa || 'Sem placa'}`;
