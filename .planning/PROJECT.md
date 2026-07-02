@@ -1,9 +1,9 @@
 # PROJECT.md
 
-> **Versão Expedida:** v10.0 (Milestone 10)  
-> **Status Geral:** Milestones 1 a 10 concluídas. Frontend Web separado com sucesso via Next.js e Turborepo.  
-> **Foco Atual:** Milestone 10.2 — Web Comprador e Moderador
-> **Diretriz Global Web:** O frontend web deve ser feito baseado nas features e fluxos do mobile, porém adaptado com as características modernas de ambientes web (grids, data-tables, sidebars, navegação otimizada), enquanto utilizam o mesmo backend.
+> **Versão Expedida:** v10.3 (Milestone 10.3 - Paridade Web)  
+> **Status Geral:** Milestones 1 a 10 concluídas. Frontend Web separado com sucesso via Next.js e Turborepo com 100% de paridade com os fluxos críticos do App Mobile.  
+> **Foco Atual:** Planejamento da próxima Milestone (v11)
+> **Diretriz Global Web:** O frontend web foi adaptado com as características modernas de ambientes web (grids, data-tables, sidebars, navegação otimizada), garantindo E2E Playwright de ponta a ponta.
 
 
 ## Visão Geral do Sistema PECAÊ
