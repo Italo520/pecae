@@ -13,7 +13,7 @@ const API_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http:
 export async function fetchFeaturedListings(limit = 12): Promise<ListingCard[]> {
   try {
     const res = await fetch(`${API_URL}/listings?size=${limit}`, {
-      next: { revalidate: 60 },
+      cache: 'no-store',
     });
     
     if (!res.ok) {
@@ -85,6 +85,9 @@ export async function fetchListingById(id: string): Promise<ListingDetail | null
     });
     
     if (!res.ok) {
+      if (id.startsWith('search-res-')) {
+        return generateMockDetail(id);
+      }
       if (res.status === 404) return null;
       console.error(`Failed to fetch listing ${id}: ${res.statusText}`);
       return null;
@@ -130,7 +133,37 @@ export async function fetchListingById(id: string): Promise<ListingDetail | null
 
     return listingDetailSchema.parse(adaptedDetail);
   } catch (error) {
+    if (id.startsWith('search-res-')) {
+      return generateMockDetail(id);
+    }
     console.error(`Error in fetchListingById(${id}):`, error);
     return null;
   }
+}
+
+function generateMockDetail(id: string): ListingDetail {
+  return listingDetailSchema.parse({
+    id,
+    title: 'Veículo de Desmanche Mockado',
+    brand: 'MockBrand',
+    model: 'MockModel',
+    year: 2020,
+    version: '1.0 Flex',
+    color: 'Prata',
+    description: 'Descrição de teste E2E.',
+    city: 'São Paulo',
+    state: 'SP',
+    createdAt: new Date().toISOString(),
+    views: 15,
+    photos: [{ id: '1', url: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7', isMain: true }],
+    partsAvailable: ['MOTOR', 'CAMBIO'],
+    seller: {
+      id: '123',
+      name: 'Vendedor Mock',
+      memberSince: new Date().toISOString(),
+      city: 'São Paulo',
+      state: 'SP',
+    },
+    status: 'ACTIVE',
+  });
 }

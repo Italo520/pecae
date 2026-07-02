@@ -52,12 +52,12 @@ export function FilterPanel({ initialBrands, searchParams, onFilterChange, onCle
   };
 
   return (
-    <div className="flex flex-col gap-6 p-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)]">
+    <div className="flex flex-col gap-6 p-6 rounded-3xl border border-border bg-surface text-foreground backdrop-blur-md">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-display font-semibold">Filtros</h2>
+        <h2 className="text-lg font-display font-bold">Filtros</h2>
         <button 
           onClick={onClearFilters}
-          className="text-sm text-[var(--brand)] hover:underline font-medium"
+          className="text-sm text-brand hover:underline font-medium"
         >
           Limpar Tudo
         </button>
@@ -70,7 +70,7 @@ export function FilterPanel({ initialBrands, searchParams, onFilterChange, onCle
           placeholder="Ex: Motor Honda Civic" 
           value={queryLocal}
           onChange={(e) => setQueryLocal(e.target.value)}
-          className="w-full px-3 py-2 bg-transparent border border-[var(--border)] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand)]"
+          className="w-full px-4 py-3 bg-background/50 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand"
         />
       </div>
 
@@ -85,7 +85,7 @@ export function FilterPanel({ initialBrands, searchParams, onFilterChange, onCle
                 value={type} 
                 checked={searchParams.vehicleCategory === type}
                 onChange={(e) => onFilterChange('vehicleCategory', e.target.value)}
-                className="text-[var(--brand)] focus:ring-[var(--brand)]"
+                className="text-brand focus:ring-brand"
               />
               {type}
             </label>
@@ -98,7 +98,7 @@ export function FilterPanel({ initialBrands, searchParams, onFilterChange, onCle
         <select 
           value={searchParams.brandId || ''}
           onChange={(e) => handleBrandChange(e.target.value)}
-          className="w-full px-3 py-2 bg-transparent border border-[var(--border)] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand)]"
+          className="w-full px-4 py-3 bg-background/50 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand"
         >
           <option value="">Todas as Marcas</option>
           {brands.map(brand => (
@@ -108,12 +108,12 @@ export function FilterPanel({ initialBrands, searchParams, onFilterChange, onCle
       </div>
 
       <div className="flex flex-col gap-2">
-        <label className="text-sm font-semibold">Modelo {isFetchingModels && <span className="text-[var(--muted)] text-xs">(Buscando...)</span>}</label>
+        <label className="text-sm font-semibold">Modelo {isFetchingModels && <span className="text-muted text-xs">(Buscando...)</span>}</label>
         <select 
           value={searchParams.modelId || ''}
           onChange={(e) => handleModelChange(e.target.value)}
           disabled={!searchParams.brandId}
-          className="w-full px-3 py-2 bg-transparent border border-[var(--border)] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand)] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full px-4 py-3 bg-background/50 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <option value="">Todos os Modelos</option>
           {models.map(model => (
@@ -132,17 +132,17 @@ export function FilterPanel({ initialBrands, searchParams, onFilterChange, onCle
           onChange={(e) => handleYearChange(e.target.value)}
           disabled={!searchParams.modelId}
           placeholder="Ex: 2018"
-          className="w-full px-3 py-2 bg-transparent border border-[var(--border)] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand)] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full px-4 py-3 bg-background/50 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand disabled:opacity-50 disabled:cursor-not-allowed"
         />
       </div>
 
       <div className="flex flex-col gap-2">
-        <label className="text-sm font-semibold">Versão {isFetchingVersions && <span className="text-[var(--muted)] text-xs">(Buscando...)</span>}</label>
+        <label className="text-sm font-semibold">Versão {isFetchingVersions && <span className="text-muted text-xs">(Buscando...)</span>}</label>
         <select 
           value={searchParams.versionId || ''}
           onChange={(e) => onFilterChange('versionId', e.target.value || undefined)}
           disabled={!searchParams.year}
-          className="w-full px-3 py-2 bg-transparent border border-[var(--border)] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand)] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full px-4 py-3 bg-background/50 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <option value="">Todas as Versões</option>
           {versions.map(version => (
@@ -156,7 +156,7 @@ export function FilterPanel({ initialBrands, searchParams, onFilterChange, onCle
         <select 
           value={searchParams.state || ''}
           onChange={(e) => onFilterChange('state', e.target.value || undefined)}
-          className="w-full px-3 py-2 bg-transparent border border-[var(--border)] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand)]"
+          className="w-full px-4 py-3 bg-background/50 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand"
         >
           <option value="">Brasil inteiro</option>
           {STATES.map(uf => (

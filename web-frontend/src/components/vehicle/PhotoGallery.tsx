@@ -15,8 +15,8 @@ export function PhotoGallery({ photos, title }: PhotoGalleryProps) {
 
   if (!photos || photos.length === 0) {
     return (
-      <div className="w-full h-64 md:h-96 bg-gray-200 rounded-lg flex items-center justify-center">
-        <span className="text-gray-500">Sem fotos</span>
+      <div className="w-full h-64 md:h-96 bg-surface border border-border rounded-xl flex items-center justify-center">
+        <span className="text-muted">Sem fotos</span>
       </div>
     );
   }
@@ -39,7 +39,7 @@ export function PhotoGallery({ photos, title }: PhotoGalleryProps) {
 
   return (
     <>
-      <div className="relative group rounded-xl overflow-hidden shadow-sm border border-gray-100 bg-black">
+      <div className="relative group rounded-3xl overflow-hidden shadow-sm border border-border bg-black">
         {/* Main Image */}
         <div 
           className="relative w-full h-64 md:h-96 lg:h-[480px] cursor-pointer"
@@ -92,8 +92,8 @@ export function PhotoGallery({ photos, title }: PhotoGalleryProps) {
             <button
               key={photo.id}
               onClick={() => setCurrentIndex(idx)}
-              className={`relative flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 transition-colors ${
-                idx === currentIndex ? 'border-blue-600' : 'border-transparent hover:border-gray-300'
+              className={`relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-colors ${
+                idx === currentIndex ? 'border-brand' : 'border-transparent hover:border-border'
               }`}
             >
               <Image

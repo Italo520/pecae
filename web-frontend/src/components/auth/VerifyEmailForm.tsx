@@ -44,28 +44,28 @@ export function VerifyEmailForm() {
   };
 
   return (
-    <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 max-w-md w-full mx-auto relative overflow-hidden">
+    <div className="bg-surface p-8 rounded-3xl border border-border max-w-md w-full mx-auto relative overflow-hidden backdrop-blur-md">
       <button 
         onClick={() => router.back()}
-        className="absolute top-6 left-6 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer"
+        className="absolute top-6 left-6 text-muted hover:text-foreground transition-colors cursor-pointer"
         aria-label="Voltar"
       >
         <ArrowLeft className="w-5 h-5" />
       </button>
       
       <div className="text-center mb-8 mt-4">
-        <div className="w-12 h-12 bg-blue-50 text-[var(--color-primary)] rounded-full flex items-center justify-center mx-auto mb-4">
-          <MailCheck className="w-6 h-6 text-blue-600" />
+        <div className="w-12 h-12 bg-brand/20 text-brand rounded-full flex items-center justify-center mx-auto mb-4">
+          <MailCheck className="w-6 h-6 text-brand" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">Verificação</h1>
-        <p className="text-sm text-gray-500 mt-2">
+        <h1 className="text-2xl font-bold font-display text-foreground">Verificação</h1>
+        <p className="text-sm text-muted mt-2">
           Insira o código de 6 dígitos enviado ao seu e-mail para ativar sua conta.
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1 text-center" htmlFor="code">
+          <label className="block text-sm font-medium text-foreground mb-1 text-center" htmlFor="code">
             CÓDIGO DE SINCRONIZAÇÃO
           </label>
           <div className="relative">
@@ -76,29 +76,29 @@ export function VerifyEmailForm() {
               maxLength={6}
               placeholder="000000"
               {...register('code')}
-              className={`w-full px-4 py-3 border rounded-lg text-center tracking-[0.7em] font-mono text-2xl focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] focus:outline-none transition-colors ${
-                errors.code ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
+              className={`w-full px-4 py-3 bg-background/50 border rounded-xl text-center tracking-[0.7em] font-mono text-2xl focus:ring-2 focus:ring-brand focus:border-brand focus:outline-none transition-colors text-foreground ${
+                errors.code ? 'border-error focus:ring-error focus:border-error' : 'border-border'
               }`}
             />
           </div>
-          {errors.code && <p className="text-red-500 text-xs mt-2 text-center">{errors.code.message}</p>}
+          {errors.code && <p className="text-error text-xs mt-2 text-center">{errors.code.message}</p>}
         </div>
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-[var(--color-primary)] text-black font-semibold py-2.5 rounded-lg hover:brightness-95 focus:ring-4 focus:ring-yellow-100 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer mt-6"
+          className="w-full bg-brand text-white font-bold py-3 rounded-xl hover:bg-brand/90 focus:ring-4 focus:ring-brand/30 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer mt-6"
         >
           {isSubmitting ? 'Verificando...' : 'Sincronizar Agora'}
         </button>
         
         <div className="text-center mt-6">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted">
             Problemas no recebimento?{' '}
             <button
               type="button"
               onClick={resendCode}
-              className="text-blue-600 hover:underline cursor-pointer font-medium"
+              className="text-brand hover:underline cursor-pointer font-medium"
             >
               REENVIAR
             </button>

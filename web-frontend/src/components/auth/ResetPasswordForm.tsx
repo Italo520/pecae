@@ -48,17 +48,17 @@ export function ResetPasswordForm() {
 
   if (isSuccess) {
     return (
-      <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 max-w-md w-full mx-auto text-center">
-        <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+      <div className="bg-surface p-8 rounded-3xl border border-border max-w-md w-full mx-auto text-center backdrop-blur-md">
+        <div className="w-16 h-16 bg-success/20 text-success rounded-full flex items-center justify-center mx-auto mb-6">
           <CheckCircle2 className="w-8 h-8" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Chave Redefinida!</h1>
-        <p className="text-gray-500 mb-8">
+        <h1 className="text-2xl font-bold font-display text-foreground mb-2">Chave Redefinida!</h1>
+        <p className="text-muted mb-8">
           Sua senha foi alterada com sucesso. Você já pode fazer login com sua nova chave de acesso.
         </p>
         <Link 
           href="/login"
-          className="inline-flex w-full justify-center bg-[var(--color-primary)] text-black font-semibold py-2.5 rounded-lg hover:brightness-95 focus:ring-4 focus:ring-yellow-100 transition-all duration-200"
+          className="inline-flex w-full justify-center bg-brand text-white font-bold py-3 rounded-xl hover:bg-brand/90 focus:ring-4 focus:ring-brand/30 transition-all duration-200"
         >
           Ir para Login
         </Link>
@@ -67,69 +67,69 @@ export function ResetPasswordForm() {
   }
 
   return (
-    <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 max-w-md w-full mx-auto relative overflow-hidden">
+    <div className="bg-surface p-8 rounded-3xl border border-border max-w-md w-full mx-auto relative overflow-hidden backdrop-blur-md">
       <Link 
         href="/login" 
-        className="absolute top-6 left-6 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer"
+        className="absolute top-6 left-6 text-muted hover:text-foreground transition-colors cursor-pointer"
         aria-label="Voltar para o login"
       >
         <ArrowLeft className="w-5 h-5" />
       </Link>
       
       <div className="text-center mb-8 mt-4">
-        <h1 className="text-2xl font-bold text-gray-900">Nova Senha</h1>
-        <p className="text-sm text-gray-500 mt-2">
+        <h1 className="text-2xl font-bold font-display text-foreground">Nova Senha</h1>
+        <p className="text-sm text-muted mt-2">
           Crie uma nova chave de acesso segura.
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="newPassword">
+          <label className="block text-sm font-medium text-foreground mb-1" htmlFor="newPassword">
             Nova Chave
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Lock className="h-5 w-5 text-gray-400" />
+              <Lock className="h-5 w-5 text-muted" />
             </div>
             <input
               id="newPassword"
               type="password"
               placeholder="Mínimo de 8 caracteres"
               {...register('newPassword')}
-              className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] focus:outline-none transition-colors ${
-                errors.newPassword ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
+              className={`w-full pl-10 pr-4 py-3 bg-background/50 border rounded-xl focus:ring-2 focus:ring-brand focus:border-brand focus:outline-none transition-colors text-foreground placeholder:text-muted ${
+                errors.newPassword ? 'border-error focus:ring-error focus:border-error' : 'border-border'
               }`}
             />
           </div>
-          {errors.newPassword && <p className="text-red-500 text-xs mt-1">{errors.newPassword.message}</p>}
+          {errors.newPassword && <p className="text-error text-xs mt-1">{errors.newPassword.message}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="confirmPassword">
+          <label className="block text-sm font-medium text-foreground mb-1" htmlFor="confirmPassword">
             Confirmar Chave
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Lock className="h-5 w-5 text-gray-400" />
+              <Lock className="h-5 w-5 text-muted" />
             </div>
             <input
               id="confirmPassword"
               type="password"
               placeholder="Repita a nova chave"
               {...register('confirmPassword')}
-              className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] focus:outline-none transition-colors ${
-                errors.confirmPassword ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
+              className={`w-full pl-10 pr-4 py-3 bg-background/50 border rounded-xl focus:ring-2 focus:ring-brand focus:border-brand focus:outline-none transition-colors text-foreground placeholder:text-muted ${
+                errors.confirmPassword ? 'border-error focus:ring-error focus:border-error' : 'border-border'
               }`}
             />
           </div>
-          {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
+          {errors.confirmPassword && <p className="text-error text-xs mt-1">{errors.confirmPassword.message}</p>}
         </div>
 
         <button
           type="submit"
           disabled={isSubmitting || !token}
-          className="w-full bg-[var(--color-primary)] text-black font-semibold py-2.5 rounded-lg hover:brightness-95 focus:ring-4 focus:ring-yellow-100 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
+          className="w-full bg-brand text-white font-bold py-3 rounded-xl hover:bg-brand/90 focus:ring-4 focus:ring-brand/30 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
         >
           {isSubmitting ? 'Redefinindo...' : 'Redefinir Chave'}
         </button>

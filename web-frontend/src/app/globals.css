@@ -20,7 +20,7 @@
   --brand-vibrant: #4ADE80;
   --background: #F1F5F1;
   --foreground: #0F172A;
-  --surface: rgba(255, 255, 255, 0.95);
+  --surface: rgba(255, 255, 255, 0.4); /* Glassmorphism light */
   --border: rgba(0, 0, 0, 0.08);
   --muted: #475569;
   --error: #EF4444;

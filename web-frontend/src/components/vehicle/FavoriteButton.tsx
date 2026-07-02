@@ -14,9 +14,17 @@ export function FavoriteButton({ listingId }: { listingId: string }) {
   };
 
   return (
-    <button 
+    <div 
+      role="button"
+      tabIndex={0}
       onClick={toggleFavorite}
-      className={`absolute top-2 right-2 p-2 rounded-full backdrop-blur-md transition-colors z-10 ${
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleFavorite(e as any);
+        }
+      }}
+      className={`absolute top-2 right-2 p-2 rounded-full backdrop-blur-md transition-colors z-10 cursor-pointer ${
         isFavorited 
           ? 'bg-red-500/20 text-red-500 hover:bg-red-500/30' 
           : 'bg-black/20 text-white hover:bg-black/40'
@@ -24,6 +32,6 @@ export function FavoriteButton({ listingId }: { listingId: string }) {
       aria-label={isFavorited ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
     >
       <Heart size={20} className={isFavorited ? 'fill-current' : ''} />
-    </button>
+    </div>
   );
 }

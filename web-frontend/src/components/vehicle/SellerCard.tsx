@@ -6,25 +6,25 @@ interface SellerCardProps {
 
 export function SellerCard({ seller }: SellerCardProps) {
   return (
-    <div className="bg-gray-50 border border-gray-100 rounded-xl p-5 mb-6">
-      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Informações do Vendedor</h3>
+    <div className="bg-surface border border-border rounded-3xl p-6 mb-6 backdrop-blur-md">
+      <h3 className="text-xs font-bold text-muted uppercase tracking-wider mb-4">Informações do Vendedor</h3>
       
       <div className="flex items-start gap-4">
-        <div className="w-12 h-12 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold text-xl flex-shrink-0">
+        <div className="w-12 h-12 bg-brand/20 text-brand rounded-full flex items-center justify-center font-bold font-display text-xl flex-shrink-0">
           {seller.name.charAt(0).toUpperCase()}
         </div>
         
         <div>
           <div className="flex items-center gap-2">
-            <h4 className="font-bold text-gray-900 text-lg">{seller.name}</h4>
+            <h4 className="font-bold text-foreground font-display text-lg">{seller.name}</h4>
             {seller.verified && (
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-brand" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M6.267 3.441A1.5 1.5 0 017.5 2.5h5a1.5 1.5 0 011.233.941l1.52 3.65a1.5 1.5 0 01-.132 1.567l-3.236 4.045a1.5 1.5 0 01-2.348 0l-3.236-4.045a1.5 1.5 0 01-.132-1.567l1.52-3.65z" clipRule="evenodd" />
               </svg>
             )}
           </div>
           
-          <div className="flex flex-col gap-1 mt-2 text-sm text-gray-600">
+          <div className="flex flex-col gap-1 mt-2 text-sm text-muted">
             <div className="flex items-center gap-1.5">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -42,10 +42,10 @@ export function SellerCard({ seller }: SellerCardProps) {
             
             {seller.rating && (
               <div className="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-yellow-400">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-warning">
                   <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
                 </svg>
-                <span className="font-medium text-gray-800">{seller.rating.toFixed(1)}</span>
+                <span className="font-bold text-foreground">{seller.rating.toFixed(1)}</span>
               </div>
             )}
           </div>

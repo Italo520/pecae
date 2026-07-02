@@ -35,7 +35,7 @@ export function BannerCarousel({ ads }: BannerCarouselProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative w-full h-[150px] md:h-[250px] overflow-hidden rounded-[var(--radius-lg)] bg-[var(--border)]">
+      <div className="relative w-full h-[150px] md:h-[250px] overflow-hidden rounded-3xl bg-border">
         {ads.map((ad, index) => (
           <Link 
             key={ad.id} 
@@ -60,7 +60,7 @@ export function BannerCarousel({ ads }: BannerCarouselProps) {
                 onClick={() => setCurrentIndex(index)}
                 aria-label={`Ir para o anúncio ${index + 1}`}
                 className={`w-2.5 h-2.5 rounded-full transition-all ${
-                  index === currentIndex ? 'bg-[var(--brand)] w-6' : 'bg-white/50 hover:bg-white'
+                  index === currentIndex ? 'bg-brand w-6' : 'bg-white/50 hover:bg-white'
                 }`}
               />
             ))}

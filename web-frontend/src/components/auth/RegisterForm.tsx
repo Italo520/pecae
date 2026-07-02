@@ -55,16 +55,16 @@ export function RegisterForm() {
   };
 
   return (
-    <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 max-w-md w-full mx-auto">
+    <div className="bg-surface p-8 rounded-3xl border border-border max-w-md w-full mx-auto backdrop-blur-md">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 text-center">Criar Conta</h1>
+        <h1 className="text-2xl font-bold font-display text-foreground text-center">Criar Conta</h1>
         
         {/* Goal Gradient / Progress */}
         <div className="flex items-center justify-center gap-2 mt-4">
-          <div className={`h-1.5 w-12 rounded-full transition-colors ${step >= 1 ? 'bg-blue-600' : 'bg-gray-200'}`} />
-          <div className={`h-1.5 w-12 rounded-full transition-colors ${step >= 2 ? 'bg-blue-600' : 'bg-gray-200'}`} />
+          <div className={`h-1.5 w-12 rounded-full transition-colors ${step >= 1 ? 'bg-brand' : 'bg-border'}`} />
+          <div className={`h-1.5 w-12 rounded-full transition-colors ${step >= 2 ? 'bg-brand' : 'bg-border'}`} />
         </div>
-        <p className="text-center text-xs text-gray-500 mt-2 font-medium">
+        <p className="text-center text-xs text-muted mt-2 font-medium">
           Passo {step} de 2
         </p>
       </div>
@@ -75,35 +75,35 @@ export function RegisterForm() {
         <div className={step === 1 ? 'block' : 'hidden'}>
           <div className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
+              <label className="block text-sm font-medium text-foreground mb-1">Nome Completo</label>
               <input
                 type="text"
                 placeholder="Ex: João da Silva"
                 {...register('name')}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors ${
-                  errors.name ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-4 py-3 bg-background/50 border rounded-xl focus:ring-2 focus:ring-brand focus:border-brand focus:outline-none transition-colors text-foreground placeholder:text-muted ${
+                  errors.name ? 'border-error' : 'border-border'
                 }`}
               />
-              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+              {errors.name && <p className="text-error text-xs mt-1">{errors.name.message}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+              <label className="block text-sm font-medium text-foreground mb-1">E-mail</label>
               <input
                 type="email"
                 placeholder="seu@email.com"
                 {...register('email')}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors ${
-                  errors.email ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-4 py-3 bg-background/50 border rounded-xl focus:ring-2 focus:ring-brand focus:border-brand focus:outline-none transition-colors text-foreground placeholder:text-muted ${
+                  errors.email ? 'border-error' : 'border-border'
                 }`}
               />
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+              {errors.email && <p className="text-error text-xs mt-1">{errors.email.message}</p>}
             </div>
             
             <button
               type="button"
               onClick={nextStep}
-              className="w-full bg-blue-600 text-white font-medium py-2.5 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-100 transition-all mt-4"
+              className="w-full bg-brand text-white font-bold py-3 rounded-xl hover:bg-brand/90 focus:ring-4 focus:ring-brand/30 transition-all mt-4"
             >
               Continuar
             </button>
@@ -114,33 +114,33 @@ export function RegisterForm() {
         <div className={step === 2 ? 'block' : 'hidden'}>
           <div className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+              <label className="block text-sm font-medium text-foreground mb-1">Senha</label>
               <input
                 type="password"
                 placeholder="Mínimo de 6 caracteres"
                 {...register('password')}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors ${
-                  errors.password ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-4 py-3 bg-background/50 border rounded-xl focus:ring-2 focus:ring-brand focus:border-brand focus:outline-none transition-colors text-foreground placeholder:text-muted ${
+                  errors.password ? 'border-error' : 'border-border'
                 }`}
               />
-              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+              {errors.password && <p className="text-error text-xs mt-1">{errors.password.message}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirmar Senha</label>
+              <label className="block text-sm font-medium text-foreground mb-1">Confirmar Senha</label>
               <input
                 type="password"
                 placeholder="Repita a senha"
                 {...register('confirmPassword')}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors ${
-                  errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-4 py-3 bg-background/50 border rounded-xl focus:ring-2 focus:ring-brand focus:border-brand focus:outline-none transition-colors text-foreground placeholder:text-muted ${
+                  errors.confirmPassword ? 'border-error' : 'border-border'
                 }`}
               />
-              {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
+              {errors.confirmPassword && <p className="text-error text-xs mt-1">{errors.confirmPassword.message}</p>}
             </div>
 
             {apiError && (
-              <div className="p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-100">
+              <div className="p-3 bg-error/10 text-error text-sm rounded-xl border border-error/20">
                 {apiError}
               </div>
             )}
@@ -149,14 +149,14 @@ export function RegisterForm() {
               <button
                 type="button"
                 onClick={prevStep}
-                className="w-1/3 bg-white border border-gray-300 text-gray-700 font-medium py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
+                className="w-1/3 bg-transparent border border-border text-foreground font-medium py-3 rounded-xl hover:bg-background/50 transition-colors"
               >
                 Voltar
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-2/3 bg-blue-600 text-white font-medium py-2.5 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-100 transition-all disabled:opacity-70"
+                className="w-2/3 bg-brand text-white font-bold py-3 rounded-xl hover:bg-brand/90 focus:ring-4 focus:ring-brand/30 transition-all disabled:opacity-70"
               >
                 {isSubmitting ? 'Criando...' : 'Criar Conta'}
               </button>
@@ -165,9 +165,9 @@ export function RegisterForm() {
         </div>
       </form>
 
-      <div className="mt-8 text-center text-sm text-gray-500">
+      <div className="mt-8 text-center text-sm text-muted">
         Já tem conta?{' '}
-        <Link href="/login" className="text-blue-600 hover:underline font-medium">
+        <Link href="/login" className="text-brand hover:underline font-bold">
           Entrar
         </Link>
       </div>

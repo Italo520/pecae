@@ -27,7 +27,7 @@ export function ListingCard({ listing }: ListingCardProps) {
   return (
     <Link 
       href={`/veiculo/${listing.id}`}
-      className="group flex flex-col bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-lg)] overflow-hidden hover:shadow-md transition-shadow relative"
+      className="group flex flex-col bg-surface border border-border rounded-3xl overflow-hidden hover:shadow-md transition-shadow relative"
     >
       {/* Top Badges & Favorite */}
       <FavoriteButton listingId={listing.id} />
@@ -39,7 +39,7 @@ export function ListingCard({ listing }: ListingCardProps) {
       </div>
 
       {/* Image Container */}
-      <div className="relative w-full aspect-[4/3] bg-[var(--border)] overflow-hidden">
+      <div className="relative w-full aspect-[4/3] bg-border overflow-hidden">
         <Image
           src={listing.imageUrl}
           alt={`${listing.brand} ${listing.model}`}
@@ -47,7 +47,7 @@ export function ListingCard({ listing }: ListingCardProps) {
           className="object-cover group-hover:scale-105 transition-transform duration-300"
         />
         {/* Photo Count */}
-        <div className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-[var(--radius-sm)] flex items-center gap-1 backdrop-blur-sm">
+        <div className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-lg flex items-center gap-1 backdrop-blur-sm">
           <Camera size={14} />
           <span>{listing.imageCount}</span>
         </div>
@@ -56,21 +56,21 @@ export function ListingCard({ listing }: ListingCardProps) {
       {/* Content */}
       <div className="p-4 flex flex-col flex-grow">
         <div className="flex justify-between items-start gap-2 mb-1">
-          <h3 className="font-semibold text-[var(--foreground)] line-clamp-2 leading-tight font-display">
+          <h3 className="font-semibold text-foreground line-clamp-2 leading-tight font-display">
             {listing.title}
           </h3>
         </div>
         
-        <p className="text-sm text-[var(--muted)] mb-3">
+        <p className="text-sm text-muted mb-3">
           {listing.year}
         </p>
 
         <div className="mt-auto flex flex-col gap-2">
-          <p className="text-sm font-medium text-[var(--brand)]">
+          <p className="text-sm font-medium text-brand">
             {listing.partsAvailable} peças disponíveis
           </p>
           
-          <div className="flex items-center justify-between text-xs text-[var(--muted)] pt-3 border-t border-[var(--border)]">
+          <div className="flex items-center justify-between text-xs text-muted pt-3 border-t border-border">
             <span className="flex items-center gap-1">
               <MapPin size={12} />
               {listing.city}, {listing.state}

@@ -83,8 +83,10 @@ test.describe('PECAÊ E2E - Fluxo de Cadastro e Moderação de Veículo', () => 
     await selectVersion.selectOption({ label: '1.0 MI 8V' });
 
     const selectYear = page.locator('select').nth(3);
-    await selectYear.locator('option:has-text("2012")').waitFor({ state: 'attached', timeout: 15000 });
-    await selectYear.selectOption('ea519f5d-17dc-4cf9-bb56-d0e4f55d210b');
+    const yearOption = selectYear.locator('option:has-text("2012")').first();
+    await yearOption.waitFor({ state: 'attached', timeout: 15000 });
+    const yearValue = await yearOption.getAttribute('value') || '';
+    await selectYear.selectOption(yearValue);
 
     await page.locator('button:has-text("Próximo Passo")').click();
     await page.waitForTimeout(1000);

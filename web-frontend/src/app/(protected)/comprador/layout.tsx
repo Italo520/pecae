@@ -33,13 +33,13 @@ export default function CompradorLayout({ children }: { children: ReactNode }) {
   ];
 
   return (
-    <div className="flex flex-1 h-full overflow-hidden bg-[var(--color-surface)] relative z-0">
+    <div className="flex flex-1 h-full overflow-hidden bg-background relative z-0">
       {/* Sidebar Desktop */}
-      <aside className="hidden md:flex flex-col w-64 border-r border-white/5 bg-black/40 backdrop-blur-xl">
+      <aside className="hidden md:flex flex-col w-64 border-r border-border bg-surface/50 backdrop-blur-xl">
         <div className="p-6">
           <Link href="/">
-            <h2 className="text-xl font-display font-semibold tracking-wider text-[var(--color-primary)]">
-              PECAÊ <span className="text-white/50 text-sm">COMPRADOR</span>
+            <h2 className="text-xl font-display font-bold tracking-wider text-brand">
+              PECAÊ <span className="text-muted font-sans text-sm">COMPRADOR</span>
             </h2>
           </Link>
         </div>
@@ -53,10 +53,10 @@ export default function CompradorLayout({ children }: { children: ReactNode }) {
               <Link 
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
                   isActive 
-                    ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]' 
-                    : 'text-white/70 hover:bg-white/5 hover:text-white'
+                    ? 'bg-brand/10 text-brand' 
+                    : 'text-muted hover:bg-foreground/5 hover:text-foreground'
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -73,7 +73,7 @@ export default function CompradorLayout({ children }: { children: ReactNode }) {
       </main>
 
       {/* Bottom Tab Mobile (Simulated for small screens) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 border-t border-white/5 bg-black/80 backdrop-blur-xl flex justify-around items-center px-2 z-50">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 border-t border-border bg-surface/80 backdrop-blur-xl flex justify-around items-center px-2 z-50">
         {navItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
           const Icon = item.icon;
@@ -83,7 +83,7 @@ export default function CompradorLayout({ children }: { children: ReactNode }) {
               key={item.href}
               href={item.href} 
               className={`p-2 flex flex-col items-center gap-1 ${
-                isActive ? 'text-[var(--color-primary)]' : 'text-white/70'
+                isActive ? 'text-brand' : 'text-muted'
               }`}
             >
               <Icon className="w-5 h-5" />

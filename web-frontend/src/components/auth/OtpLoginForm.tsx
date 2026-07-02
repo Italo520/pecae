@@ -54,20 +54,20 @@ export function OtpLoginForm() {
   };
 
   return (
-    <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 max-w-md w-full mx-auto relative overflow-hidden">
+    <div className="bg-surface p-8 rounded-3xl border border-border max-w-md w-full mx-auto relative overflow-hidden backdrop-blur-md">
       <button 
         onClick={() => step === 'code' ? setStep('phone') : router.push('/login')}
-        className="absolute top-6 left-6 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer"
+        className="absolute top-6 left-6 text-muted hover:text-foreground transition-colors cursor-pointer"
         aria-label="Voltar"
       >
         <ArrowLeft className="w-5 h-5" />
       </button>
       
       <div className="text-center mb-8 mt-4">
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold font-display text-foreground">
           {step === 'phone' ? 'Acesso via Telefone' : 'Verificação de Segurança'}
         </h1>
-        <p className="text-sm text-gray-500 mt-2">
+        <p className="text-sm text-muted mt-2">
           {step === 'phone' 
             ? 'Insira seu número para receber um código de acesso via SMS/WhatsApp.'
             : `Enviamos um código de 6 dígitos para ${phoneNumber}`}
@@ -77,30 +77,30 @@ export function OtpLoginForm() {
       {step === 'phone' ? (
         <form onSubmit={phoneForm.handleSubmit(onSendOtp)} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="phone">
+            <label className="block text-sm font-medium text-foreground mb-1" htmlFor="phone">
               Telefone
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Phone className="h-5 w-5 text-gray-400" />
+                <Phone className="h-5 w-5 text-muted" />
               </div>
               <input
                 id="phone"
                 type="tel"
                 placeholder="+55 11 99999-9999"
                 {...phoneForm.register('phone')}
-                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] focus:outline-none transition-colors ${
-                  phoneForm.formState.errors.phone ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
+                className={`w-full pl-10 pr-4 py-3 bg-background/50 border rounded-xl focus:ring-2 focus:ring-brand focus:border-brand focus:outline-none transition-colors text-foreground placeholder:text-muted ${
+                  phoneForm.formState.errors.phone ? 'border-error focus:ring-error focus:border-error' : 'border-border'
                 }`}
               />
             </div>
-            {phoneForm.formState.errors.phone && <p className="text-red-500 text-xs mt-1">{phoneForm.formState.errors.phone.message}</p>}
+            {phoneForm.formState.errors.phone && <p className="text-error text-xs mt-1">{phoneForm.formState.errors.phone.message}</p>}
           </div>
 
           <button
             type="submit"
             disabled={phoneForm.formState.isSubmitting}
-            className="w-full bg-[var(--color-primary)] text-black font-semibold py-2.5 rounded-lg hover:brightness-95 focus:ring-4 focus:ring-yellow-100 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
+            className="w-full bg-brand text-white font-bold py-3 rounded-xl hover:bg-brand/90 focus:ring-4 focus:ring-brand/30 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
           >
             {phoneForm.formState.isSubmitting ? 'Solicitando...' : 'Solicitar Código'}
           </button>
@@ -108,12 +108,12 @@ export function OtpLoginForm() {
       ) : (
         <form onSubmit={codeForm.handleSubmit(onVerifyOtp)} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="code">
+            <label className="block text-sm font-medium text-foreground mb-1" htmlFor="code">
               Código de 6 dígitos
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <KeyRound className="h-5 w-5 text-gray-400" />
+                <KeyRound className="h-5 w-5 text-muted" />
               </div>
               <input
                 id="code"
@@ -122,18 +122,18 @@ export function OtpLoginForm() {
                 maxLength={6}
                 placeholder="000000"
                 {...codeForm.register('code')}
-                className={`w-full pl-10 pr-4 py-2 border rounded-lg text-center tracking-[0.5em] font-mono text-lg focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] focus:outline-none transition-colors ${
-                  codeForm.formState.errors.code ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'
+                className={`w-full pl-10 pr-4 py-3 bg-background/50 border rounded-xl text-center tracking-[0.5em] font-mono text-lg focus:ring-2 focus:ring-brand focus:border-brand focus:outline-none transition-colors text-foreground placeholder:text-muted ${
+                  codeForm.formState.errors.code ? 'border-error focus:ring-error focus:border-error' : 'border-border'
                 }`}
               />
             </div>
-            {codeForm.formState.errors.code && <p className="text-red-500 text-xs mt-1 text-center tracking-normal font-sans">{codeForm.formState.errors.code.message}</p>}
+            {codeForm.formState.errors.code && <p className="text-error text-xs mt-1 text-center tracking-normal font-sans">{codeForm.formState.errors.code.message}</p>}
           </div>
 
           <button
             type="submit"
             disabled={codeForm.formState.isSubmitting}
-            className="w-full bg-[var(--color-primary)] text-black font-semibold py-2.5 rounded-lg hover:brightness-95 focus:ring-4 focus:ring-yellow-100 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
+            className="w-full bg-brand text-white font-bold py-3 rounded-xl hover:bg-brand/90 focus:ring-4 focus:ring-brand/30 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
           >
             {codeForm.formState.isSubmitting ? 'Verificando...' : 'Verificar e Entrar'}
           </button>
@@ -142,7 +142,7 @@ export function OtpLoginForm() {
             <button
               type="button"
               onClick={phoneForm.handleSubmit(onSendOtp)}
-              className="text-sm text-blue-600 hover:underline cursor-pointer"
+              className="text-sm font-medium text-brand hover:underline cursor-pointer"
             >
               Reenviar código
             </button>

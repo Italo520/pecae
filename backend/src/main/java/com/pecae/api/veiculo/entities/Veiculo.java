@@ -9,6 +9,7 @@ import com.pecae.api.veiculo.entities.enums.StatusVeiculo;
 import com.pecae.api.vendedor.entities.PerfilVendedor;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.SQLDelete;
@@ -74,12 +75,14 @@ public class Veiculo {
     @Column(name = "observations", columnDefinition = "TEXT")
     private String observacoes;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", columnDefinition = "VehicleStatus")
+    @ColumnTransformer(write = "?::\"VehicleStatus\"")
     @Convert(converter = ConversorStatusVeiculo.class)
     @Builder.Default
     private StatusVeiculo status = StatusVeiculo.RASCUNHO;
 
-    @Column(name = "fuel_type")
+    @Column(name = "fuel_type", columnDefinition = "FuelType")
+    @ColumnTransformer(write = "?::\"FuelType\"")
     @Convert(converter = ConversorTipoCombustivel.class)
     private TipoCombustivel tipoCombustivel;
 

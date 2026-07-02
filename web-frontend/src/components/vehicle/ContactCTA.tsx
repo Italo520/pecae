@@ -46,7 +46,7 @@ export function ContactCTA({ listingId, sellerId, whatsapp, sellerName }: Contac
       <button
         onClick={handleContact}
         disabled={isPending}
-        className="w-full bg-[var(--color-primary)] hover:bg-[#14F195] text-black font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+        className="w-full bg-brand hover:bg-brand/90 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
       >
         {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : (
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
@@ -62,12 +62,12 @@ export function ContactCTA({ listingId, sellerId, whatsapp, sellerName }: Contac
             const message = encodeURIComponent(`Olá ${sellerName}, vi seu anúncio no PECAÊ e tenho interesse.`);
             window.open(`https://wa.me/55${whatsapp.replace(/\D/g, '')}?text=${message}`, '_blank');
           }}
-          className="w-full bg-transparent border border-white/10 hover:bg-white/5 text-white/70 font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
+          className="w-full bg-surface border border-border hover:bg-border/50 text-foreground font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors"
         >
           Contato via WhatsApp
         </button>
       )}
-      <p className="text-xs text-center text-gray-500 mt-2">
+      <p className="text-xs text-center text-muted mt-2">
         A PECAÊ não cobra taxa sobre a venda.
       </p>
     </div>

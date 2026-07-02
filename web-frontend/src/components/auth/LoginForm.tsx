@@ -38,15 +38,15 @@ export function LoginForm() {
   };
 
   return (
-    <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 max-w-md w-full mx-auto">
+    <div className="bg-surface p-8 rounded-3xl border border-border max-w-md w-full mx-auto backdrop-blur-md">
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Bem-vindo de volta</h1>
-        <p className="text-sm text-gray-500 mt-2">Acesse sua conta para continuar</p>
+        <h1 className="text-2xl font-bold font-display text-foreground">Bem-vindo de volta</h1>
+        <p className="text-sm text-muted mt-2">Acesse sua conta para continuar</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="email">
+          <label className="block text-sm font-medium text-foreground mb-1" htmlFor="email">
             E-mail
           </label>
           <input
@@ -54,15 +54,15 @@ export function LoginForm() {
             type="email"
             placeholder="seu@email.com"
             {...register('email')}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors ${
-              errors.email ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-4 py-3 bg-background/50 border rounded-xl focus:ring-2 focus:ring-brand focus:border-brand focus:outline-none transition-colors text-foreground placeholder:text-muted ${
+              errors.email ? 'border-error' : 'border-border'
             }`}
           />
-          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+          {errors.email && <p className="text-error text-xs mt-1">{errors.email.message}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="password">
+          <label className="block text-sm font-medium text-foreground mb-1" htmlFor="password">
             Senha
           </label>
           <input
@@ -70,21 +70,21 @@ export function LoginForm() {
             type="password"
             placeholder="••••••••"
             {...register('password')}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors ${
-              errors.password ? 'border-red-500' : 'border-gray-300'
+            className={`w-full px-4 py-3 bg-background/50 border rounded-xl focus:ring-2 focus:ring-brand focus:border-brand focus:outline-none transition-colors text-foreground placeholder:text-muted ${
+              errors.password ? 'border-error' : 'border-border'
             }`}
           />
-          {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+          {errors.password && <p className="text-error text-xs mt-1">{errors.password.message}</p>}
           
           <div className="flex justify-end mt-2">
-            <Link href="/forgot-password" className="text-sm text-blue-600 hover:underline">
+            <Link href="/forgot-password" className="text-sm font-medium text-brand hover:underline">
               Esqueceu a senha?
             </Link>
           </div>
         </div>
 
         {error && (
-          <div className="p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-100">
+          <div className="p-3 bg-error/10 text-error text-sm rounded-xl border border-error/20">
             {error}
           </div>
         )}
@@ -92,23 +92,23 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-blue-600 text-white font-medium py-2.5 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-100 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+          className="w-full bg-brand text-white font-bold py-3 rounded-xl hover:bg-brand/90 focus:ring-4 focus:ring-brand/30 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
         >
           {isSubmitting ? 'Entrando...' : 'Entrar'}
         </button>
       </form>
 
-      <div className="mt-6 text-center text-sm text-gray-500">
+      <div className="mt-6 text-center text-sm text-muted">
         Ainda não tem conta?{' '}
-        <Link href="/register" className="text-blue-600 hover:underline font-medium">
+        <Link href="/register" className="text-brand hover:underline font-bold">
           Cadastre-se
         </Link>
       </div>
 
-      <div className="mt-8 pt-6 border-t border-gray-100">
+      <div className="mt-8 pt-6 border-t border-border">
         <button
           type="button"
-          className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 font-medium py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
+          className="w-full flex items-center justify-center gap-2 bg-transparent border border-border text-foreground font-medium py-3 rounded-xl hover:bg-background/50 transition-colors"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path

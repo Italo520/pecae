@@ -9,7 +9,7 @@ import { SellerCTA } from '@/components/home/SellerCTA';
 import { fetchFeaturedListings, fetchVehicleCategories } from '@/services/listing.service';
 import { fetchBannerAds } from '@/services/ads.service';
 
-export const revalidate = 60; // ISR every 60s
+export const dynamic = 'force-dynamic'; // E2E needs live data
 
 async function getHomeData() {
   const [listings, categories, ads] = await Promise.all([

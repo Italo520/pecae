@@ -17,7 +17,7 @@ export function SellerCTA() {
         <div className="shrink-0">
           <Link 
             href="/anunciar" 
-            className="inline-flex items-center justify-center bg-white text-[var(--brand)] font-bold py-3 px-8 rounded-[var(--radius-full)] hover:bg-white/90 hover:scale-105 transition-all shadow-lg"
+            className="inline-flex items-center justify-center bg-white text-brand font-bold py-3 px-8 rounded-full hover:bg-white/90 hover:scale-105 transition-all shadow-lg"
           >
             Anunciar Agora &rarr;
           </Link>

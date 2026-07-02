@@ -67,28 +67,28 @@ export function SearchResults({
           {activeFilters.length > 0 ? (
             <>
               {activeFilters.map(filter => (
-                <div key={filter.key} className="flex items-center gap-1.5 px-3 py-1 bg-[var(--surface)] border border-[var(--border)] rounded-full text-xs font-medium text-[var(--foreground)]">
+                <div key={filter.key} className="flex items-center gap-1.5 px-4 py-1.5 bg-surface border border-border rounded-full text-xs font-medium text-foreground backdrop-blur-md">
                   <span>{filter.label}</span>
-                  <button onClick={() => onFilterChange(filter.key, undefined)} className="text-[var(--muted)] hover:text-[var(--foreground)]" aria-label="Remover filtro">
+                  <button onClick={() => onFilterChange(filter.key, undefined)} className="text-muted hover:text-foreground" aria-label="Remover filtro">
                     ✕
                   </button>
                 </div>
               ))}
-              <button onClick={onClearFilters} className="text-xs text-[var(--brand)] hover:underline ml-2">
+              <button onClick={onClearFilters} className="text-xs text-brand hover:underline ml-2">
                 Limpar Tudo
               </button>
             </>
           ) : (
-            <span className="text-sm text-[var(--muted)]">Nenhum filtro aplicado.</span>
+            <span className="text-sm text-muted">Nenhum filtro aplicado.</span>
           )}
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <label className="text-sm text-[var(--muted)]">Ordenar por:</label>
+          <label className="text-sm text-muted">Ordenar por:</label>
           <select 
             value={searchParams.sort || ''} 
             onChange={(e) => onFilterChange('sort', e.target.value)}
-            className="px-3 py-1.5 bg-transparent border border-[var(--border)] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand)]"
+            className="px-4 py-2 bg-background/50 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand"
           >
             <option value="recent">Mais recentes</option>
             <option value="price_asc">Menor preço</option>
@@ -98,23 +98,23 @@ export function SearchResults({
         </div>
       </div>
 
-      <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
-        <h1 className="text-2xl font-display font-bold text-[var(--foreground)]">Resultados da Busca</h1>
-        <span className="text-sm text-[var(--muted)]">{total} veículos encontrados</span>
+      <div className="flex items-center justify-between border-b border-border pb-4">
+        <h1 className="text-2xl font-display font-bold text-foreground">Resultados da Busca</h1>
+        <span className="text-sm text-muted">{total} veículos encontrados</span>
       </div>
 
       {isLoading ? (
         <ListingGridSkeleton count={12} />
       ) : listings.length === 0 ? (
-        <div className="flex flex-col items-center justify-center p-12 text-center bg-[var(--surface)] rounded-xl border border-[var(--border)]">
-          <div className="w-16 h-16 mb-4 rounded-full bg-[var(--border)] flex items-center justify-center text-2xl">
+        <div className="flex flex-col items-center justify-center p-12 text-center bg-surface rounded-3xl border border-border backdrop-blur-md">
+          <div className="w-16 h-16 mb-4 rounded-full bg-border flex items-center justify-center text-2xl">
             🔍
           </div>
-          <h3 className="text-lg font-semibold text-[var(--foreground)] mb-2">Nenhum veículo encontrado.</h3>
-          <p className="text-[var(--muted)] text-sm max-w-md mb-6">
+          <h3 className="text-lg font-bold font-display text-foreground mb-2">Nenhum veículo encontrado.</h3>
+          <p className="text-muted text-sm max-w-md mb-6">
             Não encontramos peças correspondentes aos filtros selecionados. Tente remover alguns filtros ou buscar de forma mais genérica.
           </p>
-          <button onClick={onClearFilters} className="px-6 py-2 bg-[var(--brand)] text-white font-semibold rounded-lg hover:bg-[var(--brand-dark)] transition-colors">
+          <button onClick={onClearFilters} className="px-6 py-3 bg-brand text-white font-bold rounded-xl hover:bg-brand/90 transition-colors">
             Ver todos os veículos
           </button>
         </div>
@@ -129,7 +129,7 @@ export function SearchResults({
       {/* Infinite Scroll Sentinel */}
       <div ref={sentinelRef} className="h-10 w-full flex items-center justify-center mt-4">
         {isFetchingNextPage && (
-          <div className="w-6 h-6 border-2 border-[var(--brand)] border-t-transparent rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-brand border-t-transparent rounded-full animate-spin" />
         )}
       </div>
     </div>
