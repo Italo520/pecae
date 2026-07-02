@@ -35,33 +35,33 @@ export default function ChatSidebar({ context = 'seller' }: ChatSidebarProps) {
   const chatPrefix = context === 'buyer' ? '/comprador/negociacoes' : '/vendedor/chat';
 
   return (
-    <div className="flex flex-col h-full bg-black/40">
+    <div className="flex flex-col h-full bg-[var(--surface)]">
       {/* Header */}
-      <div className="p-4 border-b border-white/5 flex flex-col gap-4">
+      <div className="p-4 border-b border-[var(--border)] flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <Link 
             href={backLink} 
-            className="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center text-white/70 transition-colors"
+            className="w-10 h-10 rounded-full hover:bg-[var(--surface-hover)] flex items-center justify-center text-[var(--muted)] transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
-          <h2 className="text-xl font-display font-semibold text-white">Inbox</h2>
-          <button className="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center text-white/70 transition-colors">
+          <h2 className="text-xl font-display font-semibold text-[var(--foreground)]">Inbox</h2>
+          <button className="w-10 h-10 rounded-full hover:bg-[var(--surface-hover)] flex items-center justify-center text-[var(--muted)] transition-colors">
             <MoreVertical className="w-5 h-5" />
           </button>
         </div>
 
         {/* Search */}
         <div className="relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted)]" />
           <input 
             type="text" 
             placeholder="Buscar mensagens..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-[var(--color-primary)]/50 focus:ring-1 focus:ring-[var(--color-primary)]/50 transition-all"
+            className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl pl-10 pr-10 py-2.5 text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--brand)]/50 focus:ring-1 focus:ring-[var(--brand)]/50 transition-all"
           />
-          <button className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-[var(--color-primary)] transition-colors">
+          <button className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-[var(--brand)] transition-colors">
             <Filter className="w-4 h-4" />
           </button>
         </div>
@@ -70,19 +70,19 @@ export default function ChatSidebar({ context = 'seller' }: ChatSidebarProps) {
       {/* Chat List */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 space-y-1 custom-scrollbar">
         {isLoading && (
-          <div className="flex items-center justify-center p-8 text-white/40">
+          <div className="flex items-center justify-center p-8 text-[var(--muted)]">
             <Loader2 className="w-6 h-6 animate-spin" />
           </div>
         )}
         
         {isError && (
-          <div className="p-4 text-center text-red-400 text-sm">
+          <div className="p-4 text-center text-red-500 text-sm">
             Erro ao carregar conversas.
           </div>
         )}
 
         {!isLoading && !isError && filteredChats.length === 0 && (
-          <div className="p-4 text-center text-white/40 text-sm">
+          <div className="p-4 text-center text-[var(--muted)] text-sm">
             Nenhuma conversa encontrada.
           </div>
         )}
@@ -97,39 +97,39 @@ export default function ChatSidebar({ context = 'seller' }: ChatSidebarProps) {
               key={chat.id}
               href={`${chatPrefix}/${chat.id}`}
               className={`flex items-center gap-3 p-3 rounded-xl transition-all cursor-pointer group ${
-                isActive ? 'bg-white/10' : 'hover:bg-white/5'
+                isActive ? 'bg-[var(--brand)]/10' : 'hover:bg-[var(--surface-hover)]'
               }`}
             >
               <div className="relative flex-shrink-0">
                 {chat.interlocutor.avatar ? (
                   <img src={chat.interlocutor.avatar} alt="Avatar" className="w-12 h-12 rounded-full object-cover" />
                 ) : (
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center text-white font-medium text-lg shadow-inner">
+                  <div className="w-12 h-12 rounded-full bg-[var(--background)] border border-[var(--border)] flex items-center justify-center text-[var(--foreground)] font-medium text-lg shadow-sm">
                     {chat.interlocutor.nome.charAt(0)}
                   </div>
                 )}
                 {/* Online indicator mock for now */}
                 {chat.naoLidos > 0 && (
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-[var(--color-primary)] border-2 border-black rounded-full" />
+                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-[var(--brand)] border-2 border-[var(--surface)] rounded-full" />
                 )}
               </div>
 
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-center mb-0.5">
-                  <h3 className="text-sm font-semibold text-white truncate pr-2">{chat.interlocutor.nome}</h3>
-                  <span className={`text-xs flex-shrink-0 ${chat.naoLidos > 0 ? 'text-[var(--color-primary)] font-medium' : 'text-white/40'}`}>
+                  <h3 className={`text-sm font-semibold truncate pr-2 ${isActive ? 'text-[var(--brand)]' : 'text-[var(--foreground)]'}`}>{chat.interlocutor.nome}</h3>
+                  <span className={`text-xs flex-shrink-0 ${chat.naoLidos > 0 ? 'text-[var(--brand)] font-medium' : 'text-[var(--muted)]'}`}>
                     {timeStr}
                   </span>
                 </div>
-                <p className="text-xs text-white/60 truncate mb-1">
-                  Interesse: <span className="text-white/80">{chat.tituloDaConversa}</span>
+                <p className="text-xs text-[var(--muted)] truncate mb-1">
+                  Interesse: <span className="text-[var(--foreground)]">{chat.tituloDaConversa}</span>
                 </p>
                 <div className="flex justify-between items-center">
-                  <p className={`text-sm truncate pr-2 ${chat.naoLidos > 0 ? 'text-white font-medium' : 'text-white/50'}`}>
+                  <p className={`text-sm truncate pr-2 ${chat.naoLidos > 0 ? 'text-[var(--foreground)] font-medium' : 'text-[var(--muted)]'}`}>
                     {lastMsg}
                   </p>
                   {chat.naoLidos > 0 && (
-                    <div className="w-5 h-5 rounded-full bg-[var(--color-primary)] text-black text-[10px] font-bold flex items-center justify-center flex-shrink-0 shadow-[0_0_10px_rgba(20,241,149,0.3)]">
+                    <div className="w-5 h-5 rounded-full bg-[var(--brand)] text-black text-[10px] font-bold flex items-center justify-center flex-shrink-0 shadow-[0_0_10px_rgba(20,241,149,0.3)]">
                       {chat.naoLidos}
                     </div>
                   )}

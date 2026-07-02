@@ -25,21 +25,21 @@ export default function FavoritosPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-display font-bold text-white mb-2 flex items-center gap-3">
-              <Heart className="w-8 h-8 text-[var(--color-primary)]" />
+            <h1 className="text-3xl font-display font-bold text-[var(--foreground)] mb-2 flex items-center gap-3">
+              <Heart className="w-8 h-8 text-[var(--brand)]" />
               Favoritos
             </h1>
-            <p className="text-white/60">
+            <p className="text-[var(--muted)]">
               Acompanhe as sucatas e peças que você salvou.
             </p>
           </div>
 
           <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted)]" />
             <input 
               type="text" 
               placeholder="Buscar nos favoritos..."
-              className="w-full md:w-64 bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-[var(--color-primary)]/50 focus:ring-1 focus:ring-[var(--color-primary)]/50 transition-all"
+              className="w-full md:w-64 bg-[var(--background)] border border-[var(--border)] rounded-xl pl-10 pr-4 py-2 text-sm text-[var(--foreground)] placeholder-[var(--muted)] focus:outline-none focus:border-[var(--brand)]/50 focus:ring-1 focus:ring-[var(--brand)]/50 transition-all"
             />
           </div>
         </div>
@@ -54,47 +54,47 @@ export default function FavoritosPage() {
             icon={<Heart className="w-8 h-8" />} 
             title="Nenhum favorito salvo" 
             description="Você ainda não salvou nenhum anúncio. Explore o catálogo e salve seus favoritos!"
-            cta={<Link href="/" className="px-5 py-2.5 bg-[var(--color-primary)] text-black rounded-lg font-medium">Explorar Catálogo</Link>}
+            cta={<Link href="/" className="px-5 py-2.5 bg-[var(--brand)] text-black rounded-lg font-medium hover:bg-[var(--brand)]/90 transition-colors">Explorar Catálogo</Link>}
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {favorites.map((fav: any) => (
-              <div key={fav.id} className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 transition-all group flex flex-col">
+              <div key={fav.id} className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden hover:border-[var(--border-hover)] hover:shadow-md transition-all group flex flex-col">
                 {/* Image */}
-                <div className="relative h-48 overflow-hidden bg-black/50">
+                <div className="relative h-48 overflow-hidden bg-[var(--background)]">
                   <img 
                     src={fav.listing?.images?.[0] || 'https://via.placeholder.com/600'} 
                     alt={fav.listing?.title} 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <button onClick={() => handleToggleFavorite(fav.listing.id)} className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-[var(--color-primary)] hover:bg-black/70 hover:scale-110 transition-all">
+                  <button onClick={() => handleToggleFavorite(fav.listing.id)} className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-[var(--brand)] hover:bg-black/70 hover:scale-110 transition-all">
                     <Heart className="w-4 h-4 fill-current" />
                   </button>
                 </div>
 
                 {/* Content */}
                 <div className="p-5 flex-1 flex flex-col">
-                  <div className="flex items-center gap-2 text-xs text-white/40 mb-2">
+                  <div className="flex items-center gap-2 text-xs text-[var(--muted)] mb-2">
                     <Calendar className="w-3 h-3" />
                     Salvo em {new Date(fav.createdAt).toLocaleDateString('pt-BR')}
                   </div>
                   
-                  <h3 className="text-base font-semibold text-white mb-1 line-clamp-2">{fav.listing?.title}</h3>
-                  <div className="flex items-center gap-1.5 text-xs text-white/60 mb-4">
+                  <h3 className="text-base font-semibold text-[var(--foreground)] mb-1 line-clamp-2">{fav.listing?.title}</h3>
+                  <div className="flex items-center gap-1.5 text-xs text-[var(--muted)] mb-4">
                     <Car className="w-3.5 h-3.5" />
                     {fav.listing?.seller?.name || 'Vendedor'}
                   </div>
 
-                  <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
-                    <span className="text-[var(--color-primary)] font-medium text-lg">
+                  <div className="mt-auto pt-4 border-t border-[var(--border)] flex items-center justify-between">
+                    <span className="text-[var(--brand)] font-medium text-lg">
                       {fav.listing?.price ? `R$ ${fav.listing.price}` : 'Sob Consulta'}
                     </span>
                     
                     <div className="flex items-center gap-2">
-                      <button onClick={() => handleToggleFavorite(fav.listing.id)} className="p-2 text-white/40 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
+                      <button onClick={() => handleToggleFavorite(fav.listing.id)} className="p-2 text-[var(--muted)] hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors">
                         <Trash2 className="w-4 h-4" />
                       </button>
-                      <Link href={`/`} className="p-2 bg-[var(--color-primary)]/10 text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20 rounded-lg transition-colors">
+                      <Link href={`/`} className="p-2 bg-[var(--brand)]/10 text-[var(--brand)] hover:bg-[var(--brand)]/20 rounded-lg transition-colors">
                         <ExternalLink className="w-4 h-4" />
                       </Link>
                     </div>

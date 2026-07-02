@@ -72,14 +72,14 @@ export default function AjudaCompradorPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-[var(--color-primary)]/20 text-[var(--color-primary)] flex items-center justify-center flex-shrink-0 border border-[var(--color-primary)]/30">
+            <div className="w-16 h-16 rounded-full bg-[var(--brand)]/20 text-[var(--brand)] flex items-center justify-center flex-shrink-0 border border-[var(--brand)]/30">
               <LifeBuoy className="w-8 h-8" />
             </div>
             <div>
-              <h1 className="text-3xl font-display font-bold text-white mb-1">
+              <h1 className="text-3xl font-display font-bold text-[var(--foreground)] mb-1">
                 Central de Ajuda
               </h1>
-              <p className="text-white/60">
+              <p className="text-[var(--muted)]">
                 Tire suas dúvidas e aprenda como aproveitar ao máximo a PECAÊ.
               </p>
             </div>
@@ -87,24 +87,24 @@ export default function AjudaCompradorPage() {
         </div>
 
         {/* Search */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
           <input 
             type="text" 
             placeholder="Buscar por dúvidas (ex: negociação, devolução)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-[var(--color-primary)]/50 focus:ring-1 focus:ring-[var(--color-primary)]/50 transition-all"
+            className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--foreground)] placeholder-[var(--muted)] focus:outline-none focus:border-[var(--brand)]/50 focus:ring-1 focus:ring-[var(--brand)]/50 transition-all"
           />
         </div>
 
         {/* FAQ Section */}
         <div className="space-y-4">
-          <h2 className="text-xl font-bold text-white mb-4">Perguntas Frequentes</h2>
+          <h2 className="text-xl font-bold text-[var(--foreground)] mb-4">Perguntas Frequentes</h2>
           
           {isLoading ? (
             <div className="space-y-3">
               {[1, 2, 3].map(i => (
-                <div key={i} className="h-16 bg-white/5 animate-pulse rounded-2xl" />
+                <div key={i} className="h-16 bg-[var(--surface)] border border-[var(--border)] animate-pulse rounded-2xl" />
               ))}
             </div>
           ) : filteredFaqs.length > 0 ? (
@@ -115,15 +115,15 @@ export default function AjudaCompradorPage() {
                   <div 
                     key={faq.id} 
                     className={`border rounded-2xl overflow-hidden transition-colors duration-200 ${
-                      isOpen ? "bg-white/10 border-white/20" : "bg-white/5 border-white/10 hover:border-white/20"
+                      isOpen ? "bg-[var(--surface-hover)] border-[var(--border-hover)]" : "bg-[var(--surface)] border-[var(--border)] hover:border-[var(--border-hover)]"
                     }`}
                   >
                     <button 
                       onClick={() => setOpenId(isOpen ? null : faq.id)}
-                      className="w-full px-6 py-4 flex items-center justify-between text-left"
+                      className="w-full px-6 py-4 flex items-center justify-between text-left focus:outline-none"
                     >
-                      <span className="font-medium text-white">{faq.question}</span>
-                      <ChevronDown className={`w-5 h-5 text-white/50 transition-transform duration-200 ${
+                      <span className="font-medium text-[var(--foreground)]">{faq.question}</span>
+                      <ChevronDown className={`w-5 h-5 text-[var(--muted)] transition-transform duration-200 ${
                         isOpen && "rotate-180"
                       }`} />
                     </button>
@@ -133,7 +133,7 @@ export default function AjudaCompradorPage() {
                         isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                       }`}
                     >
-                      <div className="px-6 pb-5 pt-2 text-white/70 leading-relaxed text-sm">
+                      <div className="px-6 pb-5 pt-2 text-[var(--muted)] leading-relaxed text-sm">
                         {faq.answer}
                       </div>
                     </div>
@@ -142,43 +142,43 @@ export default function AjudaCompradorPage() {
               })}
             </div>
           ) : (
-            <div className="text-center py-10 bg-white/5 rounded-2xl border border-white/10">
-              <p className="text-white/50">Nenhuma dúvida encontrada para &quot;{searchQuery}&quot;.</p>
+            <div className="text-center py-10 bg-[var(--surface)] rounded-2xl border border-[var(--border)]">
+              <p className="text-[var(--muted)]">Nenhuma dúvida encontrada para &quot;{searchQuery}&quot;.</p>
             </div>
           )}
         </div>
 
         {/* Contact Support */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
-          <div className="bg-gradient-to-br from-[var(--color-primary)]/20 to-transparent border border-[var(--color-primary)]/30 rounded-2xl p-6 relative overflow-hidden group">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-[var(--color-primary)]/20 rounded-full blur-xl group-hover:bg-[var(--color-primary)]/30 transition-colors" />
-            <MessageSquare className="w-8 h-8 text-[var(--color-primary)] mb-4" />
-            <h3 className="text-lg font-bold text-white mb-2">Ainda precisa de ajuda?</h3>
-            <p className="text-sm text-white/70 mb-6">Nossa equipe de suporte está pronta para te ajudar via chat em tempo real.</p>
-            <button className="px-5 py-2.5 rounded-xl bg-[var(--color-primary)] text-black font-semibold hover:bg-[var(--color-primary-dark)] transition-colors inline-flex items-center gap-2">
+          <div className="bg-gradient-to-br from-[var(--brand)]/20 to-transparent border border-[var(--brand)]/30 rounded-2xl p-6 relative overflow-hidden group shadow-sm">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-[var(--brand)]/20 rounded-full blur-xl group-hover:bg-[var(--brand)]/30 transition-colors" />
+            <MessageSquare className="w-8 h-8 text-[var(--brand)] mb-4" />
+            <h3 className="text-lg font-bold text-[var(--foreground)] mb-2">Ainda precisa de ajuda?</h3>
+            <p className="text-sm text-[var(--muted)] mb-6">Nossa equipe de suporte está pronta para te ajudar via chat em tempo real.</p>
+            <button className="px-5 py-2.5 rounded-xl bg-[var(--brand)] text-black font-semibold hover:bg-[var(--brand)]/90 transition-colors inline-flex items-center gap-2 relative z-10">
               Iniciar Chat
             </button>
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-            <h3 className="text-lg font-bold text-white mb-4">Outros Canais</h3>
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
+            <h3 className="text-lg font-bold text-[var(--foreground)] mb-4">Outros Canais</h3>
             <div className="space-y-4">
-              <a href="mailto:suporte@pecae.com.br" className="flex items-center gap-3 text-white/70 hover:text-white transition-colors group">
-                <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors">
+              <a href="mailto:suporte@pecae.com.br" className="flex items-center gap-3 text-[var(--muted)] hover:text-[var(--foreground)] transition-colors group">
+                <div className="w-10 h-10 rounded-lg bg-[var(--background)] border border-[var(--border)] flex items-center justify-center group-hover:border-[var(--brand)]/50 group-hover:text-[var(--brand)] transition-colors">
                   <Mail className="w-5 h-5" />
                 </div>
                 <div>
                   <p className="text-sm font-medium">E-mail</p>
-                  <p className="text-xs text-white/50">suporte@pecae.com.br</p>
+                  <p className="text-xs text-[var(--muted)]">suporte@pecae.com.br</p>
                 </div>
               </a>
-              <div className="flex items-center gap-3 text-white/70 group">
-                <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors">
+              <div className="flex items-center gap-3 text-[var(--muted)] group">
+                <div className="w-10 h-10 rounded-lg bg-[var(--background)] border border-[var(--border)] flex items-center justify-center group-hover:border-[var(--brand)]/50 group-hover:text-[var(--brand)] transition-colors">
                   <Phone className="w-5 h-5" />
                 </div>
                 <div>
                   <p className="text-sm font-medium">Telefone</p>
-                  <p className="text-xs text-white/50">(11) 99999-9999</p>
+                  <p className="text-xs text-[var(--muted)]">(11) 99999-9999</p>
                 </div>
               </div>
             </div>

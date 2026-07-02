@@ -115,18 +115,18 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-surface)] relative">
+    <div className="flex flex-col h-full bg-[var(--background)] relative">
       {/* Header */}
-      <div className="h-[72px] px-6 border-b border-white/5 bg-black/40 backdrop-blur-md flex items-center justify-between flex-shrink-0 z-10">
+      <div className="h-[72px] px-6 border-b border-[var(--border)] bg-[var(--surface)] backdrop-blur-md flex items-center justify-between flex-shrink-0 z-10">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center text-white font-medium shadow-inner">
+          <div className="w-10 h-10 rounded-full bg-[var(--background)] border border-[var(--border)] flex items-center justify-center text-[var(--foreground)] font-medium shadow-sm">
             <UserIcon />
           </div>
           <div>
-            <h2 className="text-white font-medium">Conversa Ativa</h2>
+            <h2 className="text-[var(--foreground)] font-medium">Conversa Ativa</h2>
             <div className="flex items-center gap-2 text-xs">
-              <span className={`w-2 h-2 rounded-full ${connected ? 'bg-[var(--color-primary)]' : 'bg-red-500'}`} />
-              <span className={connected ? 'text-[var(--color-primary)]' : 'text-red-500'}>
+              <span className={`w-2 h-2 rounded-full ${connected ? 'bg-[var(--brand)]' : 'bg-red-500'}`} />
+              <span className={connected ? 'text-[var(--brand)]' : 'text-red-500'}>
                 {connected ? 'Conectado' : 'Desconectado'}
               </span>
             </div>
@@ -134,7 +134,7 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <button className="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center text-white/70 transition-colors">
+          <button className="w-10 h-10 rounded-full hover:bg-[var(--surface-hover)] flex items-center justify-center text-[var(--muted)] transition-colors">
             <MoreVertical className="w-5 h-5" />
           </button>
         </div>
@@ -144,7 +144,7 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
       <div className="flex-1 overflow-y-auto p-6 space-y-4">
         {isLoading && (
           <div className="flex justify-center p-4">
-            <Loader2 className="w-6 h-6 animate-spin text-[var(--color-primary)]" />
+            <Loader2 className="w-6 h-6 animate-spin text-[var(--brand)]" />
           </div>
         )}
 
@@ -154,12 +154,12 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
             <div key={msg.id} className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}>
               <div className={`max-w-[75%] md:max-w-[60%] px-4 py-2.5 rounded-2xl ${
                 isMine 
-                  ? 'bg-[var(--color-primary)] text-black rounded-tr-sm shadow-[0_0_15px_rgba(20,241,149,0.15)]' 
-                  : 'bg-white/10 text-white/90 rounded-tl-sm'
+                  ? 'bg-[var(--brand)] text-black rounded-tr-sm shadow-[0_0_15px_rgba(20,241,149,0.15)]' 
+                  : 'bg-[var(--surface)] border border-[var(--border)] text-[var(--foreground)] rounded-tl-sm'
               }`}>
                 <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.conteudo}</p>
               </div>
-              <span className="text-[10px] text-white/40 mt-1 px-1">{formatTime(msg.criadaEm)}</span>
+              <span className="text-[10px] text-[var(--muted)] mt-1 px-1">{formatTime(msg.criadaEm)}</span>
             </div>
           );
         })}
@@ -167,9 +167,9 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 bg-black/40 backdrop-blur-md border-t border-white/5 flex-shrink-0">
-        <div className="max-w-4xl mx-auto flex items-end gap-3 bg-white/5 border border-white/10 rounded-2xl p-2 focus-within:border-[var(--color-primary)]/50 focus-within:ring-1 focus-within:ring-[var(--color-primary)]/50 transition-all">
-          <button className="p-3 text-white/40 hover:text-white transition-colors rounded-xl hover:bg-white/5">
+      <div className="p-4 bg-[var(--surface)] border-t border-[var(--border)] flex-shrink-0">
+        <div className="max-w-4xl mx-auto flex items-end gap-3 bg-[var(--background)] border border-[var(--border)] rounded-2xl p-2 focus-within:border-[var(--brand)]/50 focus-within:ring-1 focus-within:ring-[var(--brand)]/50 transition-all">
+          <button className="p-3 text-[var(--muted)] hover:text-[var(--foreground)] transition-colors rounded-xl hover:bg-[var(--surface-hover)]">
             <Paperclip className="w-5 h-5" />
           </button>
           
@@ -178,7 +178,7 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Digite uma mensagem..."
-            className="flex-1 max-h-32 min-h-[44px] bg-transparent text-white placeholder:text-white/40 resize-none py-3 outline-none text-sm custom-scrollbar"
+            className="flex-1 max-h-32 min-h-[44px] bg-transparent text-[var(--foreground)] placeholder:text-[var(--muted)] resize-none py-3 outline-none text-sm custom-scrollbar"
             rows={1}
             style={{ height: 'auto' }}
           />
@@ -186,7 +186,7 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
           <button 
             onClick={handleSend}
             disabled={!input.trim() || !connected}
-            className="p-3 bg-[var(--color-primary)] text-black rounded-xl hover:bg-[var(--color-primary-dark)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(20,241,149,0.2)]"
+            className="p-3 bg-[var(--brand)] text-black rounded-xl hover:brightness-110 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(20,241,149,0.2)]"
           >
             <Send className="w-5 h-5" />
           </button>

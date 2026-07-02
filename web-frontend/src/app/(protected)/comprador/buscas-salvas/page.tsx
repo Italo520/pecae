@@ -29,7 +29,7 @@ export default function BuscasSalvasPage() {
       header: 'Termo Buscado',
       cell: (item) => (
         <div>
-          <h3 className="text-sm font-medium text-white mb-1">{item.query || 'Sem termo específico'}</h3>
+          <h3 className="text-sm font-medium text-[var(--foreground)] mb-1">{item.query || 'Sem termo específico'}</h3>
           {/* Mocado resultadoshoje = 0 para simular o mesmo layout */}
         </div>
       ),
@@ -37,7 +37,7 @@ export default function BuscasSalvasPage() {
     {
       header: 'Filtros Ativos',
       cell: (item) => (
-        <span className="text-xs text-white/60 bg-white/5 px-2 py-1 rounded-md">
+        <span className="text-xs text-[var(--muted)] bg-[var(--surface)] px-2 py-1 rounded-md border border-[var(--border)]">
           {JSON.stringify(item.filters) === '{}' ? 'Sem filtros' : Object.keys(item.filters).join(', ')}
         </span>
       ),
@@ -49,8 +49,8 @@ export default function BuscasSalvasPage() {
           onClick={() => handleToggleAlert(item.id, item.alertActive)}
           className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
             item.alertActive 
-              ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20' 
-              : 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white'
+              ? 'bg-[var(--brand)]/10 text-[var(--brand)] hover:bg-[var(--brand)]/20' 
+              : 'bg-[var(--surface)] border border-[var(--border)] text-[var(--muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]'
           }`}
         >
           {item.alertActive ? <Bell className="w-3 h-3" /> : <BellOff className="w-3 h-3" />}
@@ -62,7 +62,7 @@ export default function BuscasSalvasPage() {
       header: 'Ações',
       cell: (item) => (
         <div className="flex items-center justify-end gap-2">
-          <button onClick={() => handleDelete(item.id)} className="p-2 text-white/40 hover:text-red-400 transition-colors">
+          <button onClick={() => handleDelete(item.id)} className="p-2 text-[var(--muted)] hover:text-red-500 transition-colors">
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
@@ -77,11 +77,11 @@ export default function BuscasSalvasPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-display font-bold text-white mb-2 flex items-center gap-3">
-              <Search className="w-8 h-8 text-blue-400" />
+            <h1 className="text-3xl font-display font-bold text-[var(--foreground)] mb-2 flex items-center gap-3">
+              <Search className="w-8 h-8 text-[var(--brand)]" />
               Buscas Salvas
             </h1>
-            <p className="text-white/60">
+            <p className="text-[var(--muted)]">
               Gerencie seus alertas para ser notificado sobre novas peças.
             </p>
           </div>
