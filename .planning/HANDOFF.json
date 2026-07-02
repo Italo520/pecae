@@ -1,31 +1,21 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-30T18:11:00-03:00",
-  "phase": "10.2",
-  "phase_name": "buyer-moderator-web",
-  "phase_dir": ".planning/milestones/v10.2/phases/10.2-buyer-moderator-web",
-  "plan": 6,
-  "task": 1,
-  "total_tasks": 1,
+  "timestamp": "2026-07-01T22:06:00-03:00",
+  "phase": "N/A",
+  "phase_name": "N/A",
+  "phase_dir": "N/A",
+  "plan": 0,
+  "task": 0,
+  "total_tasks": 0,
   "status": "paused",
-  "completed_tasks": [
-    {"id": 1, "name": "Plan 01 - Shared UI", "status": "done", "commit": "c47c7da"},
-    {"id": 2, "name": "Plan 02 - API Hooks", "status": "done", "commit": "ef65099"},
-    {"id": 3, "name": "Plan 03 - Buyer Pages", "status": "done", "commit": "5ca150e"},
-    {"id": 4, "name": "Plan 04 - Buyer Negotiations", "status": "done", "commit": "4ed556a"},
-    {"id": 5, "name": "Plan 05 - Moderator Dashboard", "status": "done", "commit": "338b31f"},
-    {"id": 6, "name": "Plan 06 - Moderator Moderation", "status": "done", "commit": "3b5e78a"}
-  ],
-  "remaining_tasks": [
-    {"id": 7, "name": "Validation via gsd-verify-work", "status": "not_started"},
-    {"id": 8, "name": "Advance Milestone via gsd-progress", "status": "not_started"}
-  ],
+  "completed_tasks": [],
+  "remaining_tasks": [],
   "blockers": [],
   "human_actions_pending": [],
   "decisions": [
-    {"decision": "Frontend Web baseado no mobile porém adaptado para web", "rationale": "UX moderna mantendo a mesma base de features e APIs", "phase": "10.2"}
+    {"decision": "Milestone 10.3 completed", "rationale": "All requirements met for web parity", "phase": "N/A"}
   ],
   "uncommitted_files": [],
-  "next_action": "Rodar gsd-verify-work para auditar a Fase 10.2, depois gsd-progress",
-  "context_notes": "A implementação da fase foi finalizada, falta apenas o ciclo final de validação e progresso."
+  "next_action": "Run /gsd-new-milestone to start planning v11.",
+  "context_notes": "Milestone 10.3 was just successfully closed and archived. Project is in a clean state, ready for the next milestone."
 }
