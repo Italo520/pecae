@@ -28,14 +28,14 @@ public class BuscaSalva {
     @JoinColumn(name = "user_id", nullable = false)
     private Usuario usuario;
 
-    @Column(nullable = false)
+    @Column(name = "query")
     private String nome;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "filters", columnDefinition = "jsonb", nullable = false)
     private Map<String, Object> filtros;
 
-    @Column(name = "is_active", nullable = false)
+    @Column(name = "alert_active", nullable = false)
     @Builder.Default
     private Boolean ativa = true;
 

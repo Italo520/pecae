@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/buscas-salvas")
+@RequestMapping({"/buscas-salvas", "/buyers/saved-searches"})
 @RequiredArgsConstructor
 @Tag(name = "Buscas Salvas", description = "Endpoints para gerenciamento de buscas salvas e alertas")
 @SecurityRequirement(name = "bearerAuth")
@@ -33,11 +33,43 @@ public class ControladorBuscaSalva {
 
     @PostMapping
     @Operation(summary = "Criar busca salva", description = "Salva critérios de busca para monitoramento e alertas.")
-    public ResponseEntity<RespostaBuscaSalva> criar(
+    public ResponseEntity<?> criar(
             @UsuarioAtual PrincipalUsuario principal,
-            @Valid @RequestBody CriarBuscaSalvaRequest request
+            @RequestBody java.util.Map<String, Object> body,
+            jakarta.servlet.http.HttpServletRequest request
     ) {
-        RespostaBuscaSalva resposta = servicoBuscaSalva.criarBuscaSalva(principal.getId(), request);
+        boolean isLegacy = request.getRequestURI().contains("/buyers/saved-searches");
+        
+        String query = (String) body.get("query");
+        if (query == null) {
+            query = (String) body.get("nome");
+        }
+        
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> filters = (java.util.Map<String, Object>) body.get("filters");
+        if (filters == null) {
+            filters = (java.util.Map<String, Object>) body.get("filtros");
+        }
+        
+        CriarBuscaSalvaRequest serviceRequest = new CriarBuscaSalvaRequest(
+            query != null ? query : "Busca Salva",
+            filters
+        );
+        
+        RespostaBuscaSalva resposta = servicoBuscaSalva.criarBuscaSalva(principal.getId(), serviceRequest);
+        
+        if (isLegacy) {
+            java.util.Map<String, Object> responseMap = new java.util.HashMap<>();
+            responseMap.put("id", resposta.id());
+            responseMap.put("userId", principal.getId());
+            responseMap.put("query", resposta.nome());
+            responseMap.put("filters", resposta.filtros());
+            responseMap.put("alertActive", resposta.ativa());
+            responseMap.put("createdAt", resposta.criadaEm());
+            responseMap.put("updatedAt", resposta.criadaEm());
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseMap);
+        }
+        
         return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
     }
 
@@ -62,13 +94,51 @@ public class ControladorBuscaSalva {
         return ResponseEntity.ok(resposta);
     }
 
+    @PatchMapping("/{id}")
+    @Operation(summary = "Alternar status da busca salva (Legado)", description = "Ativa ou desativa os alertas de uma busca salva via body JSON.")
+    public ResponseEntity<?> alternarStatusLegado(
+            @UsuarioAtual PrincipalUsuario principal,
+            @PathVariable UUID id,
+            @RequestBody java.util.Map<String, Boolean> body
+    ) {
+        boolean alertActive = body.getOrDefault("alertActive", true);
+        RespostaBuscaSalva resposta = servicoBuscaSalva.alternarStatus(id, principal.getId(), alertActive);
+        
+        java.util.Map<String, Object> responseMap = new java.util.HashMap<>();
+        responseMap.put("id", resposta.id());
+        responseMap.put("userId", principal.getId());
+        responseMap.put("query", resposta.nome());
+        responseMap.put("filters", resposta.filtros());
+        responseMap.put("alertActive", resposta.ativa());
+        responseMap.put("createdAt", resposta.criadaEm());
+        responseMap.put("updatedAt", resposta.criadaEm());
+        return ResponseEntity.ok(responseMap);
+    }
+
     @GetMapping
     @Operation(summary = "Listar minhas buscas salvas", description = "Retorna uma lista paginada das buscas salvas pelo usuário.")
-    public ResponseEntity<Page<RespostaBuscaSalva>> listar(
+    public ResponseEntity<?> listar(
             @UsuarioAtual PrincipalUsuario principal,
-            @PageableDefault(size = 20, sort = "criadaEm", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = 20, sort = "criadaEm", direction = Sort.Direction.DESC) Pageable pageable,
+            jakarta.servlet.http.HttpServletRequest request
     ) {
         Page<RespostaBuscaSalva> buscas = servicoBuscaSalva.listarBuscasSalvas(principal.getId(), pageable);
+        
+        if (request.getRequestURI().contains("/buyers/saved-searches")) {
+            java.util.List<java.util.Map<String, Object>> listaLegada = buscas.getContent().stream().map(b -> {
+                java.util.Map<String, Object> map = new java.util.HashMap<>();
+                map.put("id", b.id());
+                map.put("userId", principal.getId());
+                map.put("query", b.nome());
+                map.put("filters", b.filtros());
+                map.put("alertActive", b.ativa());
+                map.put("createdAt", b.criadaEm());
+                map.put("updatedAt", b.criadaEm());
+                return map;
+            }).toList();
+            return ResponseEntity.ok(listaLegada);
+        }
+        
         return ResponseEntity.ok(buscas);
     }
 }

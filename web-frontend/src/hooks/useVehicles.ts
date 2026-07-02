@@ -1,7 +1,20 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/axios';
 import { API_ENDPOINTS } from '@pecae/shared';
-import type { Vehicle } from '@pecae/shared';
+// import type { Vehicle } from '@pecae/shared';
+
+export interface Vehicle {
+  id: string;
+  brand: string;
+  model: string;
+  version: string;
+  year: string;
+  plate: string;
+  color: string;
+  status: string;
+  price?: number;
+  mainImage?: string;
+}
 
 export function useVehicles() {
   return useQuery({
@@ -47,7 +60,7 @@ export function useCreateVehicle() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: VehicleCreateInput & { photos?: File[] }) => {
+    mutationFn: async (data: any & { photos?: File[] }) => {
       // For now, assuming API accepts JSON as in schema (and we mock the photos or upload to a separate endpoint later)
       const { photos, ...payload } = data;
       const response = await api.post(API_ENDPOINTS.VEHICLES.CREATE, payload);

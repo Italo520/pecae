@@ -4,7 +4,7 @@ import { ReactNode, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/auth-store';
 import Link from 'next/link';
-import { LayoutDashboard, Heart, Search, MessageCircle, User } from 'lucide-react';
+import { LayoutDashboard, Heart, Search, MessageCircle, User, LifeBuoy } from 'lucide-react';
 
 export default function CompradorLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -29,6 +29,7 @@ export default function CompradorLayout({ children }: { children: ReactNode }) {
     { name: 'Buscas Salvas', href: '/comprador/buscas-salvas', icon: Search },
     { name: 'Negociações', href: '/comprador/negociacoes', icon: MessageCircle },
     { name: 'Meu Perfil', href: '/comprador/perfil', icon: User },
+    { name: 'Ajuda', href: '/comprador/ajuda', icon: LifeBuoy },
   ];
 
   return (

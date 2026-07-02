@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '@/lib/api';
+import { api } from '@/lib/axios';
 import { useAuthStore } from '@/store/auth-store';
 
 export interface SavedSearch {
@@ -20,7 +20,7 @@ export interface CreateSavedSearchDto {
 
 export function useSavedSearches() {
   const queryClient = useQueryClient();
-  const token = useAuthStore((state) => state.token);
+  const accessToken = useAuthStore((state) => state.accessToken);
 
   const getSavedSearches = useQuery({
     queryKey: ['savedSearches'],
@@ -28,7 +28,7 @@ export function useSavedSearches() {
       const response = await api.get<SavedSearch[]>('/buyers/saved-searches');
       return response.data;
     },
-    enabled: !!token,
+    enabled: !!accessToken,
   });
 
   const saveSearch = useMutation({

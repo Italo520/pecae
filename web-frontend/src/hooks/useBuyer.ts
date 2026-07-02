@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '@/lib/api';
+import { api } from '@/lib/axios';
 import { useAuthStore } from '@/store/auth-store';
 
 export interface BuyerProfile {
@@ -30,7 +30,7 @@ export interface BuyerData {
 
 export const useBuyer = () => {
   const queryClient = useQueryClient();
-  const token = useAuthStore((state) => state.token);
+  const accessToken = useAuthStore((state) => state.accessToken);
 
   const getBuyerProfile = useQuery({
     queryKey: ['buyer', 'me'],
@@ -38,7 +38,7 @@ export const useBuyer = () => {
       const { data } = await api.get<BuyerData>('/buyers/me');
       return data;
     },
-    enabled: !!token,
+    enabled: !!accessToken,
   });
 
   const updateBuyerProfile = useMutation({

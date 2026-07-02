@@ -10,18 +10,23 @@ const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL
   : 'http://localhost:8080/ws';
 
 export function useStomp() {
-  const { token } = useAuthStore();
+  const { accessToken } = useAuthStore();
   const clientRef = useRef<Client | null>(null);
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    if (!token) return;
+    // Para testes E2E com Playwright
+    if (typeof window !== 'undefined' && (window as any).E2E_MOCK_STOMP) {
+      setConnected(true);
+      return;
+    }
+    if (!accessToken) return;
 
     const client = new Client({
       // @ts-ignore - sockjs is compatible but types might complain
       webSocketFactory: () => new SockJS(SOCKET_URL),
       connectHeaders: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       debug: (str) => {
         if (process.env.NODE_ENV === 'development') {
@@ -54,7 +59,7 @@ export function useStomp() {
       clientRef.current = null;
       setConnected(false);
     };
-  }, [token]);
+  }, [accessToken]);
 
   const subscribe = useCallback((destination: string, callback: (message: any) => void): StompSubscription | null => {
     if (!clientRef.current || !connected) return null;

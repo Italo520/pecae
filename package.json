@@ -63,7 +63,9 @@
     "metro-symbolicate": "0.80.9",
     "metro-transform-plugins": "0.80.9",
     "metro-transform-worker": "0.80.9",
-    "@types/react": "~18.2.79"
+    "@types/react": "~18.2.79",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",

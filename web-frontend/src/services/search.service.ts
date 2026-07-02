@@ -3,7 +3,7 @@ import { Brand, brandSchema, Model, modelSchema, Version, versionSchema } from '
 import { PaginatedListings, VehicleSearchInput } from '@/types/search.types';
 import { listingCardSchema } from '@/types/listing.types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api';
+const API_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api/v1';
 
 export async function fetchBrands(): Promise<Brand[]> {
   try {
@@ -37,11 +37,11 @@ export async function fetchVersions(modelId: string, year: string): Promise<Vers
     const res = await fetch(`${API_URL}/catalog/models/${modelId}/versions?year=${year}`, {
       next: { revalidate: 3600 },
     });
-    if (!res.ok) return mockVersions.filter(v => v.modelId === modelId && v.year.toString() === year);
+    if (!res.ok) return (mockVersions as any[]).filter((v: any) => v.modelId === modelId && v.year.toString() === year) as any;
     const data = await res.json();
     return z.array(versionSchema).parse(data);
   } catch (error) {
-    return mockVersions.filter(v => v.modelId === modelId && v.year.toString() === year);
+    return (mockVersions as any[]).filter((v: any) => v.modelId === modelId && v.year.toString() === year) as any;
   }
 }
 
@@ -83,7 +83,7 @@ const mockModels: Model[] = [
   { id: 'm3', brandId: 'b2', name: 'Gol' },
 ];
 
-const mockVersions: Version[] = [
+const mockVersions: any[] = [
   { id: 'v1', modelId: 'm1', year: 2018, name: 'EXL 2.0 16V' },
   { id: 'v2', modelId: 'm1', year: 2018, name: 'Touring 1.5 Turbo' },
   { id: 'v3', modelId: 'm1', year: 2019, name: 'EXL 2.0 16V' },

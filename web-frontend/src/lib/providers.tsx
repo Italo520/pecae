@@ -44,16 +44,8 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
     initializeAuth();
   }, [hydrated, user, accessToken, updateToken, logout, setInitialized]);
 
-  // Se o Zustand ainda não hidratou ou o usuário está no localStorage mas o token ainda não carregou do refresh silencioso, 
-  // exibe um indicador de carregamento rápido para evitar renderização de layouts protegidos sem token.
-  if (!hydrated || (!isInitialized && user && !accessToken)) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[var(--color-surface)]">
-        <div className="w-8 h-8 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
+  // Não bloqueamos a renderização de 'children' no servidor nem no cliente inicial
+  // para permitir SSR e SEO. Qualquer carregamento de sessão deve acontecer em background.
   return <>{children}</>;
 }
 

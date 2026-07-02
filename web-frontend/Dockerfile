@@ -6,6 +6,7 @@ WORKDIR /app
 COPY package*.json turbo.json ./
 COPY packages/ ./packages/
 COPY web-frontend/package*.json ./web-frontend/
+COPY scripts/ ./scripts/
 RUN npm ci --workspace=web-frontend
 
 # Copia o código e faz build
@@ -18,11 +19,12 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3001
 
 # Next.js standalone mode: copia apenas o necessário
 COPY --from=builder /app/web-frontend/.next/standalone ./
-COPY --from=builder /app/web-frontend/.next/static ./.next/static
-COPY --from=builder /app/web-frontend/public ./public
+COPY --from=builder /app/web-frontend/.next/static ./web-frontend/.next/static
+COPY --from=builder /app/web-frontend/public ./web-frontend/public
 
 EXPOSE 3001
-CMD ["node", "server.js"]
+CMD ["node", "web-frontend/server.js"]

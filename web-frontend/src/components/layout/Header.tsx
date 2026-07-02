@@ -48,13 +48,13 @@ export function Header() {
 
             {/* Icons */}
             <div className="flex items-center gap-4">
-              <Link href={isLoggedIn ? "/favoritos" : "/auth/login"} className="relative text-[var(--muted)] hover:text-[var(--brand)] transition-colors">
+              <Link href={isLoggedIn ? "/favoritos" : "/login"} className="relative text-[var(--muted)] hover:text-[var(--brand)] transition-colors">
                 <Heart className="w-6 h-6" />
                 {isLoggedIn && (
                   <Badge variant="count" label={3} className="absolute -top-1.5 -right-1.5" />
                 )}
               </Link>
-              <Link href={isLoggedIn ? "/notificacoes" : "/auth/login"} className="relative text-[var(--muted)] hover:text-[var(--brand)] transition-colors">
+              <Link href={isLoggedIn ? "/notificacoes" : "/login"} className="relative text-[var(--muted)] hover:text-[var(--brand)] transition-colors">
                 <Bell className="w-6 h-6" />
                 {isLoggedIn && (
                   <Badge variant="count" label={1} className="absolute -top-1.5 -right-1.5" />
@@ -71,7 +71,7 @@ export function Header() {
                   </div>
                 </button>
               ) : (
-                <Link href="/auth/login" className="text-sm font-medium text-[var(--foreground)] hover:text-[var(--brand)] transition-colors">
+                <Link href="/login" className="text-sm font-medium text-[var(--foreground)] hover:text-[var(--brand)] transition-colors">
                   Entrar
                 </Link>
               )}

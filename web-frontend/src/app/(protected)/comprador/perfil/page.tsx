@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useBuyer } from '@/hooks/useBuyer';
 import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
+import { DeleteAccountModal } from '@/components/profile/DeleteAccountModal';
 
 export default function PerfilCompradorPage() {
   const { logout } = useAuthStore();
@@ -15,6 +16,7 @@ export default function PerfilCompradorPage() {
   const { data: profile, isLoading } = getBuyerProfile;
 
   const [name, setName] = useState('');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   
   useEffect(() => {
     if (profile?.name) {
@@ -168,22 +170,42 @@ export default function PerfilCompradorPage() {
           </div>
 
           {/* Danger Zone */}
-          <div className="pt-8 border-t border-red-500/20 flex items-center justify-between">
-            <div>
-              <h3 className="text-red-400 font-semibold mb-1">Encerrar Sessão</h3>
-              <p className="text-xs text-white/50">Sair da sua conta neste dispositivo.</p>
+          <div className="pt-8 border-t border-red-500/20 flex flex-col gap-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-red-400 font-semibold mb-1">Encerrar Sessão</h3>
+                <p className="text-xs text-white/50">Sair da sua conta neste dispositivo.</p>
+              </div>
+              <button 
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-500/10 text-red-400 font-semibold hover:bg-red-500/20 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                Sair da Conta
+              </button>
             </div>
-            <button 
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-500/10 text-red-400 font-semibold hover:bg-red-500/20 transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-              Sair da Conta
-            </button>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-red-500 font-semibold mb-1">Excluir Conta</h3>
+                <p className="text-xs text-white/50">Excluir permanentemente sua conta e seus dados.</p>
+              </div>
+              <button 
+                onClick={() => setIsDeleteModalOpen(true)}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors"
+              >
+                Excluir Conta
+              </button>
+            </div>
           </div>
 
         </div>
       </div>
+
+      <DeleteAccountModal 
+        isOpen={isDeleteModalOpen} 
+        onClose={() => setIsDeleteModalOpen(false)} 
+      />
     </div>
   );
 }

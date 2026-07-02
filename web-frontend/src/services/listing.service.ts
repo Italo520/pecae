@@ -8,12 +8,12 @@ import {
   listingDetailSchema
 } from '@/types/listing.types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api';
+const API_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api/v1';
 
 export async function fetchFeaturedListings(limit = 12): Promise<ListingCard[]> {
   try {
     const res = await fetch(`${API_URL}/listings?size=${limit}`, {
-      cache: 'no-store',
+      next: { revalidate: 60 },
     });
     
     if (!res.ok) {
@@ -27,14 +27,14 @@ export async function fetchFeaturedListings(limit = 12): Promise<ListingCard[]> 
     const content = data.content || [];
     
     // Adapter do RespostaAnuncio (Java) para ListingCard (Next.js)
-    const adaptedContent = content.map((item: any) => ({
-      id: item.id,
-      title: item.titulo || '',
-      brand: item.marcaNome || '',
-      model: item.modeloNome || '',
+    const adaptedContent = content.map((item: any, index: number) => ({
+      id: item.id ? String(item.id) : String(index),
+      title: item.titulo || 'Veículo',
+      brand: item.marcaNome || 'Marca',
+      model: item.modeloNome || 'Modelo',
       year: item.anoFabricacao || new Date().getFullYear(),
-      city: item.cidade || '',
-      state: item.estado || '',
+      city: item.cidade || 'Cidade',
+      state: item.estado || 'Estado',
       partsAvailable: 0, 
       createdAt: item.publicadoEm || new Date().toISOString(),
       imageUrl: item.urlFotoPrincipal || 'https://images.pexels.com/photos/1164778/pexels-photo-1164778.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -81,7 +81,7 @@ export async function fetchVehicleCategories(): Promise<VehicleCategory[]> {
 export async function fetchListingById(id: string): Promise<ListingDetail | null> {
   try {
     const res = await fetch(`${API_URL}/listings/${id}`, {
-      cache: 'no-store',
+      next: { revalidate: 300 },
     });
     
     if (!res.ok) {
@@ -92,31 +92,40 @@ export async function fetchListingById(id: string): Promise<ListingDetail | null
     
     const data = await res.json();
     
+    // Mapeamento de status Java para front
+    const statusMap: Record<string, 'ACTIVE' | 'SOLD' | 'INACTIVE' | 'PENDING'> = {
+      'PUBLICADO': 'ACTIVE',
+      'VENDIDO': 'SOLD',
+      'INATIVO': 'INACTIVE',
+      'PENDENTE': 'PENDING'
+    };
+
+    const mappedStatus = data.status ? statusMap[data.status] || 'ACTIVE' : 'ACTIVE';
+
     // Mocking do adapter até a rota de detalhes estar 100% igual.
-    // Atualmente o listingDetailSchema exige mais dados que o /listings comum
     const adaptedDetail = {
-      id: data.id,
-      title: data.titulo || '',
-      brand: data.marcaNome || '',
-      model: data.modeloNome || '',
+      id: data.id ? String(data.id) : id,
+      title: data.titulo || 'Veículo',
+      brand: data.marcaNome || 'Marca',
+      model: data.modeloNome || 'Modelo',
       year: data.anoFabricacao || new Date().getFullYear(),
       version: data.versaoNome || '',
       color: data.cor || '',
       description: data.descricao || 'Descrição não fornecida.',
-      city: data.cidade || '',
-      state: data.estado || '',
+      city: data.cidade || 'Cidade',
+      state: data.estado || 'Estado',
       createdAt: data.publicadoEm || new Date().toISOString(),
       views: data.visualizacoes || 0,
-      photos: [{ id: '1', url: data.urlFotoPrincipal, isMain: true }],
-      partsAvailable: [], // TODO: mapear peças do backend
+      photos: [{ id: '1', url: data.urlFotoPrincipal || 'https://images.pexels.com/photos/1164778/pexels-photo-1164778.jpeg', isMain: true }],
+      partsAvailable: data.pecasDisponiveis || [],
       seller: {
-        id: data.perfilVendedorId || '1',
+        id: data.perfilVendedorId ? String(data.perfilVendedorId) : '1',
         name: data.nomeVendedor || 'Vendedor',
         memberSince: new Date().toISOString(),
-        city: data.cidade || '',
-        state: data.estado || '',
+        city: data.cidade || 'Cidade',
+        state: data.estado || 'Estado',
       },
-      status: data.status || 'ACTIVE',
+      status: mappedStatus,
     };
 
     return listingDetailSchema.parse(adaptedDetail);

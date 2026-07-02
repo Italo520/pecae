@@ -50,7 +50,7 @@ apiClient.interceptors.response.use(
         // If refresh fails, user must log in again
         useAuthStore.getState().logout();
         if (typeof window !== 'undefined') {
-          window.location.href = '/auth/login';
+          window.location.href = '/login';
         }
         return Promise.reject(refreshError);
       }
@@ -94,5 +94,29 @@ export const authService = {
     // Calls backend directly using apiClient (which injects the Bearer token)
     const response = await apiClient.get('/users/me');
     return response.data;
+  },
+
+  async forgotPassword(data: { email: string }): Promise<void> {
+    await apiClient.post('/auth/forgot-password', data);
+  },
+
+  async resetPassword(data: { token: string; password: string }): Promise<void> {
+    await apiClient.post('/auth/reset-password', data);
+  },
+
+  async sendOtp(data: { phone: string }): Promise<void> {
+    await apiClient.post('/auth/phone/send-otp', data);
+  },
+
+  async otpLogin(data: { phone: string; code: string }): Promise<{ user: UserPublic; accessToken: string }> {
+    // Calls Next.js proxy route to get HttpOnly cookie
+    const response = await axios.post('/api/auth/otp-login', data);
+    const { user, accessToken } = response.data;
+    useAuthStore.getState().setAuth(user, accessToken);
+    return response.data;
+  },
+
+  async verifyEmail(data: { code: string }): Promise<void> {
+    await apiClient.post('/auth/verify-email', data);
   }
 };

@@ -1,6 +1,3 @@
-'use client';
-
-import { useEffect } from 'react';
 import { ListingDetail } from '@/types/listing.types';
 import { Breadcrumb } from './Breadcrumb';
 import { PhotoGallery } from './PhotoGallery';
@@ -11,7 +8,7 @@ import { ContactCTA } from './ContactCTA';
 import { ShareButton } from './ShareButton';
 import { ReportButton } from './ReportButton';
 import { SimilarVehicles } from './SimilarVehicles';
-import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
+import { RecentlyViewedTracker } from './RecentlyViewedTracker';
 
 interface VehicleDetailViewProps {
   listing: ListingDetail;
@@ -19,14 +16,11 @@ interface VehicleDetailViewProps {
 
 export function VehicleDetailView({ listing }: VehicleDetailViewProps) {
   // Adiciona ao recém vistos no lado do cliente
-  useRecentlyViewed({
-    id: listing.id,
-    title: listing.title,
-    imageUrl: listing.photos.find(p => p.isMain)?.url || listing.photos[0]?.url || '',
-  });
+  const imageUrl = listing.photos.find(p => p.isMain)?.url || listing.photos[0]?.url || '';
 
   return (
     <div className="min-h-screen bg-white">
+      <RecentlyViewedTracker id={listing.id} title={listing.title} imageUrl={imageUrl} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Row 1: Top Navigation and Info */}
@@ -89,7 +83,7 @@ export function VehicleDetailView({ listing }: VehicleDetailViewProps) {
             <div className="sticky top-6">
               <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-6">
                 <SellerCard seller={listing.seller} />
-                <ContactCTA whatsapp={listing.seller.whatsapp} sellerName={listing.seller.name} />
+                <ContactCTA listingId={listing.id} sellerId={listing.seller.id} whatsapp={listing.seller.whatsapp} sellerName={listing.seller.name} />
                 
                 <div className="mt-6 pt-6 border-t border-gray-100">
                   <ShareButton title={`Confira este ${listing.title} na PECAÊ`} />

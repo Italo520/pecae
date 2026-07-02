@@ -77,7 +77,7 @@ export function LoginForm() {
           {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
           
           <div className="flex justify-end mt-2">
-            <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:underline">
+            <Link href="/forgot-password" className="text-sm text-blue-600 hover:underline">
               Esqueceu a senha?
             </Link>
           </div>
@@ -100,7 +100,7 @@ export function LoginForm() {
 
       <div className="mt-6 text-center text-sm text-gray-500">
         Ainda não tem conta?{' '}
-        <Link href="/auth/register" className="text-blue-600 hover:underline font-medium">
+        <Link href="/register" className="text-blue-600 hover:underline font-medium">
           Cadastre-se
         </Link>
       </div>
