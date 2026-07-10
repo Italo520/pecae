@@ -1,16 +1,18 @@
 'use client';
 
-import { Megaphone, Plus, ExternalLink, Activity, Target, PauseCircle, PlayCircle } from 'lucide-react';
-import Link from 'next/link';
+import { Megaphone, Plus, Activity, Target, PauseCircle, PlayCircle } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/axios';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import { toast } from 'sonner';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { SkeletonKPI } from '@/components/ui/Skeleton';
+import { CreateCampaignModal } from '@/components/ads/CreateCampaignModal';
+import { useState } from 'react';
+import { Button } from '@/components/ui/Button';
 
 export default function CampanhasPage() {
   const queryClient = useQueryClient();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: campanhas, isLoading } = useQuery({
     queryKey: ['admin', 'campaigns'],
@@ -49,27 +51,26 @@ export default function CampanhasPage() {
   const columns: Column<any>[] = [
     {
       header: 'Nome da Campanha',
-      cell: (item) => <div className="font-medium text-white">{item.name || item.nome}</div>
+      cell: (item) => <div className="font-medium text-[var(--foreground)]">{item.name || item.nome}</div>
     },
     {
       header: 'Status',
       cell: (item) => (
-        <span className={`inline-block px-2 py-1 rounded-md text-[10px] font-bold border ${
-          item.status === 'ATIVA' || item.status === 'ACTIVE'
-            ? 'bg-green-500/20 text-green-400 border-green-500/30' 
-            : 'bg-white/10 text-white/50 border-white/20'
-        }`}>
+        <span className={`inline-block px-2 py-1 rounded-md text-[10px] font-bold border ${item.status === 'ATIVA' || item.status === 'ACTIVE'
+            ? 'bg-[var(--brand)]/20 text-[var(--brand)] border-[var(--brand)]/30'
+            : 'bg-[var(--surface)] text-[var(--muted)] border-[var(--border)]'
+          }`}>
           {item.status}
         </span>
       )
     },
     {
       header: 'Cliques',
-      cell: (item) => <div className="text-white/70">{item.clicks || 0}</div>
+      cell: (item) => <div className="text-[var(--muted)]">{item.clicks || 0}</div>
     },
     {
       header: 'Orçamento',
-      cell: (item) => <div className="text-white">R$ {item.budget || 0}</div>
+      cell: (item) => <div className="text-[var(--foreground)]">R$ {item.budget || 0}</div>
     },
     {
       header: 'Ações',
@@ -77,9 +78,9 @@ export default function CampanhasPage() {
         const isAtiva = item.status === 'ATIVA' || item.status === 'ACTIVE';
         return (
           <div className="flex items-center gap-2">
-            <button 
+            <button
               onClick={() => toggleStatus.mutate({ id: item.id, status: isAtiva ? 'PAUSADA' : 'ATIVA' })}
-              className="p-2 text-white/40 hover:text-white transition-colors"
+              className="p-2 text-[var(--muted)] hover:text-[var(--brand)] transition-colors"
               title={isAtiva ? "Pausar" : "Ativar"}
             >
               {isAtiva ? <PauseCircle className="w-4 h-4" /> : <PlayCircle className="w-4 h-4" />}
@@ -93,20 +94,26 @@ export default function CampanhasPage() {
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar">
       <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8">
-        
+
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-display font-bold text-white mb-2 flex items-center gap-3">
-              <Megaphone className="w-8 h-8 text-[var(--color-primary)]" />
-              Gestão de Campanhas VIP
+            <h1 className="text-3xl font-display font-bold text-[var(--foreground)] mb-2 flex items-center gap-3">
+              <Megaphone className="w-8 h-8 text-[var(--brand)]" />
+              Gestão de Campanhas
             </h1>
-            <p className="text-white/60">
+            <p className="text-[var(--muted)]">
               Administre os anúncios patrocinados e o faturamento da plataforma.
             </p>
           </div>
 
-          <button className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-black rounded-xl font-semibold transition-colors">
+          <button 
+            onClick={() => {
+              console.log('BUTTON NOVA CAMPANHA CLICADO, SETANDO isModalOpen = true');
+              setIsModalOpen(true);
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-[var(--brand)] text-white font-medium rounded-lg hover:bg-[var(--brand-vibrant)]"
+          >
             <Plus className="w-5 h-5" />
             Nova Campanha
           </button>
@@ -114,50 +121,56 @@ export default function CampanhasPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+          <div className="bg-[var(--surface)] border border-[var(--border)] backdrop-blur-md rounded-2xl p-6">
             <div className="flex items-center gap-3 mb-2">
-              <Activity className="w-5 h-5 text-green-400" />
-              <h3 className="text-sm font-medium text-white/50">Campanhas Ativas</h3>
+              <Activity className="w-5 h-5 text-[var(--brand-vibrant)]" />
+              <h3 className="text-sm font-medium text-[var(--muted)]">Campanhas Ativas</h3>
             </div>
-            {loadingStats ? <div className="h-9 w-16 shimmer rounded bg-white/5" /> : (
-              <p className="text-3xl font-semibold text-white">{stats?.active || 0}</p>
+            {loadingStats ? <div className="h-9 w-16 shimmer rounded bg-[var(--surface)]" /> : (
+              <p className="text-3xl font-semibold text-[var(--foreground)]">{stats?.active || 0}</p>
             )}
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+          <div className="bg-[var(--surface)] border border-[var(--border)] backdrop-blur-md rounded-2xl p-6">
             <div className="flex items-center gap-3 mb-2">
-              <Target className="w-5 h-5 text-blue-400" />
-              <h3 className="text-sm font-medium text-white/50">Total de Cliques Mês</h3>
+              <Target className="w-5 h-5 text-[var(--brand-vibrant)]" />
+              <h3 className="text-sm font-medium text-[var(--muted)]">Total de Cliques Mês</h3>
             </div>
-            {loadingStats ? <div className="h-9 w-24 shimmer rounded bg-white/5" /> : (
-              <p className="text-3xl font-semibold text-white">{stats?.clicks || 0}</p>
+            {loadingStats ? <div className="h-9 w-24 shimmer rounded bg-[var(--surface)]" /> : (
+              <p className="text-3xl font-semibold text-[var(--foreground)]">{stats?.clicks || 0}</p>
             )}
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+          <div className="bg-[var(--surface)] border border-[var(--border)] backdrop-blur-md rounded-2xl p-6">
             <div className="flex items-center gap-3 mb-2">
-              <span className="text-lg font-bold text-[var(--color-primary)]">R$</span>
-              <h3 className="text-sm font-medium text-white/50">Faturamento Previsto</h3>
+              <span className="text-lg font-bold text-[var(--brand)]">R$</span>
+              <h3 className="text-sm font-medium text-[var(--muted)]">Faturamento Previsto</h3>
             </div>
-            {loadingStats ? <div className="h-9 w-32 shimmer rounded bg-white/5" /> : (
-              <p className="text-3xl font-semibold text-[var(--color-primary)]">{stats?.revenue || 0}</p>
+            {loadingStats ? <div className="h-9 w-32 shimmer rounded bg-[var(--surface)]" /> : (
+              <p className="text-3xl font-semibold text-[var(--brand)]">{stats?.revenue || 0}</p>
             )}
           </div>
         </div>
 
         {/* Table */}
         {!isLoading && (!campanhas || campanhas.length === 0) ? (
-          <EmptyState 
-            icon={<Megaphone className="w-8 h-8" />}
-            title="Nenhuma campanha ativa"
-            description="Você ainda não possui campanhas rodando. Crie uma nova campanha para começar a patrocinar anúncios."
-          />
+          <div className="bg-[var(--surface)] border border-[var(--border)] backdrop-blur-md rounded-2xl">
+            <EmptyState
+              icon={<Megaphone className="w-8 h-8 text-[var(--brand)]" />}
+              title="Nenhuma campanha ativa"
+              description="Você ainda não possui campanhas rodando. Crie uma nova campanha para começar a patrocinar anúncios."
+            />
+          </div>
         ) : (
-          <DataTable 
-            data={campanhas || []} 
-            columns={columns} 
-            keyExtractor={(i) => i.id} 
-            isLoading={isLoading} 
-          />
+          <div className="bg-[var(--surface)] border border-[var(--border)] backdrop-blur-md rounded-2xl p-4 overflow-hidden">
+            <DataTable
+              data={campanhas || []}
+              columns={columns}
+              keyExtractor={(i) => i.id}
+              isLoading={isLoading}
+            />
+          </div>
         )}
+
+        <CreateCampaignModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
 
       </div>
     </div>

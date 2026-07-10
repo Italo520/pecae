@@ -16,7 +16,7 @@ test.describe('PECAÊ E2E - Controle de Acesso RBAC/CASL - Web Next.js', () => {
     await page.locator('button', { hasText: /Entrar|Login/i }).click();
     
     // Aguarda o login e redirecionamento para a página inicial
-    await page.waitForURL('/');
+    await page.waitForURL('**/comprador/dashboard');
     console.log('✅ Login do Comprador realizado.');
 
     // 2. Tentar acessar a rota restrita de Moderador no frontend

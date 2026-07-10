@@ -28,7 +28,7 @@ test.describe('Fluxo E2E Web - Vendedor (Next.js)', () => {
 
     // 2. NAVEGAÇÃO PARA ÁREA DO VENDEDOR (ANUNCIAR)
     // Supondo que a rota de cadastro é /vendedor/anunciar
-    await page.waitForURL('/');
+    await page.waitForURL('**/vendedor/dashboard', { timeout: 15000 });
     await page.goto('/vendedor/anunciar');
 
     // 3. PREENCHIMENTO DO FORMULÁRIO DE ANÚNCIO

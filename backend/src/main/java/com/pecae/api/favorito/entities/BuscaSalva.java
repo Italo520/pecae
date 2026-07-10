@@ -33,6 +33,7 @@ public class BuscaSalva {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "filters", columnDefinition = "jsonb", nullable = false)
+    @org.hibernate.annotations.ColumnTransformer(write = "?::jsonb")
     private Map<String, Object> filtros;
 
     @Column(name = "alert_active", nullable = false)

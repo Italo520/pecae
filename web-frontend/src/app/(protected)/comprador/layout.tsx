@@ -9,17 +9,19 @@ import { LayoutDashboard, Heart, Search, MessageCircle, User, LifeBuoy } from 'l
 export default function CompradorLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated, isInitialized } = useAuthStore();
+  const { user, isAuthenticated, isInitialized } = useAuthStore();
 
   useEffect(() => {
     if (!isInitialized) return;
     
     if (!isAuthenticated) {
       router.replace('/login');
+    } else if ((user?.type as string) === 'SELLER' || (user?.type as string) === 'VENDEDOR') {
+      router.replace('/vendedor/dashboard');
     }
-  }, [isInitialized, isAuthenticated, router]);
+  }, [isInitialized, isAuthenticated, user, router]);
 
-  if (!isInitialized || !isAuthenticated) {
+  if (!isInitialized || !isAuthenticated || (user?.type as string) === 'SELLER' || (user?.type as string) === 'VENDEDOR') {
     return null; // Return null while redirecting
   }
 

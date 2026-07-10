@@ -14,12 +14,12 @@ export default function VendedorLayout({ children }: { children: ReactNode }) {
 
     if (!isAuthenticated) {
       router.replace('/login');
-    } else if (user?.type === 'BUYER') {
-      router.replace('/acesso-negado');
+    } else if ((user?.type as string) === 'BUYER' || (user?.type as string) === 'COMPRADOR') {
+      router.replace('/comprador/dashboard');
     }
   }, [user, isAuthenticated, isInitialized, router]);
 
-  if (!isInitialized || !isAuthenticated || user?.type === 'BUYER') {
+  if (!isInitialized || !isAuthenticated || (user?.type as string) === 'BUYER' || (user?.type as string) === 'COMPRADOR') {
     return null; // Return null while redirecting
   }
 

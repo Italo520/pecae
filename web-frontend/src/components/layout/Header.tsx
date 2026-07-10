@@ -20,13 +20,13 @@ export function Header() {
 
   const getFavoritesUrl = () => {
     if (!isLoggedIn) return '/login';
-    return user?.role === 'SELLER' ? '/vendedor/dashboard' : '/comprador/favoritos';
+    return user?.type === 'SELLER' ? '/vendedor/dashboard' : '/comprador/favoritos';
   };
 
   const getNotificationsUrl = () => {
     if (!isLoggedIn) return '/login';
     // Placeholder, redirects to dashboard for now since notificacoes page is not created
-    return user?.role === 'SELLER' ? '/vendedor/dashboard' : '/comprador/dashboard';
+    return user?.type === 'SELLER' ? '/vendedor/dashboard' : '/comprador/dashboard';
   };
 
   const handleLocationClick = () => {
@@ -93,13 +93,13 @@ export function Header() {
             <div className="hidden md:flex items-center">
               {isLoggedIn ? (
                 <Link 
-                  href={user?.role === 'SELLER' ? '/vendedor/dashboard' : '/comprador/dashboard'} 
+                  href={user?.type === 'SELLER' ? '/vendedor/dashboard' : '/comprador/dashboard'} 
                   className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                   title="Acessar Dashboard"
                 >
                   <div className="w-8 h-8 rounded-full bg-[var(--border)] flex items-center justify-center overflow-hidden">
-                    {user?.avatarUrl ? (
-                      <img src={user.avatarUrl} alt={user.name || 'Avatar'} className="w-full h-full object-cover" />
+                    {(user as any)?.avatarUrl || (user as any)?.avatar ? (
+                      <img src={(user as any).avatarUrl || (user as any).avatar} alt={user?.name || 'Avatar'} className="w-full h-full object-cover" />
                     ) : (
                       <User className="w-4 h-4 text-[var(--muted)]" />
                     )}

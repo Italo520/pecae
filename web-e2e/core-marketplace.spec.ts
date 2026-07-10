@@ -41,7 +41,7 @@ test.describe('PECAÊ E2E - Core do Marketplace (Web)', () => {
     await page.locator('input[type="email"]').fill('buyer-e2e@pecae.com.br');
     await page.locator('input[type="password"]').fill('Pecae@E2e123');
     await page.locator('button', { hasText: /Entrar|Login/i }).click();
-    await page.waitForURL('**/', { timeout: 15000 });
+    await page.waitForURL('**/comprador/dashboard', { timeout: 15000 });
     console.log('✅ Login do Comprador E2E realizado com sucesso.');
 
     // 2. Salvar busca com alerta ativo para "Gol" via SQL (simulando a funcionalidade da UI)
@@ -146,7 +146,7 @@ test.describe('PECAÊ E2E - Core do Marketplace (Web)', () => {
     await page.locator('input[type="email"]').fill('buyer-e2e@pecae.com.br');
     await page.locator('input[type="password"]').fill('Pecae@E2e123');
     await page.locator('button', { hasText: /Entrar|Login/i }).click();
-    await page.waitForURL('**/', { timeout: 15000 });
+    await page.waitForURL('**/comprador/dashboard', { timeout: 15000 });
     console.log('✅ Login do Comprador realizado para validação da RN14.');
 
     // 6. Validar invisibilidade do anúncio pendente (RN14)
@@ -201,7 +201,7 @@ test.describe('PECAÊ E2E - Core do Marketplace (Web)', () => {
     await page.locator('input[type="email"]').fill('buyer-e2e@pecae.com.br');
     await page.locator('input[type="password"]').fill('Pecae@E2e123');
     await page.locator('button', { hasText: /Entrar|Login/i }).click();
-    await page.waitForURL('**/', { timeout: 15000 });
+    await page.waitForURL('**/comprador/dashboard', { timeout: 15000 });
 
     // 11. Validar match de busca salva via banco de dados (inserindo manualmente para simular o alerta de busca in-app)
     console.log('ℹ️ Simulando e validando criação de alerta de match no banco de dados...');

@@ -52,7 +52,7 @@ test.describe.serial('PECAÊ E2E - Fluxos Faltantes (Chat e Monetização) na Me
     await page.locator('input[type="email"]').fill('buyer-e2e@pecae.com.br');
     await page.locator('input[type="password"]').fill('Pecae@E2e123');
     await page.locator('button', { hasText: /Entrar|Login/i }).click();
-    await page.waitForURL('**/', { timeout: 15000 });
+    await page.waitForURL('**/comprador/dashboard', { timeout: 15000 });
     console.log('✅ Login do Comprador E2E realizado com sucesso.');
 
     // 2. Acessar o chat pré-existente
@@ -111,7 +111,7 @@ test.describe.serial('PECAÊ E2E - Fluxos Faltantes (Chat e Monetização) na Me
     await page.locator('input[type="email"]').fill('buyer-e2e@pecae.com.br');
     await page.locator('input[type="password"]').fill('Pecae@E2e123');
     await page.locator('button', { hasText: /Entrar|Login/i }).click();
-    await page.waitForURL('**/', { timeout: 15000 });
+    await page.waitForURL('**/comprador/dashboard', { timeout: 15000 });
 
     const sellerProfileId = runSqlQuery("SELECT id FROM seller_profiles WHERE name = 'Sucatão E2E Principal';").trim();
     console.log(`ℹ️ Simulação de avaliação do vendedor. SellerProfile=${sellerProfileId}`);
@@ -138,7 +138,7 @@ test.describe.serial('PECAÊ E2E - Fluxos Faltantes (Chat e Monetização) na Me
     await page.locator('input[type="email"]').fill('seller-quota-e2e@pecae.com.br');
     await page.locator('input[type="password"]').fill('Pecae@E2e123');
     await page.locator('button', { hasText: /Entrar|Login/i }).click();
-    await page.waitForURL('**', { timeout: 15000 });
+    await page.waitForURL('**/vendedor/dashboard', { timeout: 15000 });
     console.log('✅ Login do Vendedor Gratuito realizado com sucesso.');
 
     // 2. Tentar criar anúncio via API REST para garantir bloqueio (RN-M10-01)

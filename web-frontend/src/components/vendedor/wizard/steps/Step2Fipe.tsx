@@ -20,9 +20,9 @@ export default function Step2Fipe() {
   const { data: versions, isLoading: loadVersions } = useCatalogVersions(selectedModel);
   const { data: years, isLoading: loadYears } = useCatalogYears(versaoId || '');
 
-  const selectClass = "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/40 focus:outline-none focus:border-[var(--color-primary)]/50 focus:ring-1 focus:ring-[var(--color-primary)]/50 transition-all appearance-none";
-  const labelClass = "block text-sm font-medium text-white/70 mb-1.5";
-  const errorClass = "text-red-400 text-xs mt-1.5 font-medium";
+  const selectClass = "w-full bg-[var(--surface-hover)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--brand)] focus:ring-1 focus:ring-[var(--brand)] transition-all appearance-none";
+  const labelClass = "block text-sm font-medium text-[var(--muted)] mb-1.5";
+  const errorClass = "text-red-500 text-xs mt-1.5 font-medium";
 
   // Reset child fields when parent changes
   const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -46,8 +46,8 @@ export default function Step2Fipe() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
-        <h2 className="text-2xl font-display font-semibold text-white mb-2">Tabela FIPE</h2>
-        <p className="text-white/50 text-sm">Selecione o modelo exato do veículo na base FIPE para facilitar a busca dos compradores.</p>
+        <h2 className="text-2xl font-display font-semibold text-[var(--foreground)] mb-2">Tabela FIPE</h2>
+        <p className="text-[var(--muted)] text-sm">Selecione o modelo exato do veículo na base FIPE para facilitar a busca dos compradores.</p>
       </div>
 
       <div className="space-y-6">
@@ -60,11 +60,11 @@ export default function Step2Fipe() {
             onChange={handleBrandChange}
             disabled={loadBrands}
           >
-            <option value="" className="bg-zinc-900 text-white/50">
+            <option value="" className="bg-[var(--surface)] text-[var(--muted)]">
               {loadBrands ? 'Carregando marcas...' : 'Selecione a Marca...'}
             </option>
             {brands?.map(b => (
-              <option key={b.id} value={b.id} className="bg-zinc-900">{b.name}</option>
+              <option key={b.id} value={b.id} className="bg-[var(--surface)]">{b.name}</option>
             ))}
           </select>
         </div>
@@ -78,11 +78,11 @@ export default function Step2Fipe() {
             onChange={handleModelChange}
             disabled={!selectedBrand || loadModels}
           >
-            <option value="" className="bg-zinc-900 text-white/50">
+            <option value="" className="bg-[var(--surface)] text-[var(--muted)]">
               {!selectedBrand ? 'Selecione a marca primeiro' : loadModels ? 'Carregando modelos...' : 'Selecione o Modelo...'}
             </option>
             {models?.map(m => (
-              <option key={m.id} value={m.id} className="bg-zinc-900">{m.name}</option>
+              <option key={m.id} value={m.id} className="bg-[var(--surface)]">{m.name}</option>
             ))}
           </select>
         </div>
@@ -96,11 +96,11 @@ export default function Step2Fipe() {
             onChange={handleVersionChange}
             disabled={!selectedModel || loadVersions}
           >
-            <option value="" className="bg-zinc-900 text-white/50">
+            <option value="" className="bg-[var(--surface)] text-[var(--muted)]">
               {!selectedModel ? 'Selecione o modelo primeiro' : loadVersions ? 'Carregando versões...' : 'Selecione a Versão...'}
             </option>
             {versions?.map(v => (
-              <option key={v.id} value={v.id} className="bg-zinc-900">{v.name}</option>
+              <option key={v.id} value={v.id} className="bg-[var(--surface)]">{v.name}</option>
             ))}
           </select>
           {errors.versaoId && <p className={errorClass}>{errors.versaoId.message}</p>}
@@ -114,11 +114,11 @@ export default function Step2Fipe() {
             {...register('anoId')}
             disabled={!versaoId || loadYears}
           >
-            <option value="" className="bg-zinc-900 text-white/50">
+            <option value="" className="bg-[var(--surface)] text-[var(--muted)]">
               {!versaoId ? 'Selecione a versão primeiro' : loadYears ? 'Carregando anos...' : 'Selecione o Ano...'}
             </option>
             {years?.map(y => (
-              <option key={y.id} value={y.id} className="bg-zinc-900">{y.name} - {y.fuelType}</option>
+              <option key={y.id} value={y.id} className="bg-[var(--surface)]">{y.name} - {y.fuelType}</option>
             ))}
           </select>
           {errors.anoId && <p className={errorClass}>{errors.anoId.message}</p>}

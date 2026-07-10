@@ -43,10 +43,20 @@ export function OtpLoginForm() {
 
   const onVerifyOtp = async (data: CodeFormData) => {
     try {
-      await authService.otpLogin({ phone: phoneNumber, code: data.code });
+      const res = await authService.otpLogin({ phone: phoneNumber, code: data.code });
       toast.success('Login efetuado com sucesso!');
       
-      const next = searchParams.get('next') || '/';
+      let next = searchParams.get('next');
+      if (!next || next === '/') {
+        if ((res.user.type as string) === 'SELLER' || (res.user.type as string) === 'VENDEDOR') {
+          next = '/vendedor/dashboard';
+        } else if ((res.user.type as string) === 'MODERATOR' || (res.user.type as string) === 'ADMIN') {
+          next = '/moderador/dashboard';
+        } else {
+          next = '/comprador/dashboard';
+        }
+      }
+      
       router.push(next);
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Código inválido ou expirado.');

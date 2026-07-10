@@ -49,9 +49,9 @@ progress:
 
 ## Session Continuity
 
-Last session: 2026-07-02
-Stopped at: Session resumed, proceeding to planning of Milestone v11
-Resume file: —
+Last session: 2026-07-10
+Stopped at: Session resumed, proceeding to structured handoff
+Resume file: HANDOFF.json
 
 ## Current Position
 

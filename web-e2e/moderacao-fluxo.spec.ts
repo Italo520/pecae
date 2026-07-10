@@ -48,7 +48,7 @@ test.describe('PECAÊ E2E - Fluxo de Cadastro e Moderação de Veículo', () => 
     await page.locator('input[type="password"]').fill('Pecae@E2e123');
     await page.locator('button', { hasText: /Entrar|Login/i }).click();
 
-    await page.waitForURL('**/', { timeout: 15000 });
+    await page.waitForURL('**/vendedor/dashboard', { timeout: 15000 });
     console.log('✅ Vendedor logado.');
 
     // 2. Acessar formulário de anúncio

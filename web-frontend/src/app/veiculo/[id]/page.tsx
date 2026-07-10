@@ -3,6 +3,8 @@ import { fetchListingById, fetchFeaturedListings } from '@/services/listing.serv
 import { VehicleDetailView } from '@/components/vehicle/VehicleDetailView';
 import { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 // Tempo de revalidação em segundos para a página via ISR
 export const revalidate = 300; 
 // Permite que páginas não geradas no build time sejam geradas on-demand
@@ -52,12 +54,17 @@ export async function generateStaticParams() {
   }
 }
 
+import { fetchBannerAds } from '@/services/ads.service';
+
 export default async function VehicleDetailPage({ params }: PageProps) {
-  const listing = await fetchListingById(params.id);
+  const [listing, ads] = await Promise.all([
+    fetchListingById(params.id),
+    fetchBannerAds('LISTING_DETAIL_TOP', 1)
+  ]);
 
   if (!listing) {
     notFound();
   }
 
-  return <VehicleDetailView listing={listing} />;
+  return <VehicleDetailView listing={listing} ads={ads} />;
 }

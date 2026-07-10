@@ -6,15 +6,15 @@ import type { VehicleCreateInput } from '@pecae/shared';
 export default function Step1Identification() {
   const { register, formState: { errors } } = useFormContext<VehicleCreateInput>();
 
-  const inputClass = "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/40 focus:outline-none focus:border-[var(--color-primary)]/50 focus:ring-1 focus:ring-[var(--color-primary)]/50 transition-all";
-  const labelClass = "block text-sm font-medium text-white/70 mb-1.5";
-  const errorClass = "text-red-400 text-xs mt-1.5 font-medium";
+  const inputClass = "w-full bg-[var(--surface-hover)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--brand)] focus:ring-1 focus:ring-[var(--brand)] transition-all";
+  const labelClass = "block text-sm font-medium text-[var(--muted)] mb-1.5";
+  const errorClass = "text-red-500 text-xs mt-1.5 font-medium";
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
-        <h2 className="text-2xl font-display font-semibold text-white mb-2">Identificação do Veículo</h2>
-        <p className="text-white/50 text-sm">Insira os dados básicos da sucata. A placa não será exibida publicamente.</p>
+        <h2 className="text-2xl font-display font-semibold text-[var(--foreground)] mb-2">Identificação do Veículo</h2>
+        <p className="text-[var(--muted)] text-sm">Insira os dados básicos da sucata. A placa não será exibida publicamente.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -61,13 +61,13 @@ export default function Step1Identification() {
             className={`${inputClass} appearance-none`}
             {...register('tipoCombustivel')}
           >
-            <option value="" className="bg-zinc-900 text-white/50">Selecione...</option>
-            <option value="FLEX" className="bg-zinc-900">Flex</option>
-            <option value="GASOLINA" className="bg-zinc-900">Gasolina</option>
-            <option value="ETANOL" className="bg-zinc-900">Etanol</option>
-            <option value="DIESEL" className="bg-zinc-900">Diesel</option>
-            <option value="ELETRICO" className="bg-zinc-900">Elétrico</option>
-            <option value="HIBRIDO" className="bg-zinc-900">Híbrido</option>
+            <option value="" className="bg-[var(--surface)] text-[var(--muted)]">Selecione...</option>
+            <option value="FLEX" className="bg-[var(--surface)]">Flex</option>
+            <option value="GASOLINA" className="bg-[var(--surface)]">Gasolina</option>
+            <option value="ETANOL" className="bg-[var(--surface)]">Etanol</option>
+            <option value="DIESEL" className="bg-[var(--surface)]">Diesel</option>
+            <option value="ELETRICO" className="bg-[var(--surface)]">Elétrico</option>
+            <option value="HIBRIDO" className="bg-[var(--surface)]">Híbrido</option>
           </select>
           {errors.tipoCombustivel && <p className={errorClass}>{errors.tipoCombustivel.message}</p>}
         </div>

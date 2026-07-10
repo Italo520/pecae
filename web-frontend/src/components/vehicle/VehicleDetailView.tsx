@@ -10,11 +10,16 @@ import { ReportButton } from './ReportButton';
 import { SimilarVehicles } from './SimilarVehicles';
 import { RecentlyViewedTracker } from './RecentlyViewedTracker';
 
+import { AdBanner } from '@/types/listing.types';
+
 interface VehicleDetailViewProps {
   listing: ListingDetail;
+  ads?: AdBanner[];
 }
 
-export function VehicleDetailView({ listing }: VehicleDetailViewProps) {
+import { BannerCarousel } from '@/components/home/BannerCarousel';
+
+export function VehicleDetailView({ listing, ads = [] }: VehicleDetailViewProps) {
   // Adiciona ao recém vistos no lado do cliente
   const imageUrl = listing.photos.find(p => p.isMain)?.url || listing.photos[0]?.url || '';
 
@@ -23,6 +28,12 @@ export function VehicleDetailView({ listing }: VehicleDetailViewProps) {
       <RecentlyViewedTracker id={listing.id} title={listing.title} imageUrl={imageUrl} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
+        {ads && ads.length > 0 && (
+          <div className="mb-6">
+            <BannerCarousel ads={ads} variant="detail" />
+          </div>
+        )}
+
         {/* Row 1: Top Navigation and Info */}
         <div className="mb-6">
           <Breadcrumb brand={listing.brand} model={listing.model} year={listing.year} />

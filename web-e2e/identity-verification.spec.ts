@@ -77,8 +77,8 @@ test.describe('PECAÊ E2E - Identidade, Registro e Login do Vendedor - Web Next.
     await page.locator('input[type="password"]').fill('Pecae@E2e123');
     await page.getByRole('button', { name: /Entrar/i }).click();
 
-    // Aguarda o redirecionamento pós-login (vai para a Home)
-    await page.waitForURL('**/', { timeout: 15000 });
+    // Aguarda o redirecionamento pós-login (vai para o Dashboard do Vendedor)
+    await page.waitForURL('**/vendedor/dashboard', { timeout: 15000 });
     console.log('✅ Login realizado com sucesso.');
 
     // 4. Acessar o Perfil e Validar o tipo da conta

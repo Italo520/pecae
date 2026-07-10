@@ -13,9 +13,9 @@ export default function ModeradorLayout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     console.log('ModeradorLayout Mount/Update:', { isInitialized, isAuthenticated, userType: user?.type, userRole: (user as any)?.role });
-    
+
     if (!isInitialized) return;
-    
+
     if (!isAuthenticated) {
       console.log('ModeradorLayout Redirecting to /login because !isAuthenticated');
       router.replace('/login');
@@ -26,10 +26,10 @@ export default function ModeradorLayout({ children }: { children: ReactNode }) {
   }, [isInitialized, isAuthenticated, user, router]);
 
   if (!isInitialized || !isAuthenticated || (user?.type !== 'MODERATOR' && user?.type !== 'ADMIN')) {
-    return null; 
+    return null;
   }
 
-  const navItems = [
+  const navItems: { name: string, href: string, icon: any, disabled?: boolean }[] = [
     { name: 'Analytics', href: '/moderador/dashboard', icon: LayoutDashboard },
     { name: 'Documentos', href: '/moderador/documentos', icon: FileText },
     { name: 'Anúncios', href: '/moderador/anuncios', icon: Megaphone },
@@ -49,24 +49,30 @@ export default function ModeradorLayout({ children }: { children: ReactNode }) {
             </h2>
           </Link>
         </div>
-        
+
         <nav className="flex-1 px-4 py-6 space-y-2">
           {navItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             const Icon = item.icon;
-            
+
             return (
-              <Link 
+              <Link
                 key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  isActive 
-                    ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]' 
-                    : 'text-white/70 hover:bg-white/5 hover:text-white'
-                }`}
+                href={item.disabled ? '#' : item.href}
+                onClick={(e) => {
+                  if (item.disabled) { e.preventDefault(); alert('Em breve!'); }
+                }}
+                className={`flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${item.disabled ? 'opacity-50 cursor-not-allowed text-white/40' :
+                    isActive
+                      ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
+                      : 'text-white/70 hover:bg-white/5 hover:text-white'
+                  }`}
               >
-                <Icon className="w-5 h-5" />
-                <span className="font-medium text-sm">{item.name}</span>
+                <div className="flex items-center gap-3">
+                  <Icon className="w-5 h-5" />
+                  <span className="font-medium text-sm">{item.name}</span>
+                </div>
+                {item.disabled && <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded text-white/50">Em breve</span>}
               </Link>
             );
           })}
@@ -83,14 +89,17 @@ export default function ModeradorLayout({ children }: { children: ReactNode }) {
         {navItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
           const Icon = item.icon;
-          
+
           return (
-            <Link 
+            <Link
               key={item.href}
-              href={item.href} 
-              className={`p-2 flex flex-col items-center gap-1 ${
-                isActive ? 'text-[var(--color-primary)]' : 'text-white/70'
-              }`}
+              href={item.disabled ? '#' : item.href}
+              onClick={(e) => {
+                if (item.disabled) { e.preventDefault(); alert('Em breve!'); }
+              }}
+              className={`p-2 flex flex-col items-center gap-1 ${item.disabled ? 'opacity-50 cursor-not-allowed' :
+                  isActive ? 'text-[var(--color-primary)]' : 'text-white/70'
+                }`}
             >
               <Icon className="w-5 h-5" />
               <span className="text-[10px] font-medium">{item.name.split(' ')[0]}</span>

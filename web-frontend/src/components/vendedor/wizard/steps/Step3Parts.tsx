@@ -36,8 +36,8 @@ export default function Step3Parts() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
-        <h2 className="text-2xl font-display font-semibold text-white mb-2">Peças Intactas</h2>
-        <p className="text-white/50 text-sm">Selecione os grupos de peças que estão em bom estado nesta sucata. Isso ajuda os compradores na busca avançada.</p>
+        <h2 className="text-2xl font-display font-semibold text-[var(--foreground)] mb-2">Peças Intactas</h2>
+        <p className="text-[var(--muted)] text-sm">Selecione os grupos de peças que estão em bom estado nesta sucata. Isso ajuda os compradores na busca avançada.</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -51,8 +51,8 @@ export default function Step3Parts() {
               className={`
                 relative cursor-pointer rounded-xl p-4 flex flex-col items-center justify-center text-center gap-3 transition-all border
                 ${isSelected 
-                  ? 'bg-[var(--color-primary)]/10 border-[var(--color-primary)]/50 text-[var(--color-primary)]' 
-                  : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}
+                  ? 'bg-[var(--brand)]/10 border-[var(--brand)]/50 text-[var(--brand)]' 
+                  : 'bg-[var(--surface-hover)] border-[var(--border)] text-[var(--muted)] hover:bg-[var(--surface-hover)]/80 hover:text-[var(--foreground)]'}
               `}
             >
               <input 
@@ -61,15 +61,15 @@ export default function Step3Parts() {
                 className="sr-only"
                 {...register('pecasDisponiveis')}
               />
-              <Icon className={`w-8 h-8 ${isSelected ? 'text-[var(--color-primary)]' : 'text-white/30'}`} />
+              <Icon className={`w-8 h-8 ${isSelected ? 'text-[var(--brand)]' : 'text-[var(--muted)]'}`} />
               <span className="text-sm font-medium leading-tight">
                 {category.name}
               </span>
               
               {/* Checkmark overlay */}
               {isSelected && (
-                <div className="absolute top-2 right-2 w-5 h-5 bg-[var(--color-primary)] rounded-full flex items-center justify-center">
-                  <svg className="w-3 h-3 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="absolute top-2 right-2 w-5 h-5 bg-[var(--brand)] rounded-full flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
@@ -80,16 +80,16 @@ export default function Step3Parts() {
       </div>
       
       {errors.pecasDisponiveis && (
-        <p className="text-red-400 text-sm font-medium mt-2">{errors.pecasDisponiveis.message}</p>
+        <p className="text-red-500 text-sm font-medium mt-2">{errors.pecasDisponiveis.message}</p>
       )}
 
       <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 flex items-start gap-3 mt-8">
-        <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400 shrink-0">
+        <div className="p-2 bg-blue-500/20 rounded-lg text-blue-500 shrink-0">
           <Zap className="w-5 h-5" />
         </div>
         <div>
-          <h4 className="text-blue-400 font-medium mb-1">Dica de Venda</h4>
-          <p className="text-blue-400/80 text-sm leading-relaxed">
+          <h4 className="text-blue-500 font-medium mb-1">Dica de Venda</h4>
+          <p className="text-blue-500/80 text-sm leading-relaxed">
             Sucatas com categorias de peças bem definidas vendem 3x mais rápido. Se você não tem certeza do estado de um sistema inteiro, não o marque.
           </p>
         </div>

@@ -20,7 +20,7 @@ test.describe('PECAÊ E2E - Usability Journey (Single Tab)', () => {
     await page.locator('input[type="password"]').fill('Pecae@E2e123');
     await page.locator('button', { hasText: /Entrar|Login/i }).click();
     
-    await page.waitForURL('**/');
+    await page.waitForURL('**/comprador/dashboard');
     console.log('✅ Login do Comprador realizado com sucesso.');
 
     // 3. Search (Busca) & Favoritar

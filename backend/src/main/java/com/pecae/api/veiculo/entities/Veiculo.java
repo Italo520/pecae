@@ -51,6 +51,7 @@ public class Veiculo {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "available_parts", columnDefinition = "jsonb", nullable = false)
+    @ColumnTransformer(write = "?::jsonb")
     @Builder.Default
     private List<String> pecasDisponiveis = new ArrayList<>();
 

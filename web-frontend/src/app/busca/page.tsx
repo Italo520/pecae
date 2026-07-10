@@ -3,6 +3,8 @@ import { fetchSearchResults, fetchBrands } from '@/services/search.service';
 import { SearchPageClient } from '@/components/search/SearchPageClient';
 import { vehicleSearchInputSchema } from '@/types/search.types';
 
+export const dynamic = 'force-dynamic';
+
 interface SearchPageProps {
   searchParams: { [key: string]: string | string[] | undefined };
 }
@@ -17,6 +19,8 @@ export async function generateMetadata({ searchParams }: SearchPageProps): Promi
     description: `Encontre ${query} em desmanches verificados na PECAÊ.`,
   };
 }
+
+import { fetchBannerAds } from '@/services/ads.service';
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   // Normalize searchParams for our schema
@@ -38,9 +42,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = vehicleSearchInputSchema.parse(normalizedParams);
 
   // Parallel fetch for SSR
-  const [results, brands] = await Promise.all([
+  const [results, brands, ads] = await Promise.all([
     fetchSearchResults(params),
     fetchBrands(),
+    fetchBannerAds('SEARCH_SIDEBAR', 2)
   ]);
 
   return (
@@ -48,6 +53,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       initialResults={results} 
       brands={brands} 
       searchParams={params} 
+      ads={ads}
     />
   );
 }

@@ -25,13 +25,13 @@ export default async function HomePage() {
 
   return (
     <>
-      <HeroSection />
-      
       {ads.length > 0 && (
         <Suspense fallback={<div className="h-[250px] w-full bg-[var(--surface)] animate-pulse" />}>
           <BannerCarousel ads={ads} />
         </Suspense>
       )}
+
+      <HeroSection />
 
       {categories.length > 0 && (
         <VehicleCategoryBar categories={categories} />

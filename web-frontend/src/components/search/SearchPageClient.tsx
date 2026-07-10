@@ -7,14 +7,18 @@ import { Brand } from '@/types/catalog.types';
 import { useSearch } from '@/hooks/useSearch';
 import { FilterPanel } from './FilterPanel';
 import { SearchResults } from './SearchResults';
+import { BannerCarousel } from '@/components/home/BannerCarousel';
+
+import { AdBanner } from '@/types/listing.types';
 
 interface SearchPageClientProps {
   initialResults: PaginatedListings;
   brands: Brand[];
   searchParams: VehicleSearchInput;
+  ads?: AdBanner[];
 }
 
-export function SearchPageClient({ initialResults, brands, searchParams }: SearchPageClientProps) {
+export function SearchPageClient({ initialResults, brands, searchParams, ads = [] }: SearchPageClientProps) {
   const router = useRouter();
   
   // We keep a local copy of params to drive the UI/Queries
@@ -69,13 +73,16 @@ export function SearchPageClient({ initialResults, brands, searchParams }: Searc
       <div className="flex flex-col lg:flex-row gap-8">
         
         {/* Sidebar */}
-        <aside className="w-full lg:w-1/4 shrink-0">
+        <aside className="w-full lg:w-1/4 shrink-0 flex flex-col gap-6">
           <FilterPanel 
             initialBrands={brands} 
             searchParams={params}
             onFilterChange={handleFilterChange}
             onClearFilters={handleClearFilters}
           />
+          {ads && ads.length > 0 && (
+            <BannerCarousel ads={ads} variant="sidebar" />
+          )}
         </aside>
 
         {/* Main Content */}

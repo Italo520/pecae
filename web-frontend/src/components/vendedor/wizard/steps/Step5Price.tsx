@@ -8,20 +8,20 @@ export default function Step5Price() {
   
   const placa = watch('placa');
 
-  const inputClass = "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/40 focus:outline-none focus:border-[var(--color-primary)]/50 focus:ring-1 focus:ring-[var(--color-primary)]/50 transition-all";
-  const labelClass = "block text-sm font-medium text-white/70 mb-1.5";
+  const inputClass = "w-full bg-[var(--surface-hover)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--brand)] focus:ring-1 focus:ring-[var(--brand)] transition-all";
+  const labelClass = "block text-sm font-medium text-[var(--muted)] mb-1.5";
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
-        <h2 className="text-2xl font-display font-semibold text-white mb-2">Revisão Final</h2>
-        <p className="text-white/50 text-sm">Adicione detalhes extras. Lembre-se: os valores das peças são negociados diretamente no chat.</p>
+        <h2 className="text-2xl font-display font-semibold text-[var(--foreground)] mb-2">Revisão Final</h2>
+        <p className="text-[var(--muted)] text-sm">Adicione detalhes extras. Lembre-se: os valores das peças são negociados diretamente no chat.</p>
       </div>
 
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6">
+      <div className="bg-[var(--surface-hover)] border border-[var(--border)] rounded-2xl p-6 space-y-6">
         
         <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
-          <p className="text-blue-400 font-medium text-sm">
+          <p className="text-blue-500 font-medium text-sm">
             O sistema operará no modelo &quot;Preço sob consulta&quot;. Os compradores entrarão em contato para solicitar cotações.
           </p>
         </div>
@@ -33,15 +33,15 @@ export default function Step5Price() {
             className={`${inputClass} min-h-[120px] resize-none`}
             {...register('observacoes')}
           />
-          {errors.observacoes && <p className="text-red-400 text-xs mt-1.5">{errors.observacoes.message}</p>}
+          {errors.observacoes && <p className="text-red-500 text-xs mt-1.5">{errors.observacoes.message}</p>}
         </div>
 
       </div>
 
       <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 flex items-center justify-between">
         <div>
-          <h4 className="text-emerald-400 font-medium">Tudo pronto!</h4>
-          <p className="text-emerald-400/80 text-sm">Placa informada: <span className="font-mono uppercase">{placa || 'N/A'}</span></p>
+          <h4 className="text-emerald-500 font-medium">Tudo pronto!</h4>
+          <p className="text-emerald-500/80 text-sm">Placa informada: <span className="font-mono uppercase">{placa || 'N/A'}</span></p>
         </div>
       </div>
 

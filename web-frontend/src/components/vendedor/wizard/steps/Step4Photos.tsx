@@ -35,21 +35,21 @@ export default function Step4Photos({ photos, setPhotos }: Step4PhotosProps) {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
-        <h2 className="text-2xl font-display font-semibold text-white mb-2">Fotos do Veículo</h2>
-        <p className="text-white/50 text-sm">Adicione imagens da sucata para atrair compradores. A primeira imagem será a capa do anúncio. Máximo de 10 fotos.</p>
+        <h2 className="text-2xl font-display font-semibold text-[var(--foreground)] mb-2">Fotos do Veículo</h2>
+        <p className="text-[var(--muted)] text-sm">Adicione imagens da sucata para atrair compradores. A primeira imagem será a capa do anúncio. Máximo de 10 fotos.</p>
       </div>
 
       <div 
         onDrop={handleDrop}
         onDragOver={handleDragOver}
-        className="w-full h-48 border-2 border-dashed border-white/10 rounded-2xl bg-white/5 flex flex-col items-center justify-center hover:bg-white/10 hover:border-[var(--color-primary)]/50 transition-all cursor-pointer group"
+        className="w-full h-48 border-2 border-dashed border-[var(--border)] rounded-2xl bg-[var(--surface-hover)] flex flex-col items-center justify-center hover:bg-[var(--surface)] hover:border-[var(--brand)] transition-all cursor-pointer group"
         onClick={() => document.getElementById('photo-upload')?.click()}
       >
-        <div className="w-16 h-16 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+        <div className="w-16 h-16 rounded-full bg-[var(--brand)]/10 text-[var(--brand)] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
           <UploadCloud className="w-8 h-8" />
         </div>
-        <p className="text-white font-medium mb-1">Clique ou arraste as fotos aqui</p>
-        <p className="text-white/50 text-sm">PNG, JPG ou WEBP até 10MB</p>
+        <p className="text-[var(--foreground)] font-medium mb-1">Clique ou arraste as fotos aqui</p>
+        <p className="text-[var(--muted)] text-sm">PNG, JPG ou WEBP até 10MB</p>
         <input 
           id="photo-upload" 
           type="file" 
@@ -63,7 +63,7 @@ export default function Step4Photos({ photos, setPhotos }: Step4PhotosProps) {
       {photos.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
           {photos.map((photo, index) => (
-            <div key={index} className="relative aspect-square rounded-xl overflow-hidden bg-white/5 border border-white/10 group">
+            <div key={index} className="relative aspect-square rounded-xl overflow-hidden bg-[var(--surface-hover)] border border-[var(--border)] group">
               {/* Note: URL.createObjectURL is used for preview. Memory leaks are possible if not revoked, but acceptable for this quick wizard */}
               <Image 
                 src={URL.createObjectURL(photo)} 
@@ -73,7 +73,7 @@ export default function Step4Photos({ photos, setPhotos }: Step4PhotosProps) {
                 className="object-cover"
               />
               {index === 0 && (
-                <div className="absolute top-2 left-2 bg-[var(--color-primary)] text-black text-xs font-bold px-2 py-1 rounded-md z-10">
+                <div className="absolute top-2 left-2 bg-[var(--brand)] text-white shadow-sm text-xs font-bold px-2 py-1 rounded-md z-10">
                   Capa
                 </div>
               )}
@@ -90,7 +90,7 @@ export default function Step4Photos({ photos, setPhotos }: Step4PhotosProps) {
           {photos.length < 10 && (
             <div 
               onClick={() => document.getElementById('photo-upload')?.click()}
-              className="aspect-square rounded-xl border border-dashed border-white/10 bg-white/5 flex items-center justify-center text-white/30 hover:bg-white/10 hover:text-white/50 transition-colors cursor-pointer"
+              className="aspect-square rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface-hover)] flex items-center justify-center text-[var(--muted)] hover:bg-[var(--surface)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
             >
               <ImageIcon className="w-8 h-8" />
             </div>
