@@ -1,7 +1,9 @@
 package com.pecae.api.chat.services.impl;
 
 import com.pecae.api.anuncio.entities.Anuncio;
+import com.pecae.api.anuncio.entities.enums.StatusAnuncio;
 import com.pecae.api.anuncio.repositories.RepositorioAnuncio;
+import com.pecae.api.compartilhado.armazenamento.ServicoArmazenamento;
 import com.pecae.api.chat.dtos.*;
 import com.pecae.api.chat.entities.LeituraSala;
 import com.pecae.api.chat.entities.MensagemChat;
@@ -54,6 +56,7 @@ public class ServicoChatImpl implements IServicoChat {
     private final MapperChat mapperChat;
     private final StringRedisTemplate redisTemplate;
     private final IServicoNotificacao servicoNotificacao;
+    private final ServicoArmazenamento servicoArmazenamento;
 
     @Override
     @Transactional
@@ -166,8 +169,21 @@ public class ServicoChatImpl implements IServicoChat {
             proximoCursor = Base64.getEncoder().encodeToString(rawCursor.getBytes(StandardCharsets.UTF_8));
         }
 
+        // Obter data de leitura do outro participante
+        UUID interlocutorId = sala.getComprador().getId().equals(usuarioId)
+                ? sala.getVendedor().getId()
+                : sala.getComprador().getId();
+
+        LocalDateTime leuEm = repositorioLeituraSala.findBySalaIdAndUsuarioId(salaId, interlocutorId)
+                .map(LeituraSala::getLeuEm)
+                .orElse(LocalDateTime.of(1970, 1, 1, 0, 0));
+
         List<RespostaMensagemChat> dtos = mensagens.stream()
-                .map(mapperChat::paraRespostaMensagem)
+                .map(m -> {
+                    RespostaMensagemChat dto = mapperChat.paraRespostaMensagem(m);
+                    boolean isLido = m.getCriadaEm().isBefore(leuEm) || m.getCriadaEm().isEqual(leuEm);
+                    return new RespostaMensagemChat(dto.id(), dto.salaId(), dto.remetenteId(), dto.conteudo(), dto.criadaEm(), isLido);
+                })
                 .toList();
 
         return new RespostaCursorMensagens(dtos, proximoCursor);
@@ -180,6 +196,20 @@ public class ServicoChatImpl implements IServicoChat {
                 .orElseThrow(() -> new ExcecaoRecursoNaoEncontrado("Sala de chat", "id", salaId));
 
         validarParticipante(sala, remetenteId);
+
+        // Bloqueio de 6 horas se o anúncio correspondente for VENDIDO ou ENCERRADO
+        if (sala.getAnuncio() != null) {
+            Anuncio anuncio = sala.getAnuncio();
+            if (anuncio.getStatus() == StatusAnuncio.VENDIDO && anuncio.getVendidoEm() != null) {
+                if (LocalDateTime.now().isAfter(anuncio.getVendidoEm().plusHours(6))) {
+                    throw new ExcecaoNegocio("Este chat está bloqueado pois o anúncio foi vendido há mais de 6 horas.");
+                }
+            } else if (anuncio.getStatus() == StatusAnuncio.ENCERRADO && anuncio.getAtualizadoEm() != null) {
+                if (LocalDateTime.now().isAfter(anuncio.getAtualizadoEm().plusHours(6))) {
+                    throw new ExcecaoNegocio("Este chat está bloqueado pois o anúncio foi encerrado há mais de 6 horas.");
+                }
+            }
+        }
 
         Usuario remetente = usuarioRepository.findById(remetenteId)
                 .orElseThrow(() -> new ExcecaoRecursoNaoEncontrado("Usuário", "id", remetenteId));
@@ -245,6 +275,38 @@ public class ServicoChatImpl implements IServicoChat {
         repositorioLeituraSala.save(leitura);
     }
 
+    @Override
+    @Transactional
+    public String salvarAnexo(UUID salaId, UUID usuarioId, org.springframework.web.multipart.MultipartFile arquivo) {
+        SalaChat sala = repositorioSalaChat.findById(salaId)
+                .orElseThrow(() -> new ExcecaoRecursoNaoEncontrado("Sala de chat", "id", salaId));
+
+        validarParticipante(sala, usuarioId);
+
+        // Bloqueio de 6 horas se o anúncio correspondente for VENDIDO ou ENCERRADO
+        if (sala.getAnuncio() != null) {
+            Anuncio anuncio = sala.getAnuncio();
+            if (anuncio.getStatus() == StatusAnuncio.VENDIDO && anuncio.getVendidoEm() != null) {
+                if (LocalDateTime.now().isAfter(anuncio.getVendidoEm().plusHours(6))) {
+                    throw new ExcecaoNegocio("Este chat está bloqueado pois o anúncio foi vendido há mais de 6 horas.");
+                }
+            } else if (anuncio.getStatus() == StatusAnuncio.ENCERRADO && anuncio.getAtualizadoEm() != null) {
+                if (LocalDateTime.now().isAfter(anuncio.getAtualizadoEm().plusHours(6))) {
+                    throw new ExcecaoNegocio("Este chat está bloqueado pois o anúncio foi encerrado há mais de 6 horas.");
+                }
+            }
+        }
+
+        String extensao = "";
+        String nomeOriginal = arquivo.getOriginalFilename();
+        if (nomeOriginal != null && nomeOriginal.contains(".")) {
+            extensao = nomeOriginal.substring(nomeOriginal.lastIndexOf("."));
+        }
+        String caminho = "chat/" + salaId.toString() + "/" + UUID.randomUUID().toString() + extensao;
+
+        return servicoArmazenamento.upload(arquivo, null, caminho);
+    }
+
     // ── Métodos Auxiliares Privados ──────────────────────────────────────────
 
     private void validarParticipante(SalaChat sala, UUID usuarioId) {
@@ -271,6 +333,15 @@ public class ServicoChatImpl implements IServicoChat {
         UUID anuncioId = sala.getAnuncio() != null ? sala.getAnuncio().getId() : null;
         UUID veiculoId = sala.getVeiculo() != null ? sala.getVeiculo().getId() : null;
 
+        String anuncioStatus = null;
+        LocalDateTime anuncioVendidoEm = null;
+
+        if (sala.getAnuncio() != null) {
+            Anuncio anuncio = sala.getAnuncio();
+            anuncioStatus = anuncio.getStatus().name();
+            anuncioVendidoEm = (anuncio.getStatus() == StatusAnuncio.VENDIDO) ? anuncio.getVendidoEm() : anuncio.getAtualizadoEm();
+        }
+
         return new RespostaSalaChat(
                 sala.getId(),
                 anuncioId,
@@ -281,7 +352,9 @@ public class ServicoChatImpl implements IServicoChat {
                 interlocutorDto,
                 ultimaMensagemDto,
                 naoLidos,
-                sala.getAtualizadaEm()
+                sala.getAtualizadaEm(),
+                anuncioStatus,
+                anuncioVendidoEm
         );
     }
 

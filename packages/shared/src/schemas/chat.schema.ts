@@ -26,7 +26,9 @@ export const salaChatSchema = z.object({
   interlocutor: chatInterlocutorSchema,
   ultimaMensagem: chatUltimaMensagemSchema.nullable().optional(),
   naoLidos: z.number().int().nonnegative(),
-  atualizadaEm: z.string().datetime(),
+  atualizadaEm: z.string(),
+  anuncioStatus: z.string().nullable().optional(),
+  anuncioVendidoEm: z.string().nullable().optional(),
 });
 
 export type SalaChat = z.infer<typeof salaChatSchema>;
@@ -36,7 +38,8 @@ export const mensagemChatSchema = z.object({
   salaId: z.string().uuid(),
   remetenteId: z.string().uuid(),
   conteudo: z.string(),
-  criadaEm: z.string().datetime(),
+  criadaEm: z.string(),
+  lido: z.boolean().optional(),
 });
 
 export type MensagemChat = z.infer<typeof mensagemChatSchema>;

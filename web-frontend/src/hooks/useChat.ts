@@ -27,6 +27,17 @@ export function useChatMessages(salaId: string) {
   });
 }
 
+export function useChatRoom(salaId: string) {
+  return useQuery<SalaChat>({
+    queryKey: ['chat-room', salaId],
+    queryFn: async () => {
+      const response = await api.get(`/chat/rooms/${salaId}`);
+      return response.data;
+    },
+    enabled: !!salaId,
+  });
+}
+
 export function useCreateChatRoom() {
   const queryClient = useQueryClient();
   

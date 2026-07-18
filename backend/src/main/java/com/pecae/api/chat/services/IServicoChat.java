@@ -21,4 +21,6 @@ public interface IServicoChat {
     RespostaMensagemChat enviarMensagem(UUID salaId, UUID remetenteId, String conteudo);
 
     void marcarComoLido(UUID salaId, UUID usuarioId);
+
+    String salvarAnexo(UUID salaId, UUID usuarioId, org.springframework.web.multipart.MultipartFile arquivo);
 }

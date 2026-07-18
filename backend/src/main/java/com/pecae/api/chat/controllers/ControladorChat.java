@@ -86,4 +86,15 @@ public class ControladorChat {
         servicoChat.marcarComoLido(id, usuario.getId());
         return ResponseEntity.ok(Map.of("success", true));
     }
+
+    @PostMapping("/rooms/{id}/attachment")
+    @Operation(summary = "Fazer upload de anexo para a sala de chat", description = "Realiza o upload de uma imagem e retorna a URL pública.")
+    public ResponseEntity<Map<String, String>> uploadAttachment(
+            @PathVariable UUID id,
+            @RequestParam("file") org.springframework.web.multipart.MultipartFile file,
+            @UsuarioAtual PrincipalUsuario usuario
+    ) {
+        String url = servicoChat.salvarAnexo(id, usuario.getId(), file);
+        return ResponseEntity.ok(Map.of("url", url));
+    }
 }

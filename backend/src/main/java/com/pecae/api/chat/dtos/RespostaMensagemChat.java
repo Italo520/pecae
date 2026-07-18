@@ -8,5 +8,10 @@ public record RespostaMensagemChat(
     UUID salaId,
     UUID remetenteId,
     String conteudo,
-    LocalDateTime criadaEm
-) {}
+    LocalDateTime criadaEm,
+    Boolean lido
+) {
+    public RespostaMensagemChat(UUID id, UUID salaId, UUID remetenteId, String conteudo, LocalDateTime criadaEm) {
+        this(id, salaId, remetenteId, conteudo, criadaEm, false);
+    }
+}

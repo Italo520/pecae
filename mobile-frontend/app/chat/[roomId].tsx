@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Image, ActivityIndicator, SafeAreaView, Animated } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Image, ActivityIndicator, SafeAreaView, Animated, Linking } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { PecaeBackground, PecaeGlassCard, ReportBottomSheet } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
@@ -9,6 +9,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { Client } from '@stomp/stompjs';
 import { TextEncoder, TextDecoder } from 'text-encoding';
+import * as ImagePicker from 'expo-image-picker';
 
 // Polyfills para compatibilidade do @stomp/stompjs no React Native
 global.TextEncoder = TextEncoder;
@@ -38,6 +39,7 @@ interface Message {
   senderId: string;
   content: string;
   createdAt: string;
+  lido?: boolean;
 }
 
 interface RoomDetails {
@@ -52,6 +54,8 @@ interface RoomDetails {
     avatar: string | null;
     isVerified?: boolean;
   };
+  anuncioStatus?: string | null;
+  anuncioVendidoEm?: string | null;
 }
 
 // Componente de mensagem com animação
@@ -79,6 +83,9 @@ const AnimatedMessage = ({ item, isMe, colors, typography }: { item: Message; is
     minute: '2-digit',
   });
 
+  const isImage = item.content.startsWith('[IMAGE]:');
+  const imageUrl = isImage ? item.content.replace('[IMAGE]:', '') : '';
+
   return (
     <Animated.View 
       style={[
@@ -97,17 +104,39 @@ const AnimatedMessage = ({ item, isMe, colors, typography }: { item: Message; is
             borderBottomLeftRadius: isMe ? 20 : 4,
             backgroundColor: isMe ? 'rgba(63, 255, 139, 0.1)' : 'rgba(255,255,255,0.05)',
             borderColor: isMe ? colors.brand + '44' : 'rgba(255,255,255,0.05)',
+            padding: isImage ? 4 : 12,
           }
         ]}
       >
-        <Text style={[styles.messageText, { color: colors.textPrimary, fontFamily: typography.body }]}>
-          {item.content}
-        </Text>
-        <View style={styles.messageFooter}>
+        {isImage ? (
+          <TouchableOpacity onPress={() => Linking.openURL(imageUrl)}>
+            <Image 
+              source={{ uri: imageUrl }} 
+              style={{
+                width: 200,
+                height: 150,
+                borderRadius: 16,
+              }}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
+        ) : (
+          <Text style={[styles.messageText, { color: colors.textPrimary, fontFamily: typography.body }]}>
+            {item.content}
+          </Text>
+        )}
+        <View style={[styles.messageFooter, { paddingHorizontal: isImage ? 8 : 0, paddingBottom: isImage ? 4 : 0 }]}>
           <Text style={[styles.messageTime, { color: colors.textMuted, fontFamily: typography.body }]}>
             {formattedTime}
           </Text>
-          {isMe && <Ionicons name="checkmark-done" size={14} color={colors.brand} style={{ marginLeft: 4 }} />}
+          {isMe && (
+            <Ionicons 
+              name={item.lido ? "checkmark-done" : "checkmark"} 
+              size={14} 
+              color={item.lido ? colors.brand : colors.textMuted} 
+              style={{ marginLeft: 4 }} 
+            />
+          )}
         </View>
       </PecaeGlassCard>
     </Animated.View>
@@ -246,8 +275,17 @@ export default function ChatRoomScreen() {
     };
   }, [roomId, token]);
 
+  const isBlocked = (() => {
+    if (!room?.anuncioStatus || !room?.anuncioVendidoEm) return false;
+    if (room.anuncioStatus !== 'VENDIDO' && room.anuncioStatus !== 'ENCERRADO') return false;
+    const soldTime = new Date(room.anuncioVendidoEm).getTime();
+    const now = Date.now();
+    const diffHours = (now - soldTime) / (1000 * 60 * 60);
+    return diffHours > 6;
+  })();
+
   const handleSend = () => {
-    if (!newMessage.trim() || !stompClientRef.current?.connected) return;
+    if (!newMessage.trim() || !stompClientRef.current?.connected || isBlocked) return;
 
     try {
       stompClientRef.current.publish({
@@ -257,6 +295,63 @@ export default function ChatRoomScreen() {
       setNewMessage('');
     } catch (error) {
       console.error('Erro ao enviar mensagem via STOMP:', error);
+    }
+  };
+
+  const handleSelectImage = async () => {
+    if (isBlocked) return;
+
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Desculpe, precisamos de permissão para acessar suas fotos!');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      const uri = result.assets[0].uri;
+      uploadImage(uri);
+    }
+  };
+
+  const uploadImage = async (uri: string) => {
+    try {
+      setIsSending(true);
+
+      const formData = new FormData();
+      const filename = uri.split('/').pop() || 'photo.jpg';
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : `image/jpeg`;
+
+      formData.append('file', {
+        uri,
+        name: filename,
+        type,
+      } as any);
+
+      const response = await api.post(`/chat/rooms/${roomId}/attachment`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const { url } = response.data;
+
+      stompClientRef.current?.publish({
+        destination: `/app/chat.send/${roomId}`,
+        body: JSON.stringify({ conteudo: `[IMAGE]:${url}` }),
+      });
+
+    } catch (error) {
+      console.error('Erro ao fazer upload da imagem:', error);
+      alert('Erro ao enviar imagem.');
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -388,28 +483,42 @@ export default function ChatRoomScreen() {
 
           {/* Input Bar */}
           <View style={styles.inputWrapper}>
-            <PecaeGlassCard intensity={25} padding={4} style={[styles.inputContainer, { borderRadius: 30, borderColor: colors.brand + '22' }]}>
-              <TouchableOpacity style={styles.attachButton}>
+            {isBlocked && (
+              <View style={[styles.blockedContainer, { backgroundColor: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.2)' }]}>
+                <Ionicons name="lock-closed-outline" size={14} color="#ef4444" style={{ marginRight: 6 }} />
+                <Text style={[styles.blockedText, { color: '#ef4444', fontFamily: typography.body }]}>
+                  Conversa encerrada. O anúncio foi finalizado há mais de 6 horas.
+                </Text>
+              </View>
+            )}
+
+            <PecaeGlassCard intensity={25} padding={4} style={[styles.inputContainer, { borderRadius: 30, borderColor: colors.brand + '22', opacity: isBlocked ? 0.6 : 1 }]}>
+              <TouchableOpacity 
+                style={styles.attachButton} 
+                onPress={handleSelectImage}
+                disabled={isBlocked || isSending}
+              >
                 <Ionicons name="add-circle-outline" size={28} color={colors.textMuted} />
               </TouchableOpacity>
               
               <TextInput
                 style={[styles.textInput, { color: colors.textPrimary, fontFamily: typography.body }]}
-                placeholder="Transmit message..."
+                placeholder={isBlocked ? "Chat bloqueado..." : "Transmit message..."}
                 placeholderTextColor={`${colors.textMuted}66`}
                 value={newMessage}
                 onChangeText={setNewMessage}
                 multiline
                 maxLength={1000}
+                editable={!isBlocked}
               />
               
               <TouchableOpacity 
                 onPress={handleSend} 
-                disabled={!newMessage.trim() || isSending}
+                disabled={!newMessage.trim() || isSending || isBlocked}
                 style={[
                   styles.sendButton, 
                   { 
-                    backgroundColor: newMessage.trim() ? colors.brand : 'transparent',
+                    backgroundColor: (newMessage.trim() && !isBlocked) ? colors.brand : 'transparent',
                   }
                 ]}
               >
@@ -419,7 +528,7 @@ export default function ChatRoomScreen() {
                   <Ionicons 
                     name="chevron-up" 
                     size={28} 
-                    color={newMessage.trim() ? '#000' : colors.textMuted} 
+                    color={(newMessage.trim() && !isBlocked) ? '#000' : colors.textMuted} 
                   />
                 )}
               </TouchableOpacity>
@@ -635,5 +744,18 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  blockedContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginBottom: 12,
+  },
+  blockedText: {
+    fontSize: 12,
+    textAlign: 'center',
   },
 });
