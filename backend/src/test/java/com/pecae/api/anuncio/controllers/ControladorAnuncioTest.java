@@ -75,7 +75,7 @@ class ControladorAnuncioTest {
     @DisplayName("GET /listings - Deve listar anúncios públicos com sucesso")
     void deveListarPublicos() throws Exception {
         RespostaAnuncio resposta = new RespostaAnuncio(
-            UUID.randomUUID(), "Título Anúncio", "PUBLICADO", 0, "Fiat", "Uno", "1.0 Mille", 2012, "Vermelho", "São Paulo", "SP", null, UUID.randomUUID(), "Vendedor", true, LocalDateTime.now()
+            UUID.randomUUID(), "Título Anúncio", "PUBLICADO", 0, "Fiat", "Uno", "1.0 Mille", 2012, "Vermelho", "São Paulo", "SP", null, UUID.randomUUID(), "Vendedor", true, LocalDateTime.now(), false
         );
         Page<RespostaAnuncio> page = new PageImpl<>(Collections.singletonList(resposta));
 

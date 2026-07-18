@@ -2,6 +2,8 @@ package com.pecae.api.usuario;
 
 import com.pecae.api.compartilhado.AbstractIntegrationTest;
 import com.pecae.api.usuario.entities.Usuario;
+import com.pecae.api.usuario.entities.enums.StatusUsuario;
+import com.pecae.api.usuario.entities.enums.TipoUsuario;
 import com.pecae.api.usuario.repositories.UsuarioRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +21,9 @@ public class UsuarioRepositoryIntegrationTest extends AbstractIntegrationTest {
         Usuario usuario = new Usuario();
         usuario.setNome("Usuário de Integração");
         usuario.setEmail("integracao@teste.com");
-        usuario.setProviderId("int-1234");
-        usuario.setAvatarUrl("http://avatar.com/123");
+        usuario.setAvatar("http://avatar.com/123");
+        usuario.setTipo(TipoUsuario.COMPRADOR);
+        usuario.setStatus(StatusUsuario.ATIVO);
 
         // Act
         Usuario salvo = usuarioRepository.save(usuario);

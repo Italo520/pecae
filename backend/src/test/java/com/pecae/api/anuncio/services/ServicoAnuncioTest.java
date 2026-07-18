@@ -80,17 +80,17 @@ class ServicoAnuncioTest {
             Anuncio anuncio = Anuncio.builder().id(UUID.randomUUID()).build();
             Page<Anuncio> page = new PageImpl<>(Collections.singletonList(anuncio));
             RespostaAnuncio respostaDto = new RespostaAnuncio(
-                anuncio.getId(), "Título", "PUBLICADO", 10, "Marca", "Modelo", "Versão", 2020, "Preto", "São Paulo", "SP", null, UUID.randomUUID(), "Vendedor", true, LocalDateTime.now()
+                anuncio.getId(), "Título", "PUBLICADO", 10, "Marca", "Modelo", "Versão", 2020, "Preto", "São Paulo", "SP", null, UUID.randomUUID(), "Vendedor", true, LocalDateTime.now(), false
             );
 
-            when(repositorioAnuncio.buscarPublicados(null, null, "São Paulo", "SP", pageable)).thenReturn(page);
+            when(repositorioAnuncio.buscarPublicados(null, null, "São Paulo", "SP", null, pageable)).thenReturn(page);
             when(mapperAnuncio.paraResposta(anuncio)).thenReturn(respostaDto);
 
             Page<RespostaAnuncio> resultado = servicoAnuncio.listarPublicos(filtros);
 
             assertThat(resultado).isNotNull().hasSize(1);
             assertThat(resultado.getContent().get(0).id()).isEqualTo(anuncio.getId());
-            verify(repositorioAnuncio, times(1)).buscarPublicados(null, null, "São Paulo", "SP", pageable);
+            verify(repositorioAnuncio, times(1)).buscarPublicados(null, null, "São Paulo", "SP", null, pageable);
         }
 
         @Test

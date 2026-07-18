@@ -18,6 +18,8 @@ import com.pecae.api.veiculo.entities.Veiculo;
 import com.pecae.api.veiculo.repositories.RepositorioVeiculo;
 import com.pecae.api.vendedor.entities.PerfilVendedor;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import com.pecae.api.notificacao.services.IServicoNotificacao;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,6 +55,10 @@ class ServicoChatImplTest {
     private RepositorioVeiculo repositorioVeiculo;
     @Mock
     private MapperChat mapperChat;
+    @Mock
+    private StringRedisTemplate redisTemplate;
+    @Mock
+    private IServicoNotificacao servicoNotificacao;
 
     @InjectMocks
     private ServicoChatImpl servicoChat;
@@ -193,6 +199,7 @@ class ServicoChatImplTest {
         when(usuarioRepository.findById(compradorId)).thenReturn(Optional.of(comprador));
         when(repositorioMensagemChat.save(any(MensagemChat.class))).thenReturn(m);
         when(mapperChat.paraRespostaMensagem(m)).thenReturn(mDto);
+        when(redisTemplate.hasKey(anyString())).thenReturn(false);
 
         RespostaMensagemChat resposta = servicoChat.enviarMensagem(sala.getId(), compradorId, conteudo);
 

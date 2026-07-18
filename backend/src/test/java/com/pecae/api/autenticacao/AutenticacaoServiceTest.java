@@ -22,6 +22,7 @@ import com.pecae.api.usuario.entities.enums.TipoUsuario;
 import com.pecae.api.usuario.mappers.IUsuarioMapper;
 import com.pecae.api.usuario.repositories.UsuarioRepository;
 import com.pecae.api.usuario.services.UsuarioService;
+import com.pecae.api.mail.services.IServicoEmail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -71,6 +72,8 @@ class AutenticacaoServiceTest {
     private IAutenticacaoMapper autenticacaoMapper;
     @Mock
     private IUsuarioMapper usuarioMapper;
+    @Mock
+    private IServicoEmail servicoEmail;
 
     @InjectMocks
     private AutenticacaoServiceImpl autenticacaoService;
@@ -109,8 +112,8 @@ class AutenticacaoServiceTest {
             RespostaAutenticacao resposta = autenticacaoService.registrar(request, "127.0.0.1", "Mozilla/5.0");
 
             assertThat(resposta).isNotNull();
-            assertThat(resposta.getAccessToken()).isEqualTo("access-token-123");
-            assertThat(resposta.getRefreshToken()).isNotNull();
+            assertThat(resposta.getTokens().getAccessToken()).isEqualTo("access-token-123");
+            assertThat(resposta.getTokens().getRefreshToken()).isNotNull();
             assertThat(resposta.getUsuario().getEmail()).isEqualTo("user@test.com");
 
             verify(aceiteTermosRepository, times(1)).save(any(AceiteTermos.class));
@@ -161,7 +164,7 @@ class AutenticacaoServiceTest {
             RespostaAutenticacao resposta = autenticacaoService.login(request, "127.0.0.1", "Mozilla");
 
             assertThat(resposta).isNotNull();
-            assertThat(resposta.getAccessToken()).isEqualTo("accessToken");
+            assertThat(resposta.getTokens().getAccessToken()).isEqualTo("accessToken");
             verify(usuarioRepository, times(1)).save(usuario); // atualiza ultimoAcessoEm
             verify(tokenAtualizacaoRepository, times(1)).save(any(TokenAtualizacao.class));
         }

@@ -5,7 +5,7 @@ import com.pecae.api.compartilhado.excecao.ExcecaoRecursoNaoEncontrado;
 import com.pecae.api.notificacao.dtos.request.RegistrarTokenPushRequest;
 import com.pecae.api.notificacao.dtos.response.RespostaNotificacao;
 import com.pecae.api.notificacao.entities.Notificacao;
-import com.pecae.api.notificacao.entities.TokenPush;
+import com.pecae.api.usuario.entities.TokenPush;
 import com.pecae.api.notificacao.entities.enums.CanalNotificacao;
 import com.pecae.api.notificacao.entities.enums.TipoNotificacao;
 import com.pecae.api.notificacao.jobs.JobEnvioNotificacao;
