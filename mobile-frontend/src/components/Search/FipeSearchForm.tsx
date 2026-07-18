@@ -147,7 +147,7 @@ export function FipeSearchForm({ hasBanner = true }: { hasBanner?: boolean }) {
 
         <View style={[styles.buttonGroup, isTablet && styles.buttonGroupTablet]}>
           <Pressable 
-            style={({ pressed }) => [[styles.searchButton, { backgroundColor: colors.brand , pressed && { opacity: 0.7 }]}]} 
+            style={({ pressed }) => [styles.searchButton, { backgroundColor: colors.brand }, pressed && { opacity: 0.7 }]} 
             onPress={handleSearch}
           >
             <Ionicons name="search" size={20} color="#000" />

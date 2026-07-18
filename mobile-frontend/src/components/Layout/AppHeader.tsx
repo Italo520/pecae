@@ -50,7 +50,7 @@ export function AppHeader() {
               <Text style={{ color: colors.textPrimary, marginLeft: 8 }}>{user?.name || 'Perfil'}</Text>
             </Pressable>
           ) : (
-            <Pressable onPress={handleAuthAction} style={({ pressed }) => [[styles.loginBtn, { borderColor: colors.brand , pressed && { opacity: 0.7 }]}]}>
+            <Pressable onPress={handleAuthAction} style={({ pressed }) => [styles.loginBtn, { borderColor: colors.brand }, pressed && { opacity: 0.7 }]}>
               <Text style={[styles.loginText, { color: colors.brand, fontFamily: typography.medium }]}>ENTRAR</Text>
             </Pressable>
           )}

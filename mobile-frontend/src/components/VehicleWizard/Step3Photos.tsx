@@ -139,7 +139,7 @@ export const Step3Photos: React.FC = () => {
                 {/* Barra de Ações (Bottom) */}
                 <View style={styles.actionRow}>
                   <Pressable 
-                    style={({ pressed }) => [[styles.actionIconBtn, isCover && { backgroundColor: colors.brand , pressed && { opacity: 0.7 }]}]} 
+                    style={({ pressed }) => [styles.actionIconBtn, isCover && { backgroundColor: colors.brand }, pressed && { opacity: 0.7 }]} 
                     onPress={() => setAsCover(photo.uri)}
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                   >

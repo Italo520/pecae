@@ -58,7 +58,12 @@ export const PecaeButton: React.FC<PecaeButtonProps> = ({
         onPressOut={handlePressOut}
         disabled={disabled || loading}
         accessibilityRole="button"
-        style={({ pressed }) => [[styles.button, { borderRadius: effects.radius.md , pressed && { opacity: 0.7 }]}, style]}
+        style={({ pressed }) => [
+          styles.button,
+          { borderRadius: effects.radius.md },
+          pressed && { opacity: 0.7 },
+          style
+        ]}
         testID={testID}
       >
         <LinearGradient

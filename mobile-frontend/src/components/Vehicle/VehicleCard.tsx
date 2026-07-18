@@ -70,10 +70,11 @@ export const VehicleCard = React.memo<VehicleCardProps>(({
   return (
     <Pressable
       onPress={handlePress}
-      style={({ pressed }) => [[
+      style={({ pressed }) => [
         styles.container,
         isList ? styles.containerList : styles.containerGrid,
-        { backgroundColor: colors.surface , pressed && { opacity: 0.7 }]},
+        { backgroundColor: colors.surface },
+        pressed && { opacity: 0.7 },
         isSponsored && { borderColor: colors.brand, borderWidth: 1 },
         style
       ]}

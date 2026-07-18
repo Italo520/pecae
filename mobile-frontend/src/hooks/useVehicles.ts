@@ -287,10 +287,8 @@ export const useVehicleActions = () => {
 
   const reactivateVehicle = useMutation({
     mutationFn: async (id: string) => {
-      // The backend does not have reactivate directly. 
-      // It might need to go through the generic patch or create a new listing.
-      // Mock for now to prevent crashes.
-      return { success: true };
+      const { data } = await api.patch(`/listings/me/${id}/republish`);
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vehicles', 'me'] });
@@ -298,5 +296,16 @@ export const useVehicleActions = () => {
     },
   });
 
-  return { markAsSold, markAsRemoved, deleteVehicle, reactivateVehicle };
+  const pauseVehicle = useMutation({
+    mutationFn: async (id: string) => {
+      const { data } = await api.patch(`/listings/me/${id}/pause`);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vehicles', 'me'] });
+      queryClient.invalidateQueries({ queryKey: ['vehicles'] });
+    },
+  });
+
+  return { markAsSold, markAsRemoved, deleteVehicle, reactivateVehicle, pauseVehicle };
 };

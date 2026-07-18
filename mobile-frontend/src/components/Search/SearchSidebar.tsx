@@ -151,9 +151,10 @@ export function SearchSidebar({
             ].map(t => (
               <Pressable
                 key={t.id}
-                style={({ pressed }) => [[
+                style={({ pressed }) => [
                   styles.typeButton,
-                  { borderColor: colors.border , pressed && { opacity: 0.7 }]},
+                  { borderColor: colors.border },
+                  pressed && { opacity: 0.7 },
                   type === t.id && { borderColor: colors.brand, backgroundColor: 'rgba(63, 255, 139, 0.1)' }
                 ]}
                 onPress={() => setType(type === t.id ? undefined : t.id)}

@@ -87,7 +87,7 @@ export function BannerCarousel({ onBannersLoaded }: { onBannersLoaded?: (hasBann
         {banners.map((banner) => (
           <Pressable 
             key={banner.id} 
-            style={({ pressed }) => [[styles.bannerWrapper, { width: bannerWidth, height: bannerHeight , pressed && { opacity: 0.7 }]}]}
+            style={({ pressed }) => [styles.bannerWrapper, { width: bannerWidth, height: bannerHeight }, pressed && { opacity: 0.7 }]}
             onPress={() => handleBannerPress(banner)}
           >
             <Image 

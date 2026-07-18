@@ -84,9 +84,10 @@ export function BottomSheetSelector({
               const isSelected = item.id === selectedValue;
               return (
                 <Pressable
-                  style={({ pressed }) => [[
+                  style={({ pressed }) => [
                     styles.option, 
-                    { borderBottomColor: colors.border , pressed && { opacity: 0.7 }]},
+                    { borderBottomColor: colors.border },
+                    pressed && { opacity: 0.7 },
                     isSelected && { backgroundColor: `${colors.brand}15` }
                   ]}
                   onPress={() => {

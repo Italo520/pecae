@@ -49,9 +49,10 @@ export const Step1VehicleSelection: React.FC = () => {
             return (
               <Pressable
                 key={type.id}
-                style={({ pressed }) => [[
+                style={({ pressed }) => [
                   styles.typeButton,
-                  { backgroundColor: colors.surface, borderColor: colors.border , pressed && { opacity: 0.7 }]},
+                  { backgroundColor: colors.surface, borderColor: colors.border },
+                  pressed && { opacity: 0.7 },
                   isSelected && { borderColor: colors.brand, backgroundColor: 'rgba(63, 255, 139, 0.1)' }
                 ]}
                 onPress={() => updateData({ vehicleType: type.id, brandId: undefined, modelId: undefined, versionId: undefined, yearFabId: undefined })}

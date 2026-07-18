@@ -34,6 +34,9 @@ const registerSchema = z.object({
   termsAccepted: z.boolean().refine((val) => val === true, {
     message: "Você deve aceitar os termos de uso",
   }),
+  privacyAccepted: z.boolean().refine((val) => val === true, {
+    message: "Você deve aceitar a política de privacidade",
+  }),
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
@@ -57,6 +60,7 @@ export default function RegisterScreen() {
     defaultValues: {
       type: "BUYER",
       termsAccepted: false,
+      privacyAccepted: false,
     },
   });
 
@@ -361,9 +365,7 @@ export default function RegisterScreen() {
                       ]}
                     >
                       Li e concordo com os{" "}
-                      <Text style={{ color: colors.brand }}>Termos de Uso</Text>{" "}
-                      e <Text style={{ color: colors.brand }}>Privacidade</Text>
-                      .
+                      <Text style={{ color: colors.brand }}>Termos de Uso</Text>.
                     </Text>
                   </View>
                   {errors.termsAccepted && (
@@ -374,6 +376,49 @@ export default function RegisterScreen() {
                       ]}
                     >
                       {errors.termsAccepted.message}
+                    </Text>
+                  )}
+
+                  <View style={[styles.termsWrapper, { marginTop: 12 }]}>
+                    <TouchableOpacity
+                      style={[
+                        styles.checkbox,
+                        {
+                          borderColor: colors.brand,
+                          backgroundColor: watch("privacyAccepted")
+                            ? colors.brand
+                            : "transparent",
+                        },
+                      ]}
+                      onPress={() =>
+                        setValue("privacyAccepted", !watch("privacyAccepted"))
+                      }
+                    >
+                      {watch("privacyAccepted") && (
+                        <Ionicons name="checkmark" size={16} color="#000" />
+                      )}
+                    </TouchableOpacity>
+                    <Text
+                      style={[
+                        styles.termsText,
+                        {
+                          color: colors.textMuted,
+                          fontFamily: typography.body,
+                        },
+                      ]}
+                    >
+                      Li e concordo com a{" "}
+                      <Text style={{ color: colors.brand }}>Política de Privacidade</Text>.
+                    </Text>
+                  </View>
+                  {errors.privacyAccepted && (
+                    <Text
+                      style={[
+                        styles.errorText,
+                        { color: colors.error, fontFamily: typography.mono },
+                      ]}
+                    >
+                      {errors.privacyAccepted.message}
                     </Text>
                   )}
 

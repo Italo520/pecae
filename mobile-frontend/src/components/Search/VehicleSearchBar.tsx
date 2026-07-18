@@ -53,7 +53,7 @@ export function VehicleSearchBar() {
     <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       {/* State Dropdown */}
       <Pressable 
-        style={({ pressed }) => [[styles.stateSelector, { borderRightColor: colors.border , pressed && { opacity: 0.7 }]}]} 
+        style={({ pressed }) => [styles.stateSelector, { borderRightColor: colors.border }, pressed && { opacity: 0.7 }]} 
         onPress={() => setShowStateModal(true)}
       >
         <Ionicons name="location-outline" size={16} color={colors.brand} />
@@ -65,7 +65,7 @@ export function VehicleSearchBar() {
 
       {/* Input Placeholder (Redirects to Search Screen) */}
       <Pressable 
-        style={({ pressed }) => [[styles.input, { justifyContent: 'center' , pressed && { opacity: 0.7 }]}]} 
+        style={({ pressed }) => [styles.input, { justifyContent: 'center' }, pressed && { opacity: 0.7 }]} 
         onPress={() => router.push('/(tabs)/search')}
         activeOpacity={0.7}
       >
@@ -75,7 +75,7 @@ export function VehicleSearchBar() {
       </Pressable>
 
       {/* Search Button */}
-      <Pressable style={({ pressed }) => [[styles.searchBtn, { backgroundColor: colors.brand , pressed && { opacity: 0.7 }]}]} onPress={() => router.push('/(tabs)/search')}>
+      <Pressable style={({ pressed }) => [styles.searchBtn, { backgroundColor: colors.brand }, pressed && { opacity: 0.7 }]} onPress={() => router.push('/(tabs)/search')}>
         <Ionicons name="search" size={18} color="#000" />
       </Pressable>
 
@@ -91,7 +91,7 @@ export function VehicleSearchBar() {
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <Pressable 
-                  style={({ pressed }) => [[styles.stateItem, { borderBottomColor: colors.border , pressed && { opacity: 0.7 }]}]}
+                  style={({ pressed }) => [styles.stateItem, { borderBottomColor: colors.border }, pressed && { opacity: 0.7 }]}
                   onPress={() => {
                     setSelectedState(item.id);
                     setShowStateModal(false);

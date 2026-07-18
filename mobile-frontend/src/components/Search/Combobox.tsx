@@ -44,12 +44,13 @@ export function Combobox({
   return (
     <>
       <Pressable 
-        style={({ pressed }) => [[
+        style={({ pressed }) => [
           styles.trigger, 
           { 
             borderColor: colors.border, 
             backgroundColor: disabled ? colors.surface + '80' : colors.surface 
-          , pressed && { opacity: 0.7 }]}
+          },
+          pressed && { opacity: 0.7 }
         ]}
         onPress={() => {
           if (!disabled) {
@@ -103,9 +104,10 @@ export function Combobox({
               keyExtractor={(item) => item.value}
               renderItem={({ item }) => (
                 <Pressable
-                  style={({ pressed }) => [[
+                  style={({ pressed }) => [
                     styles.optionItem, 
-                    { borderBottomColor: colors.border , pressed && { opacity: 0.7 }]},
+                    { borderBottomColor: colors.border },
+                    pressed && { opacity: 0.7 },
                     item.value === value && { backgroundColor: colors.surface }
                   ]}
                   onPress={() => {

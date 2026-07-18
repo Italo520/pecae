@@ -164,11 +164,12 @@ export const PecaeToast: React.FC<PecaeToastProps> = ({
             {actions.map((action, idx) => (
               <Pressable
                 key={idx}
-                style={({ pressed }) => [[
+                style={({ pressed }) => [
                   styles.actionBtn,
                   action.primary
-                    ? { backgroundColor: config.color , pressed && { opacity: 0.7 }]}
+                    ? { backgroundColor: config.color }
                     : { backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.12)', borderWidth: 1 },
+                  pressed && { opacity: 0.7 }
                 ]}
                 onPress={() => {
                   hide();

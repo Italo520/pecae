@@ -7,7 +7,30 @@ import { api } from '../../src/services/api';
 import { useAuthStore } from '../../src/store/auth-store';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
-import { supabase } from '../../src/services/supabase';
+import { Client } from '@stomp/stompjs';
+import { TextEncoder, TextDecoder } from 'text-encoding';
+
+// Polyfills para compatibilidade do @stomp/stompjs no React Native
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder as any;
+
+const obterUrlWebSocket = () => {
+  const baseURL = api.defaults.baseURL || '';
+  let wsProtocol = baseURL.startsWith('https') ? 'wss://' : 'ws://';
+  let cleanUrl = baseURL.replace('https://', '').replace('http://', '');
+  let parts = cleanUrl.split('/');
+  let hostAndPort = parts[0];
+  
+  if (hostAndPort.includes(':')) {
+    const hostOnly = hostAndPort.split(':')[0];
+    hostAndPort = `${hostOnly}:3333`;
+  } else {
+    if (hostAndPort === 'localhost') {
+      hostAndPort = 'localhost:3333';
+    }
+  }
+  return `${wsProtocol}${hostAndPort}/api/v1/ws/websocket`;
+};
 
 interface Message {
   id: string;
@@ -94,10 +117,11 @@ const AnimatedMessage = ({ item, isMe, colors, typography }: { item: Message; is
 export default function ChatRoomScreen() {
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
   const { colors, typography, effects, isDark } = usePecaeTheme();
-  const { user } = useAuthStore();
+  const { user, token } = useAuthStore();
   const router = useRouter();
   const flatListRef = useRef<FlatList>(null);
   const hudAnim = useRef(new Animated.Value(0)).current;
+  const stompClientRef = useRef<Client | null>(null);
 
   const [room, setRoom] = useState<RoomDetails | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -152,53 +176,87 @@ export default function ChatRoomScreen() {
     fetchMessages();
     markAsRead();
 
-    const channel = supabase
-      .channel(`chat:${roomId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'chat_messages',
-          filter: `room_id=eq.${roomId}`,
-        },
-        (payload) => {
-          const newMsg = payload.new as Message;
+    if (!roomId || !token) return;
+
+    const wsUrl = obterUrlWebSocket();
+    const client = new Client({
+      brokerURL: wsUrl,
+      connectHeaders: {
+        Authorization: `Bearer ${token}`
+      },
+      debug: (str) => {
+        console.log('[STOMP Mobile]:', str);
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+    });
+
+    client.onConnect = (frame) => {
+      console.log('[STOMP Mobile] Connected!');
+      
+      // 1. Entra na sala
+      client.publish({
+        destination: `/app/chat.join/${roomId}`,
+        body: JSON.stringify({}),
+      });
+
+      // 2. Assina o tópico de novas mensagens da sala
+      client.subscribe(`/topic/room/${roomId}`, (message) => {
+        try {
+          const newMsg = JSON.parse(message.body) as Message;
           setMessages((prev) => {
             if (prev.some((m) => m.id === newMsg.id)) return prev;
             return [...prev, newMsg];
           });
-
+          
           setTimeout(() => {
             flatListRef.current?.scrollToEnd({ animated: true });
           }, 100);
+        } catch (err) {
+          console.error('Erro ao processar mensagem do STOMP:', err);
         }
-      )
-      .subscribe();
+      });
+
+      // 3. Assina a fila privada do usuário para receber o histórico inicial
+      client.subscribe(`/user/queue/historico`, (message) => {
+        try {
+          const history = JSON.parse(message.body);
+          if (history && history.itens) {
+            const reversed = [...history.itens].reverse();
+            setMessages(reversed);
+          }
+        } catch (err) {
+          console.error('Erro ao processar histórico do STOMP:', err);
+        }
+      });
+    };
+
+    client.onStompError = (frame) => {
+      console.error('[STOMP Mobile] Erro no broker STOMP:', frame.headers['message']);
+      console.error('[STOMP Mobile] Detalhes:', frame.body);
+    };
+
+    client.activate();
+    stompClientRef.current = client;
 
     return () => {
-      supabase.removeChannel(channel);
+      client.deactivate();
+      stompClientRef.current = null;
     };
-  }, [roomId]);
+  }, [roomId, token]);
 
-  const handleSend = async () => {
-    if (!newMessage.trim() || isSending) return;
-    setIsSending(true);
+  const handleSend = () => {
+    if (!newMessage.trim() || !stompClientRef.current?.connected) return;
 
     try {
-      const response = await api.post(`/chat/rooms/${roomId}/messages`, {
-        content: newMessage.trim(),
+      stompClientRef.current.publish({
+        destination: `/app/chat.send/${roomId}`,
+        body: JSON.stringify({ conteudo: newMessage.trim() }),
       });
-      setMessages((prev) => [...prev, response.data]);
       setNewMessage('');
-      
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
     } catch (error) {
-      console.error('Erro ao enviar mensagem:', error);
-    } finally {
-      setIsSending(false);
+      console.error('Erro ao enviar mensagem via STOMP:', error);
     }
   };
 

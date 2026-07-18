@@ -15,7 +15,7 @@ interface VehicleInventoryCardProps {
 
 export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehicle }) => {
   const { colors, typography, effects } = usePecaeTheme();
-  const { markAsSold, markAsRemoved, deleteVehicle, reactivateVehicle } = useVehicleActions();
+  const { markAsSold, markAsRemoved, deleteVehicle, reactivateVehicle, pauseVehicle } = useVehicleActions();
   const loadVehicle = useVehicleWizardStore(s => s.loadVehicle);
   const router = useRouter();
   const { showToast } = useToast();
@@ -34,7 +34,8 @@ export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehi
       case 'PENDING': return '#f1c40f';
       case 'DRAFT': return '#e67e22'; // Laranja vibrante industrial para rascunho
       case 'SOLD': return colors.textMuted;
-      case 'INACTIVE': return colors.error;
+      case 'INACTIVE':
+      case 'PAUSED': return '#e67e22'; // Laranja para pausado/inativo
       default: return colors.textMuted;
     }
   };
@@ -45,7 +46,8 @@ export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehi
       case 'PENDING': return 'AGUARDANDO APROVAÇÃO';
       case 'DRAFT': return 'RASCUNHO';
       case 'SOLD': return 'VENDIDO';
-      case 'INACTIVE': return 'RETIRADO';
+      case 'INACTIVE':
+      case 'PAUSED': return 'PAUSADO';
       default: return status;
     }
   };
@@ -62,6 +64,40 @@ export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehi
         { label: 'Confirmar', primary: true, onPress: async () => {
             await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             markAsSold.mutate(vehicle.id);
+        } },
+      ],
+    });
+  };
+
+  const handlePause = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    showToast({
+      type: 'warning',
+      title: 'Pausar Anúncio',
+      message: 'Deseja pausar o anúncio desta sucata? Ela ficará invisível nas buscas temporariamente.',
+      duration: 0,
+      actions: [
+        { label: 'Cancelar', onPress: () => {} },
+        { label: 'Pausar', primary: true, onPress: async () => {
+            await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            pauseVehicle.mutate(vehicle.id);
+        } },
+      ],
+    });
+  };
+
+  const handleReactivate = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    showToast({
+      type: 'warning',
+      title: 'Reativar Anúncio',
+      message: 'Deseja reativar o anúncio desta sucata? Ele voltará para a fila de aprovação da moderação.',
+      duration: 0,
+      actions: [
+        { label: 'Cancelar', onPress: () => {} },
+        { label: 'Reativar', primary: true, onPress: async () => {
+            await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            reactivateVehicle.mutate(vehicle.id);
         } },
       ],
     });
@@ -125,24 +161,32 @@ export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehi
 
       <View style={[styles.actions, { borderTopColor: colors.border + '20' }]}>
         <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.7 }]} onPress={handleEdit}>
-          <Ionicons name="create-outline" size={18} color={colors.textPrimary} />
+          <Ionicons name="create-outline" size={16} color={colors.textPrimary} />
           <Text style={[styles.actionText, { color: colors.textPrimary, fontFamily: typography.medium }]}>EDITAR</Text>
         </Pressable>
 
-        {vehicle.status === 'ACTIVE' ? (
-          <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.7 }]} onPress={handleSold}>
-            <Ionicons name="checkmark-done" size={18} color={colors.brand} />
-            <Text style={[styles.actionText, { color: colors.brand, fontFamily: typography.medium }]}>VENDIDO</Text>
-          </Pressable>
-        ) : (
-           <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.7 }]} onPress={() => reactivateVehicle.mutate(vehicle.id)}>
-            <Ionicons name="refresh-outline" size={18} color={colors.brand} />
+        {vehicle.status === 'ACTIVE' && (
+          <>
+            <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.7 }]} onPress={handleSold}>
+              <Ionicons name="checkmark-done" size={16} color={colors.brand} />
+              <Text style={[styles.actionText, { color: colors.brand, fontFamily: typography.medium }]}>VENDIDO</Text>
+            </Pressable>
+            <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.7 }]} onPress={handlePause}>
+              <Ionicons name="pause-outline" size={16} color="#f39c12" />
+              <Text style={[styles.actionText, { color: '#f39c12', fontFamily: typography.medium }]}>PAUSAR</Text>
+            </Pressable>
+          </>
+        )}
+
+        {(vehicle.status === 'INACTIVE' || vehicle.status === 'PAUSED') && (
+          <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.7 }]} onPress={handleReactivate}>
+            <Ionicons name="refresh-outline" size={16} color={colors.brand} />
             <Text style={[styles.actionText, { color: colors.brand, fontFamily: typography.medium }]}>REATIVAR</Text>
           </Pressable>
         )}
 
         <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.7 }]} onPress={handleDelete}>
-          <Ionicons name="trash-outline" size={18} color={colors.error} />
+          <Ionicons name="trash-outline" size={16} color={colors.error} />
           <Text style={[styles.actionText, { color: colors.error, fontFamily: typography.medium }]}>EXCLUIR</Text>
         </Pressable>
       </View>

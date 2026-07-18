@@ -433,7 +433,7 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
       <View style={[styles.footer, { borderTopColor: colors.border }]}>
         <Pressable 
           onPress={clearSelection} 
-          style={({ pressed }) => [[styles.clearButton, { borderColor: colors.border , pressed && { opacity: 0.7 }]}]}
+          style={({ pressed }) => [styles.clearButton, { borderColor: colors.border }, pressed && { opacity: 0.7 }]}
         >
           <Text style={[styles.clearButtonText, { color: colors.textPrimary, fontFamily: typography.body }]}>
             Limpar
@@ -442,9 +442,10 @@ export const VehicleSelector: React.FC<VehicleSelectorProps> = ({
 
         <Pressable 
           onPress={handleApply} 
-          style={({ pressed }) => [[
+          style={({ pressed }) => [
             styles.applyButton, 
-            { backgroundColor: (requireCompleteSelection ? (selectedBrand && selectedModel && selectedVersion && selectedYear) : selectedBrand) ? colors.brand : colors.surface , pressed && { opacity: 0.7 }]}
+            { backgroundColor: (requireCompleteSelection ? (selectedBrand && selectedModel && selectedVersion && selectedYear) : selectedBrand) ? colors.brand : colors.surface },
+            pressed && { opacity: 0.7 }
           ]}
           disabled={requireCompleteSelection ? !(selectedBrand && selectedModel && selectedVersion && selectedYear) : !selectedBrand}
         >
