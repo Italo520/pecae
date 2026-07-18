@@ -152,9 +152,20 @@ export default function SearchScreen() {
       </Text>
       <Text style={[styles.emptySubtitle, { color: colors.textMuted, fontFamily: typography.body }]}>
         {debouncedSearchText || brandId
-          ? 'Não encontramos veículos com esses filtros. Tente termos mais genéricos.'
+          ? 'Não encontramos veículos com esses filtros. Tente termos mais genéricos ou salve sua busca para receber alertas.'
           : 'Busque por peças, modelos ou marcas específicas no inventário.'}
       </Text>
+      {(debouncedSearchText || brandId || city || state) && (
+        <TouchableOpacity 
+          style={[styles.saveSearchButton, { backgroundColor: colors.brand }]} 
+          onPress={handleSaveSearch}
+          disabled={saveSearch.isPending}
+        >
+          <Text style={[styles.saveSearchButtonText, { color: '#ffffff', fontFamily: typography.medium }]}>
+            {saveSearch.isPending ? 'SALVANDO...' : 'SALVAR BUSCA E ME ALERTAR'}
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 
@@ -522,6 +533,18 @@ const styles = StyleSheet.create({
   suggestionType: {
     fontSize: 10,
     textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  saveSearchButton: {
+    marginTop: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  saveSearchButtonText: {
+    fontSize: 12,
     letterSpacing: 1,
   },
 });

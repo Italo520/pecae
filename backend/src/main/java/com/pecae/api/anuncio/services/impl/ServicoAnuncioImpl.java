@@ -17,6 +17,8 @@ import com.pecae.api.veiculo.repositories.RepositorioVeiculo;
 import com.pecae.api.vendedor.entities.EstatisticasVendedor;
 import com.pecae.api.vendedor.entities.PerfilVendedor;
 import com.pecae.api.vendedor.repositories.PerfilVendedorRepository;
+import com.pecae.api.catalogo.repositories.MarcaVeiculoRepository;
+import com.pecae.api.catalogo.repositories.ModeloVeiculoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -40,6 +43,8 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
     private final MapperAnuncio mapperAnuncio;
     private final MaquinaEstadoAnuncio maquinaEstado;
     private final JobVisualizacaoAnuncio jobVisualizacaoAnuncio;
+    private final MarcaVeiculoRepository marcaVeiculoRepository;
+    private final ModeloVeiculoRepository modeloVeiculoRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -54,6 +59,37 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
             pageable
         );
         return anuncios.map(mapperAnuncio::paraResposta);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RespostaSugestaoAutocomplete> buscarSugestoes(String q) {
+        if (q == null || q.trim().length() < 2) {
+            return java.util.Collections.emptyList();
+        }
+
+        String query = q.trim();
+        List<RespostaSugestaoAutocomplete> sugestoes = new java.util.ArrayList<>();
+
+        // Buscar Marcas
+        marcaVeiculoRepository.findByNomeContainingIgnoreCaseAndAtivoTrue(query).stream()
+            .limit(5)
+            .forEach(m -> sugestoes.add(new RespostaSugestaoAutocomplete(
+                m.getId().toString(),
+                m.getNome(),
+                RespostaSugestaoAutocomplete.TipoSugestao.BRAND
+            )));
+
+        // Buscar Modelos
+        modeloVeiculoRepository.findByNomeContainingIgnoreCaseAndAtivoTrue(query).stream()
+            .limit(5)
+            .forEach(m -> sugestoes.add(new RespostaSugestaoAutocomplete(
+                m.getId().toString(),
+                m.getNome() + " (" + m.getMarca().getNome() + ")",
+                RespostaSugestaoAutocomplete.TipoSugestao.MODEL
+            )));
+
+        return sugestoes;
     }
 
     @Override

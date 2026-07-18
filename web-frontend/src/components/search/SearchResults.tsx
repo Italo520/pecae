@@ -5,6 +5,9 @@ import { VehicleSearchInput, PaginatedListings } from '@/types/search.types';
 import { ListingCard } from '@/components/vehicle/ListingCard';
 import { ListingGridSkeleton } from '@/components/home/ListingGridSkeleton';
 
+import { useSavedSearches } from '@/hooks/useSavedSearches';
+import { toast } from 'sonner';
+
 interface SearchResultsProps {
   searchParams: VehicleSearchInput;
   results: PaginatedListings[];
@@ -27,6 +30,33 @@ export function SearchResults({
   fetchNextPage
 }: SearchResultsProps) {
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const { saveSearch } = useSavedSearches();
+
+  const handleSaveSearch = () => {
+    saveSearch.mutate(
+      {
+        query: searchParams.query || '',
+        filters: {
+          vehicleCategory: searchParams.vehicleCategory,
+          brandId: searchParams.brandId,
+          modelId: searchParams.modelId,
+          year: searchParams.year,
+          versionId: searchParams.versionId,
+          state: searchParams.state,
+          city: searchParams.city
+        },
+        alertActive: true
+      },
+      {
+        onSuccess: () => {
+          toast.success('Busca salva com sucesso! Avisaremos quando houver novos veículos correspondentes.');
+        },
+        onError: (err: any) => {
+          toast.error(err.response?.data?.message || 'Erro ao salvar busca. Faça login para salvar.');
+        }
+      }
+    );
+  };
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -112,11 +142,20 @@ export function SearchResults({
           </div>
           <h3 className="text-lg font-bold font-display text-foreground mb-2">Nenhum veículo encontrado.</h3>
           <p className="text-muted text-sm max-w-md mb-6">
-            Não encontramos peças correspondentes aos filtros selecionados. Tente remover alguns filtros ou buscar de forma mais genérica.
+            Não encontramos peças correspondentes aos filtros selecionados. Tente remover alguns filtros, buscar de forma mais genérica ou salve seu alerta de busca.
           </p>
-          <button onClick={onClearFilters} className="px-6 py-3 bg-brand text-white font-bold rounded-xl hover:bg-brand/90 transition-colors">
-            Ver todos os veículos
-          </button>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button onClick={onClearFilters} className="px-6 py-3 bg-neutral-800 text-white font-bold rounded-xl hover:bg-neutral-700 transition-colors">
+              Ver todos os veículos
+            </button>
+            <button 
+              onClick={handleSaveSearch} 
+              disabled={saveSearch.isPending}
+              className="px-6 py-3 bg-brand text-white font-bold rounded-xl hover:bg-brand/90 transition-colors disabled:opacity-50"
+            >
+              {saveSearch.isPending ? 'Salvando...' : 'Salvar Busca e me Alertar'}
+            </button>
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

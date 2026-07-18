@@ -164,6 +164,17 @@ export function FilterPanel({ initialBrands, searchParams, onFilterChange, onCle
           ))}
         </select>
       </div>
+
+      <div className="flex flex-col gap-2">
+        <label className="text-sm font-semibold">Cidade</label>
+        <input 
+          type="text"
+          placeholder="Ex: São Bernardo"
+          value={searchParams.city || ''}
+          onChange={(e) => onFilterChange('city', e.target.value || undefined)}
+          className="w-full px-4 py-3 bg-background/50 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand"
+        />
+      </div>
     </div>
   );
 }

@@ -97,6 +97,18 @@ export async function fetchSearchResults(params: VehicleSearchInput): Promise<Pa
   }
 }
 
+export async function fetchSearchSuggestions(q: string): Promise<any[]> {
+  try {
+    const res = await fetch(`${API_URL}/search/suggestions?q=${encodeURIComponent(q)}`, {
+      next: { revalidate: 30 },
+    });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (error) {
+    return [];
+  }
+}
+
 // -------------------------------------------------------------
 // Fallback Mocks
 // -------------------------------------------------------------

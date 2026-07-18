@@ -4,12 +4,14 @@ import com.pecae.api.anuncio.dtos.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface IServicoAnuncio {
     // Endpoints Públicos
     Page<RespostaAnuncio> listarPublicos(FiltrosAnuncioQuery filtros);
     RespostaDetalheAnuncio buscarDetalhe(UUID anuncioId, String ip);
+    List<RespostaSugestaoAutocomplete> buscarSugestoes(String q);
 
     // Endpoints do Vendedor Autenticado
     RespostaDetalheAnuncio criar(UUID usuarioId, CriarAnuncioRequest request);

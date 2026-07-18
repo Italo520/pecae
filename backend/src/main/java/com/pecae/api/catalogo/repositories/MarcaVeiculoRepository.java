@@ -12,4 +12,5 @@ import java.util.UUID;
 public interface MarcaVeiculoRepository extends JpaRepository<MarcaVeiculo, UUID> {
     List<MarcaVeiculo> findAllByAtivoTrueOrderByNomeAsc();
     Optional<MarcaVeiculo> findByNomeIgnoreCase(String nome);
+    List<MarcaVeiculo> findByNomeContainingIgnoreCaseAndAtivoTrue(String nome);
 }

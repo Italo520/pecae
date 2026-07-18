@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
+import { fetchSearchSuggestions } from '@/services/search.service';
 
-// Mock hook for search suggestions
 export function useSearchSuggestions(query: string) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -12,19 +12,30 @@ export function useSearchSuggestions(query: string) {
     }
 
     setIsLoading(true);
-    const timer = setTimeout(() => {
-      // Mock data based on query
-      const mockData = [
-        `${query} honda civic`,
-        `${query} parachoque`,
-        `motor ${query}`,
-        `farol para ${query}`,
-      ];
-      setSuggestions(mockData);
-      setIsLoading(false);
-    }, 300);
+    let active = true;
 
-    return () => clearTimeout(timer);
+    fetchSearchSuggestions(query)
+      .then((data) => {
+        if (active) {
+          // Extract text suggestions
+          const items = (data || []).map((item: any) => item.text || item.nome || '');
+          setSuggestions(items.filter(Boolean));
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setSuggestions([]);
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
   }, [query]);
 
   return { suggestions, isLoading };

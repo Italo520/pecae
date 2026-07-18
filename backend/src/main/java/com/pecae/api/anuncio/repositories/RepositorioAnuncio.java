@@ -23,7 +23,7 @@ public interface RepositorioAnuncio extends JpaRepository<Anuncio, UUID> {
         JOIN vehicle_brands ma ON mo.brand_id = ma.id
         WHERE a.status = 'PUBLISHED'
           AND a.deleted_at IS NULL
-          AND a.seller_profile_id IN (SELECT id FROM seller_profiles WHERE deleted_at IS NULL)
+          AND a.seller_profile_id IN (SELECT sp.id FROM seller_profiles sp JOIN users u ON sp.user_id = u.id WHERE sp.deleted_at IS NULL AND u.status = 'ACTIVE')
           AND (:marcaId IS NULL OR ma.id = CAST(:marcaId AS uuid))
           AND (:modeloId IS NULL OR mo.id = CAST(:modeloId AS uuid))
           AND (:cidade IS NULL OR :cidade = '' OR LOWER(v.city) = LOWER(:cidade))
@@ -39,7 +39,7 @@ public interface RepositorioAnuncio extends JpaRepository<Anuncio, UUID> {
         JOIN vehicle_brands ma ON mo.brand_id = ma.id
         WHERE a.status = 'PUBLISHED'
           AND a.deleted_at IS NULL
-          AND a.seller_profile_id IN (SELECT id FROM seller_profiles WHERE deleted_at IS NULL)
+          AND a.seller_profile_id IN (SELECT sp.id FROM seller_profiles sp JOIN users u ON sp.user_id = u.id WHERE sp.deleted_at IS NULL AND u.status = 'ACTIVE')
           AND (:marcaId IS NULL OR ma.id = CAST(:marcaId AS uuid))
           AND (:modeloId IS NULL OR mo.id = CAST(:modeloId AS uuid))
           AND (:cidade IS NULL OR :cidade = '' OR LOWER(v.city) = LOWER(:cidade))

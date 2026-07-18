@@ -9,6 +9,7 @@ export const vehicleSearchInputSchema = z.object({
   year: z.string().optional(), // using string to easily read from URL searchParams
   versionId: z.string().optional(),
   state: z.string().optional(),
+  city: z.string().optional(),
   page: z.number().optional().default(1),
   sort: z.string().optional(),
 });

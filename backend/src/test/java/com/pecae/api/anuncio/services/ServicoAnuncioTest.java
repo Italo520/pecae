@@ -40,6 +40,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.pecae.api.catalogo.repositories.MarcaVeiculoRepository;
+import com.pecae.api.catalogo.repositories.ModeloVeiculoRepository;
+
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Testes do ServicoAnuncio")
 class ServicoAnuncioTest {
@@ -64,6 +67,12 @@ class ServicoAnuncioTest {
 
     @Mock
     private JobVisualizacaoAnuncio jobVisualizacaoAnuncio;
+
+    @Mock
+    private MarcaVeiculoRepository marcaVeiculoRepository;
+
+    @Mock
+    private ModeloVeiculoRepository modeloVeiculoRepository;
 
     @InjectMocks
     private ServicoAnuncioImpl servicoAnuncio;
