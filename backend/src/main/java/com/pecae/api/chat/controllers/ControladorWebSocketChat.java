@@ -68,6 +68,13 @@ public class ControladorWebSocketChat {
         // 5. Registra presença no Redis
         registrarPresenca(usuarioId.toString());
 
+        // 6. Registra que o usuário está ativamente visualizando esta sala específica
+        redisTemplate.opsForValue().set(
+            "chat:active:" + salaId + ":" + usuarioId,
+            "true",
+            Duration.ofSeconds(60)
+        );
+
         log.info("Usuário {} entrou na sala {}", usuarioId, salaId);
     }
 
@@ -90,6 +97,13 @@ public class ControladorWebSocketChat {
             salaUUID, usuarioId, requisicao.conteudo()
         );
 
+        // Atualiza a presença ativa do remetente
+        redisTemplate.opsForValue().set(
+            "chat:active:" + salaId + ":" + usuarioId,
+            "true",
+            Duration.ofSeconds(60)
+        );
+
         // 2. Publica no Redis Pub/Sub → ListenerMensagemChatRedis faz o broadcast STOMP
         publicarNoRedis(salaId, mensagem);
     }
@@ -106,6 +120,13 @@ public class ControladorWebSocketChat {
     ) {
         UUID usuarioId = obterUsuarioId(principal);
         boolean digitando = Boolean.TRUE.equals(payload.get("digitando"));
+
+        // Atualiza a presença ativa do remetente
+        redisTemplate.opsForValue().set(
+            "chat:active:" + salaId + ":" + usuarioId,
+            "true",
+            Duration.ofSeconds(60)
+        );
 
         brokerStomp.convertAndSend("/topic/room/" + salaId + "/typing",
             Map.of("usuarioId", usuarioId.toString(), "digitando", digitando)

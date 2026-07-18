@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public interface IServicoModeracao {
     Page<RespostaDenuncia> listarDenunciasPendentes(Pageable pageable);
+    Page<com.pecae.api.anuncio.dtos.RespostaAnuncio> listarAnunciosPendentes(Pageable pageable);
     void processarDenuncia(UUID moderadorId, UUID denunciaId, DecisaoModeracaoRequest request);
     void moderarAnuncio(UUID moderadorId, UUID anuncioId, DecisaoModeracaoRequest request);
     Page<RespostaLogAuditoria> listarLogsAuditoria(Pageable pageable);

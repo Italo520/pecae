@@ -96,6 +96,26 @@ public class ControladorAnuncio {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/me/{anuncioId}/pause")
+    @PreAuthorize("hasAnyRole('VENDEDOR', 'AMBOS')")
+    @Operation(summary = "Pausar anúncio", description = "Altera o status do anúncio para PAUSADO e desativa temporariamente o veículo.")
+    public ResponseEntity<Void> pausar(
+            @UsuarioAtual PrincipalUsuario usuario,
+            @PathVariable UUID anuncioId) {
+        servicoAnuncio.pausar(usuario.getId(), anuncioId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/me/{anuncioId}/republish")
+    @PreAuthorize("hasAnyRole('VENDEDOR', 'AMBOS')")
+    @Operation(summary = "Republicar anúncio", description = "Altera o status do anúncio de volta para PENDENTE para re-entrar na fila de moderação.")
+    public ResponseEntity<Void> republicar(
+            @UsuarioAtual PrincipalUsuario usuario,
+            @PathVariable UUID anuncioId) {
+        servicoAnuncio.republicar(usuario.getId(), anuncioId);
+        return ResponseEntity.noContent().build();
+    }
+
     private String extrairIpReal(HttpServletRequest request) {
         String forwarded = request.getHeader("X-Forwarded-For");
         if (forwarded != null && !forwarded.isBlank()) {

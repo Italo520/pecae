@@ -18,4 +18,6 @@ public interface IServicoAnuncio {
     void marcarComoVendido(UUID usuarioId, UUID anuncioId);
     void remover(UUID usuarioId, UUID anuncioId);
     void moderar(UUID anuncioId, com.pecae.api.anuncio.entities.enums.StatusAnuncio novoStatus);
+    void pausar(UUID usuarioId, UUID anuncioId);
+    void republicar(UUID usuarioId, UUID anuncioId);
 }

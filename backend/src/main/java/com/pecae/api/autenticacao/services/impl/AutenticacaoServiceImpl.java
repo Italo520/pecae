@@ -32,6 +32,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pecae.api.mail.services.IServicoEmail;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -61,6 +62,7 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
     private final AuthenticationManager authenticationManager;
     private final IAutenticacaoMapper autenticacaoMapper;
     private final IUsuarioMapper usuarioMapper;
+    private final IServicoEmail servicoEmail;
 
     @Value("${jwt.refresh-expiration}")
     private long expiraRefreshMs;
@@ -75,6 +77,11 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
         // Converte DTO para entidade Usuario e codifica a senha
         Usuario usuario = autenticacaoMapper.toUsuario(request);
         usuario.setSenhaHash(passwordEncoder.encode(request.getSenha()));
+        
+        // Define aceites da LGPD
+        usuario.setTermosAceitosEm(LocalDateTime.now());
+        usuario.setPrivacidadeAceitaEm(LocalDateTime.now());
+        
         Usuario usuarioSalvo = usuarioService.criarEntidade(usuario);
 
         // Cria registro de aceite dos termos
@@ -97,7 +104,14 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
                 .build();
         tokenVerificacaoEmailRepository.save(tokenEmail);
 
-        // Mock do envio de e-mail no console
+        // Enviar e-mail real via Resend (com fallback automático de log no console/log se não configurado)
+        servicoEmail.enviar(
+            usuarioSalvo.getEmail(),
+            "Verificação de E-mail — PECAÊ",
+            String.format("Olá %s,\n\nUse o código abaixo para ativar sua conta PECAÊ:\n\nCÓDIGO: %s\n\nEste código expira em 24 horas.", usuarioSalvo.getNome(), codigoVerificacao)
+        );
+
+        // Mock do envio de e-mail no console para auditoria local
         log.info("------------------------------------------------------------------");
         log.info("[MOCK EMAIL SENDER] Verificação de e-mail para: {}", usuarioSalvo.getEmail());
         log.info("Olá {}, use o código abaixo para ativar sua conta PECAÊ:", usuarioSalvo.getNome());

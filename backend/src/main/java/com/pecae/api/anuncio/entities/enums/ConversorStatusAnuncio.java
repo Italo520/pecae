@@ -18,6 +18,7 @@ public class ConversorStatusAnuncio implements AttributeConverter<StatusAnuncio,
             case VENDIDO -> "SOLD";
             case EXPIRADO -> "EXPIRED";
             case REJEITADO -> "REJECTED";
+            case PAUSADO -> "PAUSED";
         };
     }
 
@@ -33,6 +34,7 @@ public class ConversorStatusAnuncio implements AttributeConverter<StatusAnuncio,
             case "SOLD" -> StatusAnuncio.VENDIDO;
             case "EXPIRED" -> StatusAnuncio.EXPIRADO;
             case "REJECTED" -> StatusAnuncio.REJEITADO;
+            case "PAUSED" -> StatusAnuncio.PAUSADO;
             default -> throw new IllegalArgumentException("Status de anúncio desconhecido no banco: " + dbData);
         };
     }

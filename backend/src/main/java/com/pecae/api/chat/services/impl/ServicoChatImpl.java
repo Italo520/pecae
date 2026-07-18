@@ -24,6 +24,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import com.pecae.api.notificacao.services.IServicoNotificacao;
+import com.pecae.api.notificacao.entities.enums.TipoNotificacao;
+import com.pecae.api.notificacao.entities.enums.CanalNotificacao;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -47,6 +52,8 @@ public class ServicoChatImpl implements IServicoChat {
     private final RepositorioAnuncio repositorioAnuncio;
     private final RepositorioVeiculo repositorioVeiculo;
     private final MapperChat mapperChat;
+    private final StringRedisTemplate redisTemplate;
+    private final IServicoNotificacao servicoNotificacao;
 
     @Override
     @Transactional
@@ -188,6 +195,31 @@ public class ServicoChatImpl implements IServicoChat {
         repositorioSalaChat.atualizarTimestamp(salaId, LocalDateTime.now());
 
         log.debug("Mensagem persistida na sala {}: {}", salaId, mensagem.getId());
+
+        // Identificar o destinatário
+        UUID destinatarioId = sala.getComprador().getId().equals(remetenteId)
+                ? sala.getVendedor().getId()
+                : sala.getComprador().getId();
+
+        // Verificar presença do destinatário na sala de chat (chat:active:{salaId}:{destinatarioId})
+        String presencaKey = "chat:active:" + salaId.toString() + ":" + destinatarioId.toString();
+        Boolean ativoNaSala = redisTemplate.hasKey(presencaKey);
+
+        if (Boolean.FALSE.equals(ativoNaSala)) {
+            // Destinatário ausente -> despacha notificação in-app
+            String titulo = "Nova mensagem de " + remetente.getNome();
+            String linkAcao = "/chat/" + salaId.toString(); // URL/Action link
+            
+            servicoNotificacao.despacharNotificacao(
+                destinatarioId,
+                titulo,
+                conteudo,
+                TipoNotificacao.MENSAGEM_CHAT,
+                linkAcao,
+                Set.of(CanalNotificacao.APP, CanalNotificacao.PUSH)
+            );
+            log.info("Notificação in-app enviada para o usuário {} (ausente da sala {})", destinatarioId, salaId);
+        }
 
         return mapperChat.paraRespostaMensagem(mensagem);
     }

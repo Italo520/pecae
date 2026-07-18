@@ -37,4 +37,8 @@ public class RegistroRequest {
     @AssertTrue(message = "Você deve aceitar os termos de uso")
     @JsonProperty("termsAccepted")
     private boolean termosAceitos;
+
+    @AssertTrue(message = "Você deve aceitar a política de privacidade")
+    @JsonProperty("privacyAccepted")
+    private boolean privacidadeAceita;
 }

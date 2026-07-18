@@ -14,28 +14,54 @@ import java.util.UUID;
 
 public interface RepositorioAnuncio extends JpaRepository<Anuncio, UUID> {
 
-    // Listagem pública (PUBLICADO, sem vendedor deletado — LGPD)
-    @Query("""
-        SELECT a FROM Anuncio a
-        JOIN FETCH a.veiculo v
-        JOIN FETCH v.versao vs
-        JOIN FETCH vs.modelo mo
-        JOIN FETCH mo.marca ma
-        WHERE a.status = com.pecae.api.anuncio.entities.enums.StatusAnuncio.PUBLICADO
-          AND a.perfilVendedor.deletadoEm IS NULL
-          AND (:marcaId IS NULL OR ma.id = :marcaId)
-          AND (:modeloId IS NULL OR mo.id = :modeloId)
-          AND (:cidade IS NULL OR LOWER(v.cidade) = LOWER(CAST(:cidade AS String)))
-          AND (:estado IS NULL OR LOWER(v.estado) = LOWER(CAST(:estado AS String)))
-        ORDER BY a.publicadoEm DESC
-    """)
+    // Listagem pública (PUBLICADO, sem vendedor deletado — LGPD) com busca textual
+    @Query(value = """
+        SELECT a.* FROM listings a
+        JOIN vehicles v ON a.vehicle_id = v.id
+        JOIN vehicle_versions vs ON v.version_id = vs.id
+        JOIN vehicle_models mo ON vs.model_id = mo.id
+        JOIN vehicle_brands ma ON mo.brand_id = ma.id
+        WHERE a.status = 'PUBLISHED'
+          AND a.deleted_at IS NULL
+          AND a.seller_profile_id IN (SELECT id FROM seller_profiles WHERE deleted_at IS NULL)
+          AND (:marcaId IS NULL OR ma.id = CAST(:marcaId AS uuid))
+          AND (:modeloId IS NULL OR mo.id = CAST(:modeloId AS uuid))
+          AND (:cidade IS NULL OR :cidade = '' OR LOWER(v.city) = LOWER(:cidade))
+          AND (:estado IS NULL OR :estado = '' OR LOWER(v.state) = LOWER(:estado))
+          AND (:search IS NULL OR :search = '' OR a.search_vector @@ plainto_tsquery('portuguese', :search))
+        ORDER BY a.published_at DESC
+        """,
+        countQuery = """
+        SELECT count(*) FROM listings a
+        JOIN vehicles v ON a.vehicle_id = v.id
+        JOIN vehicle_versions vs ON v.version_id = vs.id
+        JOIN vehicle_models mo ON vs.model_id = mo.id
+        JOIN vehicle_brands ma ON mo.brand_id = ma.id
+        WHERE a.status = 'PUBLISHED'
+          AND a.deleted_at IS NULL
+          AND a.seller_profile_id IN (SELECT id FROM seller_profiles WHERE deleted_at IS NULL)
+          AND (:marcaId IS NULL OR ma.id = CAST(:marcaId AS uuid))
+          AND (:modeloId IS NULL OR mo.id = CAST(:modeloId AS uuid))
+          AND (:cidade IS NULL OR :cidade = '' OR LOWER(v.city) = LOWER(:cidade))
+          AND (:estado IS NULL OR :estado = '' OR LOWER(v.state) = LOWER(:estado))
+          AND (:search IS NULL OR :search = '' OR a.search_vector @@ plainto_tsquery('portuguese', :search))
+        """,
+        nativeQuery = true)
     Page<Anuncio> buscarPublicados(
         @Param("marcaId") UUID marcaId,
         @Param("modeloId") UUID modeloId,
         @Param("cidade") String cidade,
         @Param("estado") String estado,
+        @Param("search") String search,
         Pageable pageable
     );
+
+    // Métodos para buscar por ID do Veículo
+    Optional<Anuncio> findByVeiculoId(UUID veiculoId);
+    Optional<Anuncio> findByVeiculoIdAndPerfilVendedorId(UUID veiculoId, UUID perfilVendedorId);
+
+    // Listar anúncios por status (fila de moderação)
+    Page<Anuncio> findAllByStatus(StatusAnuncio status, Pageable pageable);
 
     // Buscar anúncio por ID garantindo que não está deletado e vendedor não está deletado
     Optional<Anuncio> findByIdAndStatus(UUID id, StatusAnuncio status);

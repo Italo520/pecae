@@ -50,6 +50,7 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
             filtros.modeloId(),
             filtros.cidade(),
             filtros.estado(),
+            filtros.search(),
             pageable
         );
         return anuncios.map(mapperAnuncio::paraResposta);
@@ -171,14 +172,19 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
         return anuncios.map(mapperAnuncio::paraResposta);
     }
 
+    private Anuncio obterAnuncioPorIdOuVeiculoId(UUID id, UUID perfilVendedorId) {
+        return repositorioAnuncio.findByIdAndPerfilVendedorId(id, perfilVendedorId)
+            .orElseGet(() -> repositorioAnuncio.findByVeiculoIdAndPerfilVendedorId(id, perfilVendedorId)
+                .orElseThrow(() -> new ExcecaoRecursoNaoEncontrado("Anúncio não encontrado ou não pertence ao seu perfil.")));
+    }
+
     @Override
     @Transactional
     public void marcarComoVendido(UUID usuarioId, UUID anuncioId) {
         PerfilVendedor perfilVendedor = perfilVendedorRepository.findByUsuarioId(usuarioId)
             .orElseThrow(() -> new ExcecaoNegocio("Você não possui um perfil de vendedor."));
 
-        Anuncio anuncio = repositorioAnuncio.findByIdAndPerfilVendedorId(anuncioId, perfilVendedor.getId())
-            .orElseThrow(() -> new ExcecaoRecursoNaoEncontrado("Anúncio não encontrado ou não pertence ao seu perfil."));
+        Anuncio anuncio = obterAnuncioPorIdOuVeiculoId(anuncioId, perfilVendedor.getId());
 
         if (anuncio.getStatus() == StatusAnuncio.VENDIDO) {
             return; // Idempotência
@@ -209,7 +215,7 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
             perfilVendedorRepository.save(perfilVendedor);
         }
 
-        log.info("Anúncio {} marcado como VENDIDO. Veículo {} atualizado para VENDIDO.", anuncioId, veiculo != null ? veiculo.getId() : null);
+        log.info("Anúncio {} marcado como VENDIDO. Veículo {} atualizado para VENDIDO.", anuncio.getId(), veiculo != null ? veiculo.getId() : null);
     }
 
     @Override
@@ -218,8 +224,7 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
         PerfilVendedor perfilVendedor = perfilVendedorRepository.findByUsuarioId(usuarioId)
             .orElseThrow(() -> new ExcecaoNegocio("Você não possui um perfil de vendedor."));
 
-        Anuncio anuncio = repositorioAnuncio.findByIdAndPerfilVendedorId(anuncioId, perfilVendedor.getId())
-            .orElseThrow(() -> new ExcecaoRecursoNaoEncontrado("Anúncio não encontrado ou não pertence ao seu perfil."));
+        Anuncio anuncio = obterAnuncioPorIdOuVeiculoId(anuncioId, perfilVendedor.getId());
 
         maquinaEstado.validarTransicao(anuncio.getStatus(), StatusAnuncio.EXPIRADO);
 
@@ -240,7 +245,64 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
             perfilVendedorRepository.save(perfilVendedor);
         }
 
-        log.info("Anúncio {} removido (soft-delete) pelo vendedor: {}", anuncioId, perfilVendedor.getId());
+        log.info("Anúncio {} removido (soft-delete) pelo vendedor: {}", anuncio.getId(), perfilVendedor.getId());
+    }
+
+    @Override
+    @Transactional
+    public void pausar(UUID usuarioId, UUID anuncioId) {
+        PerfilVendedor perfilVendedor = perfilVendedorRepository.findByUsuarioId(usuarioId)
+            .orElseThrow(() -> new ExcecaoNegocio("Você não possui um perfil de vendedor."));
+
+        Anuncio anuncio = obterAnuncioPorIdOuVeiculoId(anuncioId, perfilVendedor.getId());
+
+        maquinaEstado.validarTransicao(anuncio.getStatus(), StatusAnuncio.PAUSADO);
+
+        StatusAnuncio statusAnterior = anuncio.getStatus();
+        anuncio.setStatus(StatusAnuncio.PAUSADO);
+        repositorioAnuncio.save(anuncio);
+
+        // Atualizar status do veículo para INATIVO
+        Veiculo veiculo = anuncio.getVeiculo();
+        if (veiculo != null) {
+            veiculo.setStatus(StatusVeiculo.INATIVO);
+            repositorioVeiculo.save(veiculo);
+        }
+
+        // Atualizar EstatisticasVendedor
+        EstatisticasVendedor statsVendedor = perfilVendedor.getEstatisticas();
+        if (statsVendedor != null) {
+            if (statusAnterior == StatusAnuncio.PUBLICADO) {
+                statsVendedor.setAnunciosAtivos(Math.max(0, statsVendedor.getAnunciosAtivos() - 1));
+            }
+            perfilVendedorRepository.save(perfilVendedor);
+        }
+
+        log.info("Anúncio {} pausado pelo vendedor: {}", anuncio.getId(), perfilVendedor.getId());
+    }
+
+    @Override
+    @Transactional
+    public void republicar(UUID usuarioId, UUID anuncioId) {
+        PerfilVendedor perfilVendedor = perfilVendedorRepository.findByUsuarioId(usuarioId)
+            .orElseThrow(() -> new ExcecaoNegocio("Você não possui um perfil de vendedor."));
+
+        Anuncio anuncio = obterAnuncioPorIdOuVeiculoId(anuncioId, perfilVendedor.getId());
+
+        maquinaEstado.validarTransicao(anuncio.getStatus(), StatusAnuncio.PENDENTE);
+
+        anuncio.setStatus(StatusAnuncio.PENDENTE);
+        anuncio.setPublicadoEm(null);
+        repositorioAnuncio.save(anuncio);
+
+        // Atualizar status do veículo para PENDENTE
+        Veiculo veiculo = anuncio.getVeiculo();
+        if (veiculo != null) {
+            veiculo.setStatus(StatusVeiculo.PENDENTE);
+            repositorioVeiculo.save(veiculo);
+        }
+
+        log.info("Anúncio {} republicado e aguardando moderação. Vendedor: {}", anuncio.getId(), perfilVendedor.getId());
     }
 
     @Override

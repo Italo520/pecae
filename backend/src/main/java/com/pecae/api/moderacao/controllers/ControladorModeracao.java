@@ -3,6 +3,7 @@ package com.pecae.api.moderacao.controllers;
 import com.pecae.api.compartilhado.seguranca.PrincipalUsuario;
 import com.pecae.api.compartilhado.seguranca.UsuarioAtual;
 import com.pecae.api.denuncia.dtos.response.RespostaDenuncia;
+import com.pecae.api.anuncio.dtos.RespostaAnuncio;
 import com.pecae.api.moderacao.dtos.request.DecisaoModeracaoRequest;
 import com.pecae.api.moderacao.dtos.response.RespostaLogAuditoria;
 import com.pecae.api.moderacao.services.IServicoModeracao;
@@ -37,6 +38,15 @@ public class ControladorModeracao {
         @PageableDefault(size = 20, sort = "criadaEm", direction = Sort.Direction.ASC) Pageable pageable
     ) {
         Page<RespostaDenuncia> resposta = servicoModeracao.listarDenunciasPendentes(pageable);
+        return ResponseEntity.ok(resposta);
+    }
+
+    @GetMapping("/anuncios/pendentes")
+    @Operation(summary = "Listar anúncios pendentes", description = "Retorna uma lista paginada de todos os anúncios pendentes de aprovação.")
+    public ResponseEntity<Page<RespostaAnuncio>> listarAnunciosPendentes(
+        @PageableDefault(size = 20, sort = "criadoEm", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
+        Page<RespostaAnuncio> resposta = servicoModeracao.listarAnunciosPendentes(pageable);
         return ResponseEntity.ok(resposta);
     }
 

@@ -7,6 +7,7 @@ public record FiltrosAnuncioQuery(
     UUID modeloId,
     String cidade,
     String estado,
+    String search,
     Integer pagina,
     Integer tamanho
 ) {
@@ -20,5 +21,10 @@ public record FiltrosAnuncioQuery(
         } else if (tamanho > 50) {
             tamanho = 50;
         }
+    }
+
+    // Construtor alternativo para manter retrocompatibilidade com testes existentes
+    public FiltrosAnuncioQuery(UUID marcaId, UUID modeloId, String cidade, String estado, Integer pagina, Integer tamanho) {
+        this(marcaId, modeloId, cidade, estado, null, pagina, tamanho);
     }
 }

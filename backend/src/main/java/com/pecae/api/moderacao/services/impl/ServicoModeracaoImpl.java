@@ -17,6 +17,9 @@ import com.pecae.api.moderacao.repositories.RepositorioLogAuditoria;
 import com.pecae.api.moderacao.services.IServicoAuditoria;
 import com.pecae.api.moderacao.services.IServicoModeracao;
 import com.pecae.api.usuario.entities.Usuario;
+import com.pecae.api.anuncio.repositories.RepositorioAnuncio;
+import com.pecae.api.anuncio.mappers.MapperAnuncio;
+import com.pecae.api.anuncio.dtos.RespostaAnuncio;
 import com.pecae.api.usuario.repositories.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,12 +42,21 @@ public class ServicoModeracaoImpl implements IServicoModeracao {
     private final IServicoAuditoria servicoAuditoria;
     private final MapperDenuncia mapperDenuncia;
     private final MapperModeracao mapperModeracao;
+    private final RepositorioAnuncio repositorioAnuncio;
+    private final MapperAnuncio mapperAnuncio;
 
     @Override
     @Transactional(readOnly = true)
     public Page<RespostaDenuncia> listarDenunciasPendentes(Pageable pageable) {
         return repositorioDenuncia.findAllByStatus(StatusDenuncia.PENDENTE, pageable)
             .map(mapperDenuncia::paraResposta);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<RespostaAnuncio> listarAnunciosPendentes(Pageable pageable) {
+        return repositorioAnuncio.findAllByStatus(StatusAnuncio.PENDENTE, pageable)
+            .map(mapperAnuncio::paraResposta);
     }
 
     @Override

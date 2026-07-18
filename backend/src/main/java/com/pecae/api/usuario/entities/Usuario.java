@@ -70,6 +70,18 @@ public class Usuario {
     @Column(name = "last_active_at")
     private LocalDateTime ultimoAcessoEm;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletadoEm;
+
+    @Column(name = "original_email")
+    private String emailOriginal;
+
+    @Column(name = "accepted_terms_at")
+    private LocalDateTime termosAceitosEm;
+
+    @Column(name = "accepted_privacy_at")
+    private LocalDateTime privacidadeAceitaEm;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
@@ -77,10 +89,4 @@ public class Usuario {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime atualizadoEm;
-
-    @Column(name = "deleted_at")
-    private LocalDateTime deletadoEm;
-
-    @Column(name = "original_email")
-    private String emailOriginal;
 }
