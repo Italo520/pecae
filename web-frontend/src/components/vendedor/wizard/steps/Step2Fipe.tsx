@@ -3,13 +3,13 @@
 import { useFormContext } from 'react-hook-form';
 import type { VehicleCreateInput } from '@pecae/shared';
 import { useCatalogBrands, useCatalogModels, useCatalogVersions, useCatalogYears } from '@/hooks/useCatalog';
-import { useState, useEffect } from 'react';
+
 
 export default function Step2Fipe() {
   const { register, setValue, watch, formState: { errors } } = useFormContext<VehicleCreateInput>();
 
-  const [selectedBrand, setSelectedBrand] = useState<string>('');
-  const [selectedModel, setSelectedModel] = useState<string>('');
+  const selectedBrand = watch('brandId' as any) || '';
+  const selectedModel = watch('modelId' as any) || '';
   
   // Watch values if they were pre-filled when going back
   const versaoId = watch('versaoId');
@@ -26,14 +26,14 @@ export default function Step2Fipe() {
 
   // Reset child fields when parent changes
   const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedBrand(e.target.value);
-    setSelectedModel('');
+    setValue('brandId' as any, e.target.value);
+    setValue('modelId' as any, '');
     setValue('versaoId', '');
     setValue('anoId', '');
   };
 
   const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedModel(e.target.value);
+    setValue('modelId' as any, e.target.value);
     setValue('versaoId', '');
     setValue('anoId', '');
   };

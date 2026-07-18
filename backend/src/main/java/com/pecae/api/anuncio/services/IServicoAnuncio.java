@@ -20,4 +20,5 @@ public interface IServicoAnuncio {
     void moderar(UUID anuncioId, com.pecae.api.anuncio.entities.enums.StatusAnuncio novoStatus);
     void pausar(UUID usuarioId, UUID anuncioId);
     void republicar(UUID usuarioId, UUID anuncioId);
+    void encerrar(UUID usuarioId, UUID anuncioId);
 }

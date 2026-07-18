@@ -45,6 +45,36 @@ export async function fetchVersions(modelId: string, year: string): Promise<Vers
   }
 }
 
+export async function fetchYears(versionId: string): Promise<any[]> {
+  try {
+    const res = await fetch(`${API_URL}/catalog/versions/${versionId}/years`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.map((item: any) => ({
+      id: item.id,
+      name: (item.year || item.ano || '').toString(),
+      fuelType: 'Flex'
+    }));
+  } catch (error) {
+    return [];
+  }
+}
+
+export async function fetchPartCategories(): Promise<any[]> {
+  try {
+    const res = await fetch(`${API_URL}/catalog/categories`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    return [];
+  }
+}
+
 export async function fetchSearchResults(params: VehicleSearchInput): Promise<PaginatedListings> {
   try {
     const query = new URLSearchParams();

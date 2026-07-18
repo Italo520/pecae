@@ -8,6 +8,7 @@
 
 DO $$
 DECLARE
+    v_count INTEGER;
     -- Marcas
     b_vw_id UUID := gen_random_uuid();
     b_fiat_id UUID := gen_random_uuid();
@@ -65,6 +66,13 @@ DECLARE
     v_id UUID;
     y INTEGER;
 BEGIN
+    -- Verificar se o catálogo já está populado
+    SELECT count(*) INTO v_count FROM vehicle_models;
+    IF v_count > 5 THEN
+        -- Catálogo já populado, sair mais cedo
+        RETURN;
+    END IF;
+
     -- 1. Inserir Marcas
     INSERT INTO vehicle_brands (id, name, active, created_at, updated_at) VALUES
     (b_vw_id, 'Volkswagen', true, NOW(), NOW()),

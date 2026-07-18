@@ -41,17 +41,17 @@ export const Step4Inventory: React.FC<Step4InventoryProps> = ({ isInline }) => {
   const inventoryGroups = [
     {
       name: 'Motor & Câmbio',
-      slugs: ['motor', 'cambio', 'arrefecimento', 'ar-condicionado', 'escapamento'],
+      slugs: ['motor', 'cambio-transmissao', 'radiador', 'ar-condicionado', 'escapamento'],
       icon: 'settings-outline' as const
     },
     {
-      name: 'Suspensão & Eixos',
-      slugs: ['suspensao-dianteira', 'suspensao-traseira', 'freios', 'rodas-pneus', 'direcao'],
+      name: 'Suspensão & Freios',
+      slugs: ['suspensao', 'freios', 'rodas-pneus', 'direcao'],
       icon: 'construct-outline' as const
     },
     {
       name: 'Carroceria & Cabine',
-      slugs: ['lataria', 'vidros', 'bancos-estofamento', 'painel-eletrica', 'capo-para-choque'],
+      slugs: ['carroceria', 'vidros', 'interior-bancos', 'sistema-eletrico', 'painel', 'para-choques', 'portas', 'capo', 'tampa-traseira', 'retrovisores', 'farois-lanternas'],
       icon: 'car-outline' as const
     }
   ];
@@ -71,12 +71,12 @@ export const Step4Inventory: React.FC<Step4InventoryProps> = ({ isInline }) => {
 
       <View style={styles.bulkActions}>
         <Pressable onPress={selectAll}>
-          <Text style={[styles.actionText, { color: colors.brand, fontFamily: typography.bold }]}>
+          <Text style={[styles.actionText, { color: colors.brand, fontFamily: typography.medium }]}>
             MARCAR TODOS
           </Text>
         </Pressable>
         <Pressable onPress={deselectAll}>
-          <Text style={[styles.actionText, { color: colors.textMuted, fontFamily: typography.bold }]}>
+          <Text style={[styles.actionText, { color: colors.textMuted, fontFamily: typography.medium }]}>
             LIMPAR SELEÇÃO
           </Text>
         </Pressable>
@@ -107,7 +107,6 @@ export const Step4Inventory: React.FC<Step4InventoryProps> = ({ isInline }) => {
                         key={cat.id} 
                         style={({ pressed }) => [styles.partCardWrapper, pressed && { opacity: 0.7 }]}
                         onPress={() => togglePart(cat.id)}
-                        activeOpacity={0.7}
                       >
                         <PecaeGlassCard 
                           intensity={isSelected ? 35 : 15} 
@@ -132,7 +131,7 @@ export const Step4Inventory: React.FC<Step4InventoryProps> = ({ isInline }) => {
                               styles.partLabel, 
                               { 
                                 color: isSelected ? colors.textPrimary : colors.textMuted,
-                                fontFamily: isSelected ? typography.bold : typography.body 
+                                fontFamily: isSelected ? typography.medium : typography.body 
                               }
                             ]}
                           >
@@ -181,7 +180,7 @@ export const Step4Inventory: React.FC<Step4InventoryProps> = ({ isInline }) => {
           <View style={styles.footer}>
             <PecaeButton
               title="Voltar"
-              type="secondary"
+              variant="secondary"
               onPress={prevStep}
               style={styles.button}
             />

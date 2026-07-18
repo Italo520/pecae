@@ -11,5 +11,6 @@ public enum StatusAnuncio {
     VENDIDO,    // "SOLD"      — transação concluída
     EXPIRADO,   // "EXPIRED"   — prazo expirado ou removido pelo vendedor
     REJEITADO,  // "REJECTED"  — rejeitado pela moderação
-    PAUSADO     // "PAUSED"    — pausado temporariamente pelo vendedor
+    PAUSADO,    // "PAUSED"    — pausado temporariamente pelo vendedor
+    ENCERRADO   // "CLOSED"    — encerrado definitivamente pelo vendedor
 }

@@ -160,6 +160,7 @@ Modular knowledge domains that agents can load on-demand. based on task context.
 | `clean-code`              | Coding standards (Global) |
 | `behavioral-modes`        | Agent personas            |
 | `parallel-agents`         | Multi-agent patterns      |
+| `autonomous-loop`         | Harness + Loop (Autônomo) |
 | `mcp-builder`             | Model Context Protocol    |
 | `documentation-templates` | Doc formats               |
 | `i18n-localization`       | Internationalization      |
@@ -168,23 +169,24 @@ Modular knowledge domains that agents can load on-demand. based on task context.
 
 ---
 
-## 🔄 Workflows (11)
+## 🔄 Workflows (12)
 
 Slash command procedures. Invoke with `/command`.
 
-| Command          | Description              |
-| ---------------- | ------------------------ |
-| `/brainstorm`    | Socratic discovery       |
-| `/create`        | Create new features      |
-| `/debug`         | Debug issues             |
-| `/deploy`        | Deploy application       |
-| `/enhance`       | Improve existing code    |
-| `/orchestrate`   | Multi-agent coordination |
-| `/plan`          | Task breakdown           |
-| `/preview`       | Preview changes          |
-| `/status`        | Check project status     |
-| `/test`          | Run tests                |
-| `/ui-ux-pro-max` | Design with 50 styles    |
+| Command          | Description                   |
+| ---------------- | ----------------------------- |
+| `/auto`          | Autonomous Harness + Loop     |
+| `/brainstorm`    | Socratic discovery            |
+| `/create`        | Create new features           |
+| `/debug`         | Debug issues                  |
+| `/deploy`        | Deploy application            |
+| `/enhance`       | Improve existing code         |
+| `/orchestrate`   | Multi-agent coordination      |
+| `/plan`          | Task breakdown                |
+| `/preview`       | Preview changes               |
+| `/status`        | Check project status          |
+| `/test`          | Run tests                     |
+| `/ui-ux-pro-max` | Design with 50 styles         |
 
 ---
 
@@ -267,8 +269,8 @@ For details, see [scripts/README.md](scripts/README.md)
 | Metric              | Value                         |
 | ------------------- | ----------------------------- |
 | **Total Agents**    | 20                            |
-| **Total Skills**    | 36                            |
-| **Total Workflows** | 11                            |
+| **Total Skills**    | 37                            |
+| **Total Workflows** | 12                            |
 | **Total Scripts**   | 2 (master) + 18 (skill-level) |
 | **Coverage**        | ~90% web/mobile development   |
 
@@ -286,3 +288,4 @@ For details, see [scripts/README.md](scripts/README.md)
 | Testing  | `test-engineer`       | testing-patterns, webapp-testing      |
 | Debug    | `debugger`            | systematic-debugging                  |
 | Plan     | `project-planner`     | brainstorming, plan-writing           |
+| Autônomo | `orchestrator`        | autonomous-loop, parallel-agents      |

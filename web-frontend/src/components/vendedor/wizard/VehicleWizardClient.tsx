@@ -29,7 +29,7 @@ export default function VehicleWizardClient() {
   
   const { mutateAsync: createVehicle, isPending } = useCreateVehicle();
 
-  const methods = useForm<VehicleCreateInput>({
+  const methods = useForm<any>({
     resolver: zodResolver(vehicleCreateSchema),
     defaultValues: {
       placa: '',
@@ -40,6 +40,8 @@ export default function VehicleWizardClient() {
       quilometragem: 0,
       pecasDisponiveis: [],
       observacoes: '',
+      brandId: '',
+      modelId: '',
     },
     mode: 'onTouched'
   });
@@ -72,9 +74,10 @@ export default function VehicleWizardClient() {
     }
   };
 
-  const onSubmit = async (data: VehicleCreateInput) => {
+  const onSubmit = async (data: any) => {
     try {
-      await createVehicle({ ...data, photos });
+      const { brandId, modelId, ...submitData } = data;
+      await createVehicle({ ...submitData, photos });
       // Redirect on success
       router.push('/vendedor/dashboard');
     } catch (error) {

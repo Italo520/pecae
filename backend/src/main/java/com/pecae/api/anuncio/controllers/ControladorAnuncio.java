@@ -116,6 +116,16 @@ public class ControladorAnuncio {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/me/{anuncioId}/close")
+    @PreAuthorize("hasAnyRole('VENDEDOR', 'AMBOS')")
+    @Operation(summary = "Encerrar anúncio", description = "Altera o status do anúncio definitivamente para ENCERRADO e desativa o veículo.")
+    public ResponseEntity<Void> encerrar(
+            @UsuarioAtual PrincipalUsuario usuario,
+            @PathVariable UUID anuncioId) {
+        servicoAnuncio.encerrar(usuario.getId(), anuncioId);
+        return ResponseEntity.noContent().build();
+    }
+
     private String extrairIpReal(HttpServletRequest request) {
         String forwarded = request.getHeader("X-Forwarded-For");
         if (forwarded != null && !forwarded.isBlank()) {

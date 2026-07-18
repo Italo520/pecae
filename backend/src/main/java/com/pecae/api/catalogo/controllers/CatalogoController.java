@@ -43,13 +43,13 @@ public class CatalogoController {
         return ResponseEntity.ok(catalogoService.obterAnosPorVersao(versionId));
     }
 
-    @GetMapping("/categories")
+    @GetMapping({"/categories", "/part-categories"})
     @Operation(summary = "Obter todas as categorias raiz ativas")
     public ResponseEntity<List<RespostaCategoriaPeca>> obterCategoriasRaiz() {
         return ResponseEntity.ok(catalogoService.obterCategoriasRaiz());
     }
 
-    @GetMapping("/categories/{categoryId}/sub")
+    @GetMapping({"/categories/{categoryId}/sub", "/part-categories/{categoryId}/sub"})
     @Operation(summary = "Obter subcategorias ativas por ID da categoria pai")
     public ResponseEntity<List<RespostaCategoriaPeca>> obterSubcategorias(@PathVariable UUID categoryId) {
         return ResponseEntity.ok(catalogoService.obterSubcategorias(categoryId));

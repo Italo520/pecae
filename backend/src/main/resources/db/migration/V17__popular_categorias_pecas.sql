@@ -27,4 +27,4 @@ INSERT INTO part_categories (id, name, slug, icon, created_at) VALUES
 (gen_random_uuid(), 'Tampa Traseira', 'tampa-traseira', 'archive', NOW()),
 (gen_random_uuid(), 'Painel', 'painel', 'layout', NOW()),
 (gen_random_uuid(), 'Retrovisores', 'retrovisores', 'eye', NOW())
-ON CONFLICT (name) DO NOTHING;
+ON CONFLICT (slug) DO NOTHING;

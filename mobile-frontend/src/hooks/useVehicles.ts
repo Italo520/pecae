@@ -18,7 +18,7 @@ export interface VehicleListing {
   color: string;
   city: string;
   state: string;
-  status: 'DRAFT' | 'PENDING' | 'ACTIVE' | 'INACTIVE' | 'SOLD';
+  status: 'DRAFT' | 'PENDING' | 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'PAUSED' | 'CLOSED';
   createdAt: string;
   photos: VehiclePhoto[];
   availableParts: string[];
@@ -307,5 +307,16 @@ export const useVehicleActions = () => {
     },
   });
 
-  return { markAsSold, markAsRemoved, deleteVehicle, reactivateVehicle, pauseVehicle };
+  const closeVehicle = useMutation({
+    mutationFn: async (id: string) => {
+      const { data } = await api.patch(`/listings/me/${id}/close`);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vehicles', 'me'] });
+      queryClient.invalidateQueries({ queryKey: ['vehicles'] });
+    },
+  });
+
+  return { markAsSold, markAsRemoved, deleteVehicle, reactivateVehicle, pauseVehicle, closeVehicle };
 };

@@ -17,11 +17,12 @@ public class MaquinaEstadoAnuncio {
     private static final Map<StatusAnuncio, List<StatusAnuncio>> TRANSICOES_VALIDAS = Map.of(
         StatusAnuncio.RASCUNHO,   List.of(StatusAnuncio.PENDENTE),
         StatusAnuncio.PENDENTE,   List.of(StatusAnuncio.PUBLICADO, StatusAnuncio.REJEITADO),
-        StatusAnuncio.PUBLICADO,  List.of(StatusAnuncio.VENDIDO, StatusAnuncio.EXPIRADO, StatusAnuncio.PENDENTE, StatusAnuncio.PAUSADO),
+        StatusAnuncio.PUBLICADO,  List.of(StatusAnuncio.VENDIDO, StatusAnuncio.EXPIRADO, StatusAnuncio.PENDENTE, StatusAnuncio.PAUSADO, StatusAnuncio.ENCERRADO),
         StatusAnuncio.REJEITADO,  List.of(StatusAnuncio.PENDENTE),
         StatusAnuncio.VENDIDO,    List.of(StatusAnuncio.PENDENTE),  // Re-submissão permitida
         StatusAnuncio.EXPIRADO,   List.of(StatusAnuncio.PENDENTE),
-        StatusAnuncio.PAUSADO,    List.of(StatusAnuncio.PENDENTE, StatusAnuncio.VENDIDO, StatusAnuncio.EXPIRADO)
+        StatusAnuncio.PAUSADO,    List.of(StatusAnuncio.PENDENTE, StatusAnuncio.VENDIDO, StatusAnuncio.EXPIRADO, StatusAnuncio.ENCERRADO),
+        StatusAnuncio.ENCERRADO,  List.of(StatusAnuncio.PENDENTE)
     );
 
     /**

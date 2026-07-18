@@ -342,5 +342,38 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
         repositorioAnuncio.save(anuncio);
         log.info("Anúncio {} moderado com sucesso. Status alterado de {} para {}.", anuncioId, statusAnterior, novoStatus);
     }
+
+    @Override
+    @Transactional
+    public void encerrar(UUID usuarioId, UUID anuncioId) {
+        PerfilVendedor perfilVendedor = perfilVendedorRepository.findByUsuarioId(usuarioId)
+            .orElseThrow(() -> new ExcecaoNegocio("Você não possui um perfil de vendedor."));
+
+        Anuncio anuncio = obterAnuncioPorIdOuVeiculoId(anuncioId, perfilVendedor.getId());
+
+        maquinaEstado.validarTransicao(anuncio.getStatus(), StatusAnuncio.ENCERRADO);
+
+        StatusAnuncio statusAnterior = anuncio.getStatus();
+        anuncio.setStatus(StatusAnuncio.ENCERRADO);
+        repositorioAnuncio.save(anuncio);
+
+        // Atualizar status do veículo para INATIVO
+        Veiculo veiculo = anuncio.getVeiculo();
+        if (veiculo != null) {
+            veiculo.setStatus(StatusVeiculo.INATIVO);
+            repositorioVeiculo.save(veiculo);
+        }
+
+        // Atualizar EstatisticasVendedor
+        EstatisticasVendedor statsVendedor = perfilVendedor.getEstatisticas();
+        if (statsVendedor != null) {
+            if (statusAnterior == StatusAnuncio.PUBLICADO) {
+                statsVendedor.setAnunciosAtivos(Math.max(0, statsVendedor.getAnunciosAtivos() - 1));
+            }
+            perfilVendedorRepository.save(perfilVendedor);
+        }
+
+        log.info("Anúncio {} encerrado pelo vendedor: {}", anuncio.getId(), perfilVendedor.getId());
+    }
 }
 

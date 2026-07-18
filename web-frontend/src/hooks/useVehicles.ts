@@ -138,3 +138,16 @@ export function useSoldVehicle() {
     },
   });
 }
+
+export function useCloseVehicle() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await api.patch(`/listings/me/${id}/close`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-vehicles'] });
+    },
+  });
+}

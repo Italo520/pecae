@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchBrands, fetchModels, fetchVersions } from '@/services/search.service';
+import { fetchBrands, fetchModels, fetchVersions, fetchYears, fetchPartCategories } from '@/services/search.service';
 
 export function useBrands() {
   return useQuery({
@@ -34,10 +34,16 @@ export const useCatalogVersions = (modelId?: string) => useVersions(modelId, '')
 export const useCatalogYears = (versionId?: string) => {
   return useQuery({
     queryKey: ['years', versionId],
-    queryFn: () => Promise.resolve([
-      { id: 'ea519f5d-17dc-4cf9-bb56-d0e4f55d210b', name: '2012', fuelType: 'Flex' }
-    ]),
+    queryFn: () => fetchYears(versionId!),
     enabled: !!versionId,
     staleTime: Infinity,
   });
 };
+
+export function usePartCategories() {
+  return useQuery({
+    queryKey: ['part-categories'],
+    queryFn: fetchPartCategories,
+    staleTime: Infinity,
+  });
+}

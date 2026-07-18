@@ -15,7 +15,7 @@ interface VehicleInventoryCardProps {
 
 export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehicle }) => {
   const { colors, typography, effects } = usePecaeTheme();
-  const { markAsSold, markAsRemoved, deleteVehicle, reactivateVehicle, pauseVehicle } = useVehicleActions();
+  const { markAsSold, markAsRemoved, deleteVehicle, reactivateVehicle, pauseVehicle, closeVehicle } = useVehicleActions();
   const loadVehicle = useVehicleWizardStore(s => s.loadVehicle);
   const router = useRouter();
   const { showToast } = useToast();
@@ -36,6 +36,7 @@ export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehi
       case 'SOLD': return colors.textMuted;
       case 'INACTIVE':
       case 'PAUSED': return '#e67e22'; // Laranja para pausado/inativo
+      case 'CLOSED': return colors.error;
       default: return colors.textMuted;
     }
   };
@@ -48,6 +49,7 @@ export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehi
       case 'SOLD': return 'VENDIDO';
       case 'INACTIVE':
       case 'PAUSED': return 'PAUSADO';
+      case 'CLOSED': return 'ENCERRADO';
       default: return status;
     }
   };
@@ -120,6 +122,23 @@ export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehi
     });
   };
 
+  const handleClose = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    showToast({
+      type: 'warning',
+      title: 'Encerrar Anúncio',
+      message: 'Deseja encerrar definitivamente o anúncio desta sucata? Esta ação não pode ser desfeita.',
+      duration: 0,
+      actions: [
+        { label: 'Cancelar', onPress: () => {} },
+        { label: 'Encerrar', primary: true, onPress: async () => {
+            await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            closeVehicle.mutate(vehicle.id);
+        } },
+      ],
+    });
+  };
+
   return (
     <PecaeGlassCard intensity={15} style={styles.container}>
       <View style={styles.content}>
@@ -182,6 +201,13 @@ export const VehicleInventoryCard: React.FC<VehicleInventoryCardProps> = ({ vehi
           <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.7 }]} onPress={handleReactivate}>
             <Ionicons name="refresh-outline" size={16} color={colors.brand} />
             <Text style={[styles.actionText, { color: colors.brand, fontFamily: typography.medium }]}>REATIVAR</Text>
+          </Pressable>
+        )}
+
+        {(vehicle.status === 'ACTIVE' || vehicle.status === 'PAUSED') && (
+          <Pressable style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.7 }]} onPress={handleClose}>
+            <Ionicons name="archive-outline" size={16} color={colors.error} />
+            <Text style={[styles.actionText, { color: colors.error, fontFamily: typography.medium }]}>ENCERRAR</Text>
           </Pressable>
         )}
 
@@ -259,15 +285,19 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     borderTopWidth: 1,
-    height: 50,
+    paddingVertical: 6,
   },
   actionBtn: {
-    flex: 1,
+    minWidth: '30%',
+    flexGrow: 1,
+    height: 40,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    gap: 4,
+    paddingHorizontal: 8,
   },
   actionText: {
     fontSize: 11,
