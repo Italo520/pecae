@@ -1,6 +1,6 @@
 'use client';
 
-import { useVehicles, useDeleteVehicle } from '@/hooks/useVehicles';
+import { useVehicles, useDeleteVehicle, usePauseVehicle, useRepublishVehicle, useSoldVehicle } from '@/hooks/useVehicles';
 import { useAuthStore } from '@/store/auth-store';
 import Link from 'next/link';
 import { 
@@ -13,7 +13,9 @@ import {
   Activity,
   Archive,
   Clock,
-  Trash2
+  Trash2,
+  Pause,
+  RotateCcw
 } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { toast } from 'sonner';
@@ -21,10 +23,16 @@ import { toast } from 'sonner';
 function VehicleRow({ 
   vehicle, 
   getStatusBadge,
+  onPauseRequest,
+  onRepublishRequest,
+  onSoldRequest,
   onDeleteRequest
 }: { 
   vehicle: any, 
   getStatusBadge: (status: string) => JSX.Element,
+  onPauseRequest: (vehicle: any) => void,
+  onRepublishRequest: (vehicle: any) => void,
+  onSoldRequest: (vehicle: any) => void,
   onDeleteRequest: (vehicle: any) => void
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -93,13 +101,36 @@ function VehicleRow({
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-pencil"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
               Editar
             </button>
-            <button 
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); toast.info('Funcionalidade de pausa em breve!'); setMenuOpen(false); }}
-              className="text-left px-3 py-2.5 text-sm hover:bg-[var(--surface-hover)] text-[var(--foreground)] rounded-lg transition-colors flex items-center gap-2 font-medium"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-pause"><rect width="4" height="16" x="6" y="4"/><rect width="4" height="16" x="14" y="4"/></svg>
-              Pausar Anúncio
-            </button>
+
+            {vehicle.status === 'ACTIVE' && (
+              <>
+                <button 
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); onPauseRequest(vehicle); setMenuOpen(false); }}
+                  className="text-left px-3 py-2.5 text-sm hover:bg-[var(--surface-hover)] text-[var(--foreground)] rounded-lg transition-colors flex items-center gap-2 font-medium"
+                >
+                  <Pause className="w-4 h-4 text-amber-500" />
+                  Pausar Anúncio
+                </button>
+                <button 
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); onSoldRequest(vehicle); setMenuOpen(false); }}
+                  className="text-left px-3 py-2.5 text-sm hover:bg-[var(--surface-hover)] text-[var(--foreground)] rounded-lg transition-colors flex items-center gap-2 font-medium"
+                >
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  Marcar Vendido
+                </button>
+              </>
+            )}
+
+            {(vehicle.status === 'INACTIVE' || vehicle.status === 'PAUSED') && (
+              <button 
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); onRepublishRequest(vehicle); setMenuOpen(false); }}
+                className="text-left px-3 py-2.5 text-sm hover:bg-[var(--surface-hover)] text-[var(--foreground)] rounded-lg transition-colors flex items-center gap-2 font-medium"
+              >
+                <RotateCcw className="w-4 h-4 text-emerald-500" />
+                Republicar Anúncio
+              </button>
+            )}
+
             <div className="h-px bg-[var(--border)] my-1" />
             <button 
               onClick={(e) => {
@@ -110,7 +141,7 @@ function VehicleRow({
               }}
               className="text-left px-3 py-2.5 text-sm hover:bg-red-500/10 text-red-500 rounded-lg transition-colors flex items-center gap-2 font-medium"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+              <Trash2 className="w-16 h-16" style={{ width: 16, height: 16 }} />
               Excluir
             </button>
           </div>
@@ -124,6 +155,10 @@ export default function DashboardClient() {
   const { user } = useAuthStore();
   const { data: vehicles, isLoading, isError } = useVehicles();
   const { mutate: deleteVehicle, isPending: isDeleting } = useDeleteVehicle();
+  const { mutate: pauseVehicle } = usePauseVehicle();
+  const { mutate: republishVehicle } = useRepublishVehicle();
+  const { mutate: soldVehicle } = useSoldVehicle();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [vehicleToDelete, setVehicleToDelete] = useState<any | null>(null);
 
@@ -150,11 +185,47 @@ export default function DashboardClient() {
   const getStatusBadge = (status: string) => {
     switch(status) {
       case 'ACTIVE': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">Ativo</span>;
+      case 'PENDING':
       case 'IN_MODERATION': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center gap-1"><Clock className="w-3 h-3" /> Em Moderação</span>;
       case 'SOLD': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-blue-500/10 text-blue-500 border border-blue-500/20">Vendido</span>;
+      case 'INACTIVE':
+      case 'PAUSED': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-zinc-500/10 text-zinc-500 border border-zinc-500/20 flex items-center gap-1"><Pause className="w-3 h-3" /> Pausado</span>;
       case 'ARCHIVED': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-zinc-500/10 text-zinc-500 border border-zinc-500/20 flex items-center gap-1"><Archive className="w-3 h-3" /> Arquivado</span>;
       default: return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-[var(--surface-hover)] text-[var(--muted)]">{status}</span>;
     }
+  };
+
+  const handlePause = (vehicle: any) => {
+    pauseVehicle(vehicle.id, {
+      onSuccess: () => {
+        toast.success('Anúncio pausado com sucesso!');
+      },
+      onError: (err: any) => {
+        toast.error('Erro ao pausar anúncio: ' + (err.response?.data?.message || err.message));
+      }
+    });
+  };
+
+  const handleRepublish = (vehicle: any) => {
+    republishVehicle(vehicle.id, {
+      onSuccess: () => {
+        toast.success('Anúncio enviado para moderação!');
+      },
+      onError: (err: any) => {
+        toast.error('Erro ao republicar anúncio: ' + (err.response?.data?.message || err.message));
+      }
+    });
+  };
+
+  const handleSold = (vehicle: any) => {
+    soldVehicle(vehicle.id, {
+      onSuccess: () => {
+        toast.success('Veículo marcado como vendido!');
+      },
+      onError: (err: any) => {
+        toast.error('Erro ao marcar como vendido: ' + (err.response?.data?.message || err.message));
+      }
+    });
   };
 
   const confirmDelete = () => {
@@ -291,6 +362,9 @@ export default function DashboardClient() {
                     key={vehicle.id} 
                     vehicle={vehicle} 
                     getStatusBadge={getStatusBadge} 
+                    onPauseRequest={handlePause}
+                    onRepublishRequest={handleRepublish}
+                    onSoldRequest={handleSold}
                     onDeleteRequest={setVehicleToDelete}
                   />
                 ))}

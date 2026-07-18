@@ -99,3 +99,42 @@ export function useCreateVehicle() {
     },
   });
 }
+
+export function usePauseVehicle() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await api.patch(`/listings/me/${id}/pause`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-vehicles'] });
+    },
+  });
+}
+
+export function useRepublishVehicle() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await api.patch(`/listings/me/${id}/republish`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-vehicles'] });
+    },
+  });
+}
+
+export function useSoldVehicle() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await api.patch(`/listings/me/${id}/sold`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-vehicles'] });
+    },
+  });
+}

@@ -7,12 +7,19 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { z } from 'zod';
 import { authService } from '@/services/auth.service';
+import { toast } from 'sonner';
 
 const registerSchema = z.object({
   name: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
   email: z.string().email('E-mail inválido'),
   password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
-  confirmPassword: z.string()
+  confirmPassword: z.string(),
+  termsAccepted: z.literal(true, {
+    errorMap: () => ({ message: 'Você deve aceitar os termos de uso' }),
+  }),
+  privacyAccepted: z.literal(true, {
+    errorMap: () => ({ message: 'Você deve aceitar a política de privacidade' }),
+  }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"],
@@ -45,10 +52,16 @@ export function RegisterForm() {
   const onSubmit = async (data: RegisterFormData) => {
     try {
       setApiError(null);
-      // Fora do escopo mobile M02/M03, mas aqui assumiremos um registro simples
-      // O tipo de conta (Comprador/Vendedor) poderia ser um terceiro step. Por ora: COMPRADOR.
-      await authService.register({ ...data, type: 'COMPRADOR', termsAccepted: true });
-      router.push('/');
+      await authService.register({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        type: 'COMPRADOR',
+        termsAccepted: data.termsAccepted,
+        privacyAccepted: data.privacyAccepted
+      });
+      toast.success('Conta criada com sucesso! Verifique seu e-mail.');
+      router.push('/verify-email');
     } catch (err: any) {
       setApiError(err.response?.data?.message || 'Ocorreu um erro ao criar a conta.');
     }
@@ -137,6 +150,38 @@ export function RegisterForm() {
                 }`}
               />
               {errors.confirmPassword && <p className="text-error text-xs mt-1">{errors.confirmPassword.message}</p>}
+            </div>
+
+            <div className="space-y-3 pt-2">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  {...register('termsAccepted')}
+                  className="mt-1 h-4 w-4 rounded border-border text-brand focus:ring-brand accent-[var(--brand)]"
+                />
+                <span className="text-sm text-[var(--muted)]">
+                  Li e concordo com os{' '}
+                  <Link href="/termos-de-uso" target="_blank" className="text-[var(--brand)] hover:underline font-medium">
+                    Termos de Uso
+                  </Link>
+                </span>
+              </label>
+              {errors.termsAccepted && <p className="text-error text-xs">{errors.termsAccepted.message}</p>}
+
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  {...register('privacyAccepted')}
+                  className="mt-1 h-4 w-4 rounded border-border text-brand focus:ring-brand accent-[var(--brand)]"
+                />
+                <span className="text-sm text-[var(--muted)]">
+                  Li e concordo com a{' '}
+                  <Link href="/politica-de-privacidade" target="_blank" className="text-[var(--brand)] hover:underline font-medium">
+                    Política de Privacidade
+                  </Link>
+                </span>
+              </label>
+              {errors.privacyAccepted && <p className="text-error text-xs">{errors.privacyAccepted.message}</p>}
             </div>
 
             {apiError && (
