@@ -113,6 +113,14 @@ public class ServicoNotificacaoImpl implements IServicoNotificacao {
     }
 
     @Override
+    @Transactional
+    public void marcarTodasComoLidas(UUID usuarioId) {
+        log.info("Marcando todas as notificações como lidas para o usuário {}", usuarioId);
+        repositorioNotificacao.marcarTodasComoLidas(usuarioId);
+        log.info("Todas as notificações do usuário {} foram marcadas como lidas", usuarioId);
+    }
+
+    @Override
     public void despacharNotificacao(UUID usuarioId, String titulo, String conteudo, TipoNotificacao tipo, String urlAcao, Set<CanalNotificacao> canais) {
         log.info("Enviando solicitação de despacho de notificação para o usuário {}. Tipo: {}, Canais: {}", usuarioId, tipo, canais);
         jobEnvioNotificacao.executar(usuarioId, titulo, conteudo, tipo, urlAcao, canais);

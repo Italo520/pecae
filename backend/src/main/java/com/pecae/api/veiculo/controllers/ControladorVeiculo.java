@@ -88,4 +88,14 @@ public class ControladorVeiculo {
         servicoVeiculo.deletar(usuario.getId(), veiculoId);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping(value = {"/{veiculoId}/duplicate", "/{veiculoId}/clone"})
+    @PreAuthorize("hasAnyRole('VENDEDOR', 'AMBOS')")
+    @Operation(summary = "Duplicar veículo", description = "Clona os dados de um veículo para rascunho rápido.")
+    public ResponseEntity<RespostaDetalheVeiculo> clonar(
+            @UsuarioAtual PrincipalUsuario usuario,
+            @PathVariable UUID veiculoId) {
+        RespostaDetalheVeiculo resposta = servicoVeiculo.clonar(usuario.getId(), veiculoId);
+        return ResponseEntity.ok(resposta);
+    }
 }

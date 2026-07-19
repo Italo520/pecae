@@ -16,4 +16,5 @@ public interface IServicoVeiculo {
     RespostaDetalheVeiculo buscarDetalhes(UUID usuarioId, UUID veiculoId);
     RespostaDetalheVeiculo buscarDetalhesPublico(UUID veiculoId);
     void deletar(UUID usuarioId, UUID veiculoId);
+    RespostaDetalheVeiculo clonar(UUID usuarioId, UUID veiculoId);
 }

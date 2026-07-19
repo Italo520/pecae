@@ -1,6 +1,6 @@
 'use client';
 
-import { useVehicles, useDeleteVehicle, usePauseVehicle, useRepublishVehicle, useSoldVehicle, useCloseVehicle } from '@/hooks/useVehicles';
+import { useVehicles, useDeleteVehicle, usePauseVehicle, useRepublishVehicle, useSoldVehicle, useCloseVehicle, useDuplicateVehicle } from '@/hooks/useVehicles';
 import { useAuthStore } from '@/store/auth-store';
 import Link from 'next/link';
 import { 
@@ -15,10 +15,18 @@ import {
   Clock,
   Trash2,
   Pause,
-  RotateCcw
+  RotateCcw,
+  Copy
 } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { toast } from 'sonner';
+
+function maskPlate(plate?: string): string {
+  if (!plate) return '---';
+  if (plate.length < 5) return plate;
+  // Ex: ABC-1234 -> ABC-*2*4 ou similar
+  return plate.slice(0, 4) + '**' + plate.slice(6);
+}
 
 function VehicleRow({ 
   vehicle, 
@@ -27,7 +35,8 @@ function VehicleRow({
   onRepublishRequest,
   onSoldRequest,
   onCloseRequest,
-  onDeleteRequest
+  onDeleteRequest,
+  onDuplicateRequest
 }: { 
   vehicle: any, 
   getStatusBadge: (status: string) => JSX.Element,
@@ -35,7 +44,8 @@ function VehicleRow({
   onRepublishRequest: (vehicle: any) => void,
   onSoldRequest: (vehicle: any) => void,
   onCloseRequest: (vehicle: any) => void,
-  onDeleteRequest: (vehicle: any) => void
+  onDeleteRequest: (vehicle: any) => void,
+  onDuplicateRequest: (vehicle: any) => void
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -72,7 +82,7 @@ function VehicleRow({
         </div>
       </td>
       <td className="px-6 py-4 text-[var(--muted)] font-mono text-xs uppercase">
-        {vehicle.plate || '---'}
+        {maskPlate(vehicle.plate)}
       </td>
       <td className="px-6 py-4 text-[var(--foreground)] font-medium">
         {vehicle.price ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(vehicle.price) : 'Sob Consulta'}
@@ -102,6 +112,14 @@ function VehicleRow({
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-pencil"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
               Editar
+            </button>
+
+            <button 
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDuplicateRequest(vehicle); setMenuOpen(false); }}
+              className="text-left px-3 py-2.5 text-sm hover:bg-[var(--surface-hover)] text-[var(--foreground)] rounded-lg transition-colors flex items-center gap-2 font-medium"
+            >
+              <Copy className="w-4 h-4 text-[var(--brand)]" />
+              Duplicar Anúncio
             </button>
 
             {vehicle.status === 'ACTIVE' && (
@@ -171,6 +189,7 @@ export default function DashboardClient() {
   const { mutate: republishVehicle } = useRepublishVehicle();
   const { mutate: soldVehicle } = useSoldVehicle();
   const { mutate: closeVehicle } = useCloseVehicle();
+  const { mutate: duplicateVehicle } = useDuplicateVehicle();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [vehicleToDelete, setVehicleToDelete] = useState<any | null>(null);
@@ -216,6 +235,17 @@ export default function DashboardClient() {
       },
       onError: (err: any) => {
         toast.error('Erro ao pausar anúncio: ' + (err.response?.data?.message || err.message));
+      }
+    });
+  };
+
+  const handleDuplicate = (vehicle: any) => {
+    duplicateVehicle(vehicle.id, {
+      onSuccess: () => {
+        toast.success('Veículo duplicado como rascunho com sucesso!');
+      },
+      onError: (err: any) => {
+        toast.error('Erro ao duplicar veículo: ' + (err.response?.data?.message || err.message));
       }
     });
   };
@@ -392,6 +422,7 @@ export default function DashboardClient() {
                     onSoldRequest={handleSold}
                     onCloseRequest={handleClose}
                     onDeleteRequest={setVehicleToDelete}
+                    onDuplicateRequest={handleDuplicate}
                   />
                 ))}
               </tbody>

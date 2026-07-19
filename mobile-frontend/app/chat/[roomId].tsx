@@ -492,6 +492,34 @@ export default function ChatRoomScreen() {
               </View>
             )}
 
+            {!isBlocked && (
+              <FlatList
+                horizontal
+                data={['A peça está disponível?', 'Qual o menor valor?', 'Consigo retirar hoje?', 'Tem garantia?']}
+                keyExtractor={(item, index) => index.toString()}
+                showsHorizontalScrollIndicator={false}
+                style={{ marginBottom: 10 }}
+                contentContainerStyle={{ gap: 8 }}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    onPress={() => setNewMessage(item)}
+                    style={{
+                      paddingHorizontal: 12,
+                      paddingVertical: 6,
+                      borderRadius: 16,
+                      backgroundColor: isDark ? '#111' : '#EEE',
+                      borderWidth: 1,
+                      borderColor: colors.border,
+                    }}
+                  >
+                    <Text style={{ fontSize: 12, color: colors.textPrimary, fontFamily: typography.medium }}>
+                      {item}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              />
+            )}
+
             <PecaeGlassCard intensity={25} padding={4} style={[styles.inputContainer, { borderRadius: 30, borderColor: colors.brand + '22', opacity: isBlocked ? 0.6 : 1 }]}>
               <TouchableOpacity 
                 style={styles.attachButton} 

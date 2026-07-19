@@ -153,4 +153,37 @@ public class ServicoVeiculoImpl implements IServicoVeiculo {
         repositorioVeiculo.delete(veiculo);
         log.info("Veículo deletado com sucesso. ID: {}", veiculoId);
     }
+
+    @Override
+    @Transactional
+    public RespostaDetalheVeiculo clonar(UUID usuarioId, UUID veiculoId) {
+        log.info("Iniciando clonagem do veículo: {} para o usuário: {}", veiculoId, usuarioId);
+
+        PerfilVendedor perfilVendedor = perfilVendedorRepository.findByUsuarioId(usuarioId)
+                .orElseThrow(() -> new ExcecaoNegocio("Vendedor não encontrado."));
+
+        Veiculo original = repositorioVeiculo.findByIdAndPerfilVendedorId(veiculoId, perfilVendedor.getId())
+                .orElseThrow(() -> new ExcecaoRecursoNaoEncontrado("Veículo não encontrado ou não pertence a este vendedor."));
+
+        Veiculo clone = new Veiculo();
+        clone.setPerfilVendedor(original.getPerfilVendedor());
+        clone.setVersao(original.getVersao());
+        clone.setAnoFabricacao(original.getAnoFabricacao());
+        clone.setCor(original.getCor());
+        clone.setCidade(original.getCidade());
+        clone.setEstado(original.getEstado());
+        clone.setLatitude(original.getLatitude());
+        clone.setLongitude(original.getLongitude());
+        clone.setObservacoes(original.getObservacoes() != null ? "Cópia de: " + original.getObservacoes() : null);
+        clone.setQuilometragem(original.getQuilometragem());
+        clone.setTipoCombustivel(original.getTipoCombustivel());
+        clone.setStatus(StatusVeiculo.RASCUNHO);
+        clone.setPecasDisponiveis(new java.util.ArrayList<>(original.getPecasDisponiveis()));
+        clone.setPlaca(null); // Placa deve ser preenchida de forma única posteriormente
+
+        Veiculo veiculoClonado = repositorioVeiculo.save(clone);
+        log.info("Veículo clonado com sucesso. Novo ID: {}", veiculoClonado.getId());
+
+        return mapperVeiculo.paraRespostaDetalhe(veiculoClonado);
+    }
 }

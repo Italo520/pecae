@@ -6,7 +6,8 @@ import {
   Send, 
   Loader2,
   Check,
-  CheckCheck
+  CheckCheck,
+  Flag
 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useChatMessages, useChatRoom } from '@/hooks/useChat';
@@ -15,6 +16,7 @@ import { useAuthStore } from '@/store/auth-store';
 import { api } from '@/lib/axios';
 import { format } from 'date-fns';
 import type { MensagemChat } from '@pecae/shared';
+import { toast } from 'sonner';
 
 export default function ChatWindow({ chatId }: { chatId: string }) {
   const { user } = useAuthStore();
@@ -27,6 +29,12 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // States for report modal
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [reportCategory, setReportCategory] = useState('FRAUDE');
+  const [reportDesc, setReportDesc] = useState('');
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
 
   // Sync historical messages when loaded
   useEffect(() => {
@@ -152,6 +160,26 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
     }
   };
 
+  const handleSubmitReport = async () => {
+    if (isSubmittingReport) return;
+    setIsSubmittingReport(true);
+    try {
+      await api.post('/denuncias', {
+        tipoAlvo: 'USUARIO',
+        idAlvo: room?.interlocutor.id,
+        categoria: reportCategory,
+        descricao: reportDesc
+      });
+      toast.success('Denúncia submetida com sucesso. Agradecemos sua colaboração!');
+      setIsReportModalOpen(false);
+      setReportDesc('');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Falha ao enviar denúncia. Tente novamente.');
+    } finally {
+      setIsSubmittingReport(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-[var(--background)] relative">
       {/* Header */}
@@ -185,6 +213,14 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
             <img src={room.miniaturaDaConversa} alt="Miniatura Veículo" className="w-10 h-10 rounded-xl object-cover border border-[var(--border)] hidden sm:block" />
           )}
           <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setIsReportModalOpen(true)}
+              className="px-3 py-1.5 border border-red-500/20 text-red-500 hover:bg-red-500/10 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all"
+              title="Denunciar conversa"
+            >
+              <Flag className="w-3.5 h-3.5" />
+              Denunciar
+            </button>
             <button className="w-10 h-10 rounded-full hover:bg-[var(--surface-hover)] flex items-center justify-center text-[var(--muted)] transition-colors">
               <MoreVertical className="w-5 h-5" />
             </button>
@@ -260,6 +296,20 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
           </div>
         )}
 
+        {!isBlocked && (
+          <div className="flex gap-2 overflow-x-auto pb-3 custom-scrollbar max-w-4xl mx-auto">
+            {['Olá! A peça ainda está disponível?', 'Qual o menor valor que faz?', 'Consigo retirar hoje?', 'Está funcionando perfeitamente?', 'Tem garantia?'].map((qr, index) => (
+              <button
+                key={index}
+                onClick={() => setInput(qr)}
+                className="whitespace-nowrap px-3 py-1.5 bg-[var(--background)] border border-[var(--border)] rounded-full text-xs text-[var(--muted)] hover:text-[var(--foreground)] hover:border-[var(--brand)] transition-all font-medium cursor-pointer"
+              >
+                {qr}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="max-w-4xl mx-auto flex items-end gap-3 bg-[var(--background)] border border-[var(--border)] rounded-2xl p-2 focus-within:border-[var(--brand)]/50 focus-within:ring-1 focus-within:ring-[var(--brand)]/50 transition-all">
           <button 
             disabled={isBlocked || isUploading}
@@ -293,6 +343,69 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
           </button>
         </div>
       </div>
+
+      {/* Report Modal */}
+      {isReportModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-3xl w-full max-w-md p-6 space-y-6 shadow-2xl animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
+            <div>
+              <h3 className="text-lg font-bold font-display text-[var(--foreground)]">Denunciar Usuário</h3>
+              <p className="text-xs text-[var(--muted)] mt-1">Sua denúncia será avaliada de forma confidencial pela nossa moderação.</p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold text-[var(--foreground)] uppercase tracking-wider block mb-2">Motivo da Denúncia</label>
+                <select 
+                  value={reportCategory}
+                  onChange={(e) => setReportCategory(e.target.value)}
+                  className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm text-[var(--foreground)] outline-none focus:border-[var(--brand)]/50 focus:ring-1 focus:ring-[var(--brand)]/50"
+                >
+                  <option value="FRAUDE">Suspeita de Fraude / Golpe</option>
+                  <option value="SPAM">Spam / Divulgação indevida</option>
+                  <option value="CONTEUDO_INADEQUADO">Conteúdo Ofensivo / Inadequado</option>
+                  <option value="FALSO">Perfil ou Produto Falso</option>
+                  <option value="OUTRO">Outros motivos</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-[var(--foreground)] uppercase tracking-wider block mb-2">Descrição detalhada</label>
+                <textarea 
+                  value={reportDesc}
+                  onChange={(e) => setReportDesc(e.target.value)}
+                  placeholder="Forneça mais detalhes sobre o comportamento deste usuário..."
+                  className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm text-[var(--foreground)] outline-none focus:border-[var(--brand)]/50 focus:ring-1 focus:ring-[var(--brand)]/50 min-h-[100px] resize-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button 
+                onClick={() => setIsReportModalOpen(false)}
+                disabled={isSubmittingReport}
+                className="px-4 py-2.5 rounded-xl border border-[var(--border)] text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--surface-hover)] transition-all"
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={handleSubmitReport}
+                disabled={isSubmittingReport}
+                className="px-4 py-2.5 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-all flex items-center gap-1.5 disabled:opacity-50"
+              >
+                {isSubmittingReport ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Enviando...
+                  </>
+                ) : (
+                  'Submeter Denúncia'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

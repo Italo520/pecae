@@ -7,10 +7,12 @@ import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { MapPin, Heart, Bell, Menu, User } from 'lucide-react';
 import { useAuthStore } from '@/store/auth-store';
+import { useNotifications } from '@/hooks/useNotifications';
 
 export function Header() {
   const { isAuthenticated, user } = useAuthStore();
   const [mounted, setMounted] = useState(false);
+  const { getUnreadCount } = useNotifications();
 
   useEffect(() => {
     setMounted(true);
@@ -25,8 +27,7 @@ export function Header() {
 
   const getNotificationsUrl = () => {
     if (!isLoggedIn) return '/login';
-    // Placeholder, redirects to dashboard for now since notificacoes page is not created
-    return user?.type === 'SELLER' ? '/vendedor/dashboard' : '/comprador/dashboard';
+    return '/comprador/notificacoes';
   };
 
   const handleLocationClick = () => {
@@ -83,9 +84,9 @@ export function Header() {
               </Link>
               <Link href={getNotificationsUrl()} className="relative text-[var(--muted)] hover:text-[var(--brand)] transition-colors">
                 <Bell className="w-6 h-6" />
-                {isLoggedIn && (
-                  <Badge variant="count" label={1} className="absolute -top-1.5 -right-1.5" />
-                )}
+                {isLoggedIn && getUnreadCount.data && getUnreadCount.data > 0 ? (
+                  <Badge variant="count" label={getUnreadCount.data} className="absolute -top-1.5 -right-1.5" />
+                ) : null}
               </Link>
             </div>
 

@@ -49,6 +49,13 @@ public interface IServicoNotificacao {
     void marcarComoLida(UUID notificacaoId, UUID usuarioId);
 
     /**
+     * Marca todas as notificações não lidas de um usuário como lidas.
+     *
+     * @param usuarioId ID do usuário.
+     */
+    void marcarTodasComoLidas(UUID usuarioId);
+
+    /**
      * Orquestra o envio assíncrono de notificações em múltiplos canais (APP, PUSH, EMAIL).
      *
      * @param usuarioId ID do usuário destinatário.

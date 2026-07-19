@@ -52,6 +52,18 @@ export default function VendedorLayout({ children }: { children: ReactNode }) {
           >
             <span className="font-medium text-sm">Mensagens</span>
           </Link>
+          <Link 
+            href="/vendedor/analytics"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-muted hover:bg-foreground/5 hover:text-foreground transition-colors"
+          >
+            <span className="font-medium text-sm">Desempenho</span>
+          </Link>
+          <Link 
+            href="/vendedor/perfil"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-muted hover:bg-foreground/5 hover:text-foreground transition-colors"
+          >
+            <span className="font-medium text-sm">Meu Perfil</span>
+          </Link>
         </nav>
       </aside>
 
@@ -70,6 +82,9 @@ export default function VendedorLayout({ children }: { children: ReactNode }) {
         </Link>
         <Link href="/vendedor/chat" className="p-2 text-muted">
           <span className="text-xs font-medium">Chat</span>
+        </Link>
+        <Link href="/vendedor/perfil" className="p-2 text-muted">
+          <span className="text-xs font-medium">Perfil</span>
         </Link>
       </nav>
     </div>

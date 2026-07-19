@@ -151,3 +151,16 @@ export function useCloseVehicle() {
     },
   });
 }
+
+export function useDuplicateVehicle() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await api.post(`/vehicles/${id}/duplicate`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-vehicles'] });
+    },
+  });
+}

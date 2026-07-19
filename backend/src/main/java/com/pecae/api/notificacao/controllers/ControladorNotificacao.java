@@ -24,7 +24,7 @@ import java.util.UUID;
  * Controlador REST para gerenciar notificações e tokens de push.
  */
 @RestController
-@RequestMapping("/notificacoes")
+@RequestMapping(value = {"/notificacoes", "/notifications"})
 @RequiredArgsConstructor
 @Tag(name = "Notificações", description = "Endpoints para gerenciamento de notificações e tokens push")
 public class ControladorNotificacao {
@@ -69,6 +69,14 @@ public class ControladorNotificacao {
             @PathVariable UUID id
     ) {
         servicoNotificacao.marcarComoLida(id, principal.getId());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping(value = {"/read-all", "/lidas"})
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Marcar todas como lidas", description = "Marca todas as notificações in-app do usuário como lidas.")
+    public ResponseEntity<Void> marcarTodasComoLidas(@UsuarioAtual PrincipalUsuario principal) {
+        servicoNotificacao.marcarTodasComoLidas(principal.getId());
         return ResponseEntity.noContent().build();
     }
 }
