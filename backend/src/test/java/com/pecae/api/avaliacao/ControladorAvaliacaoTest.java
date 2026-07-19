@@ -88,7 +88,7 @@ class ControladorAvaliacaoTest {
 
         when(servicoAvaliacao.submeterAvaliacao(eq(usuarioId), any(CriarAvaliacaoRequest.class))).thenReturn(resposta);
 
-        mockMvc.perform(post("/api/v1/avaliacoes")
+        mockMvc.perform(post("/avaliacoes")
                         .with(authentication(auth))
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -102,7 +102,7 @@ class ControladorAvaliacaoTest {
     }
 
     @Test
-    @DisplayName("GET /api/v1/avaliacoes/vendedor/{vendedorId} - Deve listar avaliações de um vendedor de forma pública")
+    @DisplayName("GET /avaliacoes/vendedor/{vendedorId} - Deve listar avaliações de um vendedor de forma pública")
     void deveListarAvaliacoesDoVendedorComSucesso() throws Exception {
         UUID vendedorId = UUID.randomUUID();
         RespostaAvaliacao resposta = new RespostaAvaliacao(
@@ -114,7 +114,7 @@ class ControladorAvaliacaoTest {
 
         when(servicoAvaliacao.listarAvaliacoesDoVendedor(eq(vendedorId), any(Pageable.class))).thenReturn(pagina);
 
-        mockMvc.perform(get("/api/v1/avaliacoes/vendedor/{vendedorId}", vendedorId)
+        mockMvc.perform(get("/avaliacoes/vendedor/{vendedorId}", vendedorId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].sellerId").value(vendedorId.toString()))
@@ -125,13 +125,13 @@ class ControladorAvaliacaoTest {
     }
 
     @Test
-    @DisplayName("DELETE /api/v1/avaliacoes/{avaliacaoId} - Deve deletar uma avaliação com sucesso")
+    @DisplayName("DELETE /avaliacoes/{avaliacaoId} - Deve deletar uma avaliação com sucesso")
     void deveDeletarAvaliacaoComSucesso() throws Exception {
         UUID avaliacaoId = UUID.randomUUID();
 
         doNothing().when(servicoAvaliacao).deletarAvaliacao(eq(usuarioId), eq(avaliacaoId));
 
-        mockMvc.perform(delete("/api/v1/avaliacoes/{avaliacaoId}", avaliacaoId)
+        mockMvc.perform(delete("/avaliacoes/{avaliacaoId}", avaliacaoId)
                         .with(authentication(auth))
                         .with(csrf()))
                 .andExpect(status().isNoContent());

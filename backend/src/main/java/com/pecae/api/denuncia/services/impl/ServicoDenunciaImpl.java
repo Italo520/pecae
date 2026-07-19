@@ -5,11 +5,15 @@ import com.pecae.api.denuncia.dtos.request.CriarDenunciaRequest;
 import com.pecae.api.denuncia.dtos.response.RespostaDenuncia;
 import com.pecae.api.denuncia.entities.Denuncia;
 import com.pecae.api.denuncia.entities.enums.StatusDenuncia;
+import com.pecae.api.denuncia.entities.enums.TipoAlvoDenuncia;
+import com.pecae.api.denuncia.entities.enums.CategoriaDenuncia;
 import com.pecae.api.denuncia.mappers.MapperDenuncia;
 import com.pecae.api.denuncia.repositories.RepositorioDenuncia;
 import com.pecae.api.denuncia.services.IServicoDenuncia;
 import com.pecae.api.usuario.entities.Usuario;
 import com.pecae.api.usuario.repositories.UsuarioRepository;
+import com.pecae.api.anuncio.repositories.RepositorioAnuncio;
+import com.pecae.api.anuncio.entities.enums.StatusAnuncio;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -27,6 +31,7 @@ public class ServicoDenunciaImpl implements IServicoDenuncia {
     private final RepositorioDenuncia repositorioDenuncia;
     private final UsuarioRepository usuarioRepository;
     private final MapperDenuncia mapperDenuncia;
+    private final RepositorioAnuncio repositorioAnuncio;
 
     @Override
     @Transactional
@@ -46,6 +51,19 @@ public class ServicoDenunciaImpl implements IServicoDenuncia {
         Denuncia denunciaSalva = repositorioDenuncia.save(denuncia);
         log.info("Denúncia criada com sucesso - ID: {}, Alvo: {} (ID: {}), Categoria: {}",
             denunciaSalva.getId(), denunciaSalva.getTipoAlvo(), denunciaSalva.getIdAlvo(), denunciaSalva.getCategoria());
+
+        // Ocultação preventiva para denúncias graves em anúncios
+        if (request.tipoAlvo() == TipoAlvoDenuncia.ANUNCIO) {
+            if (request.categoria() == CategoriaDenuncia.FRAUDE || request.categoria() == CategoriaDenuncia.FALSO || request.categoria() == CategoriaDenuncia.CONTEUDO_INADEQUADO) {
+                repositorioAnuncio.findById(request.idAlvo()).ifPresent(anuncio -> {
+                    if (anuncio.getStatus() == StatusAnuncio.PUBLICADO) {
+                        anuncio.setStatus(StatusAnuncio.PENDENTE);
+                        repositorioAnuncio.save(anuncio);
+                        log.warn("Ocultação preventiva do anúncio {} ativada devido a denúncia por {}", anuncio.getId(), request.categoria());
+                    }
+                });
+            }
+        }
 
         return mapperDenuncia.paraResposta(denunciaSalva);
     }

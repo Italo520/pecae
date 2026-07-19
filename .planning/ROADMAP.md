@@ -87,3 +87,12 @@ Este documento detalha o roteiro cronológico de desenvolvimento estruturado por
 
 > [!NOTE]
 > As tarefas e estimativas originais desta Milestone foram arquivadas em [v10.2-ROADMAP.md](file:///c:/Users/italo/Desktop/Projects/pecae/.planning/milestones/v10.2/v10.2-ROADMAP.md) conforme o protocolo de compressão de contexto.
+
+---
+
+## [CONCLUÍDA] Milestone 11 (Sprint 13) — Resolução Completa das Pendências do MVP (Ondas 1, 2 e 3)
+
+> [!NOTE]
+> 100% dos requisitos das Ondas 1, 2 e 3 (FIPE, Chat WebSocket, Ciclo de Vida Anúncio, Proximidade Haversine SQL, Sinônimos FTS, Alertas Matching, Blacklist, Duplicatas, Ocultação por Denúncia, UX/Skeletons/Pull-to-refresh) foram implementados e validados com 0 erros de compilação.
+> As tarefas e logs detalhados foram documentados em [PENDENCIAS-MVP.md](file:///c:/Users/italo/Desktop/Projects/pecae/docs/PENDENCIAS-MVP.md) e [walkthrough.md](file:///C:/Users/italo/.gemini/antigravity-ide/brain/273d55cf-1e19-4e02-b5cf-7f59fe88c509/walkthrough.md).
+

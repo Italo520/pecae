@@ -79,19 +79,53 @@ export async function fetchSearchResults(params: VehicleSearchInput): Promise<Pa
   try {
     const query = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
-      if (value) query.append(key, value.toString());
+      if (value !== undefined && value !== null && value !== '') {
+        // Mapear campos se necessário
+        if (key === 'page') {
+          // Spring Boot usa 0-indexed para páginas
+          const pVal = parseInt(value.toString());
+          query.append('pagina', (pVal - 1).toString());
+        } else if (key === 'perPage') {
+          query.append('tamanho', value.toString());
+        } else {
+          query.append(key, value.toString());
+        }
+      }
     });
 
-    const res = await fetch(`${API_URL}/listings/search?${query.toString()}`, {
+    const res = await fetch(`${API_URL}/listings?${query.toString()}`, {
       cache: 'no-store', // Always fresh
     });
     
     if (!res.ok) return generateMockSearchResults(params);
     const data = await res.json();
     
-    // Validate the listings portion
-    data.data = z.array(listingCardSchema).parse(data.data);
-    return data;
+    const content = data.content || [];
+    const adaptedListings = content.map((item: any, index: number) => ({
+      id: item.id ? String(item.id) : String(index),
+      title: item.titulo || 'Veículo',
+      brand: item.marcaNome || 'Marca',
+      model: item.modeloNome || 'Modelo',
+      year: item.anoFabricacao || new Date().getFullYear(),
+      city: item.cidade || 'Cidade',
+      state: item.estado || 'Estado',
+      partsAvailable: item.quantidadePecasDisponiveis || 0,
+      createdAt: item.publicadoEm || new Date().toISOString(),
+      imageUrl: item.urlFotoPrincipal || 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=600&h=400',
+      imageCount: item.fotosCount || 1,
+      verifiedSeller: item.vendedorVerificado || false,
+      sponsored: item.patrocinado || false
+    }));
+
+    return {
+      data: adaptedListings,
+      meta: {
+        page: (data.number || 0) + 1,
+        perPage: data.size || 20,
+        total: data.totalElements || 0,
+        hasNextPage: !data.last
+      }
+    };
   } catch (error) {
     return generateMockSearchResults(params);
   }

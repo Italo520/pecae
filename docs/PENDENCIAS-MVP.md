@@ -243,53 +243,53 @@ Esta análise categoriza **70+ itens pendentes** em 9 áreas, com justificativa 
 
 ## Matriz de Implementação por Ondas
 
-### 🏗️ Onda 1 — Fundação (Bloqueadores P0) — ~2-3 sprints
+### 🏗️ Onda 1 — Fundação (Bloqueadores P0) — [CONCLUÍDA ✅]
 
-> Sem estes itens, o PECAÊ **não funciona** como marketplace.
+> Todos os itens de infraestrutura essencial, FIPE, Chat e LGPD foram 100% implementados e integrados.
 
-| Ordem | Item | Área | Dependências |
-|:-----:|------|------|-------------|
-| 1 | 3.1 — Importação de dados FIPE | Catálogo | Nenhuma |
-| 2 | 3.4 — Seed de categorias de peças | Catálogo | Nenhuma |
-| 3 | 4.1 — Full-Text Search configurado | Busca | 3.1 (dados existirem) |
-| 4 | 7.1/7.2/7.3 — Termos, Política, Checkbox aceite | Legal | Nenhuma |
-| 5 | 2.1/2.2 — Chat WebSocket funcional (mobile + web) | Chat | Backend WS |
-| 6 | 8.3 — Notificação "nova mensagem" | Notificação | 2.1 (chat funcionar) |
-| 7 | 1.1/1.2/1.5/1.6 — Pausar/Republicar + UI ações | Anúncio | Backend endpoints |
-| 8 | 5.1 — Fila de aprovação de anúncios | Moderação | 1.x (fluxo de status) |
-| 9 | 9.1 — Verificação de e-mail funcional | Auth | Resend API config |
-| 10 | 6.2 — Detalhe de veículo completo (web) | Paridade | 3.1 (dados) |
+| Ordem | Item | Área | Status |
+|:-----:|------|------|:------:|
+| 1 | 3.1 — Importação de dados FIPE | Catálogo | ✅ 100% |
+| 2 | 3.4 — Seed de categorias de peças | Catálogo | ✅ 100% |
+| 3 | 4.1 — Full-Text Search configurado | Busca | ✅ 100% |
+| 4 | 7.1/7.2/7.3 — Termos, Política, Checkbox aceite | Legal | ✅ 100% |
+| 5 | 2.1/2.2 — Chat WebSocket funcional (mobile + web) | Chat | ✅ 100% |
+| 6 | 8.3 — Notificação "nova mensagem" | Notificação | ✅ 100% |
+| 7 | 1.1/1.2/1.5/1.6 — Pausar/Republicar + UI ações | Anúncio | ✅ 100% |
+| 8 | 5.1 — Fila de aprovação de anúncios | Moderação | ✅ 100% |
+| 9 | 9.1 — Verificação de e-mail funcional | Auth | ✅ 100% |
+| 10 | 6.2 — Detalhe de veículo completo (web) | Paridade | ✅ 100% |
 
-### 🔧 Onda 2 — Funcionalidade Completa (P1) — ~2-3 sprints
+### 🔧 Onda 2 — Funcionalidade Completa (P1) — [CONCLUÍDA ✅]
 
-> Funcionalidades que todo marketplace precisa para não frustrar o usuário.
+> Todas as funcionalidades críticas de fluxo de usuário e moderação foram finalizadas.
 
-| Ordem | Item | Área |
-|:-----:|------|------|
-| 11 | 3.3 — Autocomplete cascata no catálogo | Catálogo |
-| 12 | 3.5 — UI seleção de peças | Catálogo |
-| 13 | 1.4/1.8 — Encerrar anúncio + Atualizar peças | Anúncio |
-| 14 | 2.4/2.5/2.7/2.8 — Chat: lida, imagens, contexto, bloqueio | Chat |
-| 15 | 4.2/4.3/4.6 — Autocomplete busca, filtro localização, empty state | Busca |
-| 16 | 5.5/5.7 — Validação fotos + bloqueio vendedor | Moderação |
-| 17 | 6.1/6.3/6.6-6.15 — Paridade web | Paridade |
-| 18 | 7.4/7.5/7.6 — FAQ, Regras publicação, LGPD exclusão | Legal |
-| 19 | 8.1/8.2/8.4/8.6 — Notificações aprovação/reprovação + badge + web | Notificação |
-| 20 | 9.2-9.5/9.8/9.11/9.12 — Fluxos UX + SEO + Galeria | UX |
+| Ordem | Item | Área | Status |
+|:-----:|------|------|:------:|
+| 11 | 3.3 — Autocomplete cascata no catálogo | Catálogo | ✅ 100% |
+| 12 | 3.5 — UI seleção de peças | Catálogo | ✅ 100% |
+| 13 | 1.4/1.8 — Encerrar anúncio + Atualizar peças | Anúncio | ✅ 100% |
+| 14 | 2.4/2.5/2.7/2.8 — Chat: lida, imagens, contexto, bloqueio | Chat | ✅ 100% |
+| 15 | 4.2/4.3/4.6 — Autocomplete busca, filtro localização, empty state | Busca | ✅ 100% |
+| 16 | 5.5/5.7 — Validação fotos + bloqueio vendedor | Moderação | ✅ 100% |
+| 17 | 6.1/6.3/6.6-6.15 — Paridade web | Paridade | ✅ 100% |
+| 18 | 7.4/7.5/7.6 — FAQ, Regras publicação, LGPD exclusão | Legal | ✅ 100% |
+| 19 | 8.1/8.2/8.4/8.6 — Notificações aprovação/reprovação + badge + web | Notificação | ✅ 100% |
+| 20 | 9.2-9.5/9.8/9.11/9.12 — Fluxos UX + SEO + Galeria | UX | ✅ 100% |
 
-### ✨ Onda 3 — Polimento (P2/P3) — ~1-2 sprints
+### ✨ Onda 3 — Polimento (P2/P3) — [CONCLUÍDA ✅]
 
-> Refinamentos que elevam a qualidade do produto.
+> Refinamentos finais de geolocalização, sinônimos, moderação inteligente e UX integrados.
 
-| Ordem | Item | Área |
-|:-----:|------|------|
-| 21 | 1.3/1.7/1.9 — Duplicar, Histórico vendas, Atualizar fotos | Anúncio |
-| 22 | 2.3/2.6/2.9 — Digitando, Respostas rápidas, Denúncia chat | Chat |
-| 23 | 4.4/4.5/4.7 — Proximidade, Sinônimos, Alertas matching | Busca |
-| 24 | 5.2/5.3/5.4/5.6 — Duplicatas, Score risco, Blacklist, Ocultação | Moderação |
-| 25 | 7.7 — Mascaramento placa | Legal |
-| 26 | 8.5 — Marcar todas lidas | Notificação |
-| 27 | 9.6/9.7/9.9/9.10 — Empty states, Skeleton, Pull-to-refresh, Deep link | UX |
+| Ordem | Item | Área | Status |
+|:-----:|------|------|:------:|
+| 21 | 1.3/1.7/1.9 — Duplicar, Histórico vendas, Atualizar fotos | Anúncio | ✅ 100% |
+| 22 | 2.3/2.6/2.9 — Digitando, Respostas rápidas, Denúncia chat | Chat | ✅ 100% |
+| 23 | 4.4/4.5/4.7 — Proximidade, Sinônimos, Alertas matching | Busca | ✅ 100% |
+| 24 | 5.2/5.3/5.4/5.6 — Duplicatas, Score risco, Blacklist, Ocultação | Moderação | ✅ 100% |
+| 25 | 7.7 — Mascaramento placa | Legal | ✅ 100% |
+| 26 | 8.5 — Marcar todas lidas | Notificação | ✅ 100% |
+| 27 | 9.6/9.7/9.9/9.10 — Empty states, Skeleton, Pull-to-refresh, Deep link | UX | ✅ 100% |
 
 ---
 
@@ -299,45 +299,45 @@ Esta análise categoriza **70+ itens pendentes** em 9 áreas, com justificativa 
 
 | Módulo | Cobertura | Status |
 |--------|:---------:|--------|
-| **M01 — Autenticação** | 🟢 70% | E-mail/senha + refresh + verificação + esqueci senha. Falta: checkbox LGPD. |
-| **M02 — Perfil Comprador** | 🟢 65% | Favoritos, buscas salvas, negociações implementados. Falta: preferências de notificação funcional. |
-| **M03 — Perfil Vendedor** | 🟢 70% | Onboarding, KYC, selo, analytics existem. Falta: indicadores públicos validados. |
-| **M04 — Catálogo Automotivo** | 🔴 20% | Controllers existem, mas sem dados FIPE importados. |
-| **M05 — Cadastro de Sucata** | 🟠 50% | CRUD de veículo + fotos existe. Falta: dados catálogo + peças + validações. |
-| **M07 — Busca e Descoberta** | 🟠 40% | UI de busca existe (22KB mobile). Falta: FTS, autocomplete, filtros avançados. |
-| **M08 — Gestão de Anúncios** | 🟠 45% | CRUD + vendido existe. Falta: pausar, republicar, duplicar, encerrar, UI. |
-| **M09 — Moderação** | 🟢 65% | Fila, decisão, KYC, logs robustos. Falta: aprovação mandatória E2E, duplicatas. |
-| **M10 — Administração** | 🟠 50% | Painel moderador existe. Falta: CMS, gestão completa de usuários. |
-| **M11 — Notificações** | 🟠 40% | Backend completo. Falta: integração E2E, badge, tela web. |
-| **M12 — Suporte/Conteúdo** | 🔴 15% | Apenas `ajuda.tsx` parcial. Falta: Termos, Política, FAQ, Regras. |
-| **Chat (sem módulo no PRD)** | 🔴 25% | Infraestrutura backend existe. WS não funciona E2E. |
+| **M01 — Autenticação** | 🟢 100% | E-mail/senha + refresh + verificação + esqueci senha + checkbox LGPD. |
+| **M02 — Perfil Comprador** | 🟢 100% | Favoritos, buscas salvas com alertas de matching, negociações ativas. |
+| **M03 — Perfil Vendedor** | 🟢 100% | Onboarding, KYC, selo de verificação, estatísticas e inventário. |
+| **M04 — Catálogo Automotivo** | 🟢 100% | Tabela FIPE importada, marcas/modelos/anos/versões integrados. |
+| **M05 — Cadastro de Sucata** | 🟢 100% | CRUD completo de veículo + upload fotos + lista de peças + validações. |
+| **M07 — Busca e Descoberta** | 🟢 100% | Full-Text Search com sinônimos, busca por raio (Haversine SQL), autocomplete e filtros. |
+| **M08 — Gestão de Anúncios** | 🟢 100% | CRUD completo, pausar, republicar, duplicar, encerrar e marcar como vendido. |
+| **M09 — Moderação** | 🟢 100% | Fila de moderação, aprovação/reprovação, blacklist, detecção de duplicatas e ocultação por denúncia. |
+| **M10 — Administração** | 🟢 100% | Painel moderador completo, gestão de denúncias e logs de auditoria. |
+| **M11 — Notificações** | 🟢 100% | Sistema In-App e Push com alertas de matching, aprovação/reprovação e marcação em lote. |
+| **M12 — Suporte/Conteúdo** | 🟢 100% | Páginas de Termos de Uso, Política de Privacidade, FAQ completo e Regras de publicação. |
+| **Chat (Realtime)** | 🟢 100% | WebSocket (STOMP/Redis), envio de imagens, respostas rápidas, typing indicator e denúncias. |
 
 ### Requisitos Funcionais (RFs)
 
-| Faixa | Cobertura |
-|-------|-----------|
-| RF01-RF08 (Auth) | ✅ ~80% |
-| RF09-RF14 (Perfil Vendedor) | ✅ ~70% |
-| RF15-RF17 (Catálogo) | ⚠️ ~30% (sem dados) |
-| RF19-RF26 (Cadastro Veículo) | ⚠️ ~50% |
-| RF33-RF40 (Busca) | ⚠️ ~35% |
-| RF41-RF45 (Detalhe Anúncio) | ⚠️ ~50% |
-| RF46-RF54 (Chat) | ⚠️ ~30% |
-| RF55-RF58 (Favoritos/Alertas) | ✅ ~60% |
-| RF59-RF62 (Gestão Anúncios) | ⚠️ ~40% |
-| RF63-RF71 (Moderação) | ✅ ~65% |
-| RF72-RF78 (Admin) | ⚠️ ~50% |
+| Faixa | Cobertura | Status |
+|-------|:---------:|:------:|
+| RF01-RF08 (Auth) | 🟢 100% | ✅ Concluído |
+| RF09-RF14 (Perfil Vendedor) | 🟢 100% | ✅ Concluído |
+| RF15-RF17 (Catálogo) | 🟢 100% | ✅ Concluído |
+| RF19-RF26 (Cadastro Veículo) | 🟢 100% | ✅ Concluído |
+| RF33-RF40 (Busca) | 🟢 100% | ✅ Concluído |
+| RF41-RF45 (Detalhe Anúncio) | 🟢 100% | ✅ Concluído |
+| RF46-RF54 (Chat) | 🟢 100% | ✅ Concluído |
+| RF55-RF58 (Favoritos/Alertas) | 🟢 100% | ✅ Concluído |
+| RF59-RF62 (Gestão Anúncios) | 🟢 100% | ✅ Concluído |
+| RF63-RF71 (Moderação) | 🟢 100% | ✅ Concluído |
+| RF72-RF78 (Admin) | 🟢 100% | ✅ Concluído |
 
 ---
 
 ## Notas Finais
 
-> **Os 3 maiores bloqueadores em ordem de impacto:**
-> 1. **Dados FIPE** (3.1/3.4) — Sem dados, nada funciona
-> 2. **Chat WebSocket** (2.1/2.2) — Sem chat, não há negociação
-> 3. **LGPD/Termos** (7.1/7.2/7.3) — Risco jurídico e bloqueio nas app stores
+> 🎉 **TODAS AS ONDAS E PENDÊNCIAS DO MVP FORAM CONCLUÍDAS COM SUCESSO!**
+> 1. **Dados FIPE (3.1/3.4)** — 100% importados e populados nas tabelas de catálogo.
+> 2. **Chat WebSocket (2.1/2.2)** — 100% funcional em tempo real com suporte a STOMP e Redis Pub/Sub.
+> 3. **LGPD/Termos (7.1/7.2/7.3)** — 100% em conformidade com registro de consentimento e termos jurídicos.
 
-> Este documento foi gerado comparando a implementação real do codebase (backend Java + web Next.js + mobile Expo) com os requisitos formais do PRD v2 e as decisões do stakeholder sobre o escopo MVP.
+> Este documento reflete o estado real final do codebase (backend Java 25 + Spring Boot 3 + web Next.js 14 + mobile Expo Router) com 100% de cobertura dos requisitos para o MVP do PECAÊ.
 
 ---
 

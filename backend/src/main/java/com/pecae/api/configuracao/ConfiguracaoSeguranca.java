@@ -50,7 +50,8 @@ public class ConfiguracaoSeguranca {
             "/listings",
             "/listings/*",
             "/vehicles/public/*",
-            "/api/v1/avaliacoes/vendedor/*"
+            "/api/v1/avaliacoes/vendedor/*",
+            "/avaliacoes/vendedor/*"
     };
 
     @Bean

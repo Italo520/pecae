@@ -95,7 +95,7 @@ class ControladorVeiculoTest {
 
         when(servicoVeiculo.criar(eq(usuarioId), any(CriarVeiculoRequest.class))).thenReturn(resposta);
 
-        mockMvc.perform(post("/vehicles/me")
+        mockMvc.perform(post("/vehicles")
                         .with(authentication(auth))
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -109,7 +109,7 @@ class ControladorVeiculoTest {
     }
 
     @Test
-    @DisplayName("GET /vehicles/me/{id} - Deve retornar detalhes do veículo")
+    @DisplayName("GET /vehicles/{id} - Deve retornar detalhes do veículo")
     void deveObterDetalhes() throws Exception {
         UUID veiculoId = UUID.randomUUID();
         RespostaDetalheVeiculo resposta = new RespostaDetalheVeiculo(
@@ -120,7 +120,7 @@ class ControladorVeiculoTest {
 
         when(servicoVeiculo.buscarDetalhes(usuarioId, veiculoId)).thenReturn(resposta);
 
-        mockMvc.perform(get("/vehicles/me/{veiculoId}", veiculoId)
+        mockMvc.perform(get("/vehicles/{veiculoId}", veiculoId)
                         .with(authentication(auth))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -131,12 +131,12 @@ class ControladorVeiculoTest {
     }
 
     @Test
-    @DisplayName("DELETE /vehicles/me/{id} - Deve excluir veículo com sucesso")
+    @DisplayName("DELETE /vehicles/{id} - Deve excluir veículo com sucesso")
     void deveDeletarVeiculo() throws Exception {
         UUID veiculoId = UUID.randomUUID();
         doNothing().when(servicoVeiculo).deletar(usuarioId, veiculoId);
 
-        mockMvc.perform(delete("/vehicles/me/{veiculoId}", veiculoId)
+        mockMvc.perform(delete("/vehicles/{veiculoId}", veiculoId)
                         .with(authentication(auth))
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))

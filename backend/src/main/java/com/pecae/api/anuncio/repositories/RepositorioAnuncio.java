@@ -28,8 +28,16 @@ public interface RepositorioAnuncio extends JpaRepository<Anuncio, UUID> {
           AND (:modeloId IS NULL OR mo.id = CAST(:modeloId AS uuid))
           AND (:cidade IS NULL OR :cidade = '' OR LOWER(v.city) = LOWER(:cidade))
           AND (:estado IS NULL OR :estado = '' OR LOWER(v.state) = LOWER(:estado))
-          AND (:search IS NULL OR :search = '' OR a.search_vector @@ plainto_tsquery('portuguese', :search))
-        ORDER BY a.published_at DESC
+          AND (:search IS NULL OR :search = '' OR a.search_vector @@ to_tsquery('portuguese', :search))
+          AND (CAST(:lat AS double precision) IS NULL OR CAST(:lng AS double precision) IS NULL OR v.lat IS NULL OR v.lng IS NULL OR :maxDistancia IS NULL OR 
+               (6371 * acos(least(1.0, greatest(-1.0, cos(radians(CAST(:lat AS double precision))) * cos(radians(v.lat)) * cos(radians(v.lng) - radians(CAST(:lng AS double precision))) + sin(radians(CAST(:lat AS double precision))) * sin(radians(v.lat)))))) <= :maxDistancia)
+        ORDER BY 
+          CASE WHEN CAST(:lat AS double precision) IS NULL OR CAST(:lng AS double precision) IS NULL OR v.lat IS NULL OR v.lng IS NULL THEN 1 ELSE 0 END ASC,
+          CASE WHEN CAST(:lat AS double precision) IS NOT NULL AND CAST(:lng AS double precision) IS NOT NULL AND v.lat IS NOT NULL AND v.lng IS NOT NULL 
+               THEN (6371 * acos(least(1.0, greatest(-1.0, cos(radians(CAST(:lat AS double precision))) * cos(radians(v.lat)) * cos(radians(v.lng) - radians(CAST(:lng AS double precision))) + sin(radians(CAST(:lat AS double precision))) * sin(radians(v.lat))))))
+               ELSE 0 
+          END ASC,
+          a.published_at DESC
         """,
         countQuery = """
         SELECT count(*) FROM listings a
@@ -44,7 +52,9 @@ public interface RepositorioAnuncio extends JpaRepository<Anuncio, UUID> {
           AND (:modeloId IS NULL OR mo.id = CAST(:modeloId AS uuid))
           AND (:cidade IS NULL OR :cidade = '' OR LOWER(v.city) = LOWER(:cidade))
           AND (:estado IS NULL OR :estado = '' OR LOWER(v.state) = LOWER(:estado))
-          AND (:search IS NULL OR :search = '' OR a.search_vector @@ plainto_tsquery('portuguese', :search))
+          AND (:search IS NULL OR :search = '' OR a.search_vector @@ to_tsquery('portuguese', :search))
+          AND (CAST(:lat AS double precision) IS NULL OR CAST(:lng AS double precision) IS NULL OR v.lat IS NULL OR v.lng IS NULL OR :maxDistancia IS NULL OR 
+               (6371 * acos(least(1.0, greatest(-1.0, cos(radians(CAST(:lat AS double precision))) * cos(radians(v.lat)) * cos(radians(v.lng) - radians(CAST(:lng AS double precision))) + sin(radians(CAST(:lat AS double precision))) * sin(radians(v.lat)))))) <= :maxDistancia)
         """,
         nativeQuery = true)
     Page<Anuncio> buscarPublicados(
@@ -53,6 +63,9 @@ public interface RepositorioAnuncio extends JpaRepository<Anuncio, UUID> {
         @Param("cidade") String cidade,
         @Param("estado") String estado,
         @Param("search") String search,
+        @Param("lat") Double lat,
+        @Param("lng") Double lng,
+        @Param("maxDistancia") Integer maxDistancia,
         Pageable pageable
     );
 

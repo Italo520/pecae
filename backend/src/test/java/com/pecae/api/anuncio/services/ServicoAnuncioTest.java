@@ -42,10 +42,18 @@ import static org.mockito.Mockito.*;
 
 import com.pecae.api.catalogo.repositories.MarcaVeiculoRepository;
 import com.pecae.api.catalogo.repositories.ModeloVeiculoRepository;
+import com.pecae.api.favorito.repositories.RepositorioBuscaSalva;
+import com.pecae.api.notificacao.services.IServicoNotificacao;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Testes do ServicoAnuncio")
 class ServicoAnuncioTest {
+
+    @Mock
+    private RepositorioBuscaSalva repositorioBuscaSalva;
+
+    @Mock
+    private IServicoNotificacao servicoNotificacao;
 
     @Mock
     private RepositorioAnuncio repositorioAnuncio;
@@ -92,14 +100,14 @@ class ServicoAnuncioTest {
                 anuncio.getId(), "Título", "PUBLICADO", 10, "Marca", "Modelo", "Versão", 2020, "Preto", "São Paulo", "SP", null, UUID.randomUUID(), "Vendedor", true, LocalDateTime.now(), false
             );
 
-            when(repositorioAnuncio.buscarPublicados(null, null, "São Paulo", "SP", null, pageable)).thenReturn(page);
+            when(repositorioAnuncio.buscarPublicados(null, null, "São Paulo", "SP", null, null, null, null, pageable)).thenReturn(page);
             when(mapperAnuncio.paraResposta(anuncio)).thenReturn(respostaDto);
 
             Page<RespostaAnuncio> resultado = servicoAnuncio.listarPublicos(filtros);
 
             assertThat(resultado).isNotNull().hasSize(1);
             assertThat(resultado.getContent().get(0).id()).isEqualTo(anuncio.getId());
-            verify(repositorioAnuncio, times(1)).buscarPublicados(null, null, "São Paulo", "SP", null, pageable);
+            verify(repositorioAnuncio, times(1)).buscarPublicados(null, null, "São Paulo", "SP", null, null, null, null, pageable);
         }
 
         @Test
@@ -159,6 +167,7 @@ class ServicoAnuncioTest {
 
             when(perfilVendedorRepository.findByUsuarioId(usuarioId)).thenReturn(Optional.of(vendedor));
             when(repositorioVeiculo.findById(veiculoId)).thenReturn(Optional.of(veiculo));
+            when(repositorioAnuncio.findAllByPerfilVendedorId(any(), any())).thenReturn(Page.empty());
             when(repositorioAnuncio.save(any(Anuncio.class))).thenReturn(anuncio);
 
             RespostaDetalheAnuncio respostaDetalhe = new RespostaDetalheAnuncio(

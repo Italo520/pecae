@@ -89,11 +89,11 @@ class ControladorAdAdminTest {
     }
 
     @Test
-    @DisplayName("POST /api/v1/admin/ads/advertisers - Deve retornar 403 Forbidden para role VENDEDOR")
+    @DisplayName("POST /admin/ads/advertisers - Deve retornar 403 Forbidden para role VENDEDOR")
     void deveRetornar403ParaVendedorAoCriarAnunciante() throws Exception {
         RequisicaoCriarAnunciante request = new RequisicaoCriarAnunciante("Parceiro", "João", "joao@parceiro.com", "119999");
 
-        mockMvc.perform(post("/api/v1/admin/ads/advertisers")
+        mockMvc.perform(post("/admin/ads/advertisers")
                         .with(authentication(authSeller))
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -102,7 +102,7 @@ class ControladorAdAdminTest {
     }
 
     @Test
-    @DisplayName("POST /api/v1/admin/ads/advertisers - Deve criar anunciante com sucesso para role ADMIN")
+    @DisplayName("POST /admin/ads/advertisers - Deve criar anunciante com sucesso para role ADMIN")
     void deveCriarAnuncianteComSucessoParaAdmin() throws Exception {
         RequisicaoCriarAnunciante request = new RequisicaoCriarAnunciante("Parceiro", "João", "joao@parceiro.com", "119999");
         RespostaAnunciante resposta = new RespostaAnunciante(
@@ -111,7 +111,7 @@ class ControladorAdAdminTest {
 
         when(servicoAd.criarAnunciante(any(RequisicaoCriarAnunciante.class))).thenReturn(resposta);
 
-        mockMvc.perform(post("/api/v1/admin/ads/advertisers")
+        mockMvc.perform(post("/admin/ads/advertisers")
                         .with(authentication(authAdmin))
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -124,7 +124,7 @@ class ControladorAdAdminTest {
     }
 
     @Test
-    @DisplayName("POST /api/v1/admin/ads/campaigns - Deve criar campanha com sucesso para role ADMIN")
+    @DisplayName("POST /admin/ads/campaigns - Deve criar campanha com sucesso para role ADMIN")
     void deveCriarCampanhaComSucessoParaAdmin() throws Exception {
         UUID anuncianteId = UUID.randomUUID();
         RequisicaoCriarCampanha request = new RequisicaoCriarCampanha(
@@ -136,7 +136,7 @@ class ControladorAdAdminTest {
 
         when(servicoAd.criarCampanha(any(RequisicaoCriarCampanha.class))).thenReturn(resposta);
 
-        mockMvc.perform(post("/api/v1/admin/ads/campaigns")
+        mockMvc.perform(post("/admin/ads/campaigns")
                         .with(authentication(authAdmin))
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -149,14 +149,14 @@ class ControladorAdAdminTest {
     }
 
     @Test
-    @DisplayName("GET /api/v1/admin/ads/creatives/{id}/metrics - Deve retornar métricas do criativo para role ADMIN")
+    @DisplayName("GET /admin/ads/creatives/{id}/metrics - Deve retornar métricas do criativo para role ADMIN")
     void deveRetornarMetricasParaAdmin() throws Exception {
         UUID criativoId = UUID.randomUUID();
         RespostaMetricaAd resposta = new RespostaMetricaAd(criativoId, "Alt", 1000L, 50L, 5.0);
 
         when(servicoAd.obterMetricasCriativo(criativoId)).thenReturn(resposta);
 
-        mockMvc.perform(get("/api/v1/admin/ads/creatives/{criativoId}/metrics", criativoId)
+        mockMvc.perform(get("/admin/ads/creatives/{criativoId}/metrics", criativoId)
                         .with(authentication(authAdmin))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

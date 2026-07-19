@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image, ActivityIndicator, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image, ActivityIndicator, Dimensions, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
 import { PecaeBackground, PecaeGlassCard, PecaeMatchToast } from '../../src/components/PecaeUI';
 import { VehicleCard } from '../../src/components/Vehicle';
@@ -16,7 +16,14 @@ export default function CatalogScreen() {
   
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [showMatchToast, setShowMatchToast] = useState(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchVehicles();
+    setRefreshing(false);
+  };
 
   const fetchVehicles = async () => {
     try {
@@ -100,6 +107,14 @@ export default function CatalogScreen() {
             contentContainerStyle={styles.list}
             showsVerticalScrollIndicator={false}
             numColumns={1}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={[colors.brand]}
+                tintColor={colors.brand}
+              />
+            }
           />
         )}
       </View>

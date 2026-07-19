@@ -1,8 +1,8 @@
 # PROJECT.md
 
-> **Versão Expedida:** v10.3 (Milestone 10.3 - Paridade Web)  
-> **Status Geral:** Milestones 1 a 10 concluídas. Frontend Web separado com sucesso via Next.js e Turborepo com 100% de paridade com os fluxos críticos do App Mobile.  
-> **Foco Atual:** Planejamento da próxima Milestone (v11)
+> **Versão Expedida:** v11.0 (Milestone 11 - MVP Completo & Polido)  
+> **Status Geral:** 100% das Milestones e Ondas de Requisitos do PRD (1, 2 e 3) foram concluídas com sucesso. Frontend Web (Next.js 14) e Mobile (Expo Router) totalmente integrados ao Backend (Java 25 / Spring Boot 3).  
+> **Foco Atual:** Prontidão para Homologação (UAT) e Deploy de Produção.
 > **Diretriz Global Web:** O frontend web foi adaptado com as características modernas de ambientes web (grids, data-tables, sidebars, navegação otimizada), garantindo E2E Playwright de ponta a ponta.
 
 

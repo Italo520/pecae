@@ -49,7 +49,7 @@ class ControladorAdPublicoTest {
     private ServicoDetalhesUsuarioCustomizado customUserDetailsService;
 
     @Test
-    @DisplayName("GET /api/v1/ads/serve/{placement} - Deve servir anúncio se disponível")
+    @DisplayName("GET /ads/serve/{placement} - Deve servir anúncio se disponível")
     void deveServirAnuncioDisponivel() throws Exception {
         UUID criativoId = UUID.randomUUID();
         RespostaAdServido resposta = new RespostaAdServido(
@@ -58,7 +58,7 @@ class ControladorAdPublicoTest {
 
         when(servicoAd.servirAnuncio(PlacementAd.HOME_HERO)).thenReturn(Optional.of(resposta));
 
-        mockMvc.perform(get("/api/v1/ads/serve/HOME_HERO")
+        mockMvc.perform(get("/ads/serve/HOME_HERO")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.criativoId").value(criativoId.toString()))
@@ -68,11 +68,11 @@ class ControladorAdPublicoTest {
     }
 
     @Test
-    @DisplayName("GET /api/v1/ads/serve/{placement} - Deve retornar 204 se não houver anúncio")
+    @DisplayName("GET /ads/serve/{placement} - Deve retornar 204 se não houver anúncio")
     void deveRetornar204SemAnuncio() throws Exception {
         when(servicoAd.servirAnuncio(PlacementAd.HOME_HERO)).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/api/v1/ads/serve/HOME_HERO")
+        mockMvc.perform(get("/ads/serve/HOME_HERO")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
@@ -80,12 +80,12 @@ class ControladorAdPublicoTest {
     }
 
     @Test
-    @DisplayName("POST /api/v1/ads/{criativoId}/impression - Deve registrar visualização com sucesso e retornar 204")
+    @DisplayName("POST /ads/{criativoId}/impression - Deve registrar visualização com sucesso e retornar 204")
     void deveRegistrarImpressao() throws Exception {
         UUID criativoId = UUID.randomUUID();
         doNothing().when(jobRastreamento).registrarImpressao(eq(criativoId), any(), any());
 
-        mockMvc.perform(post("/api/v1/ads/{criativoId}/impression", criativoId)
+        mockMvc.perform(post("/ads/{criativoId}/impression", criativoId)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
@@ -94,12 +94,12 @@ class ControladorAdPublicoTest {
     }
 
     @Test
-    @DisplayName("POST /api/v1/ads/{criativoId}/click - Deve registrar clique com sucesso e retornar 204")
+    @DisplayName("POST /ads/{criativoId}/click - Deve registrar clique com sucesso e retornar 204")
     void deveRegistrarClique() throws Exception {
         UUID criativoId = UUID.randomUUID();
         doNothing().when(jobRastreamento).registrarClique(eq(criativoId), any());
 
-        mockMvc.perform(post("/api/v1/ads/{criativoId}/click", criativoId)
+        mockMvc.perform(post("/ads/{criativoId}/click", criativoId)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());

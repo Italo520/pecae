@@ -92,7 +92,7 @@ class ControladorDenunciaTest {
 
         when(servicoDenuncia.submeterDenuncia(eq(usuarioId), any(CriarDenunciaRequest.class))).thenReturn(resposta);
 
-        mockMvc.perform(post("/api/v1/denuncias")
+        mockMvc.perform(post("/denuncias")
                 .with(authentication(auth))
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -117,7 +117,7 @@ class ControladorDenunciaTest {
 
         when(servicoDenuncia.listarMinhasDenuncias(eq(usuarioId), any(Pageable.class))).thenReturn(pagina);
 
-        mockMvc.perform(get("/api/v1/denuncias/minhas")
+        mockMvc.perform(get("/denuncias/minhas")
                 .with(authentication(auth))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())

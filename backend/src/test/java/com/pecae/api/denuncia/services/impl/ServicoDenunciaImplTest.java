@@ -45,6 +45,9 @@ class ServicoDenunciaImplTest {
     @Mock
     private MapperDenuncia mapperDenuncia;
 
+    @Mock
+    private com.pecae.api.anuncio.repositories.RepositorioAnuncio repositorioAnuncio;
+
     @InjectMocks
     private ServicoDenunciaImpl servicoDenuncia;
 

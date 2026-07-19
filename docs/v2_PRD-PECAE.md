@@ -1,11 +1,11 @@
 # PRD — PECAÊ
 ## Documento de Requisitos do Produto (Product Requirements Document)
 
-**Versão:** 1.0.0  
-**Data:** Abril de 2026  
-**Status:** Em elaboração  
-**Stack:** React Native (Expo) + Node.js (NestJS/Fastify) + Supabase (PostgreSQL) + Redis + Socket.IO + S3/R2  
-**Deploy:** Vercel (API) + Expo EAS (mobile)  
+**Versão:** 2.0.0 (Consolidado e Atualizado)  
+**Data:** Julho de 2026  
+**Status:** Aprovado & 100% Concluído (MVP)  
+**Stack:** Java 25 (Spring Boot 3) + Next.js 14 (Web) + React Native (Expo SDK 51) + PostgreSQL (FTS & Haversine SQL) + Redis + WebSocket (STOMP) + Resend API + S3/Supabase Storage  
+**Deploy:** Coolify / Hetzner / Supabase DB (Backend) + Vercel (Web Frontend) + Expo EAS (Mobile App)  
 
 ---
 
@@ -1042,23 +1042,23 @@ User ──── Role
 
 | Camada | Tecnologia | Justificativa |
 |--------|-----------|---------------|
-| **Frontend / App** | React Native (Expo SDK 51+) | App multiplataforma iOS/Android; Expo Router para navegação nativa |
-| **Linguagem** | TypeScript | Segurança de tipos ponta a ponta |
-| **Backend API** | Node.js com NestJS | Estrutura enterprise com DI, guards e módulos |
-| **ORM** | Prisma | Type-safe, migrations, Supabase/PostgreSQL |
-| **Banco de Dados** | Supabase (PostgreSQL gerenciado) | Banco gerenciado, auth integrada, storage e realtime incluídos |
-| **Busca** | PG Full-Text nativo (MVP) | Supabase suporta full-text; OpenSearch na Fase 2 |
-| **Cache / Sessão** | Redis (Upstash) | Cache, sessões distribuídas, pub/sub |
-| **Chat** | Socket.IO + Redis Adapter | WebSocket escalável horizontalmente |
-| **Armazenamento de Mídia** | Supabase Storage ou AWS S3/R2 | Imagens fora do servidor, CDN integrado |
-| **Processamento Assíncrono** | BullMQ | Compressão de imagem, notificações, reindexação |
-| **Autenticação** | Supabase Auth ou JWT custom | JWT + refresh token rotativo |
-| **Push** | Expo Notifications + FCM (Android) / APNs (iOS) | Push nativo para mobile |
-| **E-mail** | Resend / SendGrid | E-mails de verificação, alertas, notificações |
-| **CDN** | Cloudflare | Assets, imagens, cache de APIs públicas |
-| **Deploy** | Vercel (API/Backend) + Expo EAS (mobile) | CI/CD simplificado; EAS para builds e OTA updates |
-| **Monitoramento** | Grafana + Prometheus | Métricas, logs e alertas |
-| **Logs** | Pino + Loki | Logging estruturado em JSON |
+| **Frontend Web** | Next.js 14 (React 18 + TailwindCSS) | SSR/ISR para SEO, rotas dinâmicas, alta performance e UX responsiva |
+| **App Mobile** | React Native (Expo SDK 51+) | App multiplataforma iOS/Android; Expo Router para navegação nativa e deep links (`pecae://`) |
+| **Linguagem Backend** | Java 25 (OpenJDK 25) | Desempenho extremo, concorrência moderna (Virtual Threads) e tipagem forte |
+| **Framework Backend** | Spring Boot 3.x | Ecossistema enterprise robusto, injeção de dependências, JPA e segurança |
+| **Persistência / ORM** | Spring Data JPA + Hibernate | Mapeamento relacional performático com controle transacional `@Transactional` |
+| **Migrações DB** | Flyway | Versionamento automatizado de schema e migrações SQL nativas |
+| **Banco de Dados** | Supabase (PostgreSQL 16) | PostgreSQL relacional de alta performance com FTS, triggers e extensões |
+| **Busca & Geolocalização** | PG Full-Text Search + Haversine SQL | Busca textual com dicionário de sinônimos (`to_tsquery`) e cálculo de distância em raio Km |
+| **Cache & Pub/Sub** | Redis | Caching de sessões, rate limiting e barramento Pub/Sub para WebSocket distribuído |
+| **Chat Realtime** | Spring WebSocket (STOMP / SockJS) | Protocolo padrão para mensageria realtime bidirecional e baixa latência |
+| **Armazenamento de Mídia** | AWS S3 / Supabase Storage | Gestão segura de imagens de anúncios e fotos de perfil com URLs assinadas |
+| **Jobs / Assincronismo** | `@Async` + Spring TaskScheduler | Notificações de matching em background e jobs assíncronos de visualização |
+| **Autenticação / RBAC** | Spring Security + JWT | Tokens JWT assinados com controle de papéis (`ROLE_BUYER`, `ROLE_SELLER`, `ROLE_MODERATOR`) |
+| **Push Notifications** | Expo Notifications + FCM / APNs | Disparo de alertas push para aplicativos móveis |
+| **E-mail Transacional** | Resend API | Envio confiável de e-mails de confirmação, recuperação de senha e alertas |
+| **Deploy Backend** | Coolify (Hetzner Cloud / Docker) | Orquestração autônoma de containers em infraestrutura própria de alto desempenho |
+| **Deploy Frontend Web** | Vercel | Hospedagem global de borda (Edge) otimizada para Next.js |
 
 ---
 
@@ -1067,7 +1067,7 @@ User ──── Role
 ```
        ┌───────────────────┐             ┌───────────────────┐
        │   Mobile App      │             │   Dashboard Web   │
-       │ (React Native)    │             │ (Moderador/Admin) │
+       │ (React Native)    │             │  (Next.js / Web)  │
        └─────────┬─────────┘             └─────────┬─────────┘
                  │                                 │
                  └────────────────┬────────────────┘
@@ -1079,8 +1079,8 @@ User ──── Role
        ┌──────────────────────────┼──────────────────────────┐
        │                          │                          │
 ┌──────▼──────┐           ┌───────▼───────┐          ┌───────▼──────┐
-│  Supabase   │           │    NestJS     │          │  Supabase    │
-│    Auth     │           │ (API Backend) │          │  Realtime    │
+│   Resend    │           │ Spring Boot 3 │          │  WebSocket   │
+│ (E-mail API)│           │ (Java 25 API) │          │(STOMP/SockJS)│
 └─────────────┘           └───────┬───────┘          └──────────────┘
                                   │
        ┌──────────────────────────┼──────────────────────────┐

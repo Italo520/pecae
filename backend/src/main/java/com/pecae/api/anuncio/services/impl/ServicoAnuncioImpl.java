@@ -19,6 +19,11 @@ import com.pecae.api.vendedor.entities.PerfilVendedor;
 import com.pecae.api.vendedor.repositories.PerfilVendedorRepository;
 import com.pecae.api.catalogo.repositories.MarcaVeiculoRepository;
 import com.pecae.api.catalogo.repositories.ModeloVeiculoRepository;
+import com.pecae.api.favorito.repositories.RepositorioBuscaSalva;
+import com.pecae.api.favorito.entities.BuscaSalva;
+import com.pecae.api.notificacao.services.IServicoNotificacao;
+import com.pecae.api.notificacao.entities.enums.TipoNotificacao;
+import com.pecae.api.notificacao.entities.enums.CanalNotificacao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,6 +33,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,17 +55,65 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
     private final JobVisualizacaoAnuncio jobVisualizacaoAnuncio;
     private final MarcaVeiculoRepository marcaVeiculoRepository;
     private final ModeloVeiculoRepository modeloVeiculoRepository;
+    private final RepositorioBuscaSalva repositorioBuscaSalva;
+    private final IServicoNotificacao servicoNotificacao;
+
+    private static final Map<String, List<String>> SINONIMOS = Map.of(
+        "cambio", List.of("transmissão", "marcha", "caixa"),
+        "câmbio", List.of("transmissão", "marcha", "caixa"),
+        "capo", List.of("capô", "capo", "frente"),
+        "capô", List.of("capô", "capo", "frente"),
+        "parachoque", List.of("para-choque", "para choque", "parachoque"),
+        "para-choque", List.of("para-choque", "para choque", "parachoque"),
+        "amortecedor", List.of("suspensão", "molas"),
+        "farol", List.of("lanterna", "farol", "luz")
+    );
+
+    private String preprocessarBuscaParaTsquery(String search) {
+        if (search == null || search.isBlank()) return null;
+        String clean = search.trim().toLowerCase();
+        
+        if (SINONIMOS.containsKey(clean)) {
+            List<String> terms = new ArrayList<>();
+            terms.add(clean);
+            terms.addAll(SINONIMOS.get(clean));
+            return String.join(" | ", terms);
+        }
+        
+        String[] words = clean.split("\\s+");
+        List<String> processedWords = new ArrayList<>();
+        for (String w : words) {
+            String sanitized = w.replaceAll("[^a-zA-Z0-9áéíóúâêîôûãõç]", "");
+            if (sanitized.isBlank()) continue;
+            
+            if (SINONIMOS.containsKey(sanitized)) {
+                List<String> terms = new ArrayList<>();
+                terms.add(sanitized);
+                terms.addAll(SINONIMOS.get(sanitized));
+                processedWords.add("(" + String.join(" | ", terms) + ")");
+            } else {
+                processedWords.add(sanitized);
+            }
+        }
+        
+        if (processedWords.isEmpty()) return null;
+        return String.join(" & ", processedWords);
+    }
 
     @Override
     @Transactional(readOnly = true)
     public Page<RespostaAnuncio> listarPublicos(FiltrosAnuncioQuery filtros) {
         Pageable pageable = PageRequest.of(filtros.pagina(), filtros.tamanho());
+        String queryTratada = preprocessarBuscaParaTsquery(filtros.search());
         Page<Anuncio> anuncios = repositorioAnuncio.buscarPublicados(
             filtros.marcaId(),
             filtros.modeloId(),
             filtros.cidade(),
             filtros.estado(),
-            filtros.search(),
+            queryTratada,
+            filtros.latitude(),
+            filtros.longitude(),
+            filtros.maxDistanciaKm(),
             pageable
         );
         return anuncios.map(mapperAnuncio::paraResposta);
@@ -122,6 +180,10 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
             throw new ExcecaoNegocio("Este veículo não pertence ao seu perfil.");
         }
 
+        // Validações de Blacklist e Anúncio Duplicado
+        validarBlacklist(request.titulo(), request.descricao());
+        verificarDuplicado(perfilVendedor.getId(), veiculo.getId(), request.titulo(), request.descricao());
+
         Anuncio anuncio = Anuncio.builder()
             .perfilVendedor(perfilVendedor)
             .veiculo(veiculo)
@@ -184,6 +246,10 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
                 perfilVendedorRepository.save(perfilVendedor);
             }
         }
+
+        String novoTitulo = (request.titulo() != null && !request.titulo().isBlank()) ? request.titulo() : anuncio.getTitulo();
+        String novaDescricao = request.descricao() != null ? request.descricao() : anuncio.getDescricao();
+        validarBlacklist(novoTitulo, novaDescricao);
 
         if (request.titulo() != null && !request.titulo().isBlank()) {
             anuncio.setTitulo(request.titulo());
@@ -363,6 +429,25 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
                 statsVendedor.setAnunciosAtivos(statsVendedor.getAnunciosAtivos() + 1);
                 perfilVendedorRepository.save(perfilVendedor);
             }
+
+            // Disparar alertas de matching para buscas salvas ativas
+            try {
+                List<BuscaSalva> buscas = repositorioBuscaSalva.findByAtivaTrue();
+                for (BuscaSalva busca : buscas) {
+                    if (verificarMatchingBusca(anuncio, busca)) {
+                        servicoNotificacao.despacharNotificacao(
+                            busca.getUsuario().getId(),
+                            "Alerta de Busca Salva!",
+                            "Um novo anúncio correspondente à sua busca '" + busca.getNome() + "' foi publicado: " + anuncio.getTitulo(),
+                            TipoNotificacao.ALERTA_SISTEMA,
+                            "/veiculo/" + anuncio.getId(),
+                            Set.of(CanalNotificacao.APP, CanalNotificacao.PUSH)
+                        );
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Erro ao verificar buscas salvas para anuncio {}", anuncioId, e);
+            }
         } else if (novoStatus == StatusAnuncio.REJEITADO) {
             // Caso seja rejeitado, se antes estava publicado (improvável por causa do fluxo normal, mas seguro)
             if (statusAnterior == StatusAnuncio.PUBLICADO) {
@@ -377,6 +462,71 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
 
         repositorioAnuncio.save(anuncio);
         log.info("Anúncio {} moderado com sucesso. Status alterado de {} para {}.", anuncioId, statusAnterior, novoStatus);
+    }
+
+    private boolean verificarMatchingBusca(Anuncio anuncio, BuscaSalva busca) {
+        if (busca.getFiltros() == null || busca.getFiltros().isEmpty()) {
+            return false;
+        }
+        
+        Map<String, Object> f = busca.getFiltros();
+        Veiculo v = anuncio.getVeiculo();
+        if (v == null) return false;
+        
+        if (f.containsKey("marcaId")) {
+            String fMarcaId = String.valueOf(f.get("marcaId"));
+            if (fMarcaId != null && !fMarcaId.isBlank() && !fMarcaId.equalsIgnoreCase("null")) {
+                UUID brandId = v.getVersao().getModelo().getMarca().getId();
+                if (!brandId.toString().equalsIgnoreCase(fMarcaId)) {
+                    return false;
+                }
+            }
+        }
+        
+        if (f.containsKey("modeloId")) {
+            String fModeloId = String.valueOf(f.get("modeloId"));
+            if (fModeloId != null && !fModeloId.isBlank() && !fModeloId.equalsIgnoreCase("null")) {
+                UUID modelId = v.getVersao().getModelo().getId();
+                if (!modelId.toString().equalsIgnoreCase(fModeloId)) {
+                    return false;
+                }
+            }
+        }
+        
+        if (f.containsKey("estado")) {
+            String fEstado = String.valueOf(f.get("estado"));
+            if (fEstado != null && !fEstado.isBlank() && !fEstado.equalsIgnoreCase("null")) {
+                if (v.getEstado() == null || !v.getEstado().equalsIgnoreCase(fEstado)) {
+                    return false;
+                }
+            }
+        }
+        
+        if (f.containsKey("cidade")) {
+            String fCidade = String.valueOf(f.get("cidade"));
+            if (fCidade != null && !fCidade.isBlank() && !fCidade.equalsIgnoreCase("null")) {
+                if (v.getCidade() == null || !v.getCidade().equalsIgnoreCase(fCidade)) {
+                    return false;
+                }
+            }
+        }
+        
+        if (f.containsKey("search") || f.containsKey("q")) {
+            String fSearch = String.valueOf(f.getOrDefault("search", f.get("q")));
+            if (fSearch != null && !fSearch.isBlank() && !fSearch.equalsIgnoreCase("null")) {
+                String title = anuncio.getTitulo() != null ? anuncio.getTitulo().toLowerCase() : "";
+                String desc = anuncio.getDescricao() != null ? anuncio.getDescricao().toLowerCase() : "";
+                String brandName = v.getVersao().getModelo().getMarca().getNome().toLowerCase();
+                String modelName = v.getVersao().getModelo().getNome().toLowerCase();
+                
+                String target = fSearch.toLowerCase();
+                if (!title.contains(target) && !desc.contains(target) && !brandName.contains(target) && !modelName.contains(target)) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
     }
 
     @Override
@@ -410,6 +560,34 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
         }
 
         log.info("Anúncio {} encerrado pelo vendedor: {}", anuncio.getId(), perfilVendedor.getId());
+    }
+
+    private static final Set<String> BLACKLIST_TERMOS = Set.of(
+        "arma", "droga", "documento falso", "placa clonada", "clonado", "roubado", "furto", "cocaína", "maconha", "revolver"
+    );
+
+    private void validarBlacklist(String titulo, String descricao) {
+        String t = (titulo != null ? titulo : "").toLowerCase();
+        String d = (descricao != null ? descricao : "").toLowerCase();
+        for (String termo : BLACKLIST_TERMOS) {
+            if (t.contains(termo) || d.contains(termo)) {
+                throw new ExcecaoNegocio("O anúncio contém termos impróprios ou proibidos pela nossa moderação: " + termo);
+            }
+        }
+    }
+
+    private void verificarDuplicado(UUID perfilVendedorId, UUID veiculoId, String titulo, String descricao) {
+        Page<Anuncio> anunciosVendedor = repositorioAnuncio.findAllByPerfilVendedorId(perfilVendedorId, Pageable.unpaged());
+        for (Anuncio a : anunciosVendedor.getContent()) {
+            if (a.getStatus() == StatusAnuncio.PUBLICADO || a.getStatus() == StatusAnuncio.PENDENTE) {
+                if (a.getVeiculo().getId().equals(veiculoId)) {
+                    throw new ExcecaoNegocio("Você já possui um anúncio ativo para este veículo.");
+                }
+                if (a.getTitulo().equalsIgnoreCase(titulo) && a.getDescricao().equalsIgnoreCase(descricao)) {
+                    throw new ExcecaoNegocio("Você já possui um anúncio ativo com exatamente o mesmo título e descrição.");
+                }
+            }
+        }
     }
 }
 

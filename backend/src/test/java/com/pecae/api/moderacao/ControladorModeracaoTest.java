@@ -93,7 +93,7 @@ class ControladorModeracaoTest {
     }
 
     @Test
-    @DisplayName("GET /api/v1/moderacao/denuncias/pendentes - Deve retornar 200 OK para moderador")
+    @DisplayName("GET /moderacao/denuncias/pendentes - Deve retornar 200 OK para moderador")
     void deveListarDenunciasPendentesComSucesso() throws Exception {
         RespostaDenuncia resposta = new RespostaDenuncia(
             UUID.randomUUID(), UUID.randomUUID(), "Denunciante", TipoAlvoDenuncia.ANUNCIO, UUID.randomUUID(), CategoriaDenuncia.SPAM, "desc",
@@ -104,7 +104,7 @@ class ControladorModeracaoTest {
 
         when(servicoModeracao.listarDenunciasPendentes(any(Pageable.class))).thenReturn(pagina);
 
-        mockMvc.perform(get("/api/v1/moderacao/denuncias/pendentes")
+        mockMvc.perform(get("/moderacao/denuncias/pendentes")
                 .with(authentication(authModerador))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -114,9 +114,9 @@ class ControladorModeracaoTest {
     }
 
     @Test
-    @DisplayName("GET /api/v1/moderacao/denuncias/pendentes - Deve retornar 403 Forbidden para usuário comum")
+    @DisplayName("GET /moderacao/denuncias/pendentes - Deve retornar 403 Forbidden para usuário comum")
     void deveLancarForbiddenParaUsuarioComumListandoDenuncias() throws Exception {
-        mockMvc.perform(get("/api/v1/moderacao/denuncias/pendentes")
+        mockMvc.perform(get("/moderacao/denuncias/pendentes")
                 .with(authentication(authUsuarioComum))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isForbidden());
@@ -125,14 +125,14 @@ class ControladorModeracaoTest {
     }
 
     @Test
-    @DisplayName("POST /api/v1/moderacao/denuncias/{id}/decisao - Deve aplicar decisão sobre denúncia com sucesso")
+    @DisplayName("POST /moderacao/denuncias/{id}/decisao - Deve aplicar decisão sobre denúncia com sucesso")
     void deveTomarDecisaoSobreDenunciaComSucesso() throws Exception {
         UUID denunciaId = UUID.randomUUID();
         DecisaoModeracaoRequest request = new DecisaoModeracaoRequest(AcaoModeracao.RESOLVER_DENUNCIA, "Resolvido");
 
         doNothing().when(servicoModeracao).processarDenuncia(eq(moderadorId), eq(denunciaId), any(DecisaoModeracaoRequest.class));
 
-        mockMvc.perform(post("/api/v1/moderacao/denuncias/{id}/decisao", denunciaId)
+        mockMvc.perform(post("/moderacao/denuncias/{id}/decisao", denunciaId)
                 .with(authentication(authModerador))
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -143,14 +143,14 @@ class ControladorModeracaoTest {
     }
 
     @Test
-    @DisplayName("POST /api/v1/moderacao/anuncios/{id}/decisao - Deve aplicar decisão sobre anúncio com sucesso")
+    @DisplayName("POST /moderacao/anuncios/{id}/decisao - Deve aplicar decisão sobre anúncio com sucesso")
     void deveTomarDecisaoSobreAnuncioComSucesso() throws Exception {
         UUID anuncioId = UUID.randomUUID();
         DecisaoModeracaoRequest request = new DecisaoModeracaoRequest(AcaoModeracao.APROVAR_ANUNCIO, "Aprovado");
 
         doNothing().when(servicoModeracao).moderarAnuncio(eq(moderadorId), eq(anuncioId), any(DecisaoModeracaoRequest.class));
 
-        mockMvc.perform(post("/api/v1/moderacao/anuncios/{id}/decisao", anuncioId)
+        mockMvc.perform(post("/moderacao/anuncios/{id}/decisao", anuncioId)
                 .with(authentication(authModerador))
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -161,7 +161,7 @@ class ControladorModeracaoTest {
     }
 
     @Test
-    @DisplayName("GET /api/v1/moderacao/logs - Deve retornar logs de auditoria para moderador")
+    @DisplayName("GET /moderacao/logs - Deve retornar logs de auditoria para moderador")
     void deveListarLogsComSucesso() throws Exception {
         RespostaLogAuditoria resposta = new RespostaLogAuditoria(
             UUID.randomUUID(), moderadorId, "Mod", AcaoModeracao.APROVAR_ANUNCIO, "ANUNCIO", UUID.randomUUID(), "Aprovado", LocalDateTime.now()
@@ -171,7 +171,7 @@ class ControladorModeracaoTest {
 
         when(servicoModeracao.listarLogsAuditoria(any(Pageable.class))).thenReturn(pagina);
 
-        mockMvc.perform(get("/api/v1/moderacao/logs")
+        mockMvc.perform(get("/moderacao/logs")
                 .with(authentication(authModerador))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())

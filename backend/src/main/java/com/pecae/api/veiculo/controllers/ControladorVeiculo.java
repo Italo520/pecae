@@ -79,7 +79,7 @@ public class ControladorVeiculo {
         return ResponseEntity.ok(resposta);
     }
 
-    @DeleteMapping("/me/{veiculoId}")
+    @DeleteMapping(value = {"/{veiculoId}", "/me/{veiculoId}"})
     @PreAuthorize("hasAnyRole('VENDEDOR', 'AMBOS')")
     @Operation(summary = "Excluir veículo", description = "Realiza a exclusão lógica de um veículo do vendedor autenticado.")
     public ResponseEntity<Void> deletar(

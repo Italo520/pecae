@@ -8,6 +8,9 @@ public record FiltrosAnuncioQuery(
     String cidade,
     String estado,
     String search,
+    Double latitude,
+    Double longitude,
+    Integer maxDistanciaKm,
     Integer pagina,
     Integer tamanho
 ) {
@@ -25,6 +28,6 @@ public record FiltrosAnuncioQuery(
 
     // Construtor alternativo para manter retrocompatibilidade com testes existentes
     public FiltrosAnuncioQuery(UUID marcaId, UUID modeloId, String cidade, String estado, Integer pagina, Integer tamanho) {
-        this(marcaId, modeloId, cidade, estado, null, pagina, tamanho);
+        this(marcaId, modeloId, cidade, estado, null, null, null, null, pagina, tamanho);
     }
 }
