@@ -80,6 +80,23 @@ test.describe('Seller Listing Flow', () => {
       });
     });
 
+    // Intercept API /catalog/versions/*/years ou /catalog/years
+    await page.route('**/catalog/versions/*/years*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([{ id: 'c7b5a8d9-2e1f-4b3a-9c8d-7e6f5a4b3c2d', name: '2012', fuelType: 'Flex', versionId: 'ba64467c-17dc-4cf9-bb56-d0e4f55d210c' }])
+      });
+    });
+
+    await page.route('**/catalog/years*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([{ id: 'c7b5a8d9-2e1f-4b3a-9c8d-7e6f5a4b3c2d', name: '2012', fuelType: 'Flex', versionId: 'ba64467c-17dc-4cf9-bb56-d0e4f55d210c' }])
+      });
+    });
+
     // Intercept API /vehicles (Criação)
     await page.route('**/vehicles', async (route) => {
       if (route.request().method() === 'POST') {
@@ -142,8 +159,8 @@ test.describe('Seller Listing Flow', () => {
 
     // Etapa 3: Peças
     await expect(page.getByRole('heading', { name: 'Peças Intactas' })).toBeVisible();
-    await page.getByRole('checkbox', { name: 'Motor e Componentes' }).check({ force: true });
-    await page.getByRole('checkbox', { name: 'Câmbio e Transmissão' }).check({ force: true });
+    await page.locator('label').nth(0).click();
+    await page.locator('label').nth(1).click();
     await page.getByRole('button', { name: 'Próximo Passo' }).click();
 
     // Etapa 4: Fotos

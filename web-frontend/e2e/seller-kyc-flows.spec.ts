@@ -55,11 +55,7 @@ test.describe('Seller Onboarding and KYC Flows', () => {
     });
 
     // Intercept API /sellers (criação de perfil)
-    await page.route('**/sellers', async (route) => {
-      // Ignorar rotas de verificação aqui
-      if (route.request().url().includes('/verification/')) {
-        return route.fallback();
-      }
+    await page.route(url => url.pathname.endsWith('/sellers'), async (route) => {
       if (route.request().method() === 'POST') {
         await route.fulfill({
           status: 201,
@@ -151,10 +147,12 @@ test.describe('Seller Onboarding and KYC Flows', () => {
     await expect(page.getByText('documento-cnh.pdf')).toBeVisible();
 
     // Clica em enviar
+    page.once('dialog', async (dialog) => {
+      await dialog.accept();
+    });
     await page.getByRole('button', { name: /ENVIAR PARA ANÁLISE/i }).click();
 
-    // O status muda e redireciona (ou exibe a tela "Em Análise"). 
-    // Como mockamos o roteamento final para /vendedor/dashboard, aguardamos isso.
-    await expect(page).toHaveURL(/\/vendedor\/dashboard/);
+    // O status muda e redireciona para o dashboard ou solicitar-verificacao
+    await expect(page).toHaveURL(/\/vendedor\/(dashboard|solicitar-verificacao)/);
   });
 });

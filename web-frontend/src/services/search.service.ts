@@ -54,8 +54,8 @@ export async function fetchYears(versionId: string): Promise<any[]> {
     const data = await res.json();
     return data.map((item: any) => ({
       id: item.id,
-      name: (item.year || item.ano || '').toString(),
-      fuelType: 'Flex'
+      name: (item.name || item.year || item.ano || '').toString(),
+      fuelType: item.fuelType || 'Flex'
     }));
   } catch (error) {
     return [];

@@ -156,7 +156,7 @@ test.describe('Buyer Experience Flow', () => {
     });
 
     // Mock do anúncio
-    await page.route('**/listings/listing100', async (route) => {
+    await page.route('**/listings/*', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
