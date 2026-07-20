@@ -44,7 +44,7 @@ public class ControladorModeracao {
     @GetMapping("/anuncios/pendentes")
     @Operation(summary = "Listar anúncios pendentes", description = "Retorna uma lista paginada de todos os anúncios pendentes de aprovação.")
     public ResponseEntity<Page<RespostaAnuncio>> listarAnunciosPendentes(
-        @PageableDefault(size = 20, sort = "criadoEm", direction = Sort.Direction.ASC) Pageable pageable
+        @PageableDefault(size = 20, sort = "created_at", direction = Sort.Direction.ASC) Pageable pageable
     ) {
         Page<RespostaAnuncio> resposta = servicoModeracao.listarAnunciosPendentes(pageable);
         return ResponseEntity.ok(resposta);
