@@ -1,9 +1,8 @@
 # PROJECT.md
 
 > **Versão Expedida:** v11.0 (Milestone 11 - MVP Completo & Polido)  
-> **Status Geral:** 100% das Milestones e Ondas de Requisitos do PRD (1, 2 e 3) foram concluídas com sucesso. Frontend Web (Next.js 14) e Mobile (Expo Router) totalmente integrados ao Backend (Java 25 / Spring Boot 3).  
-> **Foco Atual:** Prontidão para Homologação (UAT) e Deploy de Produção.
-> **Diretriz Global Web:** O frontend web foi adaptado com as características modernas de ambientes web (grids, data-tables, sidebars, navegação otimizada), garantindo E2E Playwright de ponta a ponta.
+> **Status Geral:** 100% das Milestones e Ondas de Requisitos do PRD (1, 2 e 3) foram concluídas com sucesso. Frontend Web (Next.js 14) e Mobile (Expo Router) totalmente integrados ao Backend (Java 25 / Spring Boot 3). A **paridade total** entre as plataformas foi alcançada, e o código foi homologado (Score 100%) e consolidado na branch `main`.
+> **Foco Atual:** Produção (Deploy da v11.0 estabilizada).
 
 
 ## Visão Geral do Sistema PECAÊ

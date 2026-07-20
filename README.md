@@ -2,7 +2,7 @@
 
 Este é o **Manual Técnico Definitivo** do monorepo PECAÊ. Este documento detalha a arquitetura, as escolhas tecnológicas e fornece guias operacionais para rodar e manter a plataforma.
 
-> **Status do Projeto:** Milestone 9 Concluída. O projeto concluiu com êxito a migração total do seu backend legado em Node.js (NestJS) para uma robusta arquitetura **Java 25 (Spring Boot)**. Todas as validações E2E estão aprovadas.
+> **Status do Projeto:** MVP 100% Concluído (Milestone 11 Finalizada). A arquitetura completa (Java 25 Spring Boot backend, Next.js 14 web frontend, React Native Expo mobile frontend) foi estabilizada, obteve 100% de paridade entre as plataformas e foi consolidada na branch `main`. Todas as pendências e integrações (FIPE, Chat WebSocket STOMP, Moderação e LGPD) estão em produção.
 
 ---
 
