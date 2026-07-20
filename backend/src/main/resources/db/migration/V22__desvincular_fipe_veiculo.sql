@@ -21,9 +21,9 @@ SET marca_nome = b.name,
     ano_nome = CAST(y.year AS VARCHAR)
 FROM vehicle_versions ver
 JOIN vehicle_models m ON ver.model_id = m.id
-JOIN vehicle_brands b ON m.brand_id = b.id
-JOIN vehicle_years y ON v.year_fab_id = y.id
-WHERE v.version_id = ver.id;
+JOIN vehicle_brands b ON m.brand_id = b.id,
+vehicle_years y
+WHERE v.version_id = ver.id AND v.year_fab_id = y.id;
 
 -- Tratamento para veículos que possam ter falhado no update acima
 UPDATE vehicles SET marca_nome = 'Desconhecida' WHERE marca_nome IS NULL;
