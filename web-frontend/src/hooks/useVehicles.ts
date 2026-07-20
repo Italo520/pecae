@@ -84,7 +84,8 @@ export function useCreateVehicle() {
       const modelo = data.modeloNome || '';
       const ano = data.anoNome || '';
       const cor = data.cor || '';
-      const title = `${marca} ${modelo} ${ano} - ${cor}`.trim();
+      const uniqueSuffix = Date.now().toString().slice(-6);
+      const title = `${marca} ${modelo} ${ano} - ${cor} #${uniqueSuffix}`.trim();
       const description = data.observacoes || `Sucata doadora ${marca} ${modelo}. Peças disponíveis para venda. Entre em contato para negociar.`;
 
       try {
