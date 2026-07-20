@@ -125,11 +125,7 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
     
     try {
       setIsUploading(true);
-      const response = await api.post(`/chat/rooms/${chatId}/attachment`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await api.post(`/chat/rooms/${chatId}/attachment`, formData);
       const { url } = response.data;
       
       const tempMsg: MensagemChat = {

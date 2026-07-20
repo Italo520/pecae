@@ -72,9 +72,7 @@ export function useCreateVehicle() {
           formData.append('file', photo);
           formData.append('type', 'EXTERIOR'); // default to EXTERIOR
           try {
-            await api.post(`/vehicles/me/${vehicle.id}/photos`, formData, {
-              headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            await api.post(`/vehicles/me/${vehicle.id}/photos`, formData);
           } catch(e) {
             console.error('Failed to upload photo', e);
           }
