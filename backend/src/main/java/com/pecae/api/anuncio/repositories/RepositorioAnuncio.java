@@ -68,8 +68,8 @@ public interface RepositorioAnuncio extends JpaRepository<Anuncio, UUID> {
     Optional<Anuncio> findByVeiculoIdAndPerfilVendedorId(UUID veiculoId, UUID perfilVendedorId);
 
     // Listar anúncios por status (fila de moderação)
-    @Query(value = "SELECT * FROM listings WHERE status = 'PENDING' AND deleted_at IS NULL ORDER BY created_at ASC",
-           countQuery = "SELECT count(*) FROM listings WHERE status = 'PENDING' AND deleted_at IS NULL",
+    @Query(value = "SELECT l.* FROM listings l JOIN vehicles v ON l.vehicle_id = v.id WHERE l.status = 'PENDING' AND l.deleted_at IS NULL AND v.deleted_at IS NULL ORDER BY l.created_at ASC",
+           countQuery = "SELECT count(*) FROM listings l JOIN vehicles v ON l.vehicle_id = v.id WHERE l.status = 'PENDING' AND l.deleted_at IS NULL AND v.deleted_at IS NULL",
            nativeQuery = true)
     Page<Anuncio> findAllByStatus(@Param("status") StatusAnuncio status, Pageable pageable);
 

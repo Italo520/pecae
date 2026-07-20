@@ -37,10 +37,12 @@ public class Anuncio {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_profile_id", nullable = false)
+    @org.hibernate.annotations.NotFound(action = org.hibernate.annotations.NotFoundAction.IGNORE)
     private PerfilVendedor perfilVendedor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicle_id", nullable = false)
+    @org.hibernate.annotations.NotFound(action = org.hibernate.annotations.NotFoundAction.IGNORE)
     private Veiculo veiculo;
 
     @Column(name = "title", nullable = false)
