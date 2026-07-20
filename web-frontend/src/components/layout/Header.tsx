@@ -116,8 +116,8 @@ export function Header() {
             </div>
 
             {/* CTA Announce */}
-            <Button variant="primary" size="sm" className="hidden sm:flex">
-              <Link href="/anunciar">Anunciar</Link>
+            <Button variant="primary" size="sm" className="hidden sm:flex" onClick={() => alert('Página Anunciar em desenvolvimento')}>
+              Anunciar
             </Button>
             
           </div>

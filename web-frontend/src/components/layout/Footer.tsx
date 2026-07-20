@@ -25,32 +25,32 @@ export function Footer() {
 
           <div className="flex flex-col gap-3">
             <h3 className="font-semibold text-[var(--foreground)]">Sobre</h3>
-            <Link href="/sobre" className="text-sm text-[var(--muted)] hover:text-[var(--brand)] transition-colors">
+            <span className="text-sm text-[var(--muted)] hover:text-[var(--brand)] transition-colors cursor-not-allowed">
               Quem somos
-            </Link>
-            <Link href="/contato" className="text-sm text-[var(--muted)] hover:text-[var(--brand)] transition-colors">
+            </span>
+            <span className="text-sm text-[var(--muted)] hover:text-[var(--brand)] transition-colors cursor-not-allowed">
               Contato
-            </Link>
+            </span>
           </div>
 
           <div className="flex flex-col gap-3">
             <h3 className="font-semibold text-[var(--foreground)]">Legal</h3>
-            <Link href="/termos" className="text-sm text-[var(--muted)] hover:text-[var(--brand)] transition-colors">
+            <Link href="/termos-de-uso" className="text-sm text-[var(--muted)] hover:text-[var(--brand)] transition-colors">
               Termos de Uso
             </Link>
-            <Link href="/privacidade" className="text-sm text-[var(--muted)] hover:text-[var(--brand)] transition-colors">
+            <Link href="/politica-de-privacidade" className="text-sm text-[var(--muted)] hover:text-[var(--brand)] transition-colors">
               Privacidade
             </Link>
           </div>
 
           <div className="flex flex-col gap-3">
             <h3 className="font-semibold text-[var(--foreground)]">Ajuda</h3>
-            <Link href="/faq" className="text-sm text-[var(--muted)] hover:text-[var(--brand)] transition-colors">
+            <span className="text-sm text-[var(--muted)] hover:text-[var(--brand)] transition-colors cursor-not-allowed">
               Perguntas Frequentes
-            </Link>
-            <Link href="/dicas-seguranca" className="text-sm text-[var(--muted)] hover:text-[var(--brand)] transition-colors">
+            </span>
+            <span className="text-sm text-[var(--muted)] hover:text-[var(--brand)] transition-colors cursor-not-allowed">
               Dicas de Segurança
-            </Link>
+            </span>
           </div>
 
         </div>
