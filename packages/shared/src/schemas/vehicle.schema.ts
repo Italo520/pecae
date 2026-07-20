@@ -8,7 +8,6 @@ export const vehicleCreateSchema = z.object({
   brandCode: z.string().optional(),
   modelCode: z.string().optional(),
   yearCode: z.string().optional(),
-  placa: z.string().max(20, 'A placa não pode ter mais de 20 caracteres').optional().nullable(),
   cor: z.string().min(1, 'A cor é obrigatória').max(50, 'A cor não pode ter mais de 50 caracteres'),
   cidade: z.string().min(1, 'A cidade é obrigatória').max(100, 'A cidade não pode ter mais de 100 caracteres'),
   estado: z.string().length(2, 'O estado deve ter exatamente 2 caracteres'),

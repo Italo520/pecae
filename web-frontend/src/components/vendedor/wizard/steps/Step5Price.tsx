@@ -5,8 +5,6 @@ import type { VehicleCreateInput } from '@pecae/shared';
 
 export default function Step5Price() {
   const { register, watch, formState: { errors } } = useFormContext<VehicleCreateInput>();
-  
-  const placa = watch('placa');
 
   const inputClass = "w-full bg-[var(--surface-hover)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--brand)] focus:ring-1 focus:ring-[var(--brand)] transition-all";
   const labelClass = "block text-sm font-medium text-[var(--muted)] mb-1.5";
@@ -41,7 +39,7 @@ export default function Step5Price() {
       <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 flex items-center justify-between">
         <div>
           <h4 className="text-emerald-500 font-medium">Tudo pronto!</h4>
-          <p className="text-emerald-500/80 text-sm">Placa informada: <span className="font-mono uppercase">{placa || 'N/A'}</span></p>
+          <p className="text-emerald-500/80 text-sm">Pronto para criar o anúncio.</p>
         </div>
       </div>
 

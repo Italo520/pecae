@@ -32,7 +32,6 @@ export default function VehicleWizardClient() {
   const methods = useForm<any>({
     resolver: zodResolver(vehicleCreateSchema),
     defaultValues: {
-      placa: '',
       cor: '',
       cidade: '',
       estado: '',
@@ -81,9 +80,6 @@ export default function VehicleWizardClient() {
       if (submitData.tipoCombustivel === '') {
         submitData.tipoCombustivel = null;
       }
-      if (submitData.placa === '') {
-        submitData.placa = null;
-      }
       if (submitData.observacoes === '') {
         submitData.observacoes = null;
       }
@@ -91,9 +87,20 @@ export default function VehicleWizardClient() {
       await createVehicle({ ...submitData, photos });
       // Redirect on success
       router.push('/vendedor/dashboard');
-    } catch (error) {
-      console.error('Failed to create vehicle:', error, (error as any).response?.data);
-      alert('Erro ao criar anúncio. Verifique os dados ou tente novamente mais tarde.');
+    } catch (error: any) {
+      console.error('Failed to create vehicle:', error, error.response?.data);
+      const responseData = error.response?.data;
+      let errorMsg = 'Verifique os dados ou tente novamente mais tarde.';
+      
+      if (responseData) {
+        if (responseData.erros && responseData.erros.length > 0) {
+          errorMsg = `${responseData.erros[0].campo}: ${responseData.erros[0].mensagem}`;
+        } else if (responseData.detalhe) {
+          errorMsg = responseData.detalhe;
+        }
+      }
+      
+      alert(`Erro ao criar anúncio: ${errorMsg}`);
     }
   };
 

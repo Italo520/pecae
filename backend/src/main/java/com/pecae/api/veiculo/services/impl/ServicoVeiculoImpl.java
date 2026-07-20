@@ -40,12 +40,6 @@ public class ServicoVeiculoImpl implements IServicoVeiculo {
         PerfilVendedor perfilVendedor = perfilVendedorRepository.findByUsuarioId(usuarioId)
                 .orElseThrow(() -> new ExcecaoNegocio("Vendedor não encontrado. Crie seu perfil de vendedor antes de cadastrar um veículo."));
 
-        if (request.placa() != null && !request.placa().isBlank()) {
-            if (repositorioVeiculo.existsByPlaca(request.placa())) {
-                throw new ExcecaoNegocio("Já existe um veículo cadastrado com a placa informada.");
-            }
-        }
-
         Veiculo veiculo = mapperVeiculo.paraEntidade(request);
         veiculo.setPerfilVendedor(perfilVendedor);
         veiculo.setStatus(StatusVeiculo.RASCUNHO);
@@ -70,12 +64,6 @@ public class ServicoVeiculoImpl implements IServicoVeiculo {
 
         Veiculo veiculo = repositorioVeiculo.findByIdAndPerfilVendedorId(veiculoId, perfilVendedor.getId())
                 .orElseThrow(() -> new ExcecaoRecursoNaoEncontrado("Veículo não encontrado ou não pertence a este vendedor."));
-
-        if (request.placa() != null && !request.placa().isBlank() && !request.placa().equalsIgnoreCase(veiculo.getPlaca())) {
-            if (repositorioVeiculo.existsByPlacaAndIdNot(request.placa(), veiculoId)) {
-                throw new ExcecaoNegocio("Já existe outro veículo cadastrado com a placa informada.");
-            }
-        }
 
         mapperVeiculo.atualizarEntidadeDoDto(request, veiculo);
 

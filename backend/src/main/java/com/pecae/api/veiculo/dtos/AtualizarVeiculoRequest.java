@@ -7,9 +7,6 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public record AtualizarVeiculoRequest(
-    @Size(max = 20, message = "A placa não pode ter mais de 20 caracteres")
-    String placa,
-
     @Size(max = 50, message = "A cor não pode ter mais de 50 caracteres")
     String cor,
 

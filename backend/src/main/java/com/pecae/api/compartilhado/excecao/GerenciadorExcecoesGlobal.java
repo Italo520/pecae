@@ -138,4 +138,23 @@ public class GerenciadorExcecoesGlobal {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resposta);
     }
+
+    /**
+     * Erros de leitura de JSON (ex: valores inválidos para enum).
+     */
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    public ResponseEntity<RespostaErro> tratarMensagemIlegivel(
+            org.springframework.http.converter.HttpMessageNotReadableException ex, HttpServletRequest request) {
+
+        log.warn("Erro de parsing de JSON em {}: {}", request.getRequestURI(), ex.getMessage());
+
+        var resposta = new RespostaErro(
+                HttpStatus.BAD_REQUEST.value(),
+                "Requisicao Invalida",
+                "Formato de dados inválido. Verifique os tipos de dados enviados: " + ex.getMostSpecificCause().getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resposta);
+    }
 }

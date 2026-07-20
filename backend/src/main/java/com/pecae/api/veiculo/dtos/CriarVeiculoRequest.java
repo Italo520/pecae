@@ -18,9 +18,6 @@ public record CriarVeiculoRequest(
 
     String versaoNome,
 
-    @Size(max = 20, message = "A placa não pode ter mais de 20 caracteres")
-    String placa,
-
     @NotBlank(message = "A cor é obrigatória")
     @Size(max = 50, message = "A cor não pode ter mais de 50 caracteres")
     String cor,
