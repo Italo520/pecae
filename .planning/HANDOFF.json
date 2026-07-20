@@ -1,0 +1,28 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-07-19T23:28:00Z",
+  "phase": "Deployment Fix",
+  "phase_name": "Coolify Deploy Fix",
+  "phase_dir": ".planning",
+  "plan": 1,
+  "task": 1,
+  "total_tasks": 2,
+  "status": "paused",
+  "completed_tasks": [
+    {"id": 1, "name": "Fix Coolify Build (devDependencies missing)", "status": "done", "commit": "475eb83"},
+    {"id": 2, "name": "Configure FQDN in Coolify", "status": "done", "commit": ""}
+  ],
+  "remaining_tasks": [
+    {"id": 3, "name": "Diagnose and fix 502 Bad Gateway on access", "status": "not_started"}
+  ],
+  "blockers": [
+    {"description": "Site returns 502 Bad Gateway after successful deploy", "type": "technical", "workaround": ""}
+  ],
+  "human_actions_pending": [],
+  "decisions": [
+    {"decision": "Force NODE_ENV=development in Dockerfile during npm ci", "rationale": "Coolify sets NODE_ENV=production globally which skips devDependencies required for Next.js build", "phase": "1"}
+  ],
+  "uncommitted_files": [],
+  "next_action": "Investigate Coolify app logs or Traefik proxy logs for the 502 Bad Gateway.",
+  "context_notes": "The container builds and starts successfully (listening on 0.0.0.0:3000). The FQDN pecae.italohub.cloud was added. However, Traefik returns 502."
+}
