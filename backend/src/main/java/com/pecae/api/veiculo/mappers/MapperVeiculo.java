@@ -20,19 +20,30 @@ public interface MapperVeiculo {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void atualizarEntidadeDoDto(AtualizarVeiculoRequest dto, @MappingTarget Veiculo entidade);
 
-    @Mapping(source = "anoNome", target = "ano")
+    @Mapping(target = "ano", source = "anoNome", qualifiedByName = "extrairAno")
     @Mapping(target = "urlFotoPrincipal", expression = "java(extrairFotoPrincipal(entidade))")
     @Mapping(source = "status", target = "status")
     RespostaVeiculo paraResposta(Veiculo entidade);
 
     @Mapping(source = "perfilVendedor.id", target = "perfilVendedorId")
-    @Mapping(source = "anoNome", target = "ano")
+    @Mapping(target = "ano", source = "anoNome", qualifiedByName = "extrairAno")
     @Mapping(source = "status", target = "status")
     @Mapping(source = "tipoCombustivel", target = "tipoCombustivel")
     RespostaDetalheVeiculo paraRespostaDetalhe(Veiculo entidade);
 
     @Mapping(source = "tipo", target = "tipo")
     RespostaFotoVeiculo paraRespostaFoto(FotoVeiculo foto);
+
+    @Named("extrairAno")
+    default Integer extrairAno(String anoNome) {
+        if (anoNome == null) return null;
+        try {
+            String[] partes = anoNome.split(" ");
+            return Integer.parseInt(partes[0]);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     default String extrairFotoPrincipal(Veiculo veiculo) {
         if (veiculo.getFotos() == null || veiculo.getFotos().isEmpty()) {
