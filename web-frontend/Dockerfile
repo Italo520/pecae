@@ -7,7 +7,7 @@ COPY package*.json turbo.json ./
 COPY packages/ ./packages/
 COPY web-frontend/package*.json ./web-frontend/
 COPY scripts/ ./scripts/
-RUN npm ci --workspace=web-frontend
+RUN NODE_ENV=development npm ci --workspace=web-frontend
 
 # Copia o código e faz build
 COPY web-frontend/ ./web-frontend/
