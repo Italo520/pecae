@@ -83,7 +83,7 @@ export function useCreateVehicle() {
       }
 
       // Criar o anúncio correspondente para o veículo
-      const title = `Sucata de veículo doador - Cor ${data.cor || 'Preta'} - Placa ${data.placa || 'Sem placa'}`;
+      const title = `Sucata de veículo doador - Cor ${data.cor || 'Preta'}`;
       const description = data.observacoes || 'Sem observações adicionais sobre o lote/sucata.';
 
       await api.post('/listings/me', {

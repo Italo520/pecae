@@ -14,21 +14,11 @@ export default function Step1Identification() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
         <h2 className="text-2xl font-display font-semibold text-[var(--foreground)] mb-2">Identificação do Veículo</h2>
-        <p className="text-[var(--muted)] text-sm">Insira os dados básicos da sucata. A placa não será exibida publicamente.</p>
+        <p className="text-[var(--muted)] text-sm">Insira os dados básicos da sucata.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Placa */}
-        <div className="col-span-1">
-          <label className={labelClass}>Placa</label>
-          <input 
-            type="text" 
-            placeholder="ABC-1234"
-            className={`${inputClass} uppercase`}
-            {...register('placa')}
-          />
-          {errors.placa && <p className={errorClass}>{errors.placa.message}</p>}
-        </div>
+
 
         {/* Cor */}
         <div className="col-span-1">
