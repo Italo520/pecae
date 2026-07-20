@@ -7,56 +7,10 @@ import { api } from '../../src/services/api';
 import { useAuthStore } from '../../src/store/auth-store';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
-import { Client } from '@stomp/stompjs';
-import { TextEncoder, TextDecoder } from 'text-encoding';
 import * as ImagePicker from 'expo-image-picker';
-
-// Polyfills para compatibilidade do @stomp/stompjs no React Native
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder as any;
-
-const obterUrlWebSocket = () => {
-  const baseURL = api.defaults.baseURL || '';
-  let wsProtocol = baseURL.startsWith('https') ? 'wss://' : 'ws://';
-  let cleanUrl = baseURL.replace('https://', '').replace('http://', '');
-  let parts = cleanUrl.split('/');
-  let hostAndPort = parts[0];
-  
-  if (hostAndPort.includes(':')) {
-    const hostOnly = hostAndPort.split(':')[0];
-    hostAndPort = `${hostOnly}:3333`;
-  } else {
-    if (hostAndPort === 'localhost') {
-      hostAndPort = 'localhost:3333';
-    }
-  }
-  return `${wsProtocol}${hostAndPort}/api/v1/ws/websocket`;
-};
-
-interface Message {
-  id: string;
-  roomId: string;
-  senderId: string;
-  content: string;
-  createdAt: string;
-  lido?: boolean;
-}
-
-interface RoomDetails {
-  id: string;
-  listingId: string;
-  listingTitle: string;
-  listingThumbnail: string | null;
-  sellerId: string;
-  interlocutor: {
-    id: string;
-    name: string | null;
-    avatar: string | null;
-    isVerified?: boolean;
-  };
-  anuncioStatus?: string | null;
-  anuncioVendidoEm?: string | null;
-}
+import { useStomp } from '../../src/hooks/useStomp';
+import { useChats, RoomDetails } from '../../src/hooks/useChats';
+import { useChatMessages, Message } from '../../src/hooks/useChatMessages';
 
 // Componente de mensagem com animação
 const AnimatedMessage = ({ item, isMe, colors, typography }: { item: Message; isMe: boolean; colors: any; typography: any }) => {
@@ -150,130 +104,64 @@ export default function ChatRoomScreen() {
   const router = useRouter();
   const flatListRef = useRef<FlatList>(null);
   const hudAnim = useRef(new Animated.Value(0)).current;
-  const stompClientRef = useRef<Client | null>(null);
+  const { connected, subscribe, publish } = useStomp();
+  const { getRoomDetails, markAsRead } = useChats(roomId as string);
+  const { getMessages, uploadAttachment, addMessageToCache, setInitialMessages } = useChatMessages(roomId as string);
 
-  const [room, setRoom] = useState<RoomDetails | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const room = getRoomDetails.data;
+  const messages = getMessages.data || [];
+  
   const [newMessage, setNewMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [isReportVisible, setIsReportVisible] = useState(false);
 
   useEffect(() => {
-    Animated.spring(hudAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-      tension: 20,
-      friction: 7
-    }).start();
+    if (room) {
+      Animated.spring(hudAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+        tension: 20,
+        friction: 7
+      }).start();
+    }
   }, [room]);
 
-  const fetchRoomDetails = async () => {
-    try {
-      const response = await api.get(`/chat/rooms/${roomId}`);
-      setRoom(response.data);
-    } catch (error) {
-      console.error('Erro ao buscar detalhes da sala:', error);
+  useEffect(() => {
+    if (roomId && token) {
+      markAsRead.mutate();
     }
-  };
-
-  const fetchMessages = async () => {
-    try {
-      const response = await api.get(`/chat/rooms/${roomId}/messages`);
-      const items = response.data.items || [];
-      // Só atualiza se houver mensagens novas para evitar flickers de animação
-      if (items.length !== messages.length) {
-        setMessages(items.reverse());
-      }
-    } catch (error) {
-      console.error('Erro ao buscar mensagens:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const markAsRead = async () => {
-    try {
-      await api.put(`/chat/rooms/${roomId}/read`);
-    } catch (error) {
-      console.error('Erro ao marcar mensagens como lidas:', error);
-    }
-  };
+  }, [roomId, token]);
 
   useEffect(() => {
-    fetchRoomDetails();
-    fetchMessages();
-    markAsRead();
+    if (!connected || !roomId) return;
 
-    if (!roomId || !token) return;
+    // 1. Entra na sala
+    publish(`/app/chat.join/${roomId}`, {});
 
-    const wsUrl = obterUrlWebSocket();
-    const client = new Client({
-      brokerURL: wsUrl,
-      connectHeaders: {
-        Authorization: `Bearer ${token}`
-      },
-      debug: (str) => {
-        console.log('[STOMP Mobile]:', str);
-      },
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
+    // 2. Assina o tópico de novas mensagens da sala
+    const roomSub = subscribe(`/topic/room/${roomId}`, (newMsg: Message) => {
+      addMessageToCache(newMsg);
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
     });
 
-    client.onConnect = (frame) => {
-      console.log('[STOMP Mobile] Connected!');
-      
-      // 1. Entra na sala
-      client.publish({
-        destination: `/app/chat.join/${roomId}`,
-        body: JSON.stringify({}),
-      });
-
-      // 2. Assina o tópico de novas mensagens da sala
-      client.subscribe(`/topic/room/${roomId}`, (message) => {
-        try {
-          const newMsg = JSON.parse(message.body) as Message;
-          setMessages((prev) => {
-            if (prev.some((m) => m.id === newMsg.id)) return prev;
-            return [...prev, newMsg];
-          });
-          
-          setTimeout(() => {
-            flatListRef.current?.scrollToEnd({ animated: true });
-          }, 100);
-        } catch (err) {
-          console.error('Erro ao processar mensagem do STOMP:', err);
-        }
-      });
-
-      // 3. Assina a fila privada do usuário para receber o histórico inicial
-      client.subscribe(`/user/queue/historico`, (message) => {
-        try {
-          const history = JSON.parse(message.body);
-          if (history && history.itens) {
-            const reversed = [...history.itens].reverse();
-            setMessages(reversed);
-          }
-        } catch (err) {
-          console.error('Erro ao processar histórico do STOMP:', err);
-        }
-      });
-    };
-
-    client.onStompError = (frame) => {
-      console.error('[STOMP Mobile] Erro no broker STOMP:', frame.headers['message']);
-      console.error('[STOMP Mobile] Detalhes:', frame.body);
-    };
-
-    client.activate();
-    stompClientRef.current = client;
+    // 3. Assina a fila privada do usuário para receber o histórico inicial
+    const historySub = subscribe(`/user/queue/historico`, (history: any) => {
+      if (history && history.itens) {
+        const reversed = [...history.itens].reverse();
+        setInitialMessages(reversed);
+        setTimeout(() => {
+          flatListRef.current?.scrollToEnd({ animated: true });
+        }, 100);
+      }
+    });
 
     return () => {
-      client.deactivate();
-      stompClientRef.current = null;
+      if (roomSub) roomSub.unsubscribe();
+      if (historySub) historySub.unsubscribe();
     };
-  }, [roomId, token]);
+  }, [connected, roomId, subscribe, publish]);
 
   const isBlocked = (() => {
     if (!room?.anuncioStatus || !room?.anuncioVendidoEm) return false;
@@ -285,13 +173,10 @@ export default function ChatRoomScreen() {
   })();
 
   const handleSend = () => {
-    if (!newMessage.trim() || !stompClientRef.current?.connected || isBlocked) return;
+    if (!newMessage.trim() || !connected || isBlocked) return;
 
     try {
-      stompClientRef.current.publish({
-        destination: `/app/chat.send/${roomId}`,
-        body: JSON.stringify({ conteudo: newMessage.trim() }),
-      });
+      publish(`/app/chat.send/${roomId}`, { conteudo: newMessage.trim() });
       setNewMessage('');
     } catch (error) {
       console.error('Erro ao enviar mensagem via STOMP:', error);
@@ -322,31 +207,8 @@ export default function ChatRoomScreen() {
   const uploadImage = async (uri: string) => {
     try {
       setIsSending(true);
-
-      const formData = new FormData();
-      const filename = uri.split('/').pop() || 'photo.jpg';
-      const match = /\.(\w+)$/.exec(filename);
-      const type = match ? `image/${match[1]}` : `image/jpeg`;
-
-      formData.append('file', {
-        uri,
-        name: filename,
-        type,
-      } as any);
-
-      const response = await api.post(`/chat/rooms/${roomId}/attachment`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      const { url } = response.data;
-
-      stompClientRef.current?.publish({
-        destination: `/app/chat.send/${roomId}`,
-        body: JSON.stringify({ conteudo: `[IMAGE]:${url}` }),
-      });
-
+      const { url } = await uploadAttachment.mutateAsync({ uri, roomId: roomId as string });
+      publish(`/app/chat.send/${roomId}`, { conteudo: `[IMAGE]:${url}` });
     } catch (error) {
       console.error('Erro ao fazer upload da imagem:', error);
       alert('Erro ao enviar imagem.');
@@ -374,7 +236,7 @@ export default function ChatRoomScreen() {
     return <AnimatedMessage item={item} isMe={isMe} colors={colors} typography={typography} />;
   };
 
-  if (isLoading && !room) {
+  if (getRoomDetails.isLoading && !room) {
     return (
       <PecaeBackground>
         <View style={styles.centerContainer}>

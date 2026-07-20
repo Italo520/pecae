@@ -31,7 +31,7 @@ export function useSavedSearches() {
     enabled: !!user,
   });
 
-  const saveSearch = useMutation({
+  const createSavedSearch = useMutation({
     mutationFn: async (dto: CreateSavedSearchDto) => {
       const response = await api.post<SavedSearch>('/buyers/saved-searches', dto);
       return response.data;
@@ -51,9 +51,20 @@ export function useSavedSearches() {
     },
   });
 
+  const toggleAlert = useMutation({
+    mutationFn: async ({ id, alertActive }: { id: string; alertActive: boolean }) => {
+      const response = await api.patch<SavedSearch>(`/buyers/saved-searches/${id}`, { alertActive });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['savedSearches'] });
+    },
+  });
+
   return {
     getSavedSearches,
-    saveSearch,
+    createSavedSearch,
     deleteSavedSearch,
+    toggleAlert,
   };
 }

@@ -23,6 +23,12 @@ import { ToastProvider } from '../src/context/ToastContext';
 SplashScreen.preventAutoHideAsync();
 
 import { queryClient } from '../src/lib/queryClient';
+import { TextEncoder, TextDecoder } from 'text-encoding';
+
+// Polyfills para compatibilidade do @stomp/stompjs no React Native
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder as any;
+
 
 export default function RootLayout() {
   const { initializeAuth, isLoading: isAuthLoading } = useAuthStore();

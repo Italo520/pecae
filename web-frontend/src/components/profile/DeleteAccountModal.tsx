@@ -11,20 +11,25 @@ interface DeleteAccountModalProps {
 }
 
 export function DeleteAccountModal({ isOpen, onClose }: DeleteAccountModalProps) {
-  const [confirmation, setConfirmation] = useState('');
+  const [password, setPassword] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
-  const { logout } = useAuthStore();
+  const { logout, user } = useAuthStore();
   const router = useRouter();
 
   if (!isOpen) return null;
 
   const handleDelete = async () => {
-    if (confirmation !== 'EXCLUIR') return;
+    if (!password) return;
     
     setIsDeleting(true);
     try {
-      // Endpoint de deleção
-      await api.delete('/users/me');
+      const endpoint = user?.type === 'SELLER' || user?.type === 'VENDEDOR' 
+        ? '/sellers/me' 
+        : '/buyers/me';
+
+      await api.delete(endpoint, {
+        data: { currentPassword: password }
+      });
       
       toast.success('Conta excluída com sucesso.');
       logout();
@@ -68,13 +73,13 @@ export function DeleteAccountModal({ isOpen, onClose }: DeleteAccountModalProps)
           
           <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
             <p className="text-sm text-red-200 mb-2 font-medium">
-              Para confirmar, digite <span className="font-bold text-red-400">EXCLUIR</span> no campo abaixo:
+              Para confirmar, digite sua <span className="font-bold text-red-400">senha atual</span> no campo abaixo:
             </p>
             <input 
-              type="text" 
-              value={confirmation}
-              onChange={(e) => setConfirmation(e.target.value)}
-              placeholder="EXCLUIR"
+              type="password" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Sua senha atual"
               className="w-full bg-black/40 border border-red-500/30 rounded-lg px-4 py-2 text-red-100 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
             />
           </div>
@@ -91,7 +96,7 @@ export function DeleteAccountModal({ isOpen, onClose }: DeleteAccountModalProps)
           </button>
           <button 
             onClick={handleDelete}
-            disabled={confirmation !== 'EXCLUIR' || isDeleting}
+            disabled={!password || isDeleting}
             className="px-5 py-2.5 rounded-xl bg-red-500 text-white font-medium hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {isDeleting ? 'Excluindo...' : 'Excluir Definitivamente'}
