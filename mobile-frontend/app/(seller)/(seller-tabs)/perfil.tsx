@@ -9,6 +9,7 @@ import { api } from '../../../src/services/api';
 import { Image } from 'react-native';
 import { useAuthStore } from '../../../src/store/auth-store';
 import { useToast } from '../../../src/context/ToastContext';
+import { ThemeToggle } from '../../../src/components/PecaeUI/ThemeToggle';
 
 export default function SellerProfileScreen() {
   const { colors, effects } = usePecaeTheme();
@@ -99,6 +100,9 @@ export default function SellerProfileScreen() {
             <Text style={[styles.userName, { color: colors.textMuted, fontFamily: PecaeTokens.typography.body }]}>
               {user?.name || user?.email}
             </Text>
+          </View>
+          <View style={{ marginLeft: 'auto' }}>
+            <ThemeToggle />
           </View>
         </View>
 

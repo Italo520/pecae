@@ -16,6 +16,7 @@ import * as Linking from 'expo-linking';
 import { useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '../src/store/auth-store';
+import { useUIStore } from '../src/store/ui-store';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastProvider } from '../src/context/ToastContext';
 
@@ -42,6 +43,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     initializeAuth();
+    useUIStore.getState().initializeUI();
 
     // Listener para notificações (clique)
     const subscription = Notifications.addNotificationResponseReceivedListener(response => {

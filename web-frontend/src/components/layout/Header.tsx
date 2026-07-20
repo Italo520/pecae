@@ -8,6 +8,7 @@ import { Badge } from '../ui/Badge';
 import { MapPin, Heart, Bell, Menu, User } from 'lucide-react';
 import { useAuthStore } from '@/store/auth-store';
 import { useNotifications } from '@/hooks/useNotifications';
+import { ThemeToggle } from '../ui/ThemeToggle';
 
 export function Header() {
   const { isAuthenticated, user } = useAuthStore();
@@ -76,6 +77,7 @@ export function Header() {
 
             {/* Icons */}
             <div className="flex items-center gap-4">
+              <ThemeToggle />
               <Link href={getFavoritesUrl()} className="relative text-[var(--muted)] hover:text-[var(--brand)] transition-colors">
                 <Heart className="w-6 h-6" />
                 {isLoggedIn && (

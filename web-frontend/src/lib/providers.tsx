@@ -5,6 +5,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './query-client';
 import { useAuthStore } from '../store/auth-store';
 import axios from 'axios';
+import { ThemeProvider } from 'next-themes';
 
 function AuthInitializer({ children }: { children: React.ReactNode }) {
   const { user, accessToken, isInitialized, updateToken, logout, setInitialized } = useAuthStore();
@@ -51,11 +52,13 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthInitializer>
-        {children}
-      </AuthInitializer>
-    </QueryClientProvider>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={true}>
+      <QueryClientProvider client={queryClient}>
+        <AuthInitializer>
+          {children}
+        </AuthInitializer>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 
