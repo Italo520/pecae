@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthGuard } from '../../hooks/useAuthGuard';
 import { useAuthStore } from '../../store/auth-store';
+import { ThemeToggle } from '../PecaeUI/ThemeToggle';
 
 export function AppHeader() {
   const { colors, typography } = usePecaeTheme();
@@ -44,6 +45,7 @@ export function AppHeader() {
         </View>
 
         <View style={styles.actionsContainer}>
+          <ThemeToggle />
           {isAuthenticated ? (
             <Pressable onPress={() => router.push('/(buyer)/perfil')} style={styles.profileBtn}>
               <Ionicons name="person-circle-outline" size={24} color={colors.textPrimary} />

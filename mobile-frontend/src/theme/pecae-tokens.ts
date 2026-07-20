@@ -6,7 +6,7 @@ export const PecaeTokens = {
       dark: '#14532D', // Verde Escuro
       background: '#F1F5F1', // Cleaner light background
       backgroundGradient: ['#F1F5F1', '#E8F5E9'],
-      surface: 'rgba(255, 255, 255, 0.95)', // More solid for light mode visibility
+      surface: 'rgba(255, 255, 255, 0.4)', // Glassmorphism light (matched with Web)
       border: 'rgba(0, 0, 0, 0.08)', // Soft but defined border
       textPrimary: '#0F172A', // Slate 900 for high contrast
       textMuted: '#475569', // Slate 600
