@@ -79,7 +79,7 @@ export default function PerfilEditar() {
 
       await updateProfileMutation.mutateAsync({
         name: data.name,
-        avatarUrl: finalAvatarUrl,
+        avatar: finalAvatarUrl,
       });
 
       showToast({ type: 'success', title: 'Sucesso', message: 'Perfil atualizado com sucesso!', duration: 3000 });

@@ -63,10 +63,10 @@ export default function EvalSellerScreen() {
     return (
       <PecaeBackground>
         <View style={styles.centerContainer}>
-          <PecaeGlassCard intensity={25} style={[styles.successCard, { borderRadius: effects.radius.xl }]}>
+          <PecaeGlassCard intensity={25} style={[styles.successCard, { borderRadius: effects.radius.lg }]}>
             <View style={styles.successIconWrapper}>
               <View style={[styles.glow, { backgroundColor: colors.brand }]} />
-              <Ionicons name="checkmark-seal" size={100} color={colors.brand} />
+              <Ionicons name="checkmark-circle" size={100} color={colors.brand} />
             </View>
             <Text style={[styles.successTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>
               TRANSAÇÃO AVALIADA

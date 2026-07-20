@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet, TextInput, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../theme';
-import { Brand, Model, Version } from '../../hooks/useCatalog';
+import { Brand, Model, Version } from '@pecae/shared';
 import { BottomSheetOption } from './BottomSheetSelector';
 
 interface SearchSidebarProps {
@@ -336,5 +336,9 @@ const styles = StyleSheet.create({
   },
   activeFilterText: {
     fontSize: 13,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });

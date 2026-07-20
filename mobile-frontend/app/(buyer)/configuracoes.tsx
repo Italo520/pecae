@@ -72,7 +72,7 @@ export default function Configuracoes() {
             title: 'CONFIGURAÇÕES',
             headerTransparent: true,
             headerTintColor: colors.textPrimary,
-            headerTitleStyle: { fontFamily: typography.display, fontSize: 16, letterSpacing: 1.5 },
+            headerTitleStyle: { fontFamily: typography.display, fontSize: 16 },
           }}
         />
 

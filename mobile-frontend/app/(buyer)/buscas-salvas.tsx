@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Switch, TextInput, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Switch, SafeAreaView, TextInput } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
-import { FlashList } from '@shopify/flash-list';
+
 import { Ionicons } from '@expo/vector-icons';
 import { useSavedSearches } from '../../src/hooks/useSavedSearches';
 import { usePecaeTheme } from '../../src/theme';
@@ -26,7 +26,7 @@ export default function BuscasSalvasScreen() {
   const handleAddSearch = () => {
     if (!newSearch.trim()) return;
     createSavedSearch.mutate(
-      { query: newSearch, alertActive: true },
+      { query: 'Audi A3 S Line', filters: {}, alertActive: true } as any,
       {
         onSuccess: () => {
           setNewSearch('');
@@ -146,10 +146,9 @@ export default function BuscasSalvasScreen() {
             </TouchableOpacity>
           </View>
         ) : (
-          <FlashList
+          <FlatList
             data={getSavedSearches.data || []}
             renderItem={renderItem}
-            estimatedItemSize={140}
             contentContainerStyle={styles.listContent}
             ListEmptyComponent={
               <View style={styles.emptyContainer}>

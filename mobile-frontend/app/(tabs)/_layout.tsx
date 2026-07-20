@@ -14,19 +14,19 @@ export default function TabLayout() {
   const { data: unreadData } = useUnreadCount();
   const unreadCount = unreadData?.count || 0;
   const { user } = useAuthStore();
-  const { isDesktop } = useDeviceLayout();
+  const { isMobile, isTablet, width } = useDeviceLayout();
   
   const isOnlyBuyer = user?.type === 'BUYER';
 
   return (
     <View style={styles.container}>
-      {isDesktop && <AppHeader />}
+      {!(isMobile || isTablet) && <AppHeader />}
       <View style={styles.content}>
         <Tabs
         initialRouteName="index"
         screenOptions={{
           headerShown: false,
-          tabBarStyle: isDesktop ? { display: 'none' } : {
+          tabBarStyle: (isMobile || isTablet) ? {
             backgroundColor: colors.surface,
             borderTopColor: colors.border,
             height: Platform.OS === 'ios' ? 88 : 70,
@@ -38,7 +38,7 @@ export default function TabLayout() {
             shadowOffset: { width: 0, height: -2 },
             shadowOpacity: 0.05,
             shadowRadius: 10,
-          },
+          } : { display: 'none' },
           tabBarActiveTintColor: colors.brand,
           tabBarInactiveTintColor: colors.textMuted,
           tabBarLabelPosition: 'below-icon',
@@ -81,7 +81,7 @@ export default function TabLayout() {
               </View>
             ),
             tabBarLabelStyle: {
-              display: 'none',
+              display: width > 1024 ? 'none' : 'flex',
             },
           }}
         />

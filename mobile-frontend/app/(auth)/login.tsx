@@ -40,7 +40,8 @@ export default function LoginScreen() {
   const returnUrl = params?.returnUrl as string | undefined;
   const { colors, typography } = usePecaeTheme();
   const { setAuth } = useAuthStore();
-  const { isMobile, isDesktop, pick } = useResponsive();
+  const { isMobile, isTablet, pick } = useResponsive();
+  const isDesktop = !isMobile && !isTablet;
   const { showToast } = useToast();
 
   const {
@@ -182,8 +183,8 @@ export default function LoginScreen() {
                 {
                   color: colors.textPrimary,
                   fontFamily: typography.display,
-                  fontSize: pick({ mobile: 32, tablet: 42, desktop: 56 }),
-                  letterSpacing: pick({ mobile: 6, tablet: 12, desktop: 16 }),
+                  fontSize: pick({ mobile: 32, tablet: 42 }),
+                  letterSpacing: pick({ mobile: 6, tablet: 12 }),
                 },
               ]}
             >

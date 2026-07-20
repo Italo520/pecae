@@ -142,7 +142,6 @@ export default function SellerDashboardScreen() {
           title="Cadastrar Sucata" 
           onPress={() => router.push('/(seller)/cadastrar-sucata')}
           style={styles.fabButton}
-          icon={<Ionicons name="add" size={24} color={colors.dark} />}
         />
 
         <View style={{ height: 100 }} />

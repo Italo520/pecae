@@ -136,7 +136,7 @@ export const ReportBottomSheet: React.FC<ReportBottomSheetProps> = ({
                           styles.categoryLabel, 
                           { 
                             color: category === cat.value ? colors.brand : colors.textPrimary,
-                            fontFamily: category === cat.value ? typography.bold : typography.body
+                            fontFamily: category === cat.value ? typography.heading : typography.body
                           }
                         ]}>
                           {cat.label}
@@ -158,7 +158,7 @@ export const ReportBottomSheet: React.FC<ReportBottomSheetProps> = ({
                   />
 
                   <PecaeButton
-                    label={isSubmitting ? 'ENVIANDO...' : 'CONFIRMAR DENÚNCIA'}
+                    title={isSubmitting ? 'ENVIANDO...' : 'CONFIRMAR DENÚNCIA'}
                     onPress={handleSubmit}
                     disabled={isSubmitting}
                     loading={isSubmitting}

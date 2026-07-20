@@ -94,7 +94,6 @@ export function FipeSearchForm({ hasBanner = true }: { hasBanner?: boolean }) {
       styles.container, 
       isTablet && { marginHorizontal: 32 }, 
       { backgroundColor: colors.surface }, 
-      effects.cardShadow,
       !hasBanner && { marginTop: 24 }
     ]}>
       <Text style={[styles.title, { color: colors.textPrimary, fontFamily: typography.heading }]}>
@@ -151,7 +150,7 @@ export function FipeSearchForm({ hasBanner = true }: { hasBanner?: boolean }) {
             onPress={handleSearch}
           >
             <Ionicons name="search" size={20} color="#000" />
-            <Text style={[styles.searchButtonText, { fontFamily: typography.bold }]}>BUSCAR</Text>
+            <Text style={[styles.searchButtonText, { fontFamily: typography.heading }]}>BUSCAR</Text>
           </Pressable>
         </View>
       </View>

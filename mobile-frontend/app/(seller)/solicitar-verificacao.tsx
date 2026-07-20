@@ -146,13 +146,15 @@ export default function VerificationRequestScreen() {
   if (latest?.status === 'PENDING') {
     return (
       <PecaeBackground>
-        <PecaeScreenContainer contentContainerStyle={styles.statusContainer}>
-          <Ionicons name="time-outline" size={80} color={colors.brand} />
-          <Text style={[styles.statusTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>Verificação em Análise</Text>
-          <Text style={[styles.statusSub, { color: colors.textMuted, fontFamily: typography.body }]}>
-            Nossa equipe está revisando seus documentos. Você será notificado assim que o processo for concluído.
-          </Text>
-          <PecaeButton title="VOLTAR" onPress={() => router.back()} variant="outline" />
+        <PecaeScreenContainer>
+          <View style={styles.statusContainer}>
+            <Ionicons name="time-outline" size={80} color={colors.brand} />
+            <Text style={[styles.statusTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>Verificação em Análise</Text>
+            <Text style={[styles.statusSub, { color: colors.textMuted, fontFamily: typography.body }]}>
+              Nossa equipe está revisando seus documentos. Você será notificado assim que o processo for concluído.
+            </Text>
+            <PecaeButton title="VOLTAR" onPress={() => router.back()} variant="outline" />
+          </View>
         </PecaeScreenContainer>
       </PecaeBackground>
     );

@@ -91,7 +91,7 @@ export function Combobox({
             <View style={[styles.searchContainer, { borderBottomColor: colors.border }]}>
               <Ionicons name="search" size={20} color={colors.textMuted} style={styles.searchIcon} />
               <TextInput
-                style={[styles.searchInput, { color: colors.textPrimary, fontFamily: typography.regular }]}
+                style={[styles.searchInput, { color: colors.textPrimary, fontFamily: typography.body }]}
                 placeholder={searchPlaceholder}
                 placeholderTextColor={colors.textMuted}
                 value={search}
@@ -120,7 +120,7 @@ export function Combobox({
                     styles.optionText, 
                     { 
                       color: item.value === value ? colors.brand : colors.textPrimary,
-                      fontFamily: item.value === value ? typography.bold : typography.regular
+                      fontFamily: item.value === value ? typography.heading : typography.body
                     }
                   ]}>
                     {item.label}

@@ -16,7 +16,7 @@ export const AnalyticsListingCard: React.FC<AnalyticsListingCardProps> = ({ titl
   const { colors } = usePecaeTheme();
 
   return (
-    <PecaeGlassCard style={styles.card} padding="sm" variant="subtle">
+    <PecaeGlassCard style={styles.card} padding={12}>
       <View style={styles.row}>
         <View style={styles.rankBadge}>
           <Text style={[styles.rankText, { fontFamily: PecaeTokens.typography.display }]}>#{rank}</Text>

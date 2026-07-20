@@ -86,7 +86,7 @@ export default function AnalyticsScreen() {
             </View>
           ) : isError ? (
             <View style={styles.loadingContainer}>
-              <Text style={{ color: colors.danger }}>Erro ao carregar métricas.</Text>
+              <Text style={{ color: colors.error }}>Erro ao carregar métricas.</Text>
             </View>
           ) : (
             <>

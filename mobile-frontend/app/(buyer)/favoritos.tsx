@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, SafeAreaView } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
-import { FlashList } from '@shopify/flash-list';
+
 import { Ionicons } from '@expo/vector-icons';
 import { useFavorites } from '../../src/hooks/useFavorites';
 import { usePecaeTheme } from '../../src/theme';
@@ -107,10 +107,9 @@ export default function FavoritosScreen() {
             </TouchableOpacity>
           </View>
         ) : (
-          <FlashList
+          <FlatList
             data={getFavorites.data || []}
             renderItem={renderItem}
-            estimatedItemSize={120}
             contentContainerStyle={styles.listContent}
             ListEmptyComponent={
               <View style={styles.emptyContainer}>

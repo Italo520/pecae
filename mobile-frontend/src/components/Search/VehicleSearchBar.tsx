@@ -67,7 +67,6 @@ export function VehicleSearchBar() {
       <Pressable 
         style={({ pressed }) => [styles.input, { justifyContent: 'center' }, pressed && { opacity: 0.7 }]} 
         onPress={() => router.push('/(tabs)/search')}
-        activeOpacity={0.7}
       >
         <Text style={{ color: colors.textMuted, fontFamily: typography.body }}>
           Estou procurando...
@@ -81,7 +80,7 @@ export function VehicleSearchBar() {
 
       {/* State Modal */}
       <Modal visible={showStateModal} transparent animationType="fade">
-        <Pressable style={({ pressed }) => [styles.modalOverlay, pressed && { opacity: 0.7 }]} onPress={() => setShowStateModal(false)} activeOpacity={1}>
+        <Pressable style={({ pressed }) => [styles.modalOverlay, pressed && { opacity: 0.7 }]} onPress={() => setShowStateModal(false)}>
           <View style={[styles.modalContent, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Text style={[styles.modalTitle, { color: colors.textPrimary, fontFamily: typography.display }]}>
               Selecione o Estado
@@ -100,7 +99,7 @@ export function VehicleSearchBar() {
                   <Text style={[
                     styles.stateItemText, 
                     { color: colors.textPrimary, fontFamily: typography.body },
-                    selectedState === item.id && { color: colors.brand, fontFamily: typography.bold }
+                    selectedState === item.id && { color: colors.brand, fontFamily: typography.heading }
                   ]}>
                     {item.name}
                   </Text>

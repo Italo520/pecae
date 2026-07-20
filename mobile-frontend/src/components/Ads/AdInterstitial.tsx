@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
     color: '#0a0e14',
     fontSize: 14,
     fontFamily: 'SpaceGrotesk-Bold',
-    fontWeight: '750',
+    fontWeight: '700',
     letterSpacing: 0.5,
   },
 });

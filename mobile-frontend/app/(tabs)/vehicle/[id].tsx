@@ -21,6 +21,7 @@ export default function VehicleDetailsScreen() {
   const { getFavorites, toggleFavorite } = useFavorites();
   const { requireAuth } = useAuthGuard();
   const [isStartingChat, setIsStartingChat] = useState(false);
+  const { showToast } = useToast();
   const [isReportVisible, setIsReportVisible] = useState(false);
 
   if (loadingVehicle || !id) {
@@ -222,7 +223,7 @@ export default function VehicleDetailsScreen() {
                 </Text>
               </View>
               {vehicle.seller?.isVerified && (
-                <Ionicons name="checkmark-seal" size={24} color={colors.brand} />
+                <Ionicons name="checkmark-circle" size={16} color={colors.brand} />
               )}
             </View>
           </PecaeGlassCard>

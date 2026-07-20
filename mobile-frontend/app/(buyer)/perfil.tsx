@@ -116,12 +116,6 @@ export default function PerfilCompradorMenu() {
                 <View style={[styles.roleBadge, { backgroundColor: colors.brand + '20', borderColor: colors.brand + '40' }]}>
                   <Text style={[styles.roleText, { color: colors.brand, fontFamily: typography.mono }]}>COMPRADOR</Text>
                 </View>
-                {user?.isVerified && (
-                  <View style={[styles.verifiedBadge, { backgroundColor: '#22c55e20', borderColor: '#22c55e40' }]}>
-                    <Ionicons name="checkmark-circle" size={12} color="#22c55e" />
-                    <Text style={[styles.verifiedText, { color: '#22c55e', fontFamily: typography.mono }]}>VERIFICADO</Text>
-                  </View>
-                )}
               </View>
             </View>
           </View>

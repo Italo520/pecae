@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   adBadgeText: {
     color: '#D4AF37',
     fontSize: 9,
-    fontWeight: '750',
+    fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: '#F1F3FC',
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: 'SpaceGrotesk-Bold',
     fontWeight: '700',
     letterSpacing: 0.5,

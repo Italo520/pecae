@@ -152,8 +152,8 @@ export default function RegisterScreen() {
                 {
                   color: colors.textPrimary,
                   fontFamily: typography.display,
-                  fontSize: pick({ mobile: 32, tablet: 42, desktop: 56 }),
-                  letterSpacing: pick({ mobile: 6, tablet: 12, desktop: 16 }),
+                  fontSize: pick({ mobile: 32, tablet: 42 }),
+                  letterSpacing: pick({ mobile: 6, tablet: 12 }),
                 },
               ]}
             >

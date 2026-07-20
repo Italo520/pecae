@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Platform,
   Animated,
+  FlatList,
 } from 'react-native';
 import { PecaeBackground } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
@@ -105,9 +106,10 @@ export default function BuyerHomeScreen() {
   const { colors, typography } = usePecaeTheme();
   const [activeCategory, setActiveCategory] = useState<string | undefined>(undefined);
   const [hasBanners, setHasBanners] = useState(true);
-  const { width, isDesktop, cardWidth } = useDeviceLayout();
+  const { isMobile, isTablet, gridColumns, cardWidth } = useDeviceLayout();
   const router = useRouter();
   const { showToast } = useToast();
+  const isDesktop = !isMobile && !isTablet;
   const gridPadding = isDesktop ? 0 : 20;
 
   const {
@@ -187,10 +189,7 @@ export default function BuyerHomeScreen() {
     if (!hasNextPage && listings.length > 0) {
       return (
         <Text
-          style={[
-            styles.endText,
-            { color: colors.textMuted, fontFamily: typography.regular },
-          ]}
+          style={[styles.sectionTitle, { color: colors.textMuted, fontFamily: typography.body }]}
         >
           Você chegou ao fim 🎉
         </Text>
@@ -413,12 +412,11 @@ export default function BuyerHomeScreen() {
   // ===== MOBILE: FlashList com infinite scroll automático no fim =====
   return (
     <PecaeBackground>
-      <FlashList
+      <FlatList
         data={listings}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         numColumns={1}
-        estimatedItemSize={300}
         ListHeaderComponent={renderHeader}
         ListFooterComponent={renderFooter}
         ListEmptyComponent={

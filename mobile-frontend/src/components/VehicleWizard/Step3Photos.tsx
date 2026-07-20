@@ -122,7 +122,7 @@ export const Step3Photos: React.FC = () => {
                 
                 {/* Badge de Ordem */}
                 <View style={[styles.orderBadge, isCover && { backgroundColor: colors.brand }]}>
-                  <Text style={[styles.orderText, { color: isCover ? '#000' : '#fff', fontFamily: typography.bold }]}>
+                  <Text style={[styles.orderText, { color: isCover ? '#000' : '#fff', fontFamily: typography.heading }]}>
                     #{index + 1}
                   </Text>
                 </View>
@@ -173,7 +173,7 @@ export const Step3Photos: React.FC = () => {
 
                 {isCover && (
                   <View style={[styles.coverLabel, { backgroundColor: colors.brand }]}>
-                    <Text style={{ color: '#000', fontSize: 7, fontFamily: typography.bold }}>CAPA</Text>
+                    <Text style={{ color: '#000', fontSize: 7, fontFamily: typography.heading }}>CAPA</Text>
                   </View>
                 )}
               </PecaeGlassCard>
@@ -185,7 +185,7 @@ export const Step3Photos: React.FC = () => {
           <Pressable style={({ pressed }) => [styles.slotWrapper, pressed && { opacity: 0.7 }]} onPress={pickImage}>
             <PecaeGlassCard intensity={5} style={[styles.photoSlot, styles.addBtn]}>
               <Ionicons name="camera-outline" size={32} color={colors.textMuted} />
-              <Text style={{ color: colors.textMuted, fontSize: 10, fontFamily: typography.bold, marginTop: 4 }}>Adicionar</Text>
+              <Text style={{ color: colors.textMuted, fontSize: 10, fontFamily: typography.heading, marginTop: 4 }}>Adicionar</Text>
             </PecaeGlassCard>
           </Pressable>
         )}
@@ -194,7 +194,7 @@ export const Step3Photos: React.FC = () => {
       <View style={styles.footer}>
         <PecaeButton
           title="Voltar"
-          type="secondary"
+          variant="secondary"
           onPress={prevStep}
           style={styles.button}
         />

@@ -122,7 +122,7 @@ export default function ResetPasswordScreen() {
                     onChangeText={onChange}
                     value={value}
                     error={errors.confirmPassword?.message}
-                    leftIcon={<Ionicons name="checkmark-shield-outline" size={20} color={colors.textMuted} />}
+                    leftIcon={<Ionicons name="checkmark-outline" size={20} color={colors.textMuted} />}
                   />
                 )}
               />

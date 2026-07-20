@@ -19,7 +19,6 @@ export const PecaeScreenContainer: React.FC<PecaeScreenContainerProps> = ({
   const horizontalPadding = pick({
     mobile: 20,
     tablet: 40,
-    desktop: 0, // No desktop o maxWidth cuida da centralização
   });
 
   return (

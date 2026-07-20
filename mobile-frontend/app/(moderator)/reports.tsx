@@ -138,13 +138,13 @@ export default function ModerationReportsScreen() {
             style={[styles.actionButton, { backgroundColor: colors.brand }]}
             onPress={() => handleUpdateStatus(item.id, 'RESOLVED')}
           >
-            <Text style={[styles.actionText, { color: '#000', fontFamily: typography.bold }]}>RESOLVER</Text>
+            <Text style={[styles.actionText, { color: '#000', fontFamily: typography.heading }]}>RESOLVER</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[styles.actionButton, { backgroundColor: 'transparent', borderColor: colors.border, borderWidth: 1 }]}
             onPress={() => handleUpdateStatus(item.id, 'REJECTED')}
           >
-            <Text style={[styles.actionText, { color: colors.textPrimary, fontFamily: typography.bold }]}>REJEITAR</Text>
+            <Text style={[styles.actionText, { color: colors.textPrimary, fontFamily: typography.heading }]}>REJEITAR</Text>
           </TouchableOpacity>
         </View>
       )}

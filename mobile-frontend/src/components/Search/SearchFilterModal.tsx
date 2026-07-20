@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { usePecaeTheme } from '../../theme';
 import { PecaeButton } from '../PecaeUI/PecaeButton';
 import { PecaeGlassCard } from '../PecaeUI/PecaeGlassCard';
-import { useBrands, useModels, useBrandYears } from '../../hooks/useCatalog';
+import { useBrands, useModels, useYears } from '../../hooks/useCatalog';
 
 interface SearchFilterModalProps {
   visible: boolean;
@@ -21,7 +21,7 @@ export function SearchFilterModal({ visible, onClose, onApply, initialFilters }:
 
   const { data: brands, isLoading: loadingBrands } = useBrands();
   const { data: models, isLoading: loadingModels } = useModels(selectedBrand);
-  const { data: years, isLoading: loadingYears } = useBrandYears(selectedBrand);
+  const { data: years, isLoading: loadingYears } = useYears(selectedModel);
 
   useEffect(() => {
     if (visible && initialFilters) {
@@ -83,7 +83,7 @@ export function SearchFilterModal({ visible, onClose, onApply, initialFilters }:
                     <Text style={[
                       styles.chipText,
                       { color: colors.textPrimary, fontFamily: typography.body },
-                      selectedBrand === brand.id && { color: colors.brand, fontFamily: typography.bold }
+                      selectedBrand === brand.id && { color: colors.brand, fontFamily: typography.heading }
                     ]}>
                       {brand.name}
                     </Text>
@@ -115,7 +115,7 @@ export function SearchFilterModal({ visible, onClose, onApply, initialFilters }:
                         <Text style={[
                           styles.chipText,
                           { color: colors.textPrimary, fontFamily: typography.body },
-                          selectedModel === model.id && { color: colors.brand, fontFamily: typography.bold }
+                          selectedModel === model.id && { color: colors.brand, fontFamily: typography.heading }
                         ]}>
                           {model.name}
                         </Text>
@@ -147,7 +147,7 @@ export function SearchFilterModal({ visible, onClose, onApply, initialFilters }:
                         <Text style={[
                           styles.chipText,
                           { color: colors.textPrimary, fontFamily: typography.body },
-                          selectedYear === y.id && { color: colors.brand, fontFamily: typography.bold }
+                          selectedYear === y.id && { color: colors.brand, fontFamily: typography.heading }
                         ]}>
                           {y.year}
                         </Text>
@@ -163,7 +163,7 @@ export function SearchFilterModal({ visible, onClose, onApply, initialFilters }:
 
           <View style={styles.footer}>
             <Pressable onPress={handleClear} style={({ pressed }) => [styles.clearBtn, pressed && { opacity: 0.7 }]}>
-              <Text style={[styles.clearBtnText, { color: colors.textMuted, fontFamily: typography.bold }]}>LIMPAR TUDO</Text>
+              <Text style={[styles.clearBtnText, { color: colors.textMuted, fontFamily: typography.heading }]}>LIMPAR TUDO</Text>
             </Pressable>
             <PecaeButton 
               title="APLICAR FILTROS" 

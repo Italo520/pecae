@@ -85,24 +85,27 @@ export default function InventoryScreen() {
           contentContainerStyle={styles.list}
           ListHeaderComponent={
             <View style={styles.statsRow}>
-              <StatWidget 
-                label="TOTAL" 
-                value={stats.total.toString()} 
-                icon="car-outline" 
-                style={styles.stat}
-              />
-              <StatWidget 
-                label="ATIVOS" 
-                value={stats.active.toString()} 
-                icon="checkmark-circle-outline" 
-                style={styles.stat}
-              />
-              <StatWidget 
-                label="VENDIDOS" 
-                value={stats.sold.toString()} 
-                icon="cart-outline" 
-                style={styles.stat}
-              />
+              <View style={styles.stat}>
+                <StatWidget 
+                  label="TOTAL" 
+                  value={stats.total.toString()} 
+                  icon="car-outline" 
+                />
+              </View>
+              <View style={styles.stat}>
+                <StatWidget 
+                  label="ATIVOS" 
+                  value={stats.active.toString()} 
+                  icon="checkmark-circle-outline" 
+                />
+              </View>
+              <View style={styles.stat}>
+                <StatWidget 
+                  label="VENDIDOS" 
+                  value={stats.sold.toString()} 
+                  icon="cart-outline" 
+                />
+              </View>
             </View>
           }
           refreshControl={

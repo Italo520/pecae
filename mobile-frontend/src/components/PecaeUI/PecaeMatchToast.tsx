@@ -72,7 +72,7 @@ export const PecaeMatchToast: React.FC<PecaeMatchToastProps> = ({
     });
   };
 
-  if (!visible && slideAnim._value === -200) return null;
+  if (!visible && (slideAnim as any)._value === -200) return null;
 
   return (
     <Animated.View 

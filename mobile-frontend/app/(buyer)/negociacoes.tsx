@@ -107,7 +107,7 @@ const NegotiationItem: React.FC<{ negotiation: Negotiation }> = ({ negotiation }
           
           <View style={styles.sellerRow}>
             <Ionicons name="storefront-outline" size={12} color={colors.brand} />
-            <Text style={[styles.itemSeller, { color: colors.brand, fontFamily: typography.bold }]} numberOfLines={1}>
+            <Text style={[styles.itemSeller, { color: colors.brand, fontFamily: typography.heading }]} numberOfLines={1}>
               {negotiation.seller.storeName}
             </Text>
           </View>

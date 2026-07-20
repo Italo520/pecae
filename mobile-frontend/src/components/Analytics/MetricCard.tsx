@@ -17,8 +17,8 @@ export const MetricCard: React.FC<MetricCardProps> = ({ icon, value, label, tren
   const { colors } = usePecaeTheme();
 
   const getTrendColor = () => {
-    if (trend === 'up') return colors.success;
-    if (trend === 'down') return colors.danger;
+    if (trend === 'up') return colors.brand;
+    if (trend === 'down') return colors.error;
     return colors.textMuted;
   };
 
@@ -29,7 +29,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({ icon, value, label, tren
   };
 
   return (
-    <PecaeGlassCard style={styles.card} padding="md" variant="subtle">
+    <PecaeGlassCard style={styles.card} padding={16}>
       <View style={styles.header}>
         <View style={[styles.iconWrapper, { backgroundColor: `${colors.brand}15` }]}>
           <Ionicons name={icon} size={18} color={colors.brand} />

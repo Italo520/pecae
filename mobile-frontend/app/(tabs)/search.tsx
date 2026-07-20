@@ -56,7 +56,8 @@ type SheetType = 'type' | 'brand' | 'model' | 'version' | 'fuel' | 'mileage' | n
 
 export default function SearchScreen() {
   const { colors, typography } = usePecaeTheme();
-  const { isDesktop } = useDeviceLayout();
+  const { isMobile, isTablet } = useDeviceLayout();
+  const isDesktop = !isMobile && !isTablet;
   const params = useLocalSearchParams();
   
   const initialQ = params.q ? String(params.q) : '';
@@ -85,7 +86,7 @@ export default function SearchScreen() {
   const { data: versions = [], isLoading: isLoadingVersions } = useVersions(modelId);
 
   // Hook de buscas salvas
-  const { saveSearch } = useSavedSearches();
+  const { createSavedSearch } = useSavedSearches();
 
   // Debounce (300ms)
   useEffect(() => {
@@ -99,13 +100,11 @@ export default function SearchScreen() {
 
   const { data: searchResponse, isLoading } = useSearchVehicles({
     q: debouncedSearchText,
-    type,
+
     brandId,
     modelId,
     versionId,
     city: city || undefined,
-    state: state || undefined,
-    fuelType,
     mileageMax,
   });
 
@@ -113,10 +112,10 @@ export default function SearchScreen() {
 
   const handleSaveSearch = async () => {
     try {
-      await saveSearch.mutateAsync({
+      await createSavedSearch.mutateAsync({
         query: debouncedSearchText,
         filters: {
-          type,
+          type: type as any,
           brandId,
           modelId,
           versionId,
@@ -159,10 +158,10 @@ export default function SearchScreen() {
         <TouchableOpacity 
           style={[styles.saveSearchButton, { backgroundColor: colors.brand }]} 
           onPress={handleSaveSearch}
-          disabled={saveSearch.isPending}
+          disabled={createSavedSearch.isPending}
         >
           <Text style={[styles.saveSearchButtonText, { color: '#ffffff', fontFamily: typography.medium }]}>
-            {saveSearch.isPending ? 'SALVANDO...' : 'SALVAR BUSCA E ME ALERTAR'}
+            {createSavedSearch.isPending ? 'SALVANDO...' : 'SALVAR BUSCA E ME ALERTAR'}
           </Text>
         </TouchableOpacity>
       )}

@@ -119,8 +119,7 @@ export default function ConfiguracoesNotificacao() {
             headerTintColor: colors.textPrimary,
             headerTitleStyle: { 
               fontFamily: typography.display, 
-              fontSize: 16,
-              letterSpacing: 1.5
+              fontSize: 16
             },
           }}
         />

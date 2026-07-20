@@ -56,7 +56,7 @@ export const Step2TechDetails: React.FC = () => {
       <View style={styles.footer}>
         <PecaeButton
           title="Voltar"
-          type="secondary"
+          variant="secondary"
           onPress={prevStep}
           style={styles.button}
         />

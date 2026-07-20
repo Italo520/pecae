@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, ActivityIndicator, Platform, DimensionValue } from 'react-native';
 import { useRouter } from 'expo-router';
 import { PecaeBackground, PecaeGlassCard } from '../../src/components/PecaeUI';
 import { usePecaeTheme } from '../../src/theme';
@@ -94,10 +94,10 @@ export default function FavoritesScreen() {
         keyExtractor={(item) => item.id}
         numColumns={columns}
         key={columns} // Force re-render when columns change
-        contentContainerStyle={[styles.listContent, isWeb && styles.webListContent]}
+        contentContainerStyle={[styles.listContent, Platform.OS === 'web' && styles.webListContent]}
         ListEmptyComponent={renderEmptyState}
         renderItem={({ item }) => (
-          <View style={[styles.cardWrapper, { width: cardWidth, marginRight: columns === 1 ? 0 : 12 }]}>
+          <View style={[styles.cardWrapper, { width: cardWidth as DimensionValue, marginRight: columns === 1 ? 0 : 12 }]}>
             <TouchableOpacity 
               onPress={() => router.push(`/(tabs)/vehicle/${item.id}`)}
               activeOpacity={0.7}

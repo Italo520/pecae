@@ -136,7 +136,6 @@ export default function CadastrarSucataScreen() {
           headerTitleStyle: { 
             fontFamily: typography.display, 
             fontSize: 12, 
-            letterSpacing: 3,
             color: colors.brand 
           },
           headerLeft: () => (
@@ -196,7 +195,7 @@ export default function CadastrarSucataScreen() {
                           ]}
                         >
                           {isCompleted ? (
-                            <Ionicons name="checkmark" size={14} color={colors.isDark ? '#000' : '#fff'} />
+                            <Ionicons name="checkmark" size={14} color={'#000'} />
                           ) : (
                             <Text style={[
                               styles.stepNumber, 
@@ -204,7 +203,7 @@ export default function CadastrarSucataScreen() {
                                 color: isActive 
                                   ? '#000' 
                                   : colors.textMuted,
-                                fontFamily: typography.bold
+                                fontFamily: typography.heading
                               }
                             ]}>
                               {item.step}
@@ -215,7 +214,7 @@ export default function CadastrarSucataScreen() {
                           styles.stepLabel,
                           {
                             color: isActive ? colors.brand : colors.textMuted,
-                            fontFamily: isActive ? typography.bold : typography.body,
+                            fontFamily: isActive ? typography.heading : typography.body,
                           }
                         ]}>
                           {item.name}

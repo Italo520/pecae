@@ -175,7 +175,7 @@ export default function SellerProfileScreen() {
 
           {analytics?.viewsTimeline && analytics.viewsTimeline.length > 0 && analytics.summary.totalViews > 0 ? (
             <View style={styles.chartContainer}>
-              <Text style={[styles.chartSubtitle, { color: colors.textSecondary, fontFamily: PecaeTokens.typography.medium }]}>
+              <Text style={[styles.chartSubtitle, { color: colors.textMuted, fontFamily: PecaeTokens.typography.medium }]}>
                 Visualizações nos últimos 7 dias
               </Text>
               <View style={styles.barsRow}>
