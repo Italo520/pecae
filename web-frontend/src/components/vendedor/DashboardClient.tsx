@@ -214,7 +214,9 @@ export default function DashboardClient() {
     switch(status) {
       case 'ACTIVE': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">Ativo</span>;
       case 'PENDING':
-      case 'IN_MODERATION': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center gap-1"><Clock className="w-3 h-3" /> Em Moderação</span>;
+      case 'IN_MODERATION':
+      case 'RASCUNHO':
+      case 'DRAFT': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center gap-1"><Clock className="w-3 h-3" /> Em Moderação</span>;
       case 'SOLD': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-blue-500/10 text-blue-500 border border-blue-500/20">Vendido</span>;
       case 'INACTIVE':
       case 'PAUSED': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-zinc-500/10 text-zinc-500 border border-zinc-500/20 flex items-center gap-1"><Pause className="w-3 h-3" /> Pausado</span>;

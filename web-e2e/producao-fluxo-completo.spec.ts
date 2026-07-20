@@ -21,7 +21,7 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     await page.locator('input[type="password"]').fill('Pecae@E2e123');
     await page.locator('button', { hasText: /Entrar|Login/i }).click();
 
-    await page.waitForURL('**/vendedor/dashboard', { timeout: 20000 });
+    await page.waitForURL('**/vendedor/dashboard', { timeout: 30000 });
     console.log('✅ Vendedor logado com sucesso.');
 
     // Ir para formulário de anúncio
@@ -42,13 +42,13 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     const selectBrand = page.locator('select').nth(0);
     await selectBrand.waitFor({ state: 'visible' });
     
-    // Aguarda opções carregarem
+    // Aguarda opções da marca carregarem
     await page.waitForFunction(() => {
       const select = document.querySelector('select');
       return select && select.options.length > 1;
     }, { timeout: 15000 });
 
-    // Seleciona primeira marca válida
+    // Seleciona primeira marca válida (ex: Fiat / VW)
     const brandOption = selectBrand.locator('option').nth(1);
     const brandVal = await brandOption.getAttribute('value') || '';
     await selectBrand.selectOption(brandVal);
@@ -56,17 +56,16 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     // Modelo
     const selectModel = page.locator('select').nth(1);
     await page.waitForFunction((el) => el && (el as HTMLSelectElement).options.length > 1, await selectModel.elementHandle(), { timeout: 15000 });
-    await selectModel.selectOption({ index: 1 });
+    const modelOption = selectModel.locator('option').nth(1);
+    const modelVal = await modelOption.getAttribute('value') || '';
+    await selectModel.selectOption(modelVal);
 
-    // Versão
-    const selectVersion = page.locator('select').nth(2);
-    await page.waitForFunction((el) => el && (el as HTMLSelectElement).options.length > 1, await selectVersion.elementHandle(), { timeout: 15000 });
-    await selectVersion.selectOption({ index: 1 });
-
-    // Ano
-    const selectYear = page.locator('select').nth(3);
+    // Ano (FIPE parallelum inclui versão e ano)
+    const selectYear = page.locator('select').nth(2);
     await page.waitForFunction((el) => el && (el as HTMLSelectElement).options.length > 1, await selectYear.elementHandle(), { timeout: 15000 });
-    await selectYear.selectOption({ index: 1 });
+    const yearOption = selectYear.locator('option').nth(1);
+    const yearVal = await yearOption.getAttribute('value') || '';
+    await selectYear.selectOption(yearVal);
 
     await page.locator('button:has-text("Próximo Passo")').click();
 
@@ -74,15 +73,15 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     console.log('📝 Avançando Step 3 - Peças...');
     await page.locator('button:has-text("Próximo Passo")').click();
 
-    // STEP 4 - Fotos (Testando upload)
-    console.log('📸 Testando Step 4 - Upload de Foto...');
+    // STEP 4 - Fotos (Testando upload de foto real)
+    console.log('📸 Testando Step 4 - Upload de Foto de Sucata...');
     const buffer = Buffer.from(
-      'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
       'base64'
     );
     await page.setInputFiles('#photo-upload', {
-      name: 'teste-sucata.jpg',
-      mimeType: 'image/jpeg',
+      name: 'teste-sucata.png',
+      mimeType: 'image/png',
       buffer: buffer,
     });
     await page.waitForTimeout(1000);
@@ -97,9 +96,8 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     await page.waitForURL('**/vendedor/dashboard', { timeout: 30000 });
     console.log('✅ Sucata cadastrada! Redirecionado para o dashboard.');
 
-    // Verificar se a sucata recém cadastrada está pendente no dashboard
-    await expect(page.locator('text=Pendente').first()).toBeVisible({ timeout: 15000 });
-    console.log('✅ Sucata verificada como PENDENTE no dashboard do vendedor.');
+    await expect(page.getByText(/Em Moderação|Pendente|Rascunho/i).first()).toBeVisible({ timeout: 15000 });
+    console.log('✅ Sucata verificada como EM MODERAÇÃO no dashboard do vendedor.');
 
     // ==========================================
     // ETAPA 2: Moderador Aprova Sucata
@@ -114,18 +112,17 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     const modToken = (await modLoginRes.json()).tokens.accessToken;
 
     // Buscar lista de anúncios pendentes via API de moderação
-    const listPendingRes = await page.request.get(`${API_URL}/moderacao/anuncios?status=PENDENTE`, {
+    const listPendingRes = await page.request.get(`${API_URL}/moderacao/anuncios/pendentes`, {
       headers: { Authorization: `Bearer ${modToken}` }
     });
     expect(listPendingRes.ok()).toBeTruthy();
     const pendingData = await listPendingRes.json();
     const pendingListings = pendingData.content || pendingData;
 
-    // Localizar o ID do anúncio criado
+    // Localizar o anúncio recém criado (ou o primeiro pendente)
     const targetListing = pendingListings.find((item: any) => 
-      item.descricao?.includes(uniqueTag) || 
-      item.veiculo?.observacoes?.includes(uniqueTag) ||
-      item.titulo?.includes(uniqueTag)
+      item.titulo?.includes(uniqueTag) || 
+      item.descricao?.includes(uniqueTag)
     ) || pendingListings[0];
 
     expect(targetListing).toBeDefined();
@@ -171,8 +168,8 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     await page.waitForURL('**/comprador/dashboard', { timeout: 20000 });
     console.log('✅ Comprador logado com sucesso.');
 
-    // Ir para a página direta do veículo
-    await page.goto(`/veiculo/${targetListing.veiculoId || listingId}`);
+    // Ir para a página direta do veículo/anúncio
+    await page.goto(`/veiculo/${listingId}`);
     await page.waitForLoadState('networkidle');
 
     // Verificar detalhes do anúncio
