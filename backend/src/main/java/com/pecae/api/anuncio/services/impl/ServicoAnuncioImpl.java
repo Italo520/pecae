@@ -476,20 +476,22 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
         if (f.containsKey("marcaId")) {
             String fMarcaId = String.valueOf(f.get("marcaId"));
             if (fMarcaId != null && !fMarcaId.isBlank() && !fMarcaId.equalsIgnoreCase("null")) {
-                UUID brandId = v.getVersao().getModelo().getMarca().getId();
-                if (!brandId.toString().equalsIgnoreCase(fMarcaId)) {
-                    return false;
-                }
+                // Desativado: o banco não armazena mais marcaId
+                // UUID brandId = v.getVersao().getModelo().getMarca().getId();
+                // if (!brandId.toString().equalsIgnoreCase(fMarcaId)) {
+                //     return false;
+                // }
             }
         }
         
         if (f.containsKey("modeloId")) {
             String fModeloId = String.valueOf(f.get("modeloId"));
             if (fModeloId != null && !fModeloId.isBlank() && !fModeloId.equalsIgnoreCase("null")) {
-                UUID modelId = v.getVersao().getModelo().getId();
-                if (!modelId.toString().equalsIgnoreCase(fModeloId)) {
-                    return false;
-                }
+                // Desativado: o banco não armazena mais modeloId
+                // UUID modelId = v.getVersao().getModelo().getId();
+                // if (!modelId.toString().equalsIgnoreCase(fModeloId)) {
+                //     return false;
+                // }
             }
         }
         
@@ -516,8 +518,8 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
             if (fSearch != null && !fSearch.isBlank() && !fSearch.equalsIgnoreCase("null")) {
                 String title = anuncio.getTitulo() != null ? anuncio.getTitulo().toLowerCase() : "";
                 String desc = anuncio.getDescricao() != null ? anuncio.getDescricao().toLowerCase() : "";
-                String brandName = v.getVersao().getModelo().getMarca().getNome().toLowerCase();
-                String modelName = v.getVersao().getModelo().getNome().toLowerCase();
+                String brandName = v.getMarcaNome().toLowerCase();
+                String modelName = v.getModeloNome().toLowerCase();
                 
                 String target = fSearch.toLowerCase();
                 if (!title.contains(target) && !desc.contains(target) && !brandName.contains(target) && !modelName.contains(target)) {

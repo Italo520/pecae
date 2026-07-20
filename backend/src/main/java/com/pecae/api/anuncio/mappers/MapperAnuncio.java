@@ -13,9 +13,9 @@ import org.mapstruct.ReportingPolicy;
 public interface MapperAnuncio {
 
     // Listagem pública resumida
-    @Mapping(source = "veiculo.versao.modelo.marca.nome", target = "marcaNome")
-    @Mapping(source = "veiculo.versao.modelo.nome", target = "modeloNome")
-    @Mapping(source = "veiculo.versao.nome", target = "versaoNome")
+    @Mapping(source = "veiculo.marcaNome", target = "marcaNome")
+    @Mapping(source = "veiculo.modeloNome", target = "modeloNome")
+    @Mapping(source = "veiculo.versaoNome", target = "versaoNome")
     @Mapping(target = "anoFabricacao", expression = "java(extrairAnoFabricacao(anuncio))")
     @Mapping(source = "veiculo.cor", target = "cor")
     @Mapping(source = "veiculo.cidade", target = "cidade")
@@ -30,9 +30,9 @@ public interface MapperAnuncio {
 
     // Detalhe completo
     @Mapping(source = "veiculo.id", target = "veiculoId")
-    @Mapping(source = "veiculo.versao.modelo.marca.nome", target = "marcaNome")
-    @Mapping(source = "veiculo.versao.modelo.nome", target = "modeloNome")
-    @Mapping(source = "veiculo.versao.nome", target = "versaoNome")
+    @Mapping(source = "veiculo.marcaNome", target = "marcaNome")
+    @Mapping(source = "veiculo.modeloNome", target = "modeloNome")
+    @Mapping(source = "veiculo.versaoNome", target = "versaoNome")
     @Mapping(target = "anoFabricacao", expression = "java(extrairAnoFabricacao(anuncio))")
     @Mapping(source = "veiculo.cor", target = "cor")
     @Mapping(source = "veiculo.observacoes", target = "observacoes")
@@ -77,10 +77,14 @@ public interface MapperAnuncio {
     }
 
     default Integer extrairAnoFabricacao(Anuncio anuncio) {
-        if (anuncio.getVeiculo() == null || anuncio.getVeiculo().getAnoFabricacao() == null) {
+        if (anuncio.getVeiculo() == null || anuncio.getVeiculo().getAnoNome() == null) {
             return null;
         }
-        return anuncio.getVeiculo().getAnoFabricacao().getAno();
+        try {
+            return Integer.parseInt(anuncio.getVeiculo().getAnoNome().substring(0, 4));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     default Double extrairRatingVendedor(Anuncio anuncio) {

@@ -362,9 +362,9 @@ public class ServicoChatImpl implements IServicoChat {
         if (sala.getAnuncio() != null) {
             return sala.getAnuncio().getTitulo();
         }
-        if (sala.getVeiculo() != null && sala.getVeiculo().getVersao() != null) {
-            var v = sala.getVeiculo().getVersao();
-            return v.getModelo().getMarca().getNome() + " " + v.getModelo().getNome() + " " + v.getNome();
+        if (sala.getVeiculo() != null && sala.getVeiculo().getMarcaNome() != null) {
+            var v = sala.getVeiculo();
+            return v.getMarcaNome() + " " + v.getModeloNome() + " " + (v.getVersaoNome() != null ? v.getVersaoNome() : "");
         }
         return "Conversa";
     }
