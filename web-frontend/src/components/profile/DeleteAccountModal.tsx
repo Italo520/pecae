@@ -23,7 +23,7 @@ export function DeleteAccountModal({ isOpen, onClose }: DeleteAccountModalProps)
     
     setIsDeleting(true);
     try {
-      const endpoint = user?.type === 'SELLER' || user?.type === 'VENDEDOR' 
+      const endpoint = user?.type === 'SELLER'
         ? '/sellers/me' 
         : '/buyers/me';
 

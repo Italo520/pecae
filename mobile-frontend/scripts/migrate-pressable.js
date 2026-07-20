@@ -18,7 +18,7 @@ function walk(dir) {
   return results;
 }
 
-const files = walk(path.join(__dirname, '../src'));
+const files = walk(path.join(process.cwd(), 'src'));
 
 let filesModified = 0;
 
