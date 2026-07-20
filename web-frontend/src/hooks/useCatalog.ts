@@ -27,15 +27,15 @@ export function useVersions(modelId?: string, year?: string) {
   });
 }
 
-// Aliases and mock for Step2Fipe
 export const useCatalogBrands = useBrands;
 export const useCatalogModels = useModels;
+// In Parallelum V2, we go directly from Models to Years. We don't use Versions.
 export const useCatalogVersions = (modelId?: string) => useVersions(modelId, '');
-export const useCatalogYears = (versionId?: string) => {
+export const useCatalogYears = (brandId?: string, modelId?: string) => {
   return useQuery({
-    queryKey: ['years', versionId],
-    queryFn: () => fetchYears(versionId!),
-    enabled: !!versionId,
+    queryKey: ['years', brandId, modelId],
+    queryFn: () => fetchYears(brandId!, modelId!),
+    enabled: !!brandId && !!modelId,
     staleTime: Infinity,
   });
 };

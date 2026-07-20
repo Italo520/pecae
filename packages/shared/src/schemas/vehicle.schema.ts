@@ -1,8 +1,13 @@
 import { z } from 'zod';
 
 export const vehicleCreateSchema = z.object({
-  versaoId: z.string().uuid('ID da versão inválido'),
-  anoId: z.string().uuid('ID do ano inválido'),
+  marcaNome: z.string().min(1, 'A marca é obrigatória'),
+  modeloNome: z.string().min(1, 'O modelo é obrigatório'),
+  anoNome: z.string().min(1, 'O ano é obrigatório'),
+  versaoNome: z.string().optional().nullable(),
+  brandCode: z.string().optional(),
+  modelCode: z.string().optional(),
+  yearCode: z.string().optional(),
   placa: z.string().max(20, 'A placa não pode ter mais de 20 caracteres').optional().nullable(),
   cor: z.string().min(1, 'A cor é obrigatória').max(50, 'A cor não pode ter mais de 50 caracteres'),
   cidade: z.string().min(1, 'A cidade é obrigatória').max(100, 'A cidade não pode ter mais de 100 caracteres'),
@@ -33,9 +38,9 @@ export const vehicleUpdateSchema = z.object({
 export type VehicleUpdateInput = z.infer<typeof vehicleUpdateSchema>;
 
 export const vehicleSearchSchema = z.object({
-  marcaId: z.string().uuid().optional().nullable(),
-  modeloId: z.string().uuid().optional().nullable(),
-  versaoId: z.string().uuid().optional().nullable(),
+  marcaNome: z.string().optional().nullable(),
+  modeloNome: z.string().optional().nullable(),
+  versaoNome: z.string().optional().nullable(),
   anoMin: z.number().optional().nullable(),
   anoMax: z.number().optional().nullable(),
   q: z.string().optional().nullable(),

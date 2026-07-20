@@ -5,14 +5,20 @@ import { listingCardSchema } from '@/types/listing.types';
 
 const API_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api/v1';
 
+const FIPE_BASE_URL = 'https://fipe.parallelum.com.br/api/v2/cars';
+
 export async function fetchBrands(): Promise<Brand[]> {
   try {
-    const res = await fetch(`${API_URL}/catalog/brands`, {
-      next: { revalidate: 3600 },
+    const res = await fetch(`${FIPE_BASE_URL}/brands`, {
+      next: { revalidate: 86400 },
     });
     if (!res.ok) return mockBrands;
     const data = await res.json();
-    return z.array(brandSchema).parse(data);
+    return data.map((item: any) => ({
+      id: String(item.code),
+      name: item.name,
+      vehicleType: 'Carro'
+    }));
   } catch (error) {
     return mockBrands;
   }
@@ -20,46 +26,41 @@ export async function fetchBrands(): Promise<Brand[]> {
 
 export async function fetchModels(brandId: string): Promise<Model[]> {
   try {
-    const res = await fetch(`${API_URL}/catalog/brands/${brandId}/models`, {
-      next: { revalidate: 3600 },
+    const res = await fetch(`${FIPE_BASE_URL}/brands/${brandId}/models`, {
+      next: { revalidate: 86400 },
     });
     if (!res.ok) return mockModels.filter(m => m.brandId === brandId);
     const data = await res.json();
-    return z.array(modelSchema).parse(data);
+    return data.map((item: any) => ({
+      id: String(item.code),
+      brandId: String(brandId),
+      name: item.name
+    }));
   } catch (error) {
     return mockModels.filter(m => m.brandId === brandId);
   }
 }
 
-export async function fetchVersions(modelId: string, year: string): Promise<Version[]> {
+export async function fetchYears(brandId: string, modelId: string): Promise<any[]> {
   try {
-    // We pass both modelId and year as per the cascading requirement Marca->Modelo->Ano->Versão
-    const res = await fetch(`${API_URL}/catalog/models/${modelId}/versions?year=${year}`, {
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) return (mockVersions as any[]).filter((v: any) => v.modelId === modelId && v.year.toString() === year) as any;
-    const data = await res.json();
-    return z.array(versionSchema).parse(data);
-  } catch (error) {
-    return (mockVersions as any[]).filter((v: any) => v.modelId === modelId && v.year.toString() === year) as any;
-  }
-}
-
-export async function fetchYears(versionId: string): Promise<any[]> {
-  try {
-    const res = await fetch(`${API_URL}/catalog/versions/${versionId}/years`, {
-      next: { revalidate: 3600 },
+    const res = await fetch(`${FIPE_BASE_URL}/brands/${brandId}/models/${modelId}/years`, {
+      next: { revalidate: 86400 },
     });
     if (!res.ok) return [];
     const data = await res.json();
     return data.map((item: any) => ({
-      id: item.id,
-      name: (item.name || item.year || item.ano || '').toString(),
-      fuelType: item.fuelType || 'Flex'
+      id: String(item.code),
+      name: item.name,
+      fuelType: 'FIPE'
     }));
   } catch (error) {
     return [];
   }
+}
+
+// We don't use versions in Parallelum V2, the year contains the specific variation
+export async function fetchVersions(modelId: string, year: string): Promise<Version[]> {
+  return [];
 }
 
 export async function fetchPartCategories(): Promise<any[]> {

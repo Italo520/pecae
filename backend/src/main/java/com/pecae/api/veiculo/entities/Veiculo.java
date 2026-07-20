@@ -1,7 +1,6 @@
 package com.pecae.api.veiculo.entities;
 
-import com.pecae.api.catalogo.entities.AnoVeiculo;
-import com.pecae.api.catalogo.entities.VersaoVeiculo;
+
 import com.pecae.api.catalogo.entities.enums.ConversorTipoCombustivel;
 import com.pecae.api.catalogo.entities.enums.TipoCombustivel;
 import com.pecae.api.veiculo.entities.enums.ConversorStatusVeiculo;
@@ -41,13 +40,17 @@ public class Veiculo {
     @JoinColumn(name = "seller_id", nullable = false)
     private PerfilVendedor perfilVendedor;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "version_id", nullable = false)
-    private VersaoVeiculo versao;
+    @Column(name = "marca_nome", nullable = false)
+    private String marcaNome;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "year_fab_id", nullable = false)
-    private AnoVeiculo anoFabricacao;
+    @Column(name = "modelo_nome", nullable = false)
+    private String modeloNome;
+
+    @Column(name = "ano_nome", nullable = false)
+    private String anoNome;
+
+    @Column(name = "versao_nome")
+    private String versaoNome;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "available_parts", columnDefinition = "jsonb", nullable = false)

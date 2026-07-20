@@ -7,11 +7,16 @@ import java.util.List;
 import java.util.UUID;
 
 public record CriarVeiculoRequest(
-    @NotNull(message = "O ID da versão é obrigatório")
-    UUID versaoId,
+    @NotBlank(message = "O nome da marca é obrigatório")
+    String marcaNome,
 
-    @NotNull(message = "O ID do ano é obrigatório")
-    UUID anoId,
+    @NotBlank(message = "O nome do modelo é obrigatório")
+    String modeloNome,
+
+    @NotBlank(message = "O ano é obrigatório")
+    String anoNome,
+
+    String versaoNome,
 
     @Size(max = 20, message = "A placa não pode ter mais de 20 caracteres")
     String placa,

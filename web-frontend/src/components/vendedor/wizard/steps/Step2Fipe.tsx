@@ -2,52 +2,67 @@
 
 import { useFormContext } from 'react-hook-form';
 import type { VehicleCreateInput } from '@pecae/shared';
-import { useCatalogBrands, useCatalogModels, useCatalogVersions, useCatalogYears } from '@/hooks/useCatalog';
+import { useCatalogBrands, useCatalogModels, useCatalogYears } from '@/hooks/useCatalog';
 
 
 export default function Step2Fipe() {
   const { register, setValue, watch, formState: { errors } } = useFormContext<VehicleCreateInput>();
 
-  const selectedBrand = watch('brandId' as any) || '';
-  const selectedModel = watch('modelId' as any) || '';
-  
-  // Watch values if they were pre-filled when going back
-  const versaoId = watch('versaoId');
-  const anoId = watch('anoId');
+  const brandCode = watch('brandCode');
+  const modelCode = watch('modelCode');
+  const yearCode = watch('yearCode');
 
   const { data: brands, isLoading: loadBrands } = useCatalogBrands();
-  const { data: models, isLoading: loadModels } = useCatalogModels(selectedBrand);
-  const { data: versions, isLoading: loadVersions } = useCatalogVersions(selectedModel);
-  const { data: years, isLoading: loadYears } = useCatalogYears(versaoId || '');
+  const { data: models, isLoading: loadModels } = useCatalogModels(brandCode);
+  const { data: years, isLoading: loadYears } = useCatalogYears(brandCode, modelCode);
 
   const selectClass = "w-full bg-[var(--surface-hover)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--brand)] focus:ring-1 focus:ring-[var(--brand)] transition-all appearance-none";
   const labelClass = "block text-sm font-medium text-[var(--muted)] mb-1.5";
   const errorClass = "text-red-500 text-xs mt-1.5 font-medium";
 
-  // Reset child fields when parent changes
   const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setValue('brandId' as any, e.target.value);
-    setValue('modelId' as any, '');
-    setValue('versaoId', '');
-    setValue('anoId', '');
+    const code = e.target.value;
+    const name = brands?.find(b => b.id === code)?.name || '';
+    setValue('brandCode', code);
+    setValue('marcaNome', name, { shouldValidate: true });
+    
+    // Reset children
+    setValue('modelCode', '');
+    setValue('modeloNome', '');
+    setValue('yearCode', '');
+    setValue('anoNome', '');
+    setValue('versaoNome', '');
   };
 
   const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setValue('modelId' as any, e.target.value);
-    setValue('versaoId', '');
-    setValue('anoId', '');
+    const code = e.target.value;
+    const name = models?.find(m => m.id === code)?.name || '';
+    setValue('modelCode', code);
+    setValue('modeloNome', name, { shouldValidate: true });
+    
+    // Reset children
+    setValue('yearCode', '');
+    setValue('anoNome', '');
+    setValue('versaoNome', '');
   };
 
-  const handleVersionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setValue('versaoId', e.target.value);
-    setValue('anoId', '');
+  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const code = e.target.value;
+    const selectedYearObj = years?.find(y => y.id === code);
+    const name = selectedYearObj?.name || '';
+    
+    setValue('yearCode', code);
+    setValue('anoNome', name, { shouldValidate: true });
+    
+    // In Parallelum, year often contains the version details for cars (e.g., "1992 Gasolina")
+    setValue('versaoNome', name);
   };
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
         <h2 className="text-2xl font-display font-semibold text-[var(--foreground)] mb-2">Tabela FIPE</h2>
-        <p className="text-[var(--muted)] text-sm">Selecione o modelo exato do veículo na base FIPE para facilitar a busca dos compradores.</p>
+        <p className="text-[var(--muted)] text-sm">Selecione o modelo exato do veículo na base FIPE oficial para garantir que seu anúncio seja encontrado nas buscas.</p>
       </div>
 
       <div className="space-y-6">
@@ -56,17 +71,18 @@ export default function Step2Fipe() {
           <label className={labelClass}>Marca *</label>
           <select 
             className={selectClass} 
-            value={selectedBrand} 
+            value={brandCode || ''} 
             onChange={handleBrandChange}
             disabled={loadBrands}
           >
             <option value="" className="bg-[var(--surface)] text-[var(--muted)]">
-              {loadBrands ? 'Carregando marcas...' : 'Selecione a Marca...'}
+              {loadBrands ? 'Carregando marcas da FIPE...' : 'Selecione a Marca...'}
             </option>
             {brands?.map(b => (
               <option key={b.id} value={b.id} className="bg-[var(--surface)]">{b.name}</option>
             ))}
           </select>
+          {errors.marcaNome && <p className={errorClass}>{errors.marcaNome.message}</p>}
         </div>
 
         {/* Modelo */}
@@ -74,54 +90,37 @@ export default function Step2Fipe() {
           <label className={labelClass}>Modelo *</label>
           <select 
             className={selectClass}
-            value={selectedModel}
+            value={modelCode || ''}
             onChange={handleModelChange}
-            disabled={!selectedBrand || loadModels}
+            disabled={!brandCode || loadModels}
           >
             <option value="" className="bg-[var(--surface)] text-[var(--muted)]">
-              {!selectedBrand ? 'Selecione a marca primeiro' : loadModels ? 'Carregando modelos...' : 'Selecione o Modelo...'}
+              {!brandCode ? 'Selecione a marca primeiro' : loadModels ? 'Carregando modelos da FIPE...' : 'Selecione o Modelo...'}
             </option>
             {models?.map(m => (
               <option key={m.id} value={m.id} className="bg-[var(--surface)]">{m.name}</option>
             ))}
           </select>
+          {errors.modeloNome && <p className={errorClass}>{errors.modeloNome.message}</p>}
         </div>
 
-        {/* Versão */}
-        <div>
-          <label className={labelClass}>Versão *</label>
-          <select 
-            className={selectClass}
-            value={versaoId || ''}
-            onChange={handleVersionChange}
-            disabled={!selectedModel || loadVersions}
-          >
-            <option value="" className="bg-[var(--surface)] text-[var(--muted)]">
-              {!selectedModel ? 'Selecione o modelo primeiro' : loadVersions ? 'Carregando versões...' : 'Selecione a Versão...'}
-            </option>
-            {versions?.map(v => (
-              <option key={v.id} value={v.id} className="bg-[var(--surface)]">{v.name}</option>
-            ))}
-          </select>
-          {errors.versaoId && <p className={errorClass}>{errors.versaoId.message}</p>}
-        </div>
-
-        {/* Ano */}
+        {/* Ano / Versão */}
         <div>
           <label className={labelClass}>Ano *</label>
           <select 
             className={selectClass}
-            {...register('anoId')}
-            disabled={!versaoId || loadYears}
+            value={yearCode || ''}
+            onChange={handleYearChange}
+            disabled={!modelCode || loadYears}
           >
             <option value="" className="bg-[var(--surface)] text-[var(--muted)]">
-              {!versaoId ? 'Selecione a versão primeiro' : loadYears ? 'Carregando anos...' : 'Selecione o Ano...'}
+              {!modelCode ? 'Selecione o modelo primeiro' : loadYears ? 'Carregando anos...' : 'Selecione o Ano...'}
             </option>
             {years?.map(y => (
-              <option key={y.id} value={y.id} className="bg-[var(--surface)]">{y.name} - {y.fuelType}</option>
+              <option key={y.id} value={y.id} className="bg-[var(--surface)]">{y.name}</option>
             ))}
           </select>
-          {errors.anoId && <p className={errorClass}>{errors.anoId.message}</p>}
+          {errors.anoNome && <p className={errorClass}>{errors.anoNome.message}</p>}
         </div>
 
       </div>

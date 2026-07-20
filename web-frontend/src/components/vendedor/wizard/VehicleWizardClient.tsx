@@ -55,7 +55,7 @@ export default function VehicleWizardClient() {
     if (currentStep === 1) {
       isValid = await trigger(['cor', 'cidade', 'estado']);
     } else    if (currentStep === 2) {
-      isValid = await trigger(['versaoId', 'anoId']);
+      isValid = await trigger(['marcaNome', 'modeloNome', 'anoNome']);
     } else if (currentStep === 3) {
       isValid = true; 
     } else if (currentStep === 4) {

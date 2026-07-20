@@ -20,18 +20,13 @@ public interface MapperVeiculo {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void atualizarEntidadeDoDto(AtualizarVeiculoRequest dto, @MappingTarget Veiculo entidade);
 
-    @Mapping(source = "versao.modelo.marca.nome", target = "marcaNome")
-    @Mapping(source = "versao.modelo.nome", target = "modeloNome")
-    @Mapping(source = "anoFabricacao.ano", target = "ano")
+    @Mapping(source = "anoNome", target = "ano")
     @Mapping(target = "urlFotoPrincipal", expression = "java(extrairFotoPrincipal(entidade))")
     @Mapping(source = "status", target = "status")
     RespostaVeiculo paraResposta(Veiculo entidade);
 
     @Mapping(source = "perfilVendedor.id", target = "perfilVendedorId")
-    @Mapping(source = "versao.modelo.marca.nome", target = "marcaNome")
-    @Mapping(source = "versao.modelo.nome", target = "modeloNome")
-    @Mapping(source = "versao.nome", target = "versaoNome")
-    @Mapping(source = "anoFabricacao.ano", target = "ano")
+    @Mapping(source = "anoNome", target = "ano")
     @Mapping(source = "status", target = "status")
     @Mapping(source = "tipoCombustivel", target = "tipoCombustivel")
     RespostaDetalheVeiculo paraRespostaDetalhe(Veiculo entidade);

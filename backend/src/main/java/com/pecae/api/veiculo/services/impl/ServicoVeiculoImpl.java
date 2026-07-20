@@ -1,9 +1,6 @@
 package com.pecae.api.veiculo.services.impl;
 
-import com.pecae.api.catalogo.entities.AnoVeiculo;
-import com.pecae.api.catalogo.entities.VersaoVeiculo;
-import com.pecae.api.catalogo.repositories.AnoVeiculoRepository;
-import com.pecae.api.catalogo.repositories.VersaoVeiculoRepository;
+
 import com.pecae.api.compartilhado.excecao.ExcecaoNegocio;
 import com.pecae.api.compartilhado.excecao.ExcecaoRecursoNaoEncontrado;
 import com.pecae.api.veiculo.dtos.CriarVeiculoRequest;
@@ -33,8 +30,6 @@ public class ServicoVeiculoImpl implements IServicoVeiculo {
 
     private final RepositorioVeiculo repositorioVeiculo;
     private final PerfilVendedorRepository perfilVendedorRepository;
-    private final VersaoVeiculoRepository versaoVeiculoRepository;
-    private final AnoVeiculoRepository anoVeiculoRepository;
     private final MapperVeiculo mapperVeiculo;
 
     @Override
@@ -51,22 +46,12 @@ public class ServicoVeiculoImpl implements IServicoVeiculo {
             }
         }
 
-        VersaoVeiculo versao = versaoVeiculoRepository.findById(request.versaoId())
-                .orElseThrow(() -> new ExcecaoRecursoNaoEncontrado("Versão de veículo não encontrada."));
-
-        AnoVeiculo ano = anoVeiculoRepository.findById(request.anoId())
-                .orElseThrow(() -> new ExcecaoRecursoNaoEncontrado("Ano de fabricação não encontrado."));
-
         Veiculo veiculo = mapperVeiculo.paraEntidade(request);
         veiculo.setPerfilVendedor(perfilVendedor);
-        veiculo.setVersao(versao);
-        veiculo.setAnoFabricacao(ano);
         veiculo.setStatus(StatusVeiculo.RASCUNHO);
 
         if (request.tipoCombustivel() != null) {
             veiculo.setTipoCombustivel(request.tipoCombustivel());
-        } else {
-            veiculo.setTipoCombustivel(versao.getTipoCombustivel());
         }
 
         Veiculo veiculoSalvo = repositorioVeiculo.save(veiculo);
@@ -167,8 +152,10 @@ public class ServicoVeiculoImpl implements IServicoVeiculo {
 
         Veiculo clone = new Veiculo();
         clone.setPerfilVendedor(original.getPerfilVendedor());
-        clone.setVersao(original.getVersao());
-        clone.setAnoFabricacao(original.getAnoFabricacao());
+        clone.setMarcaNome(original.getMarcaNome());
+        clone.setModeloNome(original.getModeloNome());
+        clone.setAnoNome(original.getAnoNome());
+        clone.setVersaoNome(original.getVersaoNome());
         clone.setCor(original.getCor());
         clone.setCidade(original.getCidade());
         clone.setEstado(original.getEstado());
