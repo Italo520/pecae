@@ -77,6 +77,17 @@ export default function VehicleWizardClient() {
   const onSubmit = async (data: any) => {
     try {
       const { brandId, modelId, ...submitData } = data;
+      
+      if (submitData.tipoCombustivel === '') {
+        submitData.tipoCombustivel = null;
+      }
+      if (submitData.placa === '') {
+        submitData.placa = null;
+      }
+      if (submitData.observacoes === '') {
+        submitData.observacoes = null;
+      }
+
       await createVehicle({ ...submitData, photos });
       // Redirect on success
       router.push('/vendedor/dashboard');
