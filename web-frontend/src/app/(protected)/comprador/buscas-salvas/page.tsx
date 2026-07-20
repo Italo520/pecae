@@ -1,9 +1,9 @@
 'use client';
 
 import { Search, Bell, BellOff, Trash2, AlertCircle } from 'lucide-react';
-import { useSavedSearches, SavedSearch } from '@/hooks/useSavedSearches';
-import { DataTable, Column } from '@/components/ui/DataTable';
-import { EmptyState } from '@/components/ui/EmptyState';
+import { useSavedSearches, SavedSearch } from '../../../../hooks/useSavedSearches';
+import { DataTable, Column } from '../../../../components/ui/DataTable';
+import { EmptyState } from '../../../../components/ui/EmptyState';
 import { toast } from 'sonner';
 
 export default function BuscasSalvasPage() {
