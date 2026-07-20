@@ -12,7 +12,7 @@ RUN npm ci --workspace=web-frontend
 # Copia o código e faz build
 COPY web-frontend/ ./web-frontend/
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build --workspace=web-frontend
+RUN cd web-frontend && npm run build
 
 # Estágio 2: runner (apenas os arquivos necessários)
 FROM node:20-alpine AS runner
