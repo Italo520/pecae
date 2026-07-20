@@ -9,7 +9,6 @@ export interface Vehicle {
   model: string;
   version: string;
   year: string;
-  plate: string;
   color: string;
   status: string;
   price?: number;
@@ -32,7 +31,7 @@ export function useVehicles() {
         model: v.modeloNome || v.model || '',
         version: v.versaoNome || v.version || '',
         year: v.ano || v.year || '',
-        plate: v.placa || v.plate || '',
+
         color: v.cor || v.color || '',
         status: v.status || '',
         price: v.preco || v.price || null,
@@ -83,14 +82,24 @@ export function useCreateVehicle() {
       }
 
       // Criar o anúncio correspondente para o veículo
-      const title = `Sucata de veículo doador - Cor ${data.cor || 'Preta'}`;
-      const description = data.observacoes || 'Sem observações adicionais sobre o lote/sucata.';
+      const marca = data.marcaNome || 'Veículo';
+      const modelo = data.modeloNome || '';
+      const ano = data.anoNome || '';
+      const cor = data.cor || '';
+      const title = `${marca} ${modelo} ${ano} - ${cor}`.trim();
+      const description = data.observacoes || `Sucata doadora ${marca} ${modelo}. Peças disponíveis para venda. Entre em contato para negociar.`;
 
-      await api.post('/listings/me', {
-        veiculoId: vehicle.id,
-        titulo: title,
-        descricao: description
-      });
+      try {
+        await api.post('/listings/me', {
+          veiculoId: vehicle.id,
+          titulo: title,
+          descricao: description
+        });
+      } catch (listingError: any) {
+        console.error('Veículo criado mas falha ao criar anúncio:', listingError?.response?.data);
+        // O veículo foi criado. Propaga o erro com contexto melhorado.
+        throw listingError;
+      }
 
       return vehicle;
     },

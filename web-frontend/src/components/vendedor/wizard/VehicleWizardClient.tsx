@@ -75,7 +75,7 @@ export default function VehicleWizardClient() {
 
   const onSubmit = async (data: any) => {
     try {
-      const { brandId, modelId, ...submitData } = data;
+      const { brandId, modelId, brandCode, modelCode, yearCode, ...submitData } = data;
       
       if (submitData.tipoCombustivel === '') {
         submitData.tipoCombustivel = null;
@@ -83,17 +83,22 @@ export default function VehicleWizardClient() {
       if (submitData.observacoes === '') {
         submitData.observacoes = null;
       }
+      if (submitData.quilometragem === 0 || submitData.quilometragem === '') {
+        submitData.quilometragem = null;
+      }
 
       await createVehicle({ ...submitData, photos });
       // Redirect on success
       router.push('/vendedor/dashboard');
     } catch (error: any) {
-      console.error('Failed to create vehicle:', error, error.response?.data);
+      console.error('Falha ao criar anúncio:', error, error.response?.data);
       const responseData = error.response?.data;
       let errorMsg = 'Verifique os dados ou tente novamente mais tarde.';
       
       if (responseData) {
-        if (responseData.erros && responseData.erros.length > 0) {
+        if (responseData.mensagem) {
+          errorMsg = responseData.mensagem;
+        } else if (responseData.erros && responseData.erros.length > 0) {
           errorMsg = `${responseData.erros[0].campo}: ${responseData.erros[0].mensagem}`;
         } else if (responseData.detalhe) {
           errorMsg = responseData.detalhe;

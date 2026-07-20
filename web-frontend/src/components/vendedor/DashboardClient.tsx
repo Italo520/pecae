@@ -21,12 +21,7 @@ import {
 import { useState, useMemo } from 'react';
 import { toast } from 'sonner';
 
-function maskPlate(plate?: string): string {
-  if (!plate) return '---';
-  if (plate.length < 5) return plate;
-  // Ex: ABC-1234 -> ABC-*2*4 ou similar
-  return plate.slice(0, 4) + '**' + plate.slice(6);
-}
+
 
 function VehicleRow({ 
   vehicle, 
@@ -81,8 +76,8 @@ function VehicleRow({
           </div>
         </div>
       </td>
-      <td className="px-6 py-4 text-[var(--muted)] font-mono text-xs uppercase">
-        {maskPlate(vehicle.plate)}
+      <td className="px-6 py-4 text-[var(--muted)] text-xs">
+        {vehicle.color}
       </td>
       <td className="px-6 py-4 text-[var(--foreground)] font-medium">
         {vehicle.price ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(vehicle.price) : 'Sob Consulta'}
@@ -209,8 +204,9 @@ export default function DashboardClient() {
     const s = searchTerm.toLowerCase();
     return vehicles.filter(v => 
       v.brand.toLowerCase().includes(s) || 
-      v.model.toLowerCase().includes(s) || 
-      v.plate.toLowerCase().includes(s)
+      v.model.toLowerCase().includes(s) ||
+      v.color.toLowerCase().includes(s) ||
+      v.version.toLowerCase().includes(s)
     );
   }, [vehicles, searchTerm]);
 
@@ -364,7 +360,7 @@ export default function DashboardClient() {
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted)]" />
             <input 
               type="text" 
-              placeholder="Buscar por placa, modelo..."
+              placeholder="Buscar por marca, modelo..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-[var(--surface-hover)] border border-[var(--border)] rounded-lg pl-10 pr-4 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--brand)] focus:ring-1 focus:ring-[var(--brand)] transition-all"

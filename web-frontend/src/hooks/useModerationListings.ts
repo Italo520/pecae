@@ -44,7 +44,6 @@ export function useModerationListings() {
           model: item.veiculo.modeloNome || '',
           version: item.veiculo.versaoNome || '',
           year: item.veiculo.ano || '',
-          plate: item.veiculo.placa || '',
           color: item.veiculo.cor || '',
           status: item.veiculo.status || '',
           price: item.veiculo.preco || null,
