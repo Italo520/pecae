@@ -18,14 +18,11 @@ public interface RepositorioAnuncio extends JpaRepository<Anuncio, UUID> {
     @Query(value = """
         SELECT a.* FROM listings a
         JOIN vehicles v ON a.vehicle_id = v.id
-        JOIN vehicle_versions vs ON v.version_id = vs.id
-        JOIN vehicle_models mo ON vs.model_id = mo.id
-        JOIN vehicle_brands ma ON mo.brand_id = ma.id
         WHERE a.status = 'PUBLISHED'
           AND a.deleted_at IS NULL
           AND a.seller_profile_id IN (SELECT sp.id FROM seller_profiles sp JOIN users u ON sp.user_id = u.id WHERE sp.deleted_at IS NULL AND u.status = 'ACTIVE')
-          AND (:marcaId IS NULL OR ma.id = CAST(:marcaId AS uuid))
-          AND (:modeloId IS NULL OR mo.id = CAST(:modeloId AS uuid))
+          AND (:marcaId IS NULL OR :marcaId = '')
+          AND (:modeloId IS NULL OR :modeloId = '')
           AND (:cidade IS NULL OR :cidade = '' OR LOWER(v.city) = LOWER(:cidade))
           AND (:estado IS NULL OR :estado = '' OR LOWER(v.state) = LOWER(:estado))
           AND (:search IS NULL OR :search = '' OR a.search_vector @@ to_tsquery('portuguese', :search))
@@ -42,14 +39,11 @@ public interface RepositorioAnuncio extends JpaRepository<Anuncio, UUID> {
         countQuery = """
         SELECT count(*) FROM listings a
         JOIN vehicles v ON a.vehicle_id = v.id
-        JOIN vehicle_versions vs ON v.version_id = vs.id
-        JOIN vehicle_models mo ON vs.model_id = mo.id
-        JOIN vehicle_brands ma ON mo.brand_id = ma.id
         WHERE a.status = 'PUBLISHED'
           AND a.deleted_at IS NULL
           AND a.seller_profile_id IN (SELECT sp.id FROM seller_profiles sp JOIN users u ON sp.user_id = u.id WHERE sp.deleted_at IS NULL AND u.status = 'ACTIVE')
-          AND (:marcaId IS NULL OR ma.id = CAST(:marcaId AS uuid))
-          AND (:modeloId IS NULL OR mo.id = CAST(:modeloId AS uuid))
+          AND (:marcaId IS NULL OR :marcaId = '')
+          AND (:modeloId IS NULL OR :modeloId = '')
           AND (:cidade IS NULL OR :cidade = '' OR LOWER(v.city) = LOWER(:cidade))
           AND (:estado IS NULL OR :estado = '' OR LOWER(v.state) = LOWER(:estado))
           AND (:search IS NULL OR :search = '' OR a.search_vector @@ to_tsquery('portuguese', :search))
@@ -58,8 +52,8 @@ public interface RepositorioAnuncio extends JpaRepository<Anuncio, UUID> {
         """,
         nativeQuery = true)
     Page<Anuncio> buscarPublicados(
-        @Param("marcaId") UUID marcaId,
-        @Param("modeloId") UUID modeloId,
+        @Param("marcaId") String marcaId,
+        @Param("modeloId") String modeloId,
         @Param("cidade") String cidade,
         @Param("estado") String estado,
         @Param("search") String search,

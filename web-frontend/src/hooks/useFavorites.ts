@@ -9,7 +9,7 @@ export function useFavorites() {
   const getFavorites = useQuery({
     queryKey: ['favorites'],
     queryFn: async () => {
-      const response = await api.get('/buyers/favorites');
+      const response = await api.get('/favoritos');
       return response.data;
     },
     enabled: !!accessToken,
@@ -17,7 +17,7 @@ export function useFavorites() {
 
   const toggleFavorite = useMutation({
     mutationFn: async (listingId: string) => {
-      const response = await api.post(`/buyers/favorites/${listingId}`);
+      const response = await api.post(`/favoritos/${listingId}`);
       return response.data;
     },
     onSuccess: () => {

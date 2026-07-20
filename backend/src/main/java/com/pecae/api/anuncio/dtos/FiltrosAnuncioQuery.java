@@ -1,10 +1,8 @@
 package com.pecae.api.anuncio.dtos;
 
-import java.util.UUID;
-
 public record FiltrosAnuncioQuery(
-    UUID marcaId,
-    UUID modeloId,
+    String marcaId,
+    String modeloId,
     String cidade,
     String estado,
     String search,
@@ -27,7 +25,7 @@ public record FiltrosAnuncioQuery(
     }
 
     // Construtor alternativo para manter retrocompatibilidade com testes existentes
-    public FiltrosAnuncioQuery(UUID marcaId, UUID modeloId, String cidade, String estado, Integer pagina, Integer tamanho) {
+    public FiltrosAnuncioQuery(String marcaId, String modeloId, String cidade, String estado, Integer pagina, Integer tamanho) {
         this(marcaId, modeloId, cidade, estado, null, null, null, null, pagina, tamanho);
     }
 }
