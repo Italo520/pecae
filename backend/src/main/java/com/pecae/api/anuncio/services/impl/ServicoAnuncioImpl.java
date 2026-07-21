@@ -422,6 +422,13 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
             anuncio.setPublicadoEm(LocalDateTime.now());
             anuncio.setExpiraEm(LocalDateTime.now().plusDays(30)); // 30 dias por padrão
 
+            // Sincronizar status do veículo associado para ATIVO
+            Veiculo veiculo = anuncio.getVeiculo();
+            if (veiculo != null) {
+                veiculo.setStatus(StatusVeiculo.ATIVO);
+                repositorioVeiculo.save(veiculo);
+            }
+
             // Incrementar anúncios ativos do vendedor
             PerfilVendedor perfilVendedor = anuncio.getPerfilVendedor();
             EstatisticasVendedor statsVendedor = perfilVendedor.getEstatisticas();
@@ -449,7 +456,14 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
                 log.error("Erro ao verificar buscas salvas para anuncio {}", anuncioId, e);
             }
         } else if (novoStatus == StatusAnuncio.REJEITADO) {
-            // Caso seja rejeitado, se antes estava publicado (improvável por causa do fluxo normal, mas seguro)
+            // Sincronizar status do veículo associado para INATIVO
+            Veiculo veiculo = anuncio.getVeiculo();
+            if (veiculo != null) {
+                veiculo.setStatus(StatusVeiculo.INATIVO);
+                repositorioVeiculo.save(veiculo);
+            }
+
+            // Caso seja rejeitado, se antes estava publicado
             if (statusAnterior == StatusAnuncio.PUBLICADO) {
                 PerfilVendedor perfilVendedor = anuncio.getPerfilVendedor();
                 EstatisticasVendedor statsVendedor = perfilVendedor.getEstatisticas();
