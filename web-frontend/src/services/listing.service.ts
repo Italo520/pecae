@@ -8,7 +8,7 @@ import {
   listingDetailSchema
 } from '@/types/listing.types';
 
-const API_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api/v1';
+const API_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'https://api-pecae.italohub.cloud/api/v1';
 
 export async function fetchFeaturedListings(limit = 20, page = 0): Promise<ListingCard[]> {
   try {

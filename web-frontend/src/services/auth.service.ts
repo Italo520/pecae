@@ -4,7 +4,7 @@ import { UserPublic } from '@pecae/shared';
 
 // This is the main Axios instance that points to the Java Backend
 export const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api/v1',
+  baseURL: process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'https://api-pecae.italohub.cloud/api/v1',
   headers: {
     'Content-Type': 'application/json',
   },

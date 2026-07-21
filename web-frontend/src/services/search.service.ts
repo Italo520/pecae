@@ -3,7 +3,7 @@ import { Brand, brandSchema, Model, modelSchema, Version, versionSchema } from '
 import { PaginatedListings, VehicleSearchInput } from '@/types/search.types';
 import { listingCardSchema } from '@/types/listing.types';
 
-const API_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api/v1';
+const API_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'https://api-pecae.italohub.cloud/api/v1';
 
 const FIPE_BASE_URL = 'https://fipe.parallelum.com.br/api/v2/cars';
 
