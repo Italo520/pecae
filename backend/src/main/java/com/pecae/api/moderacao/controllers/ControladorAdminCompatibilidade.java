@@ -152,6 +152,26 @@ public class ControladorAdminCompatibilidade {
         verification.setStatus(com.pecae.api.vendedor.entities.enums.StatusVerificacao.APROVADO);
         verification.setResolvidoEm(java.time.LocalDateTime.now());
         verificacaoVendedorRepository.save(verification);
+
+        // Atualizar papel do usuário se for apenas COMPRADOR
+        var perfil = verification.getPerfilVendedor();
+        if (perfil != null) {
+            var usuario = perfil.getUsuario();
+            if (usuario != null && usuario.getTipo() == com.pecae.api.usuario.entities.enums.TipoUsuario.COMPRADOR) {
+                usuario.setTipo(com.pecae.api.usuario.entities.enums.TipoUsuario.AMBOS);
+                usuarioRepository.save(usuario);
+            }
+
+            // Mover anúncios que estavam em RASCUNHO aguardando aprovação do vendedor para PENDENTE (moderação de conteúdo)
+            var rascunhos = repositorioAnuncio.findByPerfilVendedorIdAndStatus(
+                perfil.getId(),
+                com.pecae.api.anuncio.entities.enums.StatusAnuncio.RASCUNHO
+            );
+            for (var anuncio : rascunhos) {
+                anuncio.setStatus(com.pecae.api.anuncio.entities.enums.StatusAnuncio.PENDENTE);
+                repositorioAnuncio.save(anuncio);
+            }
+        }
         
         Map<String, Object> response = new HashMap<>();
         response.put("id", verification.getId());

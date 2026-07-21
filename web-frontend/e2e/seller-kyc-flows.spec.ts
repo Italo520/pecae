@@ -24,13 +24,13 @@ test.describe('Seller Onboarding and KYC Flows', () => {
               name: 'pecae-web-auth',
               value: JSON.stringify({
                 state: {
-                  user: {
-                    id: '1',
-                    name: 'Seller Test',
-                    email: 'seller@test.com',
-                    role: 'SELLER',
-                    hasProfile: false
-                  },
+                    user: {
+                      id: '1',
+                      name: 'Comprador Teste',
+                      email: 'comprador@test.com',
+                      type: 'BUYER',
+                      hasProfile: false
+                    },
                   token: 'mock-valid-token',
                   refreshToken: 'mock-refresh-token'
                 }

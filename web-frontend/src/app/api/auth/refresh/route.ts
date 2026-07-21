@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'No refresh token provided' }, { status: 401 });
     }
 
-    const apiUrl = process.env.API_URL || 'http://localhost:3333/api/v1';
+    const apiUrl = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
 
     const res = await fetch(`${apiUrl}/auth/refresh`, {
       method: 'POST',

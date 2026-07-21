@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const apiUrl = process.env.API_URL || 'http://localhost:3333/api/v1';
+    const apiUrl = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
 
     const res = await fetch(`${apiUrl}/auth/register`, {
       method: 'POST',
@@ -11,29 +11,37 @@ export async function POST(request: Request) {
       headers: { 'Content-Type': 'application/json' },
     });
     
-    const data = await res.json();
+    let data: any = {};
+    try {
+      data = await res.json();
+    } catch (e) {
+      data = { message: res.statusText || 'Erro na comunicação com o backend' };
+    }
     
     if (!res.ok) {
       return NextResponse.json(data, { status: res.status });
     }
 
     const userRole = data.user?.type || data.user?.role || 'COMPRADOR';
+    const accessToken = data.tokens?.accessToken;
+    const refreshToken = data.tokens?.refreshToken;
 
     const response = NextResponse.json({ 
       user: data.user, 
-      accessToken: data.tokens.accessToken 
+      accessToken 
     });
     
-    // Set HttpOnly refresh token
-    response.cookies.set({
-      name: 'refresh_token',
-      value: data.tokens.refreshToken,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      path: '/api/auth',
-      maxAge: 604800, // 7 days
-    });
+    if (refreshToken) {
+      response.cookies.set({
+        name: 'refresh_token',
+        value: refreshToken,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        path: '/',
+        maxAge: 604800, // 7 days
+      });
+    }
 
     // Set user_role cookie for middleware routing
     response.cookies.set({

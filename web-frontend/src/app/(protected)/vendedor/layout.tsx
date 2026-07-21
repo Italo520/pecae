@@ -14,12 +14,10 @@ export default function VendedorLayout({ children }: { children: ReactNode }) {
 
     if (!isAuthenticated) {
       router.replace('/login');
-    } else if ((user?.type as string) === 'BUYER' || (user?.type as string) === 'COMPRADOR') {
-      router.replace('/comprador/dashboard');
     }
   }, [user, isAuthenticated, isInitialized, router]);
 
-  if (!isInitialized || !isAuthenticated || (user?.type as string) === 'BUYER' || (user?.type as string) === 'COMPRADOR') {
+  if (!isInitialized || !isAuthenticated) {
     return null; // Return null while redirecting
   }
 

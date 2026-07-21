@@ -76,6 +76,9 @@ public interface RepositorioAnuncio extends JpaRepository<Anuncio, UUID> {
     // Buscar anúncio por ID garantindo que não está deletado e vendedor não está deletado
     Optional<Anuncio> findByIdAndStatus(UUID id, StatusAnuncio status);
 
+    // Listar anúncios de um vendedor específico por status (ex: rascunhos aguardando aprovação do vendedor)
+    java.util.List<Anuncio> findByPerfilVendedorIdAndStatus(UUID perfilVendedorId, StatusAnuncio status);
+
     // Listar anúncios de um vendedor específico (painel do vendedor)
     Page<Anuncio> findAllByPerfilVendedorId(UUID perfilVendedorId, Pageable pageable);
 

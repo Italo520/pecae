@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 const registerSchema = z.object({
   name: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
   email: z.string().email('E-mail inválido'),
-  password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
+  password: z.string().min(8, 'A senha deve ter pelo menos 8 caracteres'),
   confirmPassword: z.string(),
   termsAccepted: z.literal(true, {
     errorMap: () => ({ message: 'Você deve aceitar os termos de uso' }),
@@ -56,7 +56,7 @@ export function RegisterForm() {
         name: data.name,
         email: data.email,
         password: data.password,
-        type: 'COMPRADOR',
+        type: 'BUYER',
         termsAccepted: data.termsAccepted,
         privacyAccepted: data.privacyAccepted
       });
@@ -130,7 +130,7 @@ export function RegisterForm() {
               <label className="block text-sm font-medium text-foreground mb-1">Senha</label>
               <input
                 type="password"
-                placeholder="Mínimo de 6 caracteres"
+                placeholder="Mínimo de 8 caracteres"
                 {...register('password')}
                 className={`w-full px-4 py-3 bg-background/50 border rounded-xl focus:ring-2 focus:ring-brand focus:border-brand focus:outline-none transition-colors text-foreground placeholder:text-muted ${
                   errors.password ? 'border-error' : 'border-border'

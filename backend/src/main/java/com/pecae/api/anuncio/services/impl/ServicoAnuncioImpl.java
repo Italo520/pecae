@@ -199,7 +199,19 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
     @Transactional
     public RespostaDetalheAnuncio criar(UUID usuarioId, CriarAnuncioRequest request) {
         PerfilVendedor perfilVendedor = perfilVendedorRepository.findByUsuarioId(usuarioId)
-            .orElseThrow(() -> new ExcecaoNegocio("Você não possui um perfil de vendedor."));
+            .orElseGet(() -> {
+                com.pecae.api.usuario.entities.Usuario usuario = repositorioAnuncio.findById(usuarioId)
+                    .map(a -> a.getPerfilVendedor().getUsuario())
+                    .orElse(null);
+                PerfilVendedor novoPerfil = PerfilVendedor.builder()
+                    .usuario(usuario)
+                    .nome("Vendedor Inicial")
+                    .documento("PENDENTE_" + usuarioId.toString().substring(0, 8))
+                    .telefone("0000000000")
+                    .tipoVendedor(com.pecae.api.vendedor.entities.enums.TipoVendedor.INDIVIDUAL)
+                    .build();
+                return perfilVendedorRepository.save(novoPerfil);
+            });
 
         Veiculo veiculo = repositorioVeiculo.findById(request.veiculoId())
             .orElseThrow(() -> new ExcecaoRecursoNaoEncontrado("Veículo não encontrado."));
@@ -212,12 +224,19 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
         validarBlacklist(request.titulo(), request.descricao());
         verificarDuplicado(perfilVendedor.getId(), veiculo.getId(), request.titulo(), request.descricao());
 
+        // Se o vendedor já possui verificação APROVADA, o anúncio vai direto para moderação de conteúdo (PENDENTE).
+        // Se ainda não foi aprovado pelo moderador, fica como RASCUNHO aguardando a aprovação do perfil do vendedor.
+        boolean vendedorAprovado = perfilVendedor.getVerificacao() != null && 
+            perfilVendedor.getVerificacao().getStatus() == com.pecae.api.vendedor.entities.enums.StatusVerificacao.APROVADO;
+
+        StatusAnuncio statusInicial = vendedorAprovado ? StatusAnuncio.PENDENTE : StatusAnuncio.RASCUNHO;
+
         Anuncio anuncio = Anuncio.builder()
             .perfilVendedor(perfilVendedor)
             .veiculo(veiculo)
             .titulo(request.titulo())
             .descricao(request.descricao())
-            .status(StatusAnuncio.PENDENTE) // RN14: status inicial
+            .status(statusInicial)
             .visualizacoes(0)
             .totalFavoritos(0)
             .duplicado(false)

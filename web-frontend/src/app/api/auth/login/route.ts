@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const apiUrl = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api/v1';
+    const apiUrl = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
 
     const res = await fetch(`${apiUrl}/auth/login`, {
       method: 'POST',
@@ -12,31 +12,37 @@ export async function POST(request: Request) {
       headers: { 'Content-Type': 'application/json' },
     });
     
-    const data = await res.json();
+    let data: any = {};
+    try {
+      data = await res.json();
+    } catch (e) {
+      data = { message: res.statusText || 'Erro na comunicação com o backend' };
+    }
     
     if (!res.ok) {
       return NextResponse.json(data, { status: res.status });
     }
 
     const userRole = data.user?.type || data.user?.role || 'COMPRADOR';
-
-    console.log('Proxy Login: Token recebido do backend:', data.tokens.refreshToken ? 'Sim (presente)' : 'Não');
+    const accessToken = data.tokens?.accessToken;
+    const refreshToken = data.tokens?.refreshToken;
 
     const response = NextResponse.json({ 
       user: data.user, 
-      accessToken: data.tokens.accessToken 
+      accessToken 
     });
 
-    // Set HttpOnly refresh token directly on response
-    response.cookies.set({
-      name: 'refresh_token',
-      value: data.tokens.refreshToken,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      path: '/',
-      maxAge: 604800, // 7 days
-    });
+    if (refreshToken) {
+      response.cookies.set({
+        name: 'refresh_token',
+        value: refreshToken,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        path: '/',
+        maxAge: 604800, // 7 days
+      });
+    }
     console.log('Proxy Login: Cookie refresh_token setado diretamente no NextResponse');
 
     // Set user_role cookie for middleware routing
