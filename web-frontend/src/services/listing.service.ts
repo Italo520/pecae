@@ -123,7 +123,9 @@ export async function fetchListingById(id: string): Promise<ListingDetail | null
             order: f.ordem !== undefined ? f.ordem : idx
           }))
         : [{ id: '1', url: data.urlFotoPrincipal || 'https://images.pexels.com/photos/1164778/pexels-photo-1164778.jpeg', isMain: true, order: 0 }],
-      partsAvailable: Array.isArray(data.pecasDisponiveis) ? data.pecasDisponiveis : [],
+      partsAvailable: Array.isArray(data.pecasDisponiveis) 
+        ? data.pecasDisponiveis.map((p: any) => typeof p === 'string' ? p : (p.nome || p.codigo || p.id || String(p)))
+        : [],
       seller: {
         id: data.perfilVendedorId ? String(data.perfilVendedorId) : 'vendedor',
         name: data.nomeVendedor || 'Vendedor PECAÊ',
