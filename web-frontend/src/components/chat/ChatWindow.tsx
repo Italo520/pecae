@@ -91,22 +91,36 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
     return diffHours > 6;
   })();
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim() || isBlocked) return;
     
+    const messageContent = input;
+    setInput('');
+
     // Optimistic UI update
     const tempMsg: MensagemChat = {
       id: crypto.randomUUID(),
       salaId: chatId,
       remetenteId: user?.id || '',
-      conteudo: input,
+      conteudo: messageContent,
       criadaEm: new Date().toISOString(),
       lido: false
     };
     
     setMessages(prev => [...prev, tempMsg]);
-    publish(`/app/chat.send/${chatId}`, { conteudo: input });
-    setInput('');
+
+    if (connected) {
+      publish(`/app/chat.send/${chatId}`, { conteudo: messageContent });
+    } else {
+      try {
+        const res = await api.post(`/chat/rooms/${chatId}/messages`, { conteudo: messageContent });
+        if (res.data?.id) {
+          setMessages(prev => prev.map(m => m.id === tempMsg.id ? res.data : m));
+        }
+      } catch (err) {
+        console.error('Failed to send message via HTTP API fallback:', err);
+      }
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -332,7 +346,7 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
           
           <button 
             onClick={handleSend}
-            disabled={!input.trim() || !connected || isBlocked}
+            disabled={!input.trim() || isBlocked}
             className="p-3 bg-[var(--brand)] text-black rounded-xl hover:brightness-110 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(20,241,149,0.2)]"
           >
             <Send className="w-5 h-5" />

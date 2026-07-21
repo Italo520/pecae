@@ -226,6 +226,7 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     // Acessar chat do vendedor
     await page.goto(`/vendedor/chat/${roomId}`);
     await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
 
     // Verificar mensagem do comprador
     await expect(page.locator(`text=${uniqueTag}`).first()).toBeVisible({ timeout: 15000 });
