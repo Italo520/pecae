@@ -18,7 +18,18 @@ public interface RepositorioMensagemChat extends JpaRepository<MensagemChat, UUI
         SELECT m FROM MensagemChat m
         WHERE m.sala.id = :salaId
           AND m.deletada = false
-          AND (:cursorCriadoEm IS NULL OR m.criadaEm < :cursorCriadoEm
+        ORDER BY m.criadaEm DESC, m.id DESC
+        """)
+    List<MensagemChat> buscarMensagensIniciais(
+        @Param("salaId") UUID salaId,
+        Pageable pageable
+    );
+
+    @Query("""
+        SELECT m FROM MensagemChat m
+        WHERE m.sala.id = :salaId
+          AND m.deletada = false
+          AND (CAST(:cursorCriadoEm AS java.time.LocalDateTime) IS NULL OR m.criadaEm < :cursorCriadoEm
                OR (m.criadaEm = :cursorCriadoEm AND m.id < :cursorId))
         ORDER BY m.criadaEm DESC, m.id DESC
         """)

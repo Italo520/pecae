@@ -37,7 +37,7 @@ export function LoginForm() {
         } else if ((res.user.type as string) === 'MODERATOR' || (res.user.type as string) === 'ADMIN') {
           next = '/moderador/dashboard';
         } else {
-          next = '/comprador/dashboard';
+          next = '/';
         }
       }
       

@@ -179,14 +179,29 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
 
     // ==========================================
-    // ETAPA 4: Comprador busca e visualiza
+    // ETAPA 4: Login do Comprador e busca do anúncio
     // ==========================================
     console.log('▶️ ETAPA 4: Login do Comprador e busca do anúncio');
-    await loginUser(page, 'buyer-e2e@pecae.com.br', 'Pecae@E2e123', '/comprador/dashboard');
-    console.log('✅ Comprador logado com sucesso.');
+    await loginUser(page, 'buyer-e2e@pecae.com.br', 'Pecae@E2e123', '/');
+    console.log('✅ Comprador logado com sucesso na página principal (/).');
 
-    // Ir para a página direta do veículo/anúncio
-    await page.goto(`/veiculo/${listingId}`);
+    // Buscar anúncio pelo título único
+    const searchInput = page.locator('input[placeholder*="Buscar"], input[placeholder*="Pesquisar"]').first();
+    if (await searchInput.isVisible()) {
+      await searchInput.fill(uniqueTitle);
+      await page.keyboard.press('Enter');
+      await page.waitForTimeout(2000);
+    } else {
+      await page.goto(`/listings/${listingId}`);
+    }
+
+    // Clicar no card do anúncio recém criado se estiver na busca/home
+    const adCard = page.locator(`a[href*="/veiculo/${listingId}"], a[href*="${listingId}"]`).first();
+    if (await adCard.isVisible().catch(() => false)) {
+      await adCard.click();
+    } else if (!page.url().includes(`/veiculo/${listingId}`)) {
+      await page.goto(`/veiculo/${listingId}`);
+    }
     await page.waitForLoadState('networkidle');
 
     // Verificar detalhes do anúncio
@@ -214,24 +229,12 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     const buyerInput = page.locator('textarea[placeholder*="mensagem"], input[placeholder*="mensagem"]').first();
     await buyerInput.fill(buyerMsg);
     await page.keyboard.press('Enter');
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(2000);
 
     // Pegar a URL da sala de chat atual
     const chatUrl = page.url();
     const roomId = chatUrl.split('/').pop() || '';
     console.log(`ℹ️ ID da sala de chat: ${roomId}`);
-
-    // Obter token do comprador via API e garantir persistência síncrona da mensagem no PostgreSQL
-    const buyerAuthRes = await page.request.post(`${API_URL}/auth/login`, {
-      data: { email: 'buyer-e2e@pecae.com.br', password: 'Pecae@E2e123' }
-    });
-    const buyerToken = (await buyerAuthRes.json()).tokens.accessToken;
-
-    const postRes = await page.request.post(`${API_URL}/chat/rooms/${roomId}/messages`, {
-      headers: { Authorization: `Bearer ${buyerToken}` },
-      data: { conteudo: buyerMsg }
-    });
-    console.log(`ℹ️ Status do envio via REST API: ${postRes.status()}`);
 
     await expect(page.locator(`text=${uniqueTag}`).first()).toBeVisible({ timeout: 15000 });
     console.log('✅ Mensagem do comprador enviada e exibida no chat.');

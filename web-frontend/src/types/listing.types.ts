@@ -61,6 +61,7 @@ export const listingDetailSchema = z.object({
   version: z.string().optional(),
   color: z.string().optional(),
   description: z.string(),
+  observacoes: z.string().optional().nullable(),
   city: z.string(),
   state: z.string(),
   createdAt: z.string(),

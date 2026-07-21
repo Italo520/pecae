@@ -1,6 +1,7 @@
 package com.pecae.api.anuncio.dtos;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public record RespostaAnuncio(
@@ -20,5 +21,6 @@ public record RespostaAnuncio(
     String nomeVendedor,
     Boolean vendedorVerificado,
     LocalDateTime publicadoEm,
-    Boolean patrocinadoAtivo
+    Boolean patrocinadoAtivo,
+    List<String> pecasDisponiveis
 ) {}

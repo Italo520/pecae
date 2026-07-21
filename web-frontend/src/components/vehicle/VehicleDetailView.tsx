@@ -84,6 +84,15 @@ export function VehicleDetailView({ listing, ads = [] }: VehicleDetailViewProps)
               <p className="text-foreground/80 whitespace-pre-line leading-relaxed">
                 {listing.description || 'O vendedor não adicionou uma descrição.'}
               </p>
+
+              {listing.observacoes && (
+                <div className="mt-6 pt-4 border-t border-border">
+                  <h3 className="text-lg font-bold font-display text-foreground mb-2">Observações do Vendedor</h3>
+                  <p className="text-foreground/80 whitespace-pre-line leading-relaxed">
+                    {listing.observacoes}
+                  </p>
+                </div>
+              )}
             </div>
 
             <PartsList parts={listing.partsAvailable} />

@@ -35,7 +35,7 @@ export async function fetchFeaturedListings(limit = 12): Promise<ListingCard[]> 
       year: item.anoFabricacao || new Date().getFullYear(),
       city: item.cidade || 'Cidade',
       state: item.estado || 'Estado',
-      partsAvailable: 0, 
+      partsAvailable: Array.isArray(item.pecasDisponiveis) ? item.pecasDisponiveis.length : (item.totalPecas || 0), 
       createdAt: item.publicadoEm || new Date().toISOString(),
       imageUrl: item.urlFotoPrincipal || 'https://images.pexels.com/photos/1164778/pexels-photo-1164778.jpeg?auto=compress&cs=tinysrgb&w=800',
       imageCount: 1, 
@@ -115,12 +115,15 @@ export async function fetchListingById(id: string): Promise<ListingDetail | null
       version: data.versaoNome || 'EXL',
       color: data.cor || 'Preto',
       description: data.descricao || 'Carro com baixa no detran, motor intacto.',
+      observacoes: data.observacoes || null,
       city: data.cidade || 'São Paulo',
       state: data.estado || 'SP',
       createdAt: data.publicadoEm || new Date().toISOString(),
       views: data.visualizacoes || 15,
-      photos: [{ id: '1', url: data.urlFotoPrincipal || 'https://images.pexels.com/photos/1164778/pexels-photo-1164778.jpeg', isMain: true }],
-      partsAvailable: data.pecasDisponiveis && data.pecasDisponiveis.length > 0 ? data.pecasDisponiveis : ['Motor', 'Câmbio'],
+      photos: data.fotos && data.fotos.length > 0 
+        ? data.fotos.map((f: any) => ({ id: f.id || '1', url: f.urlFoto || f.url || '', isMain: f.tipo === 'MAIN' || f.ordem === 1 }))
+        : [{ id: '1', url: data.urlFotoPrincipal || 'https://images.pexels.com/photos/1164778/pexels-photo-1164778.jpeg', isMain: true }],
+      partsAvailable: Array.isArray(data.pecasDisponiveis) && data.pecasDisponiveis.length > 0 ? data.pecasDisponiveis : [],
       seller: {
         id: data.perfilVendedorId ? String(data.perfilVendedorId) : 'seller1',
         name: data.nomeVendedor || 'Desmanche do Zé',

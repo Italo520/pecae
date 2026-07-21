@@ -159,7 +159,9 @@ public class ServicoChatImpl implements IServicoChat {
 
         int limite = 20;
         Pageable pageable = PageRequest.of(0, limite + 1);
-        List<MensagemChat> mensagens = repositorioMensagemChat.buscarMensagensPorCursor(salaId, cursorCriadoEm, cursorId, pageable);
+        List<MensagemChat> mensagens = (cursorCriadoEm == null || cursorId == null)
+                ? repositorioMensagemChat.buscarMensagensIniciais(salaId, pageable)
+                : repositorioMensagemChat.buscarMensagensPorCursor(salaId, cursorCriadoEm, cursorId, pageable);
 
         String proximoCursor = null;
         if (mensagens.size() > limite) {
