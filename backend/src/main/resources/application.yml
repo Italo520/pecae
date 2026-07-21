@@ -107,9 +107,9 @@ google:
 storage:
   type: ${STORAGE_TYPE:supabase}
   supabase:
-    url: ${SUPABASE_URL:}
-    key: ${SUPABASE_SERVICE_KEY:}
-    bucket: ${SUPABASE_BUCKET:uploads}
+    url: ${SUPABASE_URL:https://hsxeulvcfrbyvxehhhaj.supabase.co}
+    key: ${SUPABASE_SERVICE_KEY:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzeGV1bHZjZnJieXZ4ZWhoaGFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4OTU0NjQsImV4cCI6MjA5NjQ3MTQ2NH0.gl7nMqpNt-5-AQb39OogZUsTTzcoqtr0esoumTUu6c0}
+    bucket: ${SUPABASE_BUCKET:vehicles}
 
 # ── Email ──
 mail:
