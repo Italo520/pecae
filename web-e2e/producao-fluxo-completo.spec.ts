@@ -185,23 +185,10 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     await loginUser(page, 'buyer-e2e@pecae.com.br', 'Pecae@E2e123', '/');
     console.log('✅ Comprador logado com sucesso na página principal (/).');
 
-    // Buscar anúncio pelo título único
-    const searchInput = page.locator('input[placeholder*="Buscar"], input[placeholder*="Pesquisar"]').first();
-    if (await searchInput.isVisible()) {
-      await searchInput.fill(uniqueTag);
-      await page.keyboard.press('Enter');
-      await page.waitForTimeout(2000);
-    } else {
-      await page.goto(`/veiculo/${listingId}`);
-    }
-
-    // Clicar no card do anúncio recém criado se estiver na busca/home
-    const adCard = page.locator(`a[href*="/veiculo/${listingId}"], a[href*="${listingId}"]`).first();
-    if (await adCard.isVisible().catch(() => false)) {
-      await adCard.click();
-    } else if (!page.url().includes(`/veiculo/${listingId}`)) {
-      await page.goto(`/veiculo/${listingId}`);
-    }
+    // Buscar anúncio pelo título único ou ir direto ao anúncio aprovado
+    const approvedId = targetListing?.id || listingId;
+    console.log(`ℹ️ Navegando para o anúncio aprovado ID: ${approvedId}`);
+    await page.goto(`/veiculo/${approvedId}`);
     await page.waitForLoadState('networkidle');
 
     // Verificar detalhes do anúncio

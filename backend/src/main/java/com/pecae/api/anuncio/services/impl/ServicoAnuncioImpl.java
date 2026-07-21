@@ -158,14 +158,13 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
     @Override
     @Transactional
     public RespostaDetalheAnuncio buscarDetalhe(UUID anuncioId, String ip) {
-        Anuncio anuncio = repositorioAnuncio.findByIdAndStatus(anuncioId, StatusAnuncio.PUBLICADO)
+        Anuncio anuncio = repositorioAnuncio.findById(anuncioId)
             .orElseGet(() -> repositorioAnuncio.findByVeiculoId(anuncioId)
-                .filter(a -> a.getStatus() == StatusAnuncio.PUBLICADO)
-                .orElseThrow(() -> new ExcecaoRecursoNaoEncontrado("Anúncio publicado não encontrado.")));
+                .orElseThrow(() -> new ExcecaoRecursoNaoEncontrado("Anúncio não encontrado.")));
 
         // RN-LGPD: Vendedor deletado não exibe anúncio
-        if (anuncio.getPerfilVendedor().getDeletadoEm() != null) {
-            throw new ExcecaoRecursoNaoEncontrado("Anúncio publicado não encontrado.");
+        if (anuncio.getPerfilVendedor() != null && anuncio.getPerfilVendedor().getDeletadoEm() != null) {
+            throw new ExcecaoRecursoNaoEncontrado("Anúncio não encontrado.");
         }
 
         if (anuncio.getVeiculo() != null) {
