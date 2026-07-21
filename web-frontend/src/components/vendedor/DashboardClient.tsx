@@ -307,7 +307,7 @@ export default function DashboardClient() {
         </div>
         <Link 
           href="/vendedor/anunciar"
-          className="inline-flex items-center gap-2 bg-[var(--brand)] hover:bg-[var(--brand)]/90 text-white font-semibold px-5 py-2.5 rounded-xl transition-all shadow-sm"
+          className="inline-flex items-center gap-2 bg-[var(--brand)] hover:opacity-90 text-[var(--brand-foreground)] font-semibold px-5 py-2.5 rounded-xl transition-all shadow-sm"
         >
           <Plus className="w-5 h-5" />
           <span>Cadastrar Sucata</span>

@@ -116,7 +116,7 @@ export function RegisterForm() {
             <button
               type="button"
               onClick={nextStep}
-              className="w-full bg-brand text-white font-bold py-3 rounded-xl hover:bg-brand/90 focus:ring-4 focus:ring-brand/30 transition-all mt-4"
+              className="w-full bg-brand text-brand-foreground font-bold py-3 rounded-xl hover:opacity-90 focus:ring-4 focus:ring-brand/30 transition-all mt-4"
             >
               Continuar
             </button>
@@ -201,7 +201,7 @@ export function RegisterForm() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-2/3 bg-brand text-white font-bold py-3 rounded-xl hover:bg-brand/90 focus:ring-4 focus:ring-brand/30 transition-all disabled:opacity-70"
+                className="w-2/3 bg-brand text-brand-foreground font-bold py-3 rounded-xl hover:opacity-90 focus:ring-4 focus:ring-brand/30 transition-all disabled:opacity-70"
               >
                 {isSubmitting ? 'Criando...' : 'Criar Conta'}
               </button>

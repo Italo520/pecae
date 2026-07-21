@@ -3,11 +3,13 @@
 @theme {
   --color-brand: var(--brand);
   --color-brand-vibrant: var(--brand-vibrant);
+  --color-brand-foreground: var(--brand-foreground);
   --color-primary: var(--brand);
   --color-primary-dark: #208344;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
   --color-border: var(--border);
   --color-muted: var(--muted);
   --color-error: var(--error);
@@ -17,11 +19,13 @@
 
 :root {
   --brand: #2D8C4E;
-  --brand-vibrant: #4ADE80;
+  --brand-vibrant: #236B3C;
+  --brand-foreground: #FFFFFF;
   --background: #F1F5F1;
   --foreground: #0F172A;
-  --surface: rgba(255, 255, 255, 0.4); /* Glassmorphism light */
-  --border: rgba(0, 0, 0, 0.08);
+  --surface: rgba(255, 255, 255, 0.7); /* Glassmorphism light com bom contraste */
+  --surface-hover: rgba(0, 0, 0, 0.05);
+  --border: rgba(0, 0, 0, 0.12);
   --muted: #475569;
   --error: #EF4444;
   --radius-sm: 8px;
@@ -33,9 +37,11 @@
 .dark {
   --brand: #3fff8b;
   --brand-vibrant: #7ae6ff;
+  --brand-foreground: #091E11;
   --background: #0a0e14;
   --foreground: #F1F3FC;
-  --surface: rgba(27, 32, 40, 0.6);
+  --surface: rgba(27, 32, 40, 0.7);
+  --surface-hover: rgba(255, 255, 255, 0.07);
   --border: rgba(63, 255, 139, 0.15);
   --muted: #A8ABB3;
   --error: #FF4D4D;

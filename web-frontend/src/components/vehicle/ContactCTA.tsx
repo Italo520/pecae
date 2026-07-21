@@ -47,7 +47,7 @@ export function ContactCTA({ listingId, sellerId, whatsapp, sellerName }: Contac
       <button
         onClick={handleContact}
         disabled={isPending}
-        className="w-full bg-brand hover:bg-brand/90 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+        className="w-full bg-brand hover:opacity-90 text-brand-foreground font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
       >
         {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : (
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">

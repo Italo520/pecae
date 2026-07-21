@@ -10,10 +10,10 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const variantClasses = {
-  primary: 'bg-[var(--brand)] text-white hover:bg-[var(--brand-vibrant)] active:bg-[var(--brand)]',
+  primary: 'bg-[var(--brand)] text-[var(--brand-foreground)] hover:opacity-90 active:bg-[var(--brand)]',
   secondary: 'bg-[var(--muted)] text-white hover:opacity-90',
-  outline: 'border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--surface)]',
-  ghost: 'text-[var(--foreground)] hover:bg-black/5 dark:hover:bg-white/10',
+  outline: 'border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--surface-hover)]',
+  ghost: 'text-[var(--foreground)] hover:bg-[var(--surface-hover)]',
   destructive: 'bg-[var(--error)] text-white hover:opacity-90',
 };
 

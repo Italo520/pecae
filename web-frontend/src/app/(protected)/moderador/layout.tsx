@@ -39,13 +39,13 @@ export default function ModeradorLayout({ children }: { children: ReactNode }) {
   ];
 
   return (
-    <div className="flex min-h-screen bg-[var(--color-surface)]">
+    <div className="flex min-h-screen bg-[var(--background)]">
       {/* Sidebar Desktop */}
-      <aside className="hidden md:flex flex-col w-64 border-r border-white/5 bg-black/40 backdrop-blur-xl">
+      <aside className="hidden md:flex flex-col w-64 border-r border-[var(--border)] bg-[var(--surface)] backdrop-blur-xl">
         <div className="p-6">
           <Link href="/">
-            <h2 className="text-xl font-display font-semibold tracking-wider text-[var(--color-primary)]">
-              PECAÊ <span className="text-white/50 text-sm">MODERADOR</span>
+            <h2 className="text-xl font-display font-semibold tracking-wider text-[var(--brand)]">
+              PECAÊ <span className="text-[var(--muted)] text-sm">MODERADOR</span>
             </h2>
           </Link>
         </div>
@@ -62,17 +62,17 @@ export default function ModeradorLayout({ children }: { children: ReactNode }) {
                 onClick={(e) => {
                   if (item.disabled) { e.preventDefault(); alert('Em breve!'); }
                 }}
-                className={`flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${item.disabled ? 'opacity-50 cursor-not-allowed text-white/40' :
+                className={`flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${item.disabled ? 'opacity-50 cursor-not-allowed text-[var(--muted)]' :
                     isActive
-                      ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
-                      : 'text-white/70 hover:bg-white/5 hover:text-white'
+                      ? 'bg-[var(--brand)]/10 text-[var(--brand)] font-semibold'
+                      : 'text-[var(--muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]'
                   }`}
               >
                 <div className="flex items-center gap-3">
                   <Icon className="w-5 h-5" />
                   <span className="font-medium text-sm">{item.name}</span>
                 </div>
-                {item.disabled && <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded text-white/50">Em breve</span>}
+                {item.disabled && <span className="text-[10px] bg-[var(--surface-hover)] px-2 py-0.5 rounded text-[var(--muted)]">Em breve</span>}
               </Link>
             );
           })}
@@ -85,7 +85,7 @@ export default function ModeradorLayout({ children }: { children: ReactNode }) {
       </main>
 
       {/* Bottom Tab Mobile */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 border-t border-white/5 bg-black/80 backdrop-blur-xl flex justify-around items-center px-2 z-50">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 border-t border-[var(--border)] bg-[var(--surface)] backdrop-blur-xl flex justify-around items-center px-2 z-50">
         {navItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
           const Icon = item.icon;
@@ -98,7 +98,7 @@ export default function ModeradorLayout({ children }: { children: ReactNode }) {
                 if (item.disabled) { e.preventDefault(); alert('Em breve!'); }
               }}
               className={`p-2 flex flex-col items-center gap-1 ${item.disabled ? 'opacity-50 cursor-not-allowed' :
-                  isActive ? 'text-[var(--color-primary)]' : 'text-white/70'
+                  isActive ? 'text-[var(--brand)]' : 'text-[var(--muted)]'
                 }`}
             >
               <Icon className="w-5 h-5" />

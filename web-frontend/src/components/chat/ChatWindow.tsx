@@ -258,7 +258,7 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
                   ? '' 
                   : `px-4 py-2.5 rounded-2xl ${
                       isMine 
-                        ? 'bg-[var(--brand)] text-black rounded-tr-sm shadow-[0_0_15px_rgba(20,241,149,0.15)]' 
+                        ? 'bg-[var(--brand)] text-[var(--brand-foreground)] rounded-tr-sm shadow-sm' 
                         : 'bg-[var(--surface)] border border-[var(--border)] text-[var(--foreground)] rounded-tl-sm'
                     }`
               }`}>

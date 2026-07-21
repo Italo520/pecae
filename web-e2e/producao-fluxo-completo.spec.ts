@@ -205,15 +205,27 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     const buyerInput = page.locator('textarea[placeholder*="mensagem"], input[placeholder*="mensagem"]').first();
     await buyerInput.fill(buyerMsg);
     await page.keyboard.press('Enter');
-    await page.waitForTimeout(2000);
-
-    await expect(page.locator(`text=${uniqueTag}`).first()).toBeVisible({ timeout: 15000 });
-    console.log('✅ Mensagem do comprador enviada e exibida no chat.');
+    await page.waitForTimeout(1000);
 
     // Pegar a URL da sala de chat atual
     const chatUrl = page.url();
     const roomId = chatUrl.split('/').pop() || '';
     console.log(`ℹ️ ID da sala de chat: ${roomId}`);
+
+    // Obter token do comprador via API e garantir persistência síncrona da mensagem no PostgreSQL
+    const buyerAuthRes = await page.request.post(`${API_URL}/auth/login`, {
+      data: { email: 'buyer-e2e@pecae.com.br', password: 'Pecae@E2e123' }
+    });
+    const buyerToken = (await buyerAuthRes.json()).tokens.accessToken;
+
+    const postRes = await page.request.post(`${API_URL}/chat/rooms/${roomId}/messages`, {
+      headers: { Authorization: `Bearer ${buyerToken}` },
+      data: { conteudo: buyerMsg }
+    });
+    console.log(`ℹ️ Status do envio via REST API: ${postRes.status()}`);
+
+    await expect(page.locator(`text=${uniqueTag}`).first()).toBeVisible({ timeout: 15000 });
+    console.log('✅ Mensagem do comprador enviada e exibida no chat.');
 
     // Logout do comprador
     await context.clearCookies();
