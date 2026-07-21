@@ -8,12 +8,16 @@ import { Badge } from '../ui/Badge';
 import { MapPin, Heart, Bell, Menu, User } from 'lucide-react';
 import { useAuthStore } from '@/store/auth-store';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useFavorites } from '@/hooks/useFavorites';
 import { ThemeToggle } from '../ui/ThemeToggle';
 
 export function Header() {
   const { isAuthenticated, user } = useAuthStore();
   const [mounted, setMounted] = useState(false);
   const { getUnreadCount } = useNotifications();
+  const { getFavorites } = useFavorites();
+
+  const favoritesCount = Array.isArray(getFavorites.data) ? getFavorites.data.length : 0;
 
   useEffect(() => {
     setMounted(true);
@@ -88,9 +92,9 @@ export function Header() {
               <ThemeToggle />
               <Link href={getFavoritesUrl()} className="relative text-[var(--muted)] hover:text-[var(--brand)] transition-colors">
                 <Heart className="w-6 h-6" />
-                {isLoggedIn && (
-                  <Badge variant="count" label={3} className="absolute -top-1.5 -right-1.5" />
-                )}
+                {isLoggedIn && favoritesCount > 0 ? (
+                  <Badge variant="count" label={favoritesCount} className="absolute -top-1.5 -right-1.5" />
+                ) : null}
               </Link>
               <Link href={getNotificationsUrl()} className="relative text-[var(--muted)] hover:text-[var(--brand)] transition-colors">
                 <Bell className="w-6 h-6" />

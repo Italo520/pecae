@@ -58,50 +58,62 @@ export default function FavoritosPage() {
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {favorites.map((fav: any) => (
-              <div key={fav.id} className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden hover:border-[var(--border-hover)] hover:shadow-md transition-all group flex flex-col">
-                {/* Image */}
-                <div className="relative h-48 overflow-hidden bg-[var(--background)]">
-                  <img 
-                    src={fav.listing?.images?.[0] || 'https://via.placeholder.com/600'} 
-                    alt={fav.listing?.title} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <button onClick={() => handleToggleFavorite(fav.listing.id)} className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-[var(--brand)] hover:bg-black/70 hover:scale-110 transition-all">
-                    <Heart className="w-4 h-4 fill-current" />
-                  </button>
-                </div>
+            {favorites.map((fav: any) => {
+              const item = fav.anuncio || fav.listing || fav;
+              const listingId = item.id;
+              const title = item.titulo || item.title || 'Anúncio de Sucata';
+              const photo = item.urlFotoPrincipal || item.urlFoto || item.images?.[0] || 'https://images.pexels.com/photos/1164778/pexels-photo-1164778.jpeg';
+              const sellerName = item.nomeVendedor || item.seller?.name || 'Vendedor';
+              const location = [item.cidade, item.estado].filter(Boolean).join(', ') || 'Brasil';
+              const savedDate = fav.criadoEm || fav.createdAt ? new Date(fav.criadoEm || fav.createdAt).toLocaleDateString('pt-BR') : '';
 
-                {/* Content */}
-                <div className="p-5 flex-1 flex flex-col">
-                  <div className="flex items-center gap-2 text-xs text-[var(--muted)] mb-2">
-                    <Calendar className="w-3 h-3" />
-                    Salvo em {new Date(fav.createdAt).toLocaleDateString('pt-BR')}
-                  </div>
-                  
-                  <h3 className="text-base font-semibold text-[var(--foreground)] mb-1 line-clamp-2">{fav.listing?.title}</h3>
-                  <div className="flex items-center gap-1.5 text-xs text-[var(--muted)] mb-4">
-                    <Car className="w-3.5 h-3.5" />
-                    {fav.listing?.seller?.name || 'Vendedor'}
+              return (
+                <div key={fav.id || listingId} className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden hover:border-[var(--border-hover)] hover:shadow-md transition-all group flex flex-col">
+                  {/* Image */}
+                  <div className="relative h-48 overflow-hidden bg-[var(--background)]">
+                    <img 
+                      src={photo} 
+                      alt={title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <button onClick={() => handleToggleFavorite(listingId)} className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-[var(--brand)] hover:bg-black/70 hover:scale-110 transition-all">
+                      <Heart className="w-4 h-4 fill-current" />
+                    </button>
                   </div>
 
-                  <div className="mt-auto pt-4 border-t border-[var(--border)] flex items-center justify-between">
-                    <span className="text-[var(--brand)] font-medium text-lg">
-                      {fav.listing?.price ? `R$ ${fav.listing.price}` : 'Sob Consulta'}
-                    </span>
+                  {/* Content */}
+                  <div className="p-5 flex-1 flex flex-col">
+                    {savedDate && (
+                      <div className="flex items-center gap-2 text-xs text-[var(--muted)] mb-2">
+                        <Calendar className="w-3 h-3" />
+                        Salvo em {savedDate}
+                      </div>
+                    )}
                     
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => handleToggleFavorite(fav.listing.id)} className="p-2 text-[var(--muted)] hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                      <Link href={`/`} className="p-2 bg-[var(--brand)]/10 text-[var(--brand)] hover:bg-[var(--brand)]/20 rounded-lg transition-colors">
-                        <ExternalLink className="w-4 h-4" />
-                      </Link>
+                    <h3 className="text-base font-semibold text-[var(--foreground)] mb-1 line-clamp-2">{title}</h3>
+                    <div className="flex items-center gap-1.5 text-xs text-[var(--muted)] mb-4">
+                      <Car className="w-3.5 h-3.5" />
+                      {sellerName} • {location}
+                    </div>
+
+                    <div className="mt-auto pt-4 border-t border-[var(--border)] flex items-center justify-between">
+                      <span className="text-[var(--brand)] font-medium text-sm">
+                        {item.totalPecasDisponiveis !== undefined ? `${item.totalPecasDisponiveis} peças` : 'Peças Disponíveis'}
+                      </span>
+                      
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => handleToggleFavorite(listingId)} className="p-2 text-[var(--muted)] hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                        <Link href={`/veiculo/${listingId}`} className="p-2 bg-[var(--brand)]/10 text-[var(--brand)] hover:bg-[var(--brand)]/20 rounded-lg transition-colors">
+                          <ExternalLink className="w-4 h-4" />
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

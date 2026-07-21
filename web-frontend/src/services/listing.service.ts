@@ -116,8 +116,13 @@ export async function fetchListingById(id: string): Promise<ListingDetail | null
       createdAt: data.publicadoEm || data.criadoEm || new Date().toISOString(),
       views: data.visualizacoes || 0,
       photos: data.fotos && data.fotos.length > 0 
-        ? data.fotos.map((f: any) => ({ id: f.id || '1', url: f.urlFoto || f.url || '', isMain: f.tipo === 'MAIN' || f.ordem === 1 }))
-        : [{ id: '1', url: data.urlFotoPrincipal || 'https://images.pexels.com/photos/1164778/pexels-photo-1164778.jpeg', isMain: true }],
+        ? data.fotos.map((f: any, idx: number) => ({ 
+            id: f.id ? String(f.id) : String(idx + 1), 
+            url: f.urlFoto || f.url || '', 
+            isMain: f.tipo === 'MAIN' || f.ordem === 1 || idx === 0,
+            order: f.ordem !== undefined ? f.ordem : idx
+          }))
+        : [{ id: '1', url: data.urlFotoPrincipal || 'https://images.pexels.com/photos/1164778/pexels-photo-1164778.jpeg', isMain: true, order: 0 }],
       partsAvailable: Array.isArray(data.pecasDisponiveis) ? data.pecasDisponiveis : [],
       seller: {
         id: data.perfilVendedorId ? String(data.perfilVendedorId) : 'vendedor',
