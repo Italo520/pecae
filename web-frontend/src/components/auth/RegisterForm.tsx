@@ -60,8 +60,8 @@ export function RegisterForm() {
         termsAccepted: data.termsAccepted,
         privacyAccepted: data.privacyAccepted
       });
-      toast.success('Conta criada com sucesso! Verifique seu e-mail.');
-      router.push('/verify-email');
+      toast.success('Conta criada com sucesso!');
+      router.push('/login');
     } catch (err: any) {
       setApiError(err.response?.data?.message || 'Ocorreu um erro ao criar a conta.');
     }

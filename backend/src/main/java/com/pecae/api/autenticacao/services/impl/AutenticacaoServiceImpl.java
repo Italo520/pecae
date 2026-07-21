@@ -78,9 +78,12 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
         Usuario usuario = autenticacaoMapper.toUsuario(request);
         usuario.setSenhaHash(passwordEncoder.encode(request.getSenha()));
         
-        // Define aceites da LGPD
+        // Define aceites da LGPD e Auto-Verificação do E-mail
         usuario.setTermosAceitosEm(LocalDateTime.now());
         usuario.setPrivacidadeAceitaEm(LocalDateTime.now());
+        usuario.setEmailVerificado(true);
+        usuario.setEmailVerificadoEm(LocalDateTime.now());
+        usuario.setStatus(StatusUsuario.ATIVO);
         
         Usuario usuarioSalvo = usuarioService.criarEntidade(usuario);
 
@@ -93,32 +96,7 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
                 .build();
         aceiteTermosRepository.save(termos);
 
-        // Gera token de verificação de e-mail (código de 6 dígitos)
-        String codigoVerificacao = gerarCodigo6Digitos();
-        String hashToken = gerarHashString(codigoVerificacao);
-
-        TokenVerificacaoEmail tokenEmail = TokenVerificacaoEmail.builder()
-                .usuarioId(usuarioSalvo.getId())
-                .tokenHash(hashToken)
-                .expiraEm(LocalDateTime.now().plusDays(1)) // Expira em 24h
-                .build();
-        tokenVerificacaoEmailRepository.save(tokenEmail);
-
-        // Enviar e-mail real via Resend (com fallback automático de log no console/log se não configurado)
-        servicoEmail.enviar(
-            usuarioSalvo.getEmail(),
-            "Verificação de E-mail — PECAÊ",
-            String.format("Olá %s,\n\nUse o código abaixo para ativar sua conta PECAÊ:\n\nCÓDIGO: %s\n\nEste código expira em 24 horas.", usuarioSalvo.getNome(), codigoVerificacao)
-        );
-
-        // Mock do envio de e-mail no console para auditoria local
-        log.info("------------------------------------------------------------------");
-        log.info("[MOCK EMAIL SENDER] Verificação de e-mail para: {}", usuarioSalvo.getEmail());
-        log.info("Olá {}, use o código abaixo para ativar sua conta PECAÊ:", usuarioSalvo.getNome());
-        log.info("CÓDIGO: {}", codigoVerificacao);
-        log.info("------------------------------------------------------------------");
-
-        // Gera tokens iniciais para o usuário deslogado / logado parcialmente
+        // Gera tokens iniciais para o usuário logado
         PrincipalUsuario principal = PrincipalUsuario.criar(usuarioSalvo);
         String tokenAcesso = provedorTokenJwt.gerarToken(principal);
         String tokenAtualizacao = criarESalvarTokenAtualizacao(usuarioSalvo.getId(), ip, userAgent);
@@ -136,14 +114,18 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
     @Transactional
     public RespostaAutenticacao login(LoginRequest request, String ip, String userAgent) {
         Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new ExcecaoNegocio("Credenciais inválidas ou e-mail não verificado.", HttpStatus.UNAUTHORIZED));
+                .orElseThrow(() -> new ExcecaoNegocio("Credenciais inválidas.", HttpStatus.UNAUTHORIZED));
 
         if (!passwordEncoder.matches(request.getSenha(), usuario.getSenhaHash())) {
-            throw new ExcecaoNegocio("Credenciais inválidas ou e-mail não verificado.", HttpStatus.UNAUTHORIZED);
+            throw new ExcecaoNegocio("Credenciais inválidas.", HttpStatus.UNAUTHORIZED);
         }
 
-        if (!usuario.isEmailVerificado()) {
-            throw new ExcecaoNegocio("E-mail não verificado. Por favor, verifique sua caixa de entrada.", HttpStatus.UNAUTHORIZED);
+        // Auto-verificar e-mail se estivesse pendente
+        if (!usuario.isEmailVerificado() || usuario.getStatus() == StatusUsuario.PENDENTE_VERIFICACAO) {
+            usuario.setEmailVerificado(true);
+            usuario.setEmailVerificadoEm(LocalDateTime.now());
+            usuario.setStatus(StatusUsuario.ATIVO);
+            usuarioRepository.save(usuario);
         }
 
         if (usuario.getStatus() != StatusUsuario.ATIVO) {

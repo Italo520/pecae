@@ -22,14 +22,14 @@ public interface IAutenticacaoMapper {
     @Mapping(target = "telefone", ignore = true)
     @Mapping(target = "telefoneVerificado", constant = "false")
     @Mapping(target = "telefoneVerificadoEm", ignore = true)
-    @Mapping(target = "emailVerificado", constant = "false")
-    @Mapping(target = "emailVerificadoEm", ignore = true)
+    @Mapping(target = "emailVerificado", constant = "true")
+    @Mapping(target = "emailVerificadoEm", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "avatar", ignore = true)
     @Mapping(target = "ultimoAcessoEm", ignore = true)
     @Mapping(target = "criadoEm", ignore = true)
     @Mapping(target = "atualizadoEm", ignore = true)
     @Mapping(target = "deletadoEm", ignore = true)
     @Mapping(target = "emailOriginal", ignore = true)
-    @Mapping(target = "status", constant = "PENDENTE_VERIFICACAO")
+    @Mapping(target = "status", constant = "ATIVO")
     Usuario toUsuario(RegistroRequest request);
 }
