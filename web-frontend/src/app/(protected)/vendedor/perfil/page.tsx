@@ -25,9 +25,9 @@ export default function PerfilVendedorPage() {
   
   useEffect(() => {
     if (profile) {
-      setStoreName(profile.nome || '');
-      setPhone(profile.telefone || '');
-      setBio(profile.biografia || '');
+      setStoreName(profile.name || profile.nome || '');
+      setPhone(profile.phone || profile.telefone || '');
+      setBio(profile.bio || profile.biografia || '');
     }
   }, [profile]);
 

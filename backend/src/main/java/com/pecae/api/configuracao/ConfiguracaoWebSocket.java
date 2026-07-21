@@ -33,13 +33,9 @@ public class ConfiguracaoWebSocket implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // Endpoint WebSocket nativo
-        registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*", "https://pecae.italohub.cloud", "http://localhost:3000");
-
         // Endpoint WebSocket com SockJS fallback
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*", "https://pecae.italohub.cloud", "http://localhost:3000")
+                .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
 

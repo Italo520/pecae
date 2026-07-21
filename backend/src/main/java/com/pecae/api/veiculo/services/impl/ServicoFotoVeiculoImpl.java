@@ -79,13 +79,19 @@ public class ServicoFotoVeiculoImpl implements IServicoFotoVeiculo {
         }
         String caminho = veiculoId.toString() + "/" + UUID.randomUUID().toString() + "." + extensao;
 
-        // Upload com fallback gracioso
+        // Upload com fallback gracioso para Base64 Data URI
         String urlFoto;
         try {
             urlFoto = servicoArmazenamento.upload(arquivo, "vehicles", caminho);
         } catch (Exception e) {
-            log.warn("Falha no upload para o storage Supabase. Usando URL fallback para a foto: {}", e.getMessage());
-            urlFoto = "https://images.pexels.com/photos/1164778/pexels-photo-1164778.jpeg";
+            log.warn("Falha no upload para o storage Supabase. Usando Data URI Base64 para a foto: {}", e.getMessage());
+            try {
+                String mime = (arquivo.getContentType() != null && !arquivo.getContentType().isBlank())
+                        ? arquivo.getContentType() : "image/jpeg";
+                urlFoto = "data:" + mime + ";base64," + java.util.Base64.getEncoder().encodeToString(arquivo.getBytes());
+            } catch (Exception ex) {
+                urlFoto = "https://images.pexels.com/photos/1164778/pexels-photo-1164778.jpeg";
+            }
         }
 
 

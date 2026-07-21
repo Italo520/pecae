@@ -62,6 +62,12 @@ export function useMarkAsRead() {
       const response = await api.put(`/chat/rooms/${salaId}/read`);
       return response.data;
     },
+    onMutate: async (salaId) => {
+      queryClient.setQueryData(['chats'], (old: SalaChat[] | undefined) => {
+        if (!old) return old;
+        return old.map(chat => chat.id === salaId ? { ...chat, naoLidos: 0 } : chat);
+      });
+    },
     onSuccess: (_, salaId) => {
       queryClient.invalidateQueries({ queryKey: ['chats'] });
       queryClient.invalidateQueries({ queryKey: ['chat-room', salaId] });

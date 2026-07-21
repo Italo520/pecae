@@ -4,10 +4,15 @@ import { useAuthStore } from '@/store/auth-store';
 
 export interface SellerProfile {
   id: string;
-  nome: string;
-  telefone: string;
+  name?: string;
+  nome?: string;
+  phone?: string;
+  telefone?: string;
+  bio?: string;
   biografia?: string;
+  logoUrl?: string;
   urlLogo?: string;
+  bannerUrl?: string;
   urlBanner?: string;
 }
 

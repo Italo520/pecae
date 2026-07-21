@@ -89,6 +89,7 @@ export default function ChatSidebar({ context = 'seller' }: ChatSidebarProps) {
 
         {filteredChats.map(chat => {
           const isActive = pathname === `${chatPrefix}/${chat.id}`;
+          const naoLidosCount = isActive ? 0 : chat.naoLidos;
           const lastMsg = chat.ultimaMensagem?.conteudo || 'Nova conversa iniciada';
           const timeStr = formatTime(chat.ultimaMensagem?.criadaEm || chat.atualizadaEm);
           
@@ -108,8 +109,7 @@ export default function ChatSidebar({ context = 'seller' }: ChatSidebarProps) {
                     {chat.interlocutor.nome.charAt(0)}
                   </div>
                 )}
-                {/* Online indicator mock for now */}
-                {chat.naoLidos > 0 && (
+                {naoLidosCount > 0 && (
                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-[var(--brand)] border-2 border-[var(--surface)] rounded-full" />
                 )}
               </div>
@@ -117,7 +117,7 @@ export default function ChatSidebar({ context = 'seller' }: ChatSidebarProps) {
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-center mb-0.5">
                   <h3 className={`text-sm font-semibold truncate pr-2 ${isActive ? 'text-[var(--brand)]' : 'text-[var(--foreground)]'}`}>{chat.interlocutor.nome}</h3>
-                  <span className={`text-xs flex-shrink-0 ${chat.naoLidos > 0 ? 'text-[var(--brand)] font-medium' : 'text-[var(--muted)]'}`}>
+                  <span className={`text-xs flex-shrink-0 ${naoLidosCount > 0 ? 'text-[var(--brand)] font-medium' : 'text-[var(--muted)]'}`}>
                     {timeStr}
                   </span>
                 </div>
@@ -125,12 +125,12 @@ export default function ChatSidebar({ context = 'seller' }: ChatSidebarProps) {
                   Interesse: <span className="text-[var(--foreground)]">{chat.tituloDaConversa}</span>
                 </p>
                 <div className="flex justify-between items-center">
-                  <p className={`text-sm truncate pr-2 ${chat.naoLidos > 0 ? 'text-[var(--foreground)] font-medium' : 'text-[var(--muted)]'}`}>
+                  <p className={`text-sm truncate pr-2 ${naoLidosCount > 0 ? 'text-[var(--foreground)] font-medium' : 'text-[var(--muted)]'}`}>
                     {lastMsg}
                   </p>
-                  {chat.naoLidos > 0 && (
+                  {naoLidosCount > 0 && (
                     <div className="w-5 h-5 rounded-full bg-[var(--brand)] text-black text-[10px] font-bold flex items-center justify-center flex-shrink-0 shadow-[0_0_10px_rgba(20,241,149,0.3)]">
-                      {chat.naoLidos}
+                      {naoLidosCount}
                     </div>
                   )}
                 </div>
