@@ -22,7 +22,8 @@ export default function Step2Fipe() {
 
   const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const code = e.target.value;
-    const name = brands?.find(b => b.id === code)?.name || '';
+    const selectedText = e.target.options[e.target.selectedIndex]?.text || '';
+    const name = (selectedText && !selectedText.includes('Selecione')) ? selectedText : (brands?.find(b => b.id === code)?.name || '');
     setValue('brandCode', code);
     setValue('marcaNome', name, { shouldValidate: true });
     
@@ -36,7 +37,8 @@ export default function Step2Fipe() {
 
   const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const code = e.target.value;
-    const name = models?.find(m => m.id === code)?.name || '';
+    const selectedText = e.target.options[e.target.selectedIndex]?.text || '';
+    const name = (selectedText && !selectedText.includes('Selecione')) ? selectedText : (models?.find(m => m.id === code)?.name || '');
     setValue('modelCode', code);
     setValue('modeloNome', name, { shouldValidate: true });
     
@@ -48,8 +50,8 @@ export default function Step2Fipe() {
 
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const code = e.target.value;
-    const selectedYearObj = years?.find(y => y.id === code);
-    const name = selectedYearObj?.name || '';
+    const selectedText = e.target.options[e.target.selectedIndex]?.text || '';
+    const name = (selectedText && !selectedText.includes('Selecione')) ? selectedText : (years?.find(y => y.id === code)?.name || '');
     
     setValue('yearCode', code);
     setValue('anoNome', name, { shouldValidate: true });

@@ -17,7 +17,7 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
       await targetPage.locator('input[type="email"]').fill(email);
       await targetPage.locator('input[type="password"]').fill(pass);
       await targetPage.locator('button[type="submit"]').click();
-      await targetPage.waitForTimeout(3000);
+      await targetPage.waitForURL((url: URL) => !url.pathname.includes('/login'), { timeout: 15000 });
       if (!targetPage.url().includes(targetPath)) {
         await targetPage.goto(targetPath);
       }
@@ -32,7 +32,7 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
 
     // Ir para formulário de anúncio
     await page.goto('/vendedor/anunciar');
-    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
 
     // STEP 1 - Identificação
     console.log('📝 Preenchendo Step 1 - Identificação...');
@@ -99,11 +99,7 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     const obsText = `Teste E2E Sucata Prod ${uniqueTag}`;
     await page.locator('textarea').fill(obsText);
     await page.locator('button:has-text("Finalizar e Anunciar")').click();
-
-    await page.waitForTimeout(3000);
-    if (!page.url().includes('/vendedor/dashboard')) {
-      await page.goto('/vendedor/dashboard');
-    }
+    await page.waitForURL((url: URL) => url.pathname.includes('/vendedor/dashboard'), { timeout: 20000 });
     console.log('✅ Sucata cadastrada! Redirecionado para o dashboard.');
 
     await expect(page.getByText(/Em Moderação|Pendente|Rascunho/i).first()).toBeVisible({ timeout: 15000 });
@@ -121,22 +117,26 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     expect(modLoginRes.ok()).toBeTruthy();
     const modToken = (await modLoginRes.json()).tokens.accessToken;
 
-    // Buscar lista de anúncios pendentes via API de moderação
-    const listPendingRes = await page.request.get(`${API_URL}/moderacao/anuncios/pendentes`, {
-      headers: { Authorization: `Bearer ${modToken}` }
-    });
-    if (!listPendingRes.ok()) {
-      console.error(`❌ Erro ao buscar pendentes: Status ${listPendingRes.status()} - Body: ${await listPendingRes.text()}`);
+    // Buscar lista de anúncios pendentes via API de moderação com retry
+    let targetListing: any = null;
+    for (let attempt = 1; attempt <= 5; attempt++) {
+      await page.waitForTimeout(1500);
+      const listPendingRes = await page.request.get(`${API_URL}/moderacao/anuncios/pendentes`, {
+        headers: { Authorization: `Bearer ${modToken}` }
+      });
+      if (listPendingRes.ok()) {
+        const pendingData = await listPendingRes.json();
+        console.log(`ℹ️ [E2E] Pendentes recebidos: ${JSON.stringify(pendingData).slice(0, 300)}`);
+        const pendingListings = pendingData.content || (Array.isArray(pendingData) ? pendingData : []);
+        targetListing = pendingListings.find((item: any) => 
+          item.titulo?.includes(uniqueTag) || 
+          item.descricao?.includes(uniqueTag)
+        ) || pendingListings[0];
+        if (targetListing) break;
+      } else {
+        console.error(`❌ Erro API Moderação Status: ${listPendingRes.status()} - ${await listPendingRes.text()}`);
+      }
     }
-    expect(listPendingRes.ok()).toBeTruthy();
-    const pendingData = await listPendingRes.json();
-    const pendingListings = pendingData.content || pendingData;
-
-    // Localizar o anúncio recém criado (ou o primeiro pendente)
-    const targetListing = pendingListings.find((item: any) => 
-      item.titulo?.includes(uniqueTag) || 
-      item.descricao?.includes(uniqueTag)
-    ) || pendingListings[0];
 
     expect(targetListing).toBeDefined();
     const listingId = targetListing.id;
