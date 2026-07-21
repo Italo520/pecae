@@ -12,19 +12,22 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     const uniqueTag = `E2E-${Date.now()}`;
     console.log(`🚀 [E2E PROD] Iniciando teste completo com tag única: ${uniqueTag}`);
 
+    async function loginUser(targetPage: any, email: string, pass: string, targetPath: string) {
+      await targetPage.goto('/login');
+      await targetPage.locator('input[type="email"]').fill(email);
+      await targetPage.locator('input[type="password"]').fill(pass);
+      await targetPage.locator('button[type="submit"]').click();
+      await targetPage.waitForTimeout(3000);
+      if (!targetPage.url().includes(targetPath)) {
+        await targetPage.goto(targetPath);
+      }
+    }
+
     // ==========================================
     // ETAPA 1: Login Vendedor & Cadastro de Sucata
     // ==========================================
     console.log('▶️ ETAPA 1: Login do Vendedor');
-    await page.goto('/login');
-    await page.locator('input[type="email"]').fill('seller-e2e@pecae.com.br');
-    await page.locator('input[type="password"]').fill('Pecae@E2e123');
-    await page.locator('button[type="submit"]').click();
-
-    await page.waitForTimeout(3000);
-    if (!page.url().includes('/vendedor/dashboard')) {
-      await page.goto('/vendedor/dashboard');
-    }
+    await loginUser(page, 'seller-e2e@pecae.com.br', 'Pecae@E2e123', '/vendedor/dashboard');
     console.log('✅ Vendedor logado com sucesso.');
 
     // Ir para formulário de anúncio
@@ -33,6 +36,7 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
 
     // STEP 1 - Identificação
     console.log('📝 Preenchendo Step 1 - Identificação...');
+    await page.waitForSelector('input[placeholder*="Prata"]', { timeout: 30000 });
     await page.locator('input[placeholder*="Prata"]').fill('Prata');
     await page.locator('input[placeholder="0"]').fill('50000');
     await page.locator('select').first().selectOption('FLEX');
@@ -169,15 +173,7 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     // ETAPA 4: Comprador busca e visualiza
     // ==========================================
     console.log('▶️ ETAPA 4: Login do Comprador e busca do anúncio');
-    await page.goto('/login');
-    await page.locator('input[type="email"]').fill('buyer-e2e@pecae.com.br');
-    await page.locator('input[type="password"]').fill('Pecae@E2e123');
-    await page.locator('button[type="submit"]').click();
-
-    await page.waitForTimeout(3000);
-    if (!page.url().includes('/comprador/dashboard')) {
-      await page.goto('/comprador/dashboard');
-    }
+    await loginUser(page, 'buyer-e2e@pecae.com.br', 'Pecae@E2e123', '/comprador/dashboard');
     console.log('✅ Comprador logado com sucesso.');
 
     // Ir para a página direta do veículo/anúncio
@@ -206,8 +202,9 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     console.log('✅ Chat iniciado pelo comprador.');
 
     const buyerMsg = `Olá, vendedor! Gostaria de saber mais sobre esta sucata (${uniqueTag})`;
-    await page.locator('input[placeholder*="mensagem"], textarea[placeholder*="mensagem"]').fill(buyerMsg);
-    await page.locator('button[type="submit"], button:has-text("Enviar")').click();
+    const buyerInput = page.locator('textarea[placeholder*="mensagem"], input[placeholder*="mensagem"]').first();
+    await buyerInput.fill(buyerMsg);
+    await page.keyboard.press('Enter');
     await page.waitForTimeout(2000);
 
     await expect(page.locator(`text=${uniqueTag}`).first()).toBeVisible({ timeout: 15000 });
@@ -224,15 +221,7 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
 
     // Login do Vendedor para responder no chat
     console.log('▶️ Vendedor respondendo no Chat...');
-    await page.goto('/login');
-    await page.locator('input[type="email"]').fill('seller-e2e@pecae.com.br');
-    await page.locator('input[type="password"]').fill('Pecae@E2e123');
-    await page.locator('button[type="submit"]').click();
-
-    await page.waitForTimeout(3000);
-    if (!page.url().includes('/vendedor/dashboard')) {
-      await page.goto('/vendedor/dashboard');
-    }
+    await loginUser(page, 'seller-e2e@pecae.com.br', 'Pecae@E2e123', '/vendedor/dashboard');
 
     // Acessar chat do vendedor
     await page.goto(`/vendedor/chat/${roomId}`);
@@ -244,8 +233,9 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
 
     // Vendedor envia resposta
     const sellerMsg = `Olá! A sucata está disponível sim com todas as peças. (${uniqueTag})`;
-    await page.locator('input[placeholder*="mensagem"], textarea[placeholder*="mensagem"]').fill(sellerMsg);
-    await page.locator('button[type="submit"], button:has-text("Enviar")').click();
+    const sellerInput = page.locator('textarea[placeholder*="mensagem"], input[placeholder*="mensagem"]').first();
+    await sellerInput.fill(sellerMsg);
+    await page.keyboard.press('Enter');
     await page.waitForTimeout(2000);
 
     await expect(page.locator(`text=${sellerMsg}`).first()).toBeVisible({ timeout: 15000 });
