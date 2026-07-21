@@ -45,7 +45,7 @@ public class ControladorFotoVeiculo {
             @UsuarioAtual PrincipalUsuario usuario,
             @PathVariable UUID veiculoId,
             @RequestParam("file") MultipartFile arquivo,
-            @RequestParam("type") TipoFoto tipo) {
+            @RequestParam(value = "type", required = false) TipoFoto tipo) {
         RespostaFotoVeiculo resposta = servicoFotoVeiculo.adicionarFoto(usuario.getId(), veiculoId, arquivo, tipo);
         return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
     }

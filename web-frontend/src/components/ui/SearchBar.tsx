@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Search } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useSearchSuggestions } from '@/hooks/useSearchSuggestions';
 
 export interface SearchBarProps {
@@ -12,6 +13,7 @@ export interface SearchBarProps {
 }
 
 export function SearchBar({ placeholder = 'Buscar peças ou veículos...', onSearch, defaultValue = '', className = '' }: SearchBarProps) {
+  const router = useRouter();
   const [query, setQuery] = useState(defaultValue);
   const [debouncedQuery, setDebouncedQuery] = useState(defaultValue);
   const [isFocused, setIsFocused] = useState(false);
@@ -38,18 +40,23 @@ export function SearchBar({ placeholder = 'Buscar peças ou veículos...', onSea
 
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (onSearch && query.trim()) {
+    if (!query.trim()) return;
+    setIsFocused(false);
+    if (onSearch) {
       onSearch(query.trim());
-      setIsFocused(false);
+    } else {
+      router.push(`/busca?q=${encodeURIComponent(query.trim())}`);
     }
   };
 
   const handleSelectSuggestion = (suggestion: string) => {
     setQuery(suggestion);
+    setIsFocused(false);
     if (onSearch) {
       onSearch(suggestion);
+    } else {
+      router.push(`/busca?q=${encodeURIComponent(suggestion.trim())}`);
     }
-    setIsFocused(false);
   };
 
   const showDropdown = isFocused && (suggestions.length > 0 || isLoading) && query.length >= 2;

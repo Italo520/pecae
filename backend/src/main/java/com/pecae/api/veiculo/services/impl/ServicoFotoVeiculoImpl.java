@@ -97,10 +97,11 @@ public class ServicoFotoVeiculoImpl implements IServicoFotoVeiculo {
 
 
         // Criar e salvar
+        TipoFoto tipoFoto = (tipo != null) ? tipo : TipoFoto.EXTERIOR;
         FotoVeiculo foto = FotoVeiculo.builder()
                 .veiculo(veiculo)
                 .urlFoto(urlFoto)
-                .tipo(tipo)
+                .tipo(tipoFoto)
                 .ordem((int) (quantidadeFotos + 1))
                 .build();
 

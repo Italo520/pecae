@@ -1,5 +1,4 @@
 import React from 'react';
-import { SearchBar } from '@/components/ui/SearchBar';
 
 export function HeroSection() {
   // Real data for social proof will come from props or a Server Action if needed,
@@ -13,14 +12,9 @@ export function HeroSection() {
         Encontre peças do seu veículo
       </h1>
       
-      <p className="text-lg md:text-xl text-muted mb-10 max-w-2xl font-body">
+      <p className="text-lg md:text-xl text-muted max-w-2xl font-body">
         <span className="font-semibold text-foreground">{activeListings}</span> peças disponíveis em <span className="font-semibold text-foreground">{activeCities}</span> cidades. O maior marketplace automotivo do Brasil.
       </p>
-
-      <div className="w-full max-w-3xl mx-auto">
-        {/* We use the SearchBar component we built in Phase 5a */}
-        <SearchBar placeholder="Busque por marca, modelo, ano ou peça..." />
-      </div>
     </section>
   );
 }

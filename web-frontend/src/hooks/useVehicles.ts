@@ -73,7 +73,6 @@ export function useCreateVehicle() {
           const photo = photos[i];
           const formData = new FormData();
           formData.append('file', photo);
-          formData.append('type', i === 0 ? 'EXTERIOR' : 'OUTRO');
           try {
             await api.post(`/vehicles/me/${vehicle.id}/photos`, formData, {
               headers: { 'Content-Type': 'multipart/form-data' }
