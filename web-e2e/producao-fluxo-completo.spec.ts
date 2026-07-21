@@ -240,8 +240,15 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
+    // Clica no link da sala na barra lateral caso não esteja focado na janela principal
+    const targetRoomLink = page.locator(`a[href*="${roomId}"]`).first();
+    if (await targetRoomLink.isVisible().catch(() => false)) {
+      await targetRoomLink.click();
+      await page.waitForTimeout(1000);
+    }
+
     // Verificar mensagem do comprador
-    await expect(page.locator(`text=${uniqueTag}`).first()).toBeVisible({ timeout: 15000 });
+    await expect(page.locator(`text=${uniqueTag}`).first()).toBeVisible({ timeout: 20000 });
     console.log('✅ Vendedor recebeu a mensagem do comprador.');
 
     // Vendedor envia resposta

@@ -13,6 +13,7 @@ export function useChats() {
       const response = await api.get('/chat/rooms');
       return response.data;
     },
+    refetchInterval: 5000,
   });
 }
 
@@ -24,6 +25,7 @@ export function useChatMessages(salaId: string) {
       return response.data;
     },
     enabled: !!salaId,
+    refetchInterval: 3000,
   });
 }
 
