@@ -16,24 +16,31 @@ interface PageProps {
 
 // Gera metadata para SEO
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const listing = await fetchListingById(params.id);
-  
-  if (!listing) {
+  try {
+    const listing = await fetchListingById(params.id);
+    
+    if (!listing) {
+      return {
+        title: 'Veículo | PECAÊ',
+        description: 'Anúncio de veículo na PECAÊ.',
+      };
+    }
+
     return {
-      title: 'Veículo não encontrado | PECAÊ',
-      description: 'O anúncio que você procura não está mais disponível.',
+      title: `${listing.title} | PECAÊ Sucatas`,
+      description: `Sucata de ${listing.title}. ${listing.partsAvailable.length} categorias de peças disponíveis em ${listing.city}, ${listing.state}.`,
+      openGraph: {
+        title: `${listing.title} | PECAÊ`,
+        description: `Peças para ${listing.title} em ${listing.city}-${listing.state}`,
+        images: listing.photos && listing.photos.length > 0 ? [listing.photos[0].url] : [],
+      },
+    };
+  } catch (err) {
+    return {
+      title: 'Veículo | PECAÊ',
+      description: 'Anúncio de veículo na PECAÊ.',
     };
   }
-
-  return {
-    title: `${listing.title} | PECAÊ Sucatas`,
-    description: `Sucata de ${listing.title}. ${listing.partsAvailable.length} categorias de peças disponíveis em ${listing.city}, ${listing.state}.`,
-    openGraph: {
-      title: `${listing.title} | PECAÊ`,
-      description: `Peças para ${listing.title} em ${listing.city}-${listing.state}`,
-      images: listing.photos && listing.photos.length > 0 ? [listing.photos[0].url] : [],
-    },
-  };
 }
 
 // SSG: Gera os 100 anúncios mais recentes no build time
