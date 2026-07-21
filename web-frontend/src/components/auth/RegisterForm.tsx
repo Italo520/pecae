@@ -52,7 +52,7 @@ export function RegisterForm() {
   const onSubmit = async (data: RegisterFormData) => {
     try {
       setApiError(null);
-      await authService.register({
+      const res = await authService.register({
         name: data.name,
         email: data.email,
         password: data.password,
@@ -60,9 +60,16 @@ export function RegisterForm() {
         termsAccepted: data.termsAccepted,
         privacyAccepted: data.privacyAccepted
       });
-      toast.success('Conta criada com sucesso!');
-      router.push('/login');
+      toast.success('Conta criada com sucesso! Login efetuado.');
+      router.push('/');
     } catch (err: any) {
+      if (err.response?.status === 409) {
+        toast.info('Este e-mail já possui cadastro. Redirecionando para o login...');
+        setTimeout(() => {
+          router.push('/login');
+        }, 1500);
+        return;
+      }
       setApiError(err.response?.data?.message || 'Ocorreu um erro ao criar a conta.');
     }
   };
