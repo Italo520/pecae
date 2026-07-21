@@ -246,8 +246,7 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
 
     // Acessar chat do vendedor
     await page.goto(`/vendedor/chat/${roomId}`);
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(3000);
 
     // Clica no link da sala na barra lateral caso não esteja focado na janela principal
     const targetRoomLink = page.locator(`a[href*="${roomId}"]`).first();
