@@ -53,6 +53,12 @@ export default function VendedorLayout({ children }: { children: ReactNode }) {
             <span className="font-medium text-sm">Mensagens</span>
           </Link>
           <Link 
+            href="/vendedor/notificacoes"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-muted hover:bg-foreground/5 hover:text-foreground transition-colors"
+          >
+            <span className="font-medium text-sm">Notificações</span>
+          </Link>
+          <Link 
             href="/vendedor/analytics"
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-muted hover:bg-foreground/5 hover:text-foreground transition-colors"
           >

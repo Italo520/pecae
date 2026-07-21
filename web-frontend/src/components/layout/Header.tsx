@@ -32,6 +32,10 @@ export function Header() {
 
   const getNotificationsUrl = () => {
     if (!isLoggedIn) return '/login?next=/comprador/notificacoes';
+    const userRole = (user?.type as string) || ((user as any)?.role as string);
+    if (userRole === 'SELLER' || userRole === 'VENDEDOR') {
+      return '/vendedor/notificacoes';
+    }
     return '/comprador/notificacoes';
   };
 
