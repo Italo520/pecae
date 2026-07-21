@@ -596,10 +596,11 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
         Page<Anuncio> anunciosVendedor = repositorioAnuncio.findAllByPerfilVendedorId(perfilVendedorId, Pageable.unpaged());
         for (Anuncio a : anunciosVendedor.getContent()) {
             if (a.getStatus() == StatusAnuncio.PUBLICADO || a.getStatus() == StatusAnuncio.PENDENTE) {
-                if (a.getVeiculo().getId().equals(veiculoId)) {
+                if (a.getVeiculo() != null && a.getVeiculo().getId() != null && a.getVeiculo().getId().equals(veiculoId)) {
                     throw new ExcecaoNegocio("Você já possui um anúncio ativo para este veículo.");
                 }
-                if (a.getTitulo().equalsIgnoreCase(titulo) && a.getDescricao().equalsIgnoreCase(descricao)) {
+                if (a.getTitulo() != null && a.getTitulo().equalsIgnoreCase(titulo) && 
+                    a.getDescricao() != null && a.getDescricao().equalsIgnoreCase(descricao)) {
                     throw new ExcecaoNegocio("Você já possui um anúncio ativo com exatamente o mesmo título e descrição.");
                 }
             }

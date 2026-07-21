@@ -12,6 +12,14 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     const uniqueTag = `E2E-${Date.now()}`;
     console.log(`🚀 [E2E PROD] Iniciando teste completo com tag única: ${uniqueTag}`);
 
+    page.on('dialog', async dialog => {
+      console.error(`⚠️ BROWSER DIALOG ALERT: ${dialog.message()}`);
+      await dialog.accept();
+    });
+    page.on('console', msg => {
+      if (msg.type() === 'error') console.error(`❌ BROWSER CONSOLE ERROR: ${msg.text()}`);
+    });
+
     async function loginUser(targetPage: any, email: string, pass: string, targetPath: string) {
       await targetPage.goto('/login');
       await targetPage.locator('input[type="email"]').fill(email);
