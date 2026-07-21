@@ -3,6 +3,7 @@ import { fetchListingById, fetchFeaturedListings } from '@/services/listing.serv
 import { VehicleDetailView } from '@/components/vehicle/VehicleDetailView';
 import { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
 // Tempo de revalidação em segundos para a página via ISR (1 hora)
 export const revalidate = 3600; 
 // Permite que páginas não geradas no build time sejam geradas on-demand
