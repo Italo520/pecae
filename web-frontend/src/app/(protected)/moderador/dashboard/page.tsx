@@ -57,10 +57,10 @@ export default function ModeradorDashboard() {
         
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-display font-bold text-white mb-2">
+          <h1 className="text-3xl font-display font-bold text-[var(--foreground)] mb-2">
             Visão Geral da Plataforma
           </h1>
-          <p className="text-white/60">
+          <p className="text-[var(--muted)]">
             Acompanhe as principais métricas e pendências de moderação.
           </p>
         </div>
@@ -84,7 +84,7 @@ export default function ModeradorDashboard() {
               <StatsCard 
                 title="Anúncios Ativos" 
                 value={stats?.activeListings || 0} 
-                icon={<Car className="w-5 h-5 text-[var(--color-primary)]" />} 
+                icon={<Car className="w-5 h-5 text-[var(--brand)]" />} 
               />
               <StatsCard 
                 title="Documentos Pendentes" 
@@ -104,31 +104,31 @@ export default function ModeradorDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
           
           {/* Recent Documents */}
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 flex flex-col">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-semibold text-white">Documentos Pendentes (KYC)</h2>
-              <Link href="/moderador/documentos" className="text-sm text-[var(--color-primary)] hover:underline flex items-center">
+              <h2 className="text-lg font-semibold text-[var(--foreground)]">Documentos Pendentes (KYC)</h2>
+              <Link href="/moderador/documentos" className="text-sm text-[var(--brand)] hover:underline flex items-center">
                 Ver Todos <ArrowUpRight className="w-4 h-4 ml-1" />
               </Link>
             </div>
             
             {loadingDocs ? (
               <div className="animate-pulse space-y-4">
-                {[1,2,3].map(i => <div key={i} className="h-16 bg-white/5 rounded-xl shimmer" />)}
+                {[1,2,3].map(i => <div key={i} className="h-16 bg-[var(--background)] rounded-xl shimmer" />)}
               </div>
             ) : !pendingDocs?.length ? (
               <div className="flex-1 flex flex-col justify-center items-center text-center py-8">
-                <FileText className="w-12 h-12 text-white/20 mb-4" />
-                <p className="text-white/60 mb-2">Nenhum documento pendente no momento.</p>
+                <FileText className="w-12 h-12 text-[var(--muted)] mb-4" />
+                <p className="text-[var(--muted)] mb-2">Nenhum documento pendente no momento.</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {pendingDocs.map((doc: any) => (
-                  <div key={doc.id} className="flex items-start gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+                  <div key={doc.id} className="flex items-start gap-4 p-4 rounded-xl bg-[var(--background)] hover:bg-[var(--surface-hover)] transition-colors">
                      <FileText className="w-5 h-5 text-orange-400" />
                      <div>
-                       <h4 className="text-sm font-medium text-white mb-1">{doc.user?.name || 'Usuário'}</h4>
-                       <p className="text-xs text-white/50">{doc.documentType}</p>
+                       <h4 className="text-sm font-medium text-[var(--foreground)] mb-1">{doc.user?.name || 'Usuário'}</h4>
+                       <p className="text-xs text-[var(--muted)]">{doc.documentType}</p>
                      </div>
                   </div>
                 ))}
@@ -137,9 +137,9 @@ export default function ModeradorDashboard() {
           </div>
 
           {/* Recent Reports */}
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 flex flex-col">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-semibold text-white">Denúncias Recentes</h2>
+              <h2 className="text-lg font-semibold text-[var(--foreground)]">Denúncias Recentes</h2>
               <Link href="/moderador/reports" className="text-sm text-red-400 hover:underline flex items-center">
                 Ver Todas <ArrowUpRight className="w-4 h-4 ml-1" />
               </Link>
@@ -147,23 +147,23 @@ export default function ModeradorDashboard() {
             
             {loadingReports ? (
               <div className="animate-pulse space-y-4">
-                {[1,2,3].map(i => <div key={i} className="h-16 bg-white/5 rounded-xl shimmer" />)}
+                {[1,2,3].map(i => <div key={i} className="h-16 bg-[var(--background)] rounded-xl shimmer" />)}
               </div>
             ) : !recentReports?.length ? (
               <div className="flex-1 flex flex-col justify-center items-center text-center py-8">
-                <AlertTriangle className="w-12 h-12 text-white/20 mb-4" />
-                <p className="text-white/60 mb-2">Nenhuma denúncia aberta.</p>
+                <AlertTriangle className="w-12 h-12 text-[var(--muted)] mb-4" />
+                <p className="text-[var(--muted)] mb-2">Nenhuma denúncia aberta.</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {recentReports.map((rep: any) => (
-                  <div key={rep.id} className="flex items-start gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors cursor-pointer">
+                  <div key={rep.id} className="flex items-start gap-4 p-4 rounded-xl bg-[var(--background)] hover:bg-[var(--surface-hover)] transition-colors cursor-pointer">
                     <div className="w-10 h-10 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center flex-shrink-0">
                       <AlertTriangle className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-medium text-white mb-1">Suspeita #{rep.id?.slice(-4) || 'N/A'}</h4>
-                      <p className="text-xs text-white/50 line-clamp-1">{rep.reason || 'Sem descrição'}</p>
+                      <h4 className="text-sm font-medium text-[var(--foreground)] mb-1">Suspeita #{rep.id?.slice(-4) || 'N/A'}</h4>
+                      <p className="text-xs text-[var(--muted)] line-clamp-1">{rep.reason || 'Sem descrição'}</p>
                     </div>
                   </div>
                 ))}

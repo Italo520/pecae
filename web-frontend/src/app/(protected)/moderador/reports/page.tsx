@@ -23,16 +23,16 @@ export default function DenunciasPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-display font-bold text-white mb-2 flex items-center gap-3">
+            <h1 className="text-3xl font-display font-bold text-[var(--foreground)] mb-2 flex items-center gap-3">
               <AlertTriangle className="w-8 h-8 text-red-400" />
               Central de Denúncias
             </h1>
-            <p className="text-white/60">
+            <p className="text-[var(--muted)]">
               Analise tickets abertos por usuários sobre anúncios ou comportamentos suspeitos.
             </p>
           </div>
 
-          <button className="flex items-center justify-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl transition-colors border border-white/10 cursor-not-allowed">
+          <button className="flex items-center justify-center gap-2 px-4 py-2 bg-[var(--surface)] hover:bg-[var(--surface-hover)] text-[var(--foreground)] rounded-xl transition-colors border border-[var(--border)] cursor-not-allowed">
             <Filter className="w-4 h-4" />
             <span className="text-sm font-medium">Filtrar Gravidade</span>
           </button>
@@ -52,7 +52,7 @@ export default function DenunciasPage() {
         ) : (
           <div className="space-y-4">
             {pendingReports.map((report: any) => (
-              <div key={report.id} className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col md:flex-row gap-6 items-start hover:bg-white/10 transition-colors">
+              <div key={report.id} className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 flex flex-col md:flex-row gap-6 items-start hover:bg-[var(--surface-hover)] transition-colors">
                 
                 {/* Info Column */}
                 <div className="flex-1">
@@ -60,25 +60,25 @@ export default function DenunciasPage() {
                     <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${getSeverityColor(report.severity || 'MEDIA')}`}>
                       RISCO {report.severity || 'MEDIA'}
                     </span>
-                    <span className="text-xs text-white/40">Ticket #{report.id.slice(-6)}</span>
-                    <span className="text-xs text-white/40">
+                    <span className="text-xs text-[var(--muted)]">Ticket #{report.id.slice(-6)}</span>
+                    <span className="text-xs text-[var(--muted)]">
                       • {report.createdAt ? new Date(report.createdAt).toLocaleString('pt-BR') : 'Recente'}
                     </span>
                   </div>
                   
-                  <h3 className="text-lg font-semibold text-white mb-2">{report.reason || 'Denúncia Padrão'}</h3>
-                  <p className="text-sm text-white/70 mb-4 bg-black/20 p-4 rounded-xl border border-white/5">
+                  <h3 className="text-lg font-semibold text-[var(--foreground)] mb-2">{report.reason || 'Denúncia Padrão'}</h3>
+                  <p className="text-sm text-[var(--foreground)] mb-4 bg-[var(--background)] p-4 rounded-xl border border-[var(--border)]">
                     &quot;{report.description || 'Sem descrição detalhada fornecida pelo usuário.'}&quot;
                   </p>
                   
                   <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
                     <div>
-                      <span className="text-white/40 mr-2">Denunciante:</span>
-                      <span className="text-white font-medium">{report.reporter?.name || 'Usuário Anônimo'}</span>
+                      <span className="text-[var(--muted)] mr-2">Denunciante:</span>
+                      <span className="text-[var(--foreground)] font-medium">{report.reporter?.name || 'Usuário Anônimo'}</span>
                     </div>
                     <div>
-                      <span className="text-white/40 mr-2">Denunciado:</span>
-                      <span className="text-blue-400 hover:underline cursor-pointer font-medium">{report.reportedEntity?.name || 'Alvo Oculto'}</span>
+                      <span className="text-[var(--muted)] mr-2">Denunciado:</span>
+                      <span className="text-blue-500 hover:underline cursor-pointer font-medium">{report.reportedEntity?.name || 'Alvo Oculto'}</span>
                     </div>
                   </div>
                 </div>
@@ -88,7 +88,7 @@ export default function DenunciasPage() {
                   <button 
                     onClick={() => resolve.mutate({ id: report.id, action: 'BAN_USER' })}
                     disabled={resolve.isPending}
-                    className="w-full flex items-center gap-3 px-4 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-colors disabled:opacity-50"
+                    className="w-full flex items-center gap-3 px-4 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl transition-colors disabled:opacity-50"
                   >
                     {resolve.isPending && resolve.variables?.id === report.id && resolve.variables?.action === 'BAN_USER' ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserX className="w-4 h-4" />}
                     <span className="text-xs font-semibold">Banir Usuário</span>
@@ -101,11 +101,11 @@ export default function DenunciasPage() {
                     {resolve.isPending && resolve.variables?.id === report.id && resolve.variables?.action === 'REMOVE_AD' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                     <span className="text-xs font-semibold">Remover Anúncio</span>
                   </button>
-                  <div className="h-px w-full bg-white/5 my-1" />
+                  <div className="h-px w-full bg-[var(--border)] my-1" />
                   <button 
                     onClick={() => resolve.mutate({ id: report.id, action: 'DISMISS' })}
                     disabled={resolve.isPending}
-                    className="w-full flex items-center gap-3 px-4 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl transition-colors disabled:opacity-50"
+                    className="w-full flex items-center gap-3 px-4 py-3 bg-[var(--background)] hover:bg-[var(--surface-hover)] text-[var(--foreground)] rounded-xl transition-colors disabled:opacity-50"
                   >
                     {resolve.isPending && resolve.variables?.id === report.id && resolve.variables?.action === 'DISMISS' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                     <span className="text-xs font-semibold">Ignorar (Falso)</span>

@@ -18,24 +18,24 @@ export default function DocumentosModeracaoPage() {
           
           {/* Header */}
           <div>
-            <h1 className="text-3xl font-display font-bold text-white mb-2 flex items-center gap-3">
+            <h1 className="text-3xl font-display font-bold text-[var(--foreground)] mb-2 flex items-center gap-3">
               <ShieldAlert className="w-8 h-8 text-orange-400" />
               Moderação de KYC
             </h1>
-            <p className="text-white/60">
+            <p className="text-[var(--muted)]">
               Aprove ou rejeite documentos de credenciamento enviados por desmanches.
             </p>
           </div>
 
           {/* Filters/Tabs */}
-          <div className="flex items-center gap-4 border-b border-white/10 pb-4">
-            <button className="text-[var(--color-primary)] font-medium border-b-2 border-[var(--color-primary)] pb-4 -mb-[17px] px-2">
+          <div className="flex items-center gap-4 border-b border-[var(--border)] pb-4">
+            <button className="text-[var(--brand)] font-medium border-b-2 border-[var(--brand)] pb-4 -mb-[17px] px-2">
               Pendentes ({pendingDocs.length})
             </button>
-            <button className="text-white/40 hover:text-white font-medium pb-4 -mb-[17px] px-2 transition-colors cursor-not-allowed">
+            <button className="text-[var(--muted)] hover:text-[var(--foreground)] font-medium pb-4 -mb-[17px] px-2 transition-colors cursor-not-allowed">
               Aprovados Recentes
             </button>
-            <button className="text-white/40 hover:text-white font-medium pb-4 -mb-[17px] px-2 transition-colors cursor-not-allowed">
+            <button className="text-[var(--muted)] hover:text-[var(--foreground)] font-medium pb-4 -mb-[17px] px-2 transition-colors cursor-not-allowed">
               Rejeitados
             </button>
           </div>
@@ -43,7 +43,7 @@ export default function DocumentosModeracaoPage() {
           {/* Content */}
           {isLoading ? (
             <div className="flex justify-center p-12">
-              <Loader2 className="w-8 h-8 text-[var(--color-primary)] animate-spin" />
+              <Loader2 className="w-8 h-8 text-[var(--brand)] animate-spin" />
             </div>
           ) : pendingDocs.length === 0 ? (
             <EmptyState 
@@ -54,7 +54,7 @@ export default function DocumentosModeracaoPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {pendingDocs.map((doc: any) => (
-                <div key={doc.id} className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col hover:bg-white/10 transition-colors">
+                <div key={doc.id} className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 flex flex-col hover:bg-[var(--surface-hover)] transition-colors">
                   
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
@@ -62,20 +62,20 @@ export default function DocumentosModeracaoPage() {
                         <Building2 className="w-5 h-5" />
                       </div>
                       <div className="overflow-hidden">
-                        <h3 className="text-white font-semibold truncate">{doc.user?.name || 'Desmanche'}</h3>
-                        <p className="text-xs text-white/50 truncate">CNPJ: {doc.businessData?.cnpj || 'N/A'}</p>
+                        <h3 className="text-[var(--foreground)] font-semibold truncate">{doc.user?.name || 'Desmanche'}</h3>
+                        <p className="text-xs text-[var(--muted)] truncate">CNPJ: {doc.businessData?.cnpj || 'N/A'}</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-black/30 rounded-xl p-4 mb-6">
+                  <div className="bg-[var(--background)] rounded-xl p-4 mb-6">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs text-white/40">Tipo de Documento</span>
-                      <span className="text-xs font-medium text-white">{doc.documentType || 'KYC'}</span>
+                      <span className="text-xs text-[var(--muted)]">Tipo de Documento</span>
+                      <span className="text-xs font-medium text-[var(--foreground)]">{doc.documentType || 'KYC'}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-white/40">Enviado em</span>
-                      <span className="text-xs text-white/70">
+                      <span className="text-xs text-[var(--muted)]">Enviado em</span>
+                      <span className="text-xs text-[var(--foreground)]">
                         {doc.createdAt ? new Date(doc.createdAt).toLocaleString('pt-BR') : 'Recente'}
                       </span>
                     </div>
@@ -84,7 +84,7 @@ export default function DocumentosModeracaoPage() {
                   <div className="mt-auto grid grid-cols-3 gap-2">
                     <button 
                       onClick={() => setSelectedDoc(doc)}
-                      className="col-span-1 flex flex-col items-center justify-center py-2 rounded-xl bg-white/5 text-white/70 hover:bg-white/10 transition-colors"
+                      className="col-span-1 flex flex-col items-center justify-center py-2 rounded-xl bg-[var(--background)] text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-hover)] transition-colors"
                       title="Visualizar Detalhes"
                     >
                       <Eye className="w-5 h-5 mb-1" />
@@ -93,7 +93,7 @@ export default function DocumentosModeracaoPage() {
                     <button 
                       onClick={() => reject.mutate({ id: doc.id })}
                       disabled={reject.isPending && reject.variables?.id === doc.id}
-                      className="col-span-1 flex flex-col items-center justify-center py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50"
+                      className="col-span-1 flex flex-col items-center justify-center py-2 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors disabled:opacity-50"
                     >
                       {reject.isPending && reject.variables?.id === doc.id ? (
                         <Loader2 className="w-5 h-5 mb-1 animate-spin" />
@@ -105,7 +105,7 @@ export default function DocumentosModeracaoPage() {
                     <button 
                       onClick={() => approve.mutate(doc.id)}
                       disabled={approve.isPending && approve.variables === doc.id}
-                      className="col-span-1 flex flex-col items-center justify-center py-2 rounded-xl bg-[var(--color-primary)]/10 text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20 transition-colors disabled:opacity-50"
+                      className="col-span-1 flex flex-col items-center justify-center py-2 rounded-xl bg-[var(--brand)]/10 text-[var(--brand)] hover:bg-[var(--brand)]/20 transition-colors disabled:opacity-50"
                     >
                       {approve.isPending && approve.variables === doc.id ? (
                         <Loader2 className="w-5 h-5 mb-1 animate-spin" />
@@ -131,31 +131,31 @@ export default function DocumentosModeracaoPage() {
             onClick={() => setSelectedDoc(null)}
           />
           {/* Panel */}
-          <div className="w-full max-w-md bg-[var(--color-surface)] border-l border-white/10 flex flex-col h-full shadow-2xl animate-in slide-in-from-right duration-300">
-            <div className="flex items-center justify-between p-6 border-b border-white/10">
-              <h2 className="text-xl font-bold text-white">Análise de Documento</h2>
-              <button onClick={() => setSelectedDoc(null)} className="p-2 text-white/40 hover:text-white rounded-full bg-white/5 hover:bg-white/10">
+          <div className="w-full max-w-md bg-[var(--surface)] border-l border-[var(--border)] flex flex-col h-full shadow-2xl animate-in slide-in-from-right duration-300">
+            <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
+              <h2 className="text-xl font-bold text-[var(--foreground)]">Análise de Documento</h2>
+              <button onClick={() => setSelectedDoc(null)} className="p-2 text-[var(--muted)] hover:text-[var(--foreground)] rounded-full bg-[var(--background)] hover:bg-[var(--surface-hover)]">
                 <X className="w-5 h-5" />
               </button>
             </div>
             
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               <div>
-                <h3 className="text-sm font-medium text-white/50 mb-1">Empresa</h3>
-                <p className="text-base text-white">{selectedDoc.user?.name || 'Desmanche'}</p>
-                <p className="text-sm text-white/70">CNPJ: {selectedDoc.businessData?.cnpj || 'N/A'}</p>
+                <h3 className="text-sm font-medium text-[var(--muted)] mb-1">Empresa</h3>
+                <p className="text-base text-[var(--foreground)]">{selectedDoc.user?.name || 'Desmanche'}</p>
+                <p className="text-sm text-[var(--muted)]">CNPJ: {selectedDoc.businessData?.cnpj || 'N/A'}</p>
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-white/50 mb-3">Imagens Enviadas</h3>
+                <h3 className="text-sm font-medium text-[var(--muted)] mb-3">Imagens Enviadas</h3>
                 {selectedDoc.documentUrls?.length ? (
                   <div className="space-y-4">
                     {selectedDoc.documentUrls.map((url: string, i: number) => (
-                      <div key={i} className="aspect-[4/3] rounded-xl bg-white/5 overflow-hidden border border-white/10 flex items-center justify-center relative group">
+                      <div key={i} className="aspect-[4/3] rounded-xl bg-[var(--background)] overflow-hidden border border-[var(--border)] flex items-center justify-center relative group">
                         {url.endsWith('.pdf') ? (
                           <div className="text-center">
-                            <FileText className="w-12 h-12 text-white/20 mx-auto mb-2" />
-                            <a href={url} target="_blank" rel="noreferrer" className="text-sm text-[var(--color-primary)] hover:underline">
+                            <FileText className="w-12 h-12 text-[var(--muted)] mx-auto mb-2" />
+                            <a href={url} target="_blank" rel="noreferrer" className="text-sm text-[var(--brand)] hover:underline">
                               Abrir PDF Externo
                             </a>
                           </div>
@@ -166,20 +166,20 @@ export default function DocumentosModeracaoPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="p-8 border border-dashed border-white/20 rounded-xl text-center text-white/40 text-sm">
+                  <div className="p-8 border border-dashed border-[var(--border)] rounded-xl text-center text-[var(--muted)] text-sm">
                     Nenhuma imagem vinculada.
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="p-6 border-t border-white/10 bg-black/20 flex gap-4">
+            <div className="p-6 border-t border-[var(--border)] bg-[var(--background)] flex gap-4">
               <button 
                 onClick={() => {
                   reject.mutate({ id: selectedDoc.id });
                   setSelectedDoc(null);
                 }}
-                className="flex-1 py-3 rounded-xl bg-red-500/10 text-red-400 font-medium hover:bg-red-500/20 transition-colors"
+                className="flex-1 py-3 rounded-xl bg-red-500/10 text-red-500 font-medium hover:bg-red-500/20 transition-colors"
               >
                 Rejeitar
               </button>
@@ -188,7 +188,7 @@ export default function DocumentosModeracaoPage() {
                   approve.mutate(selectedDoc.id);
                   setSelectedDoc(null);
                 }}
-                className="flex-1 py-3 rounded-xl bg-[var(--color-primary)] text-black font-semibold hover:bg-[var(--color-primary-dark)] transition-colors"
+                className="flex-1 py-3 rounded-xl bg-[var(--brand)] text-[var(--brand-foreground)] font-semibold hover:opacity-90 transition-colors"
               >
                 Aprovar KYC
               </button>

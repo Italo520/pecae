@@ -11,8 +11,8 @@ export default function ModeradorAnunciosPage() {
       <div className="max-w-7xl mx-auto space-y-8">
         
         <header>
-          <h1 className="text-3xl font-display font-bold text-white tracking-tight">Fila de Anúncios</h1>
-          <p className="text-white/60 mt-2">
+          <h1 className="text-3xl font-display font-bold text-[var(--foreground)] tracking-tight">Fila de Anúncios</h1>
+          <p className="text-[var(--muted)] mt-2">
             Avalie anúncios pendentes. Aprovação libera para publicação, rejeição notifica o vendedor.
           </p>
         </header>

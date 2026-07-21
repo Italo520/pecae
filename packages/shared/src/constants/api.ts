@@ -52,12 +52,12 @@ export const API_ENDPOINTS = {
     INTERSTITIAL_STATUS: (userId: string) => `/ads/interstitial/status/${userId}`,
   },
   MODERATION: {
-    LISTINGS: '/moderation/listings',
-    APPROVE_LISTING: (id: string) => `/moderation/listings/${id}/approve`,
-    REJECT_LISTING: (id: string) => `/moderation/listings/${id}/reject`,
-    VERIFICATIONS: '/moderation/verifications',
-    APPROVE_VERIFICATION: (id: string) => `/moderation/verifications/${id}/approve`,
-    REJECT_VERIFICATION: (id: string) => `/moderation/verifications/${id}/reject`,
+    LISTINGS: '/moderacao/anuncios/pendentes',
+    APPROVE_LISTING: (id: string) => `/moderacao/anuncios/${id}/decisao`,
+    REJECT_LISTING: (id: string) => `/moderacao/anuncios/${id}/decisao`,
+    VERIFICATIONS: '/moderacao/verificacoes',
+    APPROVE_VERIFICATION: (id: string) => `/moderacao/verificacoes/${id}/decisao`,
+    REJECT_VERIFICATION: (id: string) => `/moderacao/verificacoes/${id}/decisao`,
   },
   DENUNCIAS: '/denuncias',
 } as const;

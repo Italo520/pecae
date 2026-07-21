@@ -40,23 +40,23 @@ export function RejectModal({ isOpen, onClose, onSuccess, ids }: RejectModalProp
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-[#1A1A1A] border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
         <button
           onClick={onClose}
           disabled={isSubmitting}
-          className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors"
+          className="absolute top-4 right-4 text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <h3 className="text-xl font-display font-semibold text-white mb-2">Rejeitar Anúncio(s)</h3>
-        <p className="text-white/60 text-sm mb-6">
+        <h3 className="text-xl font-display font-semibold text-[var(--foreground)] mb-2">Rejeitar Anúncio(s)</h3>
+        <p className="text-[var(--muted)] text-sm mb-6">
           Você está rejeitando {ids.length} anúncio(s). Informe o motivo detalhado para notificar o vendedor.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="reason" className="block text-sm font-medium text-white/70 mb-2">Motivo da Rejeição *</label>
+            <label htmlFor="reason" className="block text-sm font-medium text-[var(--foreground)] mb-2">Motivo da Rejeição *</label>
             <textarea
               id="reason"
               value={reason}
@@ -64,7 +64,7 @@ export function RejectModal({ isOpen, onClose, onSuccess, ids }: RejectModalProp
               required
               rows={4}
               placeholder="Descreva por que o anúncio está sendo rejeitado (ex: fotos ilegíveis, dados inconsistentes...)"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/40 focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 resize-none transition-all"
+              className="w-full bg-[var(--background)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--foreground)] placeholder:[var(--muted)] focus:outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/50 resize-none transition-all"
             />
           </div>
 
@@ -73,7 +73,7 @@ export function RejectModal({ isOpen, onClose, onSuccess, ids }: RejectModalProp
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2.5 rounded-xl text-white/70 font-medium hover:bg-white/5 transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-2.5 rounded-xl text-[var(--muted)] font-medium hover:bg-[var(--surface-hover)] transition-colors disabled:opacity-50"
             >
               Cancelar
             </button>
