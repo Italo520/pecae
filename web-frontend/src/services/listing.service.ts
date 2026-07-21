@@ -51,31 +51,17 @@ export async function fetchFeaturedListings(limit = 20, page = 0): Promise<Listi
 }
 
 export async function fetchVehicleCategories(): Promise<VehicleCategory[]> {
-  try {
-    const res = await fetch(`${API_URL}/catalog/categories`, {
-      next: { revalidate: 60 },
-    });
-    
-    if (!res.ok) {
-      console.error(`Failed to fetch vehicle categories: ${res.statusText}`);
-      return [];
-    }
-    
-    const data = await res.json();
-    
-    // Adapter de RespostaCategoriaPeca (Java) para VehicleCategory (Next.js)
-    const adaptedContent = data.map((item: any) => ({
-      slug: item.id, // backend retorna id, o front usa slug como key
-      name: item.name || '',
-      count: 0, // backend não retorna contagem de veículos na categoria ainda
-      icon: item.iconUrl || 'car',
-    }));
+  // Retorna os tipos de veículos para filtragem rápida na Home Page
+  const defaultTypes: VehicleCategory[] = [
+    { slug: 'Carro', name: 'Carros', count: 0, icon: 'Car' },
+    { slug: 'Moto', name: 'Motos', count: 0, icon: 'Bike' },
+    { slug: 'Caminhão', name: 'Caminhões', count: 0, icon: 'Truck' },
+    { slug: 'Ônibus', name: 'Ônibus', count: 0, icon: 'Bus' },
+    { slug: 'Van', name: 'Vans & Utilitários', count: 0, icon: 'CarFront' },
+    { slug: 'Agro', name: 'Agro & Pesados', count: 0, icon: 'Tractor' },
+  ];
 
-    return z.array(vehicleCategorySchema).parse(adaptedContent);
-  } catch (error) {
-    console.error('Error in fetchVehicleCategories:', error);
-    return [];
-  }
+  return defaultTypes;
 }
 
 export async function fetchListingById(id: string): Promise<ListingDetail | null> {

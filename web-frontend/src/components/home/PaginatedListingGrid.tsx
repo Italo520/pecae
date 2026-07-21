@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ListingCard as ListingCardType } from '@/types/listing.types';
 import { ListingCard } from '@/components/vehicle/ListingCard';
 import { api } from '@/lib/axios';
@@ -11,10 +11,24 @@ export interface PaginatedListingGridProps {
 }
 
 export function PaginatedListingGrid({ initialListings, title = 'Veículos em Destaque' }: PaginatedListingGridProps) {
-  const [listings, setListings] = useState<ListingCardType[]>(initialListings);
+  // Deduplicar listagem inicial
+  const deduplicatedInitial = Array.from(
+    new Map((initialListings || []).map(item => [item.id, item])).values()
+  );
+
+  const [listings, setListings] = useState<ListingCardType[]>(deduplicatedInitial);
   const [page, setPage] = useState<number>(0);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
-  const [hasMore, setHasMore] = useState<boolean>(initialListings.length >= 20);
+  const [hasMore, setHasMore] = useState<boolean>(deduplicatedInitial.length >= 20);
+
+  useEffect(() => {
+    const deduped = Array.from(
+      new Map((initialListings || []).map(item => [item.id, item])).values()
+    );
+    setListings(deduped);
+    setPage(0);
+    setHasMore(deduped.length >= 20);
+  }, [initialListings]);
 
   const handleLoadMore = async () => {
     if (isLoadingMore || !hasMore) return;
@@ -22,14 +36,15 @@ export function PaginatedListingGrid({ initialListings, title = 'Veículos em De
     const nextPage = page + 1;
 
     try {
-      const response = await api.get(`/listings?size=20&page=${nextPage}`);
+      // Envia tanto pagina/tamanho quanto page/size para compatibilidade total
+      const response = await api.get(`/listings?pagina=${nextPage}&tamanho=20&page=${nextPage}&size=20`);
       const content = response.data?.content || [];
 
       if (content.length === 0) {
         setHasMore(false);
       } else {
         const adaptedContent: ListingCardType[] = content.map((item: any, index: number) => ({
-          id: item.id ? String(item.id) : String(listings.length + index),
+          id: item.id ? String(item.id) : `page-${nextPage}-${index}`,
           title: item.titulo || 'Veículo',
           brand: item.marcaNome || 'Marca',
           model: item.modeloNome || 'Modelo',
@@ -44,7 +59,16 @@ export function PaginatedListingGrid({ initialListings, title = 'Veículos em De
           verifiedSeller: item.vendedorVerificado || false,
         }));
 
-        setListings(prev => [...prev, ...adaptedContent]);
+        setListings(prev => {
+          const existingIds = new Set(prev.map(item => item.id));
+          const newUniqueItems = adaptedContent.filter(item => !existingIds.has(item.id));
+          if (newUniqueItems.length === 0) {
+            setHasMore(false);
+            return prev;
+          }
+          return [...prev, ...newUniqueItems];
+        });
+
         setPage(nextPage);
         if (content.length < 20) {
           setHasMore(false);
@@ -79,8 +103,8 @@ export function PaginatedListingGrid({ initialListings, title = 'Veículos em De
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {listings.map((listing, idx) => (
-          <ListingCard key={`${listing.id}-${idx}`} listing={listing} />
+        {listings.map((listing) => (
+          <ListingCard key={listing.id} listing={listing} />
         ))}
       </div>
 

@@ -1,7 +1,9 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Camera, MapPin } from 'lucide-react';
+import { Camera, MapPin, Loader2 } from 'lucide-react';
 import { ListingCard as ListingCardType } from '@/types/listing.types';
 import { Badge } from '@/components/ui/Badge';
 import { FavoriteButton } from './FavoriteButton';
@@ -10,7 +12,6 @@ export interface ListingCardProps {
   listing: ListingCardType;
 }
 
-// Utilitário para tempo relativo
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const hours = Math.floor(diff / 3_600_000);
@@ -22,13 +23,27 @@ function timeAgo(dateStr: string): string {
 }
 
 export function ListingCard({ listing }: ListingCardProps) {
+  const [isNavigating, setIsNavigating] = useState(false);
   const isNew = (Date.now() - new Date(listing.createdAt).getTime()) < (24 * 3600 * 1000);
 
   return (
     <Link 
       href={`/veiculo/${listing.id}`}
-      className="group flex flex-col bg-surface border border-border rounded-3xl overflow-hidden hover:shadow-md transition-shadow relative"
+      onClick={() => setIsNavigating(true)}
+      className="group flex flex-col bg-surface border border-border rounded-3xl overflow-hidden hover:shadow-md transition-all relative cursor-pointer"
     >
+      {/* Visual Navigation Feedback Overlay */}
+      {isNavigating && (
+        <div className="absolute inset-0 z-30 bg-background/60 backdrop-blur-xs flex flex-col items-center justify-center gap-2 animate-fade-in">
+          <div className="p-3 bg-surface border border-brand/40 rounded-full shadow-lg">
+            <Loader2 className="w-6 h-6 text-brand animate-spin" />
+          </div>
+          <span className="text-xs font-semibold text-brand bg-surface/90 px-3 py-1 rounded-full border border-border">
+            Carregando veículo...
+          </span>
+        </div>
+      )}
+
       {/* Top Badges & Favorite */}
       <FavoriteButton listingId={listing.id} />
       
