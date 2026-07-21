@@ -593,17 +593,29 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
     }
 
     private void verificarDuplicado(UUID perfilVendedorId, UUID veiculoId, String titulo, String descricao) {
-        Page<Anuncio> anunciosVendedor = repositorioAnuncio.findAllByPerfilVendedorId(perfilVendedorId, Pageable.unpaged());
-        for (Anuncio a : anunciosVendedor.getContent()) {
-            if (a.getStatus() == StatusAnuncio.PUBLICADO || a.getStatus() == StatusAnuncio.PENDENTE) {
-                if (a.getVeiculo() != null && a.getVeiculo().getId() != null && a.getVeiculo().getId().equals(veiculoId)) {
-                    throw new ExcecaoNegocio("Você já possui um anúncio ativo para este veículo.");
-                }
-                if (a.getTitulo() != null && a.getTitulo().equalsIgnoreCase(titulo) && 
-                    a.getDescricao() != null && a.getDescricao().equalsIgnoreCase(descricao)) {
-                    throw new ExcecaoNegocio("Você já possui um anúncio ativo com exatamente o mesmo título e descrição.");
+        try {
+            Page<Anuncio> anunciosVendedor = repositorioAnuncio.findAllByPerfilVendedorId(perfilVendedorId, Pageable.unpaged());
+            for (Anuncio a : anunciosVendedor.getContent()) {
+                if (a.getStatus() == StatusAnuncio.PUBLICADO || a.getStatus() == StatusAnuncio.PENDENTE) {
+                    try {
+                        Veiculo v = a.getVeiculo();
+                        if (v != null && v.getId() != null && v.getId().equals(veiculoId)) {
+                            throw new ExcecaoNegocio("Você já possui um anúncio ativo para este veículo.");
+                        }
+                    } catch (ExcecaoNegocio e) {
+                        throw e;
+                    } catch (Exception ignored) {}
+
+                    if (a.getTitulo() != null && a.getTitulo().equalsIgnoreCase(titulo) && 
+                        a.getDescricao() != null && a.getDescricao().equalsIgnoreCase(descricao)) {
+                        throw new ExcecaoNegocio("Você já possui um anúncio ativo com exatamente o mesmo título e descrição.");
+                    }
                 }
             }
+        } catch (ExcecaoNegocio e) {
+            throw e;
+        } catch (Exception e) {
+            log.warn("Erro genérico ao verificar duplicidade de anúncio: {}", e.getMessage());
         }
     }
 }
