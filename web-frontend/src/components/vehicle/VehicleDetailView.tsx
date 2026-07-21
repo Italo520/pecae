@@ -80,9 +80,11 @@ export function VehicleDetailView({ listing, ads = [] }: VehicleDetailViewProps)
                 )}
               </div>
               
-              <h3 className="text-lg font-bold font-display text-foreground mb-2 mt-6">Descrição</h3>
+              <h3 className="text-lg font-bold font-display text-foreground mb-2 mt-6">Descrição do Veículo</h3>
               <p className="text-foreground/80 whitespace-pre-line leading-relaxed">
-                {listing.description || 'O vendedor não adicionou uma descrição.'}
+                {listing.description && listing.description !== listing.observacoes
+                  ? listing.description
+                  : `Sucata doadora de peças ${listing.brand} ${listing.model}${listing.year ? ` (${listing.year})` : ''}. Veículo cadastrado no sistema PECAÊ com garantia de procedência de desmanche credenciado pelo DETRAN.`}
               </p>
 
               {listing.observacoes && (

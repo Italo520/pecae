@@ -10,9 +10,9 @@ import {
 
 const API_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api/v1';
 
-export async function fetchFeaturedListings(limit = 12): Promise<ListingCard[]> {
+export async function fetchFeaturedListings(limit = 20, page = 0): Promise<ListingCard[]> {
   try {
-    const res = await fetch(`${API_URL}/listings?size=${limit}`, {
+    const res = await fetch(`${API_URL}/listings?size=${limit}&page=${page}`, {
       cache: 'no-store',
     });
     
