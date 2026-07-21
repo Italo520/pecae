@@ -69,14 +69,17 @@ export function useCreateVehicle() {
 
       // Upload photos if any
       if (photos && photos.length > 0) {
-        for (const photo of photos) {
+        for (let i = 0; i < photos.length; i++) {
+          const photo = photos[i];
           const formData = new FormData();
           formData.append('file', photo);
-          formData.append('type', 'EXTERIOR'); // default to EXTERIOR
+          formData.append('type', i === 0 ? 'EXTERIOR' : 'OTHER');
           try {
-            await api.post(`/vehicles/me/${vehicle.id}/photos`, formData);
-          } catch(e) {
-            console.error('Failed to upload photo', e);
+            await api.post(`/vehicles/me/${vehicle.id}/photos`, formData, {
+              headers: { 'Content-Type': 'multipart/form-data' }
+            });
+          } catch(e: any) {
+            console.error(`Failed to upload photo ${i + 1}:`, e?.response?.data || e?.message || e);
           }
         }
       }
