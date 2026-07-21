@@ -55,10 +55,24 @@ export async function generateStaticParams() {
 import { fetchBannerAds } from '@/services/ads.service';
 
 export default async function VehicleDetailPage({ params }: PageProps) {
-  const [listing, ads] = await Promise.all([
-    fetchListingById(params.id),
-    fetchBannerAds('LISTING_DETAIL_TOP', 1)
-  ]);
+  let listing = null;
+  let ads: any[] = [];
+
+  try {
+    const [listingResult, adsResult] = await Promise.allSettled([
+      fetchListingById(params.id),
+      fetchBannerAds('LISTING_DETAIL_TOP', 1)
+    ]);
+    
+    if (listingResult.status === 'fulfilled') {
+      listing = listingResult.value;
+    }
+    if (adsResult.status === 'fulfilled') {
+      ads = adsResult.value || [];
+    }
+  } catch (err) {
+    console.error('Error loading listing detail page:', err);
+  }
 
   if (!listing) {
     notFound();
