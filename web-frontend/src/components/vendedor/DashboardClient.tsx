@@ -193,8 +193,8 @@ export default function DashboardClient() {
     if (!vehicles) return { total: 0, active: 0, sold: 0 };
     return {
       total: vehicles.length,
-      active: vehicles.filter(v => v.status === 'ACTIVE').length,
-      sold: vehicles.filter(v => v.status === 'SOLD').length
+      active: vehicles.filter(v => v.status === 'ACTIVE' || v.status === 'ATIVO').length,
+      sold: vehicles.filter(v => v.status === 'SOLD' || v.status === 'VENDIDO').length
     };
   }, [vehicles]);
 
@@ -211,17 +211,24 @@ export default function DashboardClient() {
   }, [vehicles, searchTerm]);
 
   const getStatusBadge = (status: string) => {
-    switch(status) {
-      case 'ACTIVE': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">Ativo</span>;
+    switch(status?.toUpperCase()) {
+      case 'ACTIVE':
+      case 'ATIVO': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">Ativo</span>;
       case 'PENDING':
       case 'IN_MODERATION':
+      case 'EM_MODERACAO':
       case 'RASCUNHO':
       case 'DRAFT': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center gap-1"><Clock className="w-3 h-3" /> Em Moderação</span>;
-      case 'SOLD': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-blue-500/10 text-blue-500 border border-blue-500/20">Vendido</span>;
+      case 'SOLD':
+      case 'VENDIDO': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-blue-500/10 text-blue-500 border border-blue-500/20">Vendido</span>;
       case 'INACTIVE':
-      case 'PAUSED': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-zinc-500/10 text-zinc-500 border border-zinc-500/20 flex items-center gap-1"><Pause className="w-3 h-3" /> Pausado</span>;
-      case 'CLOSED': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-red-500/10 text-red-500 border border-red-500/20 flex items-center gap-1"><Archive className="w-3 h-3" /> Encerrado</span>;
-      case 'ARCHIVED': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-zinc-500/10 text-zinc-500 border border-zinc-500/20 flex items-center gap-1"><Archive className="w-3 h-3" /> Arquivado</span>;
+      case 'INATIVO':
+      case 'PAUSED':
+      case 'PAUSADO': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-zinc-500/10 text-zinc-500 border border-zinc-500/20 flex items-center gap-1"><Pause className="w-3 h-3" /> Pausado</span>;
+      case 'CLOSED':
+      case 'ENCERRADO': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-red-500/10 text-red-500 border border-red-500/20 flex items-center gap-1"><Archive className="w-3 h-3" /> Encerrado</span>;
+      case 'ARCHIVED':
+      case 'ARQUIVADO': return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-zinc-500/10 text-zinc-500 border border-zinc-500/20 flex items-center gap-1"><Archive className="w-3 h-3" /> Arquivado</span>;
       default: return <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-[var(--surface-hover)] text-[var(--muted)]">{status}</span>;
     }
   };
