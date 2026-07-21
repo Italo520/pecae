@@ -10,9 +10,14 @@ export function useFavorites() {
     queryKey: ['favorites'],
     queryFn: async () => {
       const response = await api.get('/favoritos');
-      return response.data;
+      const data = response.data;
+      if (Array.isArray(data)) return data;
+      if (Array.isArray(data?.itens)) return data.itens;
+      if (Array.isArray(data?.content)) return data.content;
+      return [];
     },
     enabled: !!accessToken,
+    initialData: [],
   });
 
   const toggleFavorite = useMutation({

@@ -49,12 +49,12 @@ export default function FavoritosPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map(i => <SkeletonCard key={i} />)}
           </div>
-        ) : !favorites?.length ? (
+        ) : (!Array.isArray(favorites) || favorites.length === 0) ? (
           <EmptyState 
             icon={<Heart className="w-8 h-8" />} 
             title="Nenhum favorito salvo" 
             description="Você ainda não salvou nenhum anúncio. Explore o catálogo e salve seus favoritos!"
-            cta={<Link href="/" className="px-5 py-2.5 bg-[var(--brand)] text-black rounded-lg font-medium hover:bg-[var(--brand)]/90 transition-colors">Explorar Catálogo</Link>}
+            cta={<Link href="/" className="px-5 py-2.5 bg-[var(--brand)] text-[var(--brand-foreground)] rounded-lg font-medium hover:opacity-90 transition-colors">Explorar Catálogo</Link>}
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

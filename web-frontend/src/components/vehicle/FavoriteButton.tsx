@@ -11,8 +11,11 @@ export function FavoriteButton({ listingId }: { listingId: string }) {
   const { data: favorites } = getFavorites;
 
   const isFavorited = useMemo(() => {
-    if (!favorites) return false;
-    return favorites.some((fav: any) => fav.listing?.id === listingId);
+    if (!Array.isArray(favorites)) return false;
+    return favorites.some((fav: any) => {
+      const id = fav?.listing?.id || fav?.listingId || fav?.anuncioId || fav?.id;
+      return id === listingId;
+    });
   }, [favorites, listingId]);
 
   const handleToggle = (e: React.MouseEvent) => {
