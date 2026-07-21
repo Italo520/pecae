@@ -188,11 +188,11 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     // Buscar anúncio pelo título único
     const searchInput = page.locator('input[placeholder*="Buscar"], input[placeholder*="Pesquisar"]').first();
     if (await searchInput.isVisible()) {
-      await searchInput.fill(uniqueTitle);
+      await searchInput.fill(uniqueTag);
       await page.keyboard.press('Enter');
       await page.waitForTimeout(2000);
     } else {
-      await page.goto(`/listings/${listingId}`);
+      await page.goto(`/veiculo/${listingId}`);
     }
 
     // Clicar no card do anúncio recém criado se estiver na busca/home
