@@ -160,8 +160,9 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     // ETAPA 3: Vendedor confirma aprovação
     // ==========================================
     console.log('▶️ ETAPA 3: Confirmação do Vendedor');
-    await page.waitForTimeout(6000); // aguarda polling de 5s do useVehicles
-    // Valida que o badge "Ativo" aparece especificamente na tabela de veículos
+    await page.reload();
+    await page.waitForTimeout(2000);
+    // Valida que o badge "Ativo" aparece na tabela de inventário do vendedor
     await expect(page.locator('table').getByText('Ativo').first()).toBeVisible({ timeout: 15000 });
     console.log('✅ Anúncio confirmado como ATIVO no inventário do vendedor.');
 
