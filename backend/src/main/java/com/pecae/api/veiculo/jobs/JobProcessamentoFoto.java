@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 @Component
 public class JobProcessamentoFoto {
 
-    @Async("configuracaoAsync")
+    @Async
     public CompletableFuture<Void> processarAsync(UUID fotoId) {
         log.info("[JOB] Iniciando processamento assíncrono da foto: {}", fotoId);
         try {
