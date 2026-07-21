@@ -22,13 +22,21 @@ export function Header() {
   const isLoggedIn = mounted && isAuthenticated;
 
   const getFavoritesUrl = () => {
-    if (!isLoggedIn) return '/login';
-    return user?.type === 'SELLER' ? '/vendedor/dashboard' : '/comprador/favoritos';
+    if (!isLoggedIn) return '/login?next=/comprador/favoritos';
+    return '/comprador/favoritos';
   };
 
   const getNotificationsUrl = () => {
-    if (!isLoggedIn) return '/login';
+    if (!isLoggedIn) return '/login?next=/comprador/notificacoes';
     return '/comprador/notificacoes';
+  };
+
+  const handleAnnounceClick = () => {
+    if (!isLoggedIn) {
+      window.location.href = '/login?next=/vendedor/anunciar';
+    } else {
+      window.location.href = '/vendedor/anunciar';
+    }
   };
 
   const handleLocationClick = () => {
@@ -116,7 +124,7 @@ export function Header() {
             </div>
 
             {/* CTA Announce */}
-            <Button variant="primary" size="sm" className="hidden sm:flex" onClick={() => alert('Página Anunciar em desenvolvimento')}>
+            <Button variant="primary" size="sm" className="hidden sm:flex" onClick={handleAnnounceClick}>
               Anunciar
             </Button>
             

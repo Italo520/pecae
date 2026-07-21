@@ -53,3 +53,18 @@ export function useCreateChatRoom() {
     },
   });
 }
+
+export function useMarkAsRead() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (salaId: string) => {
+      const response = await api.put(`/chat/rooms/${salaId}/read`);
+      return response.data;
+    },
+    onSuccess: (_, salaId) => {
+      queryClient.invalidateQueries({ queryKey: ['chats'] });
+      queryClient.invalidateQueries({ queryKey: ['chat-room', salaId] });
+    },
+  });
+}

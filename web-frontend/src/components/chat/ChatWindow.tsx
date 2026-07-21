@@ -10,7 +10,7 @@ import {
   Flag
 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
-import { useChatMessages, useChatRoom } from '@/hooks/useChat';
+import { useChatMessages, useChatRoom, useMarkAsRead } from '@/hooks/useChat';
 import { useStomp } from '@/hooks/useStomp';
 import { useAuthStore } from '@/store/auth-store';
 import { api } from '@/lib/axios';
@@ -23,11 +23,13 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
   const { data: history, isLoading } = useChatMessages(chatId);
   const { data: room } = useChatRoom(chatId);
   const { connected, subscribe, publish } = useStomp();
+  const markAsRead = useMarkAsRead();
   
   const [messages, setMessages] = useState<MensagemChat[]>([]);
   const [input, setInput] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // States for report modal
@@ -35,6 +37,13 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
   const [reportCategory, setReportCategory] = useState('FRAUDE');
   const [reportDesc, setReportDesc] = useState('');
   const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+
+  // Marcar mensagens como lidas ao carregar/selecionar a sala
+  useEffect(() => {
+    if (chatId) {
+      markAsRead.mutate(chatId);
+    }
+  }, [chatId]);
 
   // Sync historical messages when loaded
   useEffect(() => {
@@ -74,7 +83,9 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
   }, [connected, chatId, publish, subscribe]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   };
 
   useEffect(() => {
@@ -239,7 +250,7 @@ export default function ChatWindow({ chatId }: { chatId: string }) {
       </div>
 
       {/* Message List */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-6 space-y-4">
         {isLoading && (
           <div className="flex justify-center p-4">
             <Loader2 className="w-6 h-6 animate-spin text-[var(--brand)]" />

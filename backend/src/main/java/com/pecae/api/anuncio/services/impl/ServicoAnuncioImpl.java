@@ -116,7 +116,12 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
             filtros.maxDistanciaKm(),
             pageable
         );
-        return anuncios.map(mapperAnuncio::paraResposta);
+        return anuncios.map(a -> {
+            if (a.getVeiculo() != null && a.getVeiculo().getFotos() != null) {
+                org.hibernate.Hibernate.initialize(a.getVeiculo().getFotos());
+            }
+            return mapperAnuncio.paraResposta(a);
+        });
     }
 
     @Override
@@ -159,6 +164,18 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
         // RN-LGPD: Vendedor deletado não exibe anúncio
         if (anuncio.getPerfilVendedor().getDeletadoEm() != null) {
             throw new ExcecaoRecursoNaoEncontrado("Anúncio publicado não encontrado.");
+        }
+
+        if (anuncio.getVeiculo() != null) {
+            if (anuncio.getVeiculo().getFotos() != null) {
+                org.hibernate.Hibernate.initialize(anuncio.getVeiculo().getFotos());
+            }
+            if (anuncio.getVeiculo().getPecasDisponiveis() != null) {
+                org.hibernate.Hibernate.initialize(anuncio.getVeiculo().getPecasDisponiveis());
+            }
+        }
+        if (anuncio.getPerfilVendedor() != null) {
+            org.hibernate.Hibernate.initialize(anuncio.getPerfilVendedor());
         }
 
         // Registrar visualização assincronamente (deduplicada por IP)

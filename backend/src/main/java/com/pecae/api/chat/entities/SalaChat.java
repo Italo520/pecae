@@ -16,7 +16,11 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 @Entity
-@Table(name = "chat_rooms")
+@Table(name = "chat_rooms", indexes = {
+    @Index(name = "idx_chat_rooms_buyer", columnList = "buyer_id"),
+    @Index(name = "idx_chat_rooms_seller", columnList = "seller_id"),
+    @Index(name = "idx_chat_rooms_updated", columnList = "updated_at")
+})
 @Getter
 @Setter
 @Builder

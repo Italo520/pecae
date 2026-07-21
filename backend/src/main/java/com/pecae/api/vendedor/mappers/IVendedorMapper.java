@@ -15,6 +15,7 @@ public interface IVendedorMapper {
     @Mapping(target = "usuario", ignore = true)
     PerfilVendedor toEntity(CriarVendedorRequest request);
 
+    @org.mapstruct.BeanMapping(nullValuePropertyMappingStrategy = org.mapstruct.NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "nome", source = "nome")
     @Mapping(target = "telefone", source = "telefone")
     @Mapping(target = "biografia", source = "biografia")

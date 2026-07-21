@@ -81,16 +81,12 @@ export async function fetchVehicleCategories(): Promise<VehicleCategory[]> {
 export async function fetchListingById(id: string): Promise<ListingDetail | null> {
   try {
     const res = await fetch(`${API_URL}/listings/${id}`, {
-      next: { revalidate: 300 },
+      cache: 'no-store',
     });
     
     if (!res.ok) {
-      if (id.startsWith('search-res-') || id.includes('101') || id.includes('listing')) {
-        return generateMockDetail(id);
-      }
-      if (res.status === 404) return generateMockDetail(id);
       console.error(`Failed to fetch listing ${id}: ${res.statusText}`);
-      return generateMockDetail(id);
+      return null;
     }
     
     const data = await res.json();
@@ -105,64 +101,38 @@ export async function fetchListingById(id: string): Promise<ListingDetail | null
 
     const mappedStatus = data.status ? statusMap[data.status] || 'ACTIVE' : 'ACTIVE';
 
-    // Mocking do adapter até a rota de detalhes estar 100% igual.
     const adaptedDetail = {
       id: data.id ? String(data.id) : id,
-      title: data.titulo || 'Sucata Civic 2018 EXL Completo',
-      brand: data.marcaNome || 'Honda',
-      model: data.modeloNome || 'Civic',
-      year: data.anoFabricacao || 2018,
-      version: data.versaoNome || 'EXL',
-      color: data.cor || 'Preto',
-      description: data.descricao || 'Carro com baixa no detran, motor intacto.',
+      title: data.titulo || `${data.marcaNome || ''} ${data.modeloNome || ''}`.trim() || 'Veículo',
+      brand: data.marcaNome || 'Não informada',
+      model: data.modeloNome || 'Não informado',
+      year: data.anoFabricacao || new Date().getFullYear(),
+      version: data.versaoNome || '',
+      color: data.cor || '',
+      description: data.descricao || 'Sem descrição.',
       observacoes: data.observacoes || null,
-      city: data.cidade || 'São Paulo',
-      state: data.estado || 'SP',
-      createdAt: data.publicadoEm || new Date().toISOString(),
-      views: data.visualizacoes || 15,
+      city: data.cidade || '',
+      state: data.estado || '',
+      createdAt: data.publicadoEm || data.criadoEm || new Date().toISOString(),
+      views: data.visualizacoes || 0,
       photos: data.fotos && data.fotos.length > 0 
         ? data.fotos.map((f: any) => ({ id: f.id || '1', url: f.urlFoto || f.url || '', isMain: f.tipo === 'MAIN' || f.ordem === 1 }))
         : [{ id: '1', url: data.urlFotoPrincipal || 'https://images.pexels.com/photos/1164778/pexels-photo-1164778.jpeg', isMain: true }],
-      partsAvailable: Array.isArray(data.pecasDisponiveis) && data.pecasDisponiveis.length > 0 ? data.pecasDisponiveis : [],
+      partsAvailable: Array.isArray(data.pecasDisponiveis) ? data.pecasDisponiveis : [],
       seller: {
-        id: data.perfilVendedorId ? String(data.perfilVendedorId) : 'seller1',
-        name: data.nomeVendedor || 'Desmanche do Zé',
-        memberSince: new Date().toISOString(),
-        city: data.cidade || 'São Paulo',
-        state: data.estado || 'SP',
+        id: data.perfilVendedorId ? String(data.perfilVendedorId) : 'vendedor',
+        name: data.nomeVendedor || 'Vendedor PECAÊ',
+        memberSince: data.criadoEm || new Date().toISOString(),
+        city: data.cidade || '',
+        state: data.estado || '',
+        whatsapp: data.telefoneVendedor || undefined
       },
       status: mappedStatus,
     };
 
     return listingDetailSchema.parse(adaptedDetail);
   } catch (error) {
-    return generateMockDetail(id);
+    console.error('Error in fetchListingById:', error);
+    return null;
   }
-}
-
-function generateMockDetail(id: string): ListingDetail {
-  return listingDetailSchema.parse({
-    id,
-    title: 'Sucata Civic 2018 EXL Completo',
-    brand: 'Honda',
-    model: 'Civic',
-    year: 2018,
-    version: 'EXL',
-    color: 'Preto',
-    description: 'Carro com baixa no detran, motor intacto.',
-    city: 'São Paulo',
-    state: 'SP',
-    createdAt: new Date().toISOString(),
-    views: 15,
-    photos: [{ id: '1', url: 'https://images.pexels.com/photos/1164778/pexels-photo-1164778.jpeg', isMain: true }],
-    partsAvailable: ['Motor', 'Câmbio'],
-    seller: {
-      id: 'seller1',
-      name: 'Desmanche do Zé',
-      memberSince: new Date().toISOString(),
-      city: 'São Paulo',
-      state: 'SP',
-    },
-    status: 'ACTIVE',
-  });
 }
