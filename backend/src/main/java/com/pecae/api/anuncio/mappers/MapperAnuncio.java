@@ -71,10 +71,14 @@ public interface MapperAnuncio {
     }
 
     default Boolean isVendedorVerificado(Anuncio anuncio) {
-        if (anuncio.getPerfilVendedor() == null || anuncio.getPerfilVendedor().getVerificacao() == null) {
+        try {
+            if (anuncio.getPerfilVendedor() == null || anuncio.getPerfilVendedor().getVerificacao() == null) {
+                return false;
+            }
+            return anuncio.getPerfilVendedor().getVerificacao().getStatus() == com.pecae.api.vendedor.entities.enums.StatusVerificacao.APROVADO;
+        } catch (Exception e) {
             return false;
         }
-        return anuncio.getPerfilVendedor().getVerificacao().getStatus() == com.pecae.api.vendedor.entities.enums.StatusVerificacao.APROVADO;
     }
 
     default Integer extrairAnoFabricacao(Anuncio anuncio) {
@@ -89,16 +93,24 @@ public interface MapperAnuncio {
     }
 
     default Double extrairRatingVendedor(Anuncio anuncio) {
-        if (anuncio.getPerfilVendedor() == null || anuncio.getPerfilVendedor().getEstatisticas() == null) {
+        try {
+            if (anuncio.getPerfilVendedor() == null || anuncio.getPerfilVendedor().getEstatisticas() == null) {
+                return 0.0;
+            }
+            return anuncio.getPerfilVendedor().getEstatisticas().getMediaAvaliacao();
+        } catch (Exception e) {
             return 0.0;
         }
-        return anuncio.getPerfilVendedor().getEstatisticas().getMediaAvaliacao();
     }
 
     default Integer extrairTotalAvaliacoesVendedor(Anuncio anuncio) {
-        if (anuncio.getPerfilVendedor() == null || anuncio.getPerfilVendedor().getEstatisticas() == null) {
+        try {
+            if (anuncio.getPerfilVendedor() == null || anuncio.getPerfilVendedor().getEstatisticas() == null) {
+                return 0;
+            }
+            return anuncio.getPerfilVendedor().getEstatisticas().getTotalAvaliacoes();
+        } catch (Exception e) {
             return 0;
         }
-        return anuncio.getPerfilVendedor().getEstatisticas().getTotalAvaliacoes();
     }
 }

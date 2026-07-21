@@ -177,6 +177,16 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
         }
         if (anuncio.getPerfilVendedor() != null) {
             org.hibernate.Hibernate.initialize(anuncio.getPerfilVendedor());
+            try {
+                if (anuncio.getPerfilVendedor().getVerificacao() != null) {
+                    org.hibernate.Hibernate.initialize(anuncio.getPerfilVendedor().getVerificacao());
+                }
+            } catch (Exception ignored) {}
+            try {
+                if (anuncio.getPerfilVendedor().getEstatisticas() != null) {
+                    org.hibernate.Hibernate.initialize(anuncio.getPerfilVendedor().getEstatisticas());
+                }
+            } catch (Exception ignored) {}
         }
 
         // Registrar visualização assincronamente (deduplicada por IP)
