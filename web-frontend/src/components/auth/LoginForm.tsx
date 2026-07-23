@@ -41,7 +41,7 @@ export function LoginForm() {
         }
       }
       
-      router.push(next);
+      window.location.href = next;
     } catch (err: any) {
       setError(err.response?.data?.message || 'E-mail ou senha incorretos.');
     }

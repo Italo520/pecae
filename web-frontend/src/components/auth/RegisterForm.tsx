@@ -60,13 +60,13 @@ export function RegisterForm() {
         termsAccepted: data.termsAccepted,
         privacyAccepted: data.privacyAccepted
       });
-      toast.success('Conta criada com sucesso! Login efetuado.');
-      router.push('/');
+      toast.success('Conta criada com sucesso!');
+      window.location.href = '/';
     } catch (err: any) {
       if (err.response?.status === 409) {
         toast.info('Este e-mail já possui cadastro. Redirecionando para o login...');
         setTimeout(() => {
-          router.push('/login');
+          window.location.href = '/login';
         }, 1500);
         return;
       }

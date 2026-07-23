@@ -40,10 +40,16 @@ export function Header() {
   };
 
   const handleAnnounceClick = () => {
-    if (!isLoggedIn) {
-      window.location.href = '/login?next=/vendedor/anunciar';
-    } else {
+    if (!isLoggedIn) return;
+
+    const userType = (user?.type as string) || ((user as any)?.role as string);
+    const isSeller = userType === 'SELLER' || userType === 'VENDEDOR' || userType === 'BOTH' || userType === 'AMBOS';
+
+    if (isSeller) {
       window.location.href = '/vendedor/anunciar';
+    } else {
+      // Comprador logado clicando em Anunciar -> vai para onboarding de vendedor
+      window.location.href = '/vendedor/onboarding';
     }
   };
 
@@ -112,7 +118,7 @@ export function Header() {
             <div className="hidden md:flex items-center">
               {isLoggedIn ? (
                 <Link 
-                  href={user?.type === 'SELLER' ? '/vendedor/dashboard' : '/comprador/dashboard'} 
+                  href={(user?.type as any) === 'SELLER' || (user?.type as any) === 'VENDEDOR' ? '/vendedor/dashboard' : '/comprador/dashboard'} 
                   className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                   title="Acessar Dashboard"
                 >
@@ -131,10 +137,12 @@ export function Header() {
               )}
             </div>
 
-            {/* CTA Announce */}
-            <Button variant="primary" size="sm" className="hidden sm:flex" onClick={handleAnnounceClick}>
-              Anunciar
-            </Button>
+            {/* CTA Announce - visível apenas para usuários logados */}
+            {isLoggedIn && (
+              <Button variant="primary" size="sm" className="hidden sm:flex" onClick={handleAnnounceClick}>
+                Anunciar
+              </Button>
+            )}
             
           </div>
         </div>
