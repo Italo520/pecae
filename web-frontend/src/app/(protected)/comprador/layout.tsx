@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/auth-store';
 import Link from 'next/link';
 import { LayoutDashboard, Heart, Search, MessageCircle, User, LifeBuoy } from 'lucide-react';
+import { WorkspaceSwitcher } from '@/components/layout/WorkspaceSwitcher';
 
 export default function CompradorLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -16,12 +17,10 @@ export default function CompradorLayout({ children }: { children: ReactNode }) {
     
     if (!isAuthenticated) {
       router.replace('/login');
-    } else if ((user?.type as string) === 'SELLER' || (user?.type as string) === 'VENDEDOR') {
-      router.replace('/vendedor/dashboard');
     }
-  }, [isInitialized, isAuthenticated, user, router]);
+  }, [isInitialized, isAuthenticated, router]);
 
-  if (!isInitialized || !isAuthenticated || (user?.type as string) === 'SELLER' || (user?.type as string) === 'VENDEDOR') {
+  if (!isInitialized || !isAuthenticated) {
     return null; // Return null while redirecting
   }
 
@@ -38,13 +37,7 @@ export default function CompradorLayout({ children }: { children: ReactNode }) {
     <div className="flex flex-1 h-full overflow-hidden bg-background relative z-0">
       {/* Sidebar Desktop */}
       <aside className="hidden md:flex flex-col w-64 border-r border-border bg-surface/50 backdrop-blur-xl">
-        <div className="p-6">
-          <Link href="/">
-            <h2 className="text-xl font-display font-bold tracking-wider text-brand">
-              PECAÊ <span className="text-muted font-sans text-sm">COMPRADOR</span>
-            </h2>
-          </Link>
-        </div>
+        <WorkspaceSwitcher currentWorkspace="comprador" />
         
         <nav className="flex-1 px-4 py-6 space-y-2">
           {navItems.map((item) => {
@@ -74,7 +67,7 @@ export default function CompradorLayout({ children }: { children: ReactNode }) {
         {children}
       </main>
 
-      {/* Bottom Tab Mobile (Simulated for small screens) */}
+      {/* Bottom Tab Mobile */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 border-t border-border bg-surface/80 backdrop-blur-xl flex justify-around items-center px-2 z-50">
         {navItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
@@ -93,6 +86,15 @@ export default function CompradorLayout({ children }: { children: ReactNode }) {
             </Link>
           );
         })}
+        {((user?.type as string) === 'SELLER' || (user?.type as string) === 'VENDEDOR' || (user?.type as string) === 'BOTH' || (user?.type as string) === 'AMBOS') && (
+          <Link 
+            href="/vendedor/dashboard"
+            className="p-2 flex flex-col items-center gap-1 text-muted"
+          >
+            <div className="w-5 h-5 flex items-center justify-center bg-brand text-white rounded-md">P</div>
+            <span className="text-[10px] font-medium">Loja</span>
+          </Link>
+        )}
       </nav>
     </div>
   );

@@ -11,8 +11,8 @@ import { Building2, MapPin, Phone, Clock, FileText } from 'lucide-react';
 
 const sellerSchema = z.object({
   storeName: z.string().min(3, 'Nome da loja deve ter pelo menos 3 caracteres'),
-  type: z.enum(['PF', 'PJ']),
-  cnpj: z.string().optional(),
+  type: z.enum(['CONCESSIONARIA', 'DESMANCHE']),
+  cnpj: z.string().min(14, 'CNPJ inválido'),
   description: z.string().min(10, 'Descreva sua loja (mínimo 10 caracteres)'),
   phone: z.string().min(10, 'Telefone inválido'),
   whatsapp: z.string().min(10, 'WhatsApp inválido'),
@@ -35,7 +35,7 @@ export default function OnboardingPage() {
   } = useForm<SellerOnboardingData>({
     resolver: zodResolver(sellerSchema),
     defaultValues: {
-      type: 'PF',
+      type: 'CONCESSIONARIA',
     }
   });
 
@@ -75,51 +75,49 @@ export default function OnboardingPage() {
             )}
 
             <div>
-              <label className="block text-xs font-mono text-gray-400 mb-3 tracking-wider">TIPO DE ENTIDADE</label>
+              <label className="block text-xs font-mono text-gray-400 mb-3 tracking-wider">TIPO DE OPERAÇÃO (PJ)</label>
               <div className="flex bg-black/20 p-1 rounded-xl">
                 <button
                   type="button"
-                  onClick={() => setValue('type', 'PF')}
+                  onClick={() => setValue('type', 'CONCESSIONARIA')}
                   className={`flex-1 py-3 text-sm font-bold tracking-wider rounded-lg transition-all duration-300 ${
-                    selectedType === 'PF' ? 'bg-gray-800 text-[#3FFF8B] shadow-lg border border-gray-700' : 'text-gray-500 hover:text-gray-300'
+                    selectedType === 'CONCESSIONARIA' ? 'bg-gray-800 text-[#3FFF8B] shadow-lg border border-gray-700' : 'text-gray-500 hover:text-gray-300'
                   }`}
                 >
-                  PF
+                  CONCESSIONÁRIA
                 </button>
                 <button
                   type="button"
-                  onClick={() => setValue('type', 'PJ')}
+                  onClick={() => setValue('type', 'DESMANCHE')}
                   className={`flex-1 py-3 text-sm font-bold tracking-wider rounded-lg transition-all duration-300 ${
-                    selectedType === 'PJ' ? 'bg-gray-800 text-[#3FFF8B] shadow-lg border border-gray-700' : 'text-gray-500 hover:text-gray-300'
+                    selectedType === 'DESMANCHE' ? 'bg-gray-800 text-[#3FFF8B] shadow-lg border border-gray-700' : 'text-gray-500 hover:text-gray-300'
                   }`}
                 >
-                  PJ
+                  DESMANCHE
                 </button>
               </div>
             </div>
 
-            {selectedType === 'PJ' && (
-              <Controller
-                control={control}
-                name="cnpj"
-                render={({ field }) => (
-                  <div>
-                    <label className="block text-xs text-gray-400 font-semibold mb-1">CNPJ DA OPERAÇÃO</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <FileText className="h-5 w-5 text-gray-500" />
-                      </div>
-                      <input
-                        {...field}
-                        className="block w-full pl-10 bg-gray-950 border border-gray-800 rounded-xl py-3 text-white focus:ring-[#3FFF8B] focus:border-[#3FFF8B] transition-colors"
-                        placeholder="00.000.000/0000-00"
-                      />
+            <Controller
+              control={control}
+              name="cnpj"
+              render={({ field }) => (
+                <div>
+                  <label className="block text-xs text-gray-400 font-semibold mb-1">CNPJ DA OPERAÇÃO</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <FileText className="h-5 w-5 text-gray-500" />
                     </div>
-                    {errors.cnpj && <p className="text-red-500 text-xs mt-1">{errors.cnpj.message}</p>}
+                    <input
+                      {...field}
+                      className="block w-full pl-10 bg-gray-950 border border-gray-800 rounded-xl py-3 text-white focus:ring-[#3FFF8B] focus:border-[#3FFF8B] transition-colors"
+                      placeholder="00.000.000/0000-00"
+                    />
                   </div>
-                )}
-              />
-            )}
+                  {errors.cnpj && <p className="text-red-500 text-xs mt-1">{errors.cnpj.message}</p>}
+                </div>
+              )}
+            />
 
             <Controller
               control={control}

@@ -2,8 +2,8 @@ import { apiClient } from './auth.service';
 
 export interface SellerOnboardingData {
   storeName: string;
-  type: 'PF' | 'PJ';
-  cnpj?: string;
+  type: 'CONCESSIONARIA' | 'DESMANCHE';
+  cnpj: string;
   description: string;
   phone: string;
   whatsapp: string;
@@ -22,13 +22,13 @@ export const sellerService = {
       : `+55${formattedWhatsapp}`;
       
     const payload = {
-      ...data,
-      whatsapp: finalWhatsapp,
+      name: data.storeName,
+      document: data.cnpj.replace(/\D/g, ''),
       phone: data.phone.replace(/\D/g, ''),
-      openHours: data.openHours ? { "Horário": data.openHours } : undefined
+      sellerType: data.type
     };
 
-    const response = await apiClient.post('/sellers', payload);
+    const response = await apiClient.post('/sellers/me', payload);
     return response.data;
   },
 
