@@ -1,6 +1,7 @@
 package com.pecae.api.vendedor.entities;
 
 import com.pecae.api.vendedor.entities.enums.TipoVendedor;
+import com.pecae.api.vendedor.entities.enums.ConversorTipoVendedor;
 import com.pecae.api.usuario.entities.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
@@ -53,9 +54,9 @@ public class PerfilVendedor {
     @Column(name = "banner_url")
     private String urlBanner;
 
-    @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "seller_type", nullable = false, columnDefinition = "SellerType")
+    @org.hibernate.annotations.ColumnTransformer(write = "?::\"SellerType\"")
+    @Convert(converter = ConversorTipoVendedor.class)
     private TipoVendedor tipoVendedor;
 
     @OneToOne(mappedBy = "perfilVendedor", cascade = CascadeType.ALL, orphanRemoval = true)
