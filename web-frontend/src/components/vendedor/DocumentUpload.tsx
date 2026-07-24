@@ -29,7 +29,13 @@ export const DocumentUpload = ({ files, setFiles, maxFiles = 5 }: DocumentUpload
   }, [files, maxFiles, setFiles]);
 
   const removeFile = (name: string) => {
-    setFiles(files => files.filter(file => file.name !== name));
+    setFiles(files => {
+      const fileToRemove = files.find(file => file.name === name);
+      if (fileToRemove?.preview) {
+        URL.revokeObjectURL(fileToRemove.preview);
+      }
+      return files.filter(file => file.name !== name);
+    });
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

@@ -116,6 +116,26 @@ test.describe('PECAÊ E2E - Onboarding de Vendedor', () => {
     console.log('✅ Perfil comercial criado com sucesso! Redirecionado para verificação.');
     
     await expect(page.locator('text=VERIFICAÇÃO KYC')).toBeVisible({ timeout: 10000 });
-    console.log('🎉 Teste de Onboarding concluído com sucesso!');
+
+    // 8. Testar o envio de múltiplos documentos no formulário KYC (Evitando o TypeError de slots ausentes)
+    console.log('📄 Anexando múltiplos documentos (RG, CNPJ, Selfie) na verificação KYC...');
+    page.once('dialog', async (dialog) => {
+      await dialog.accept();
+    });
+
+    const file1 = { name: 'documento-rg.pdf', mimeType: 'application/pdf', buffer: Buffer.from('mock rg content') };
+    const file2 = { name: 'comprovante-cnpj.pdf', mimeType: 'application/pdf', buffer: Buffer.from('mock cnpj content') };
+    const file3 = { name: 'selfie-identidade.png', mimeType: 'image/png', buffer: Buffer.from('mock selfie content') };
+
+    await page.locator('input[type="file"]').setInputFiles([file1, file2, file3]);
+
+    await expect(page.getByText('documento-rg.pdf')).toBeVisible();
+    await expect(page.getByText('comprovante-cnpj.pdf')).toBeVisible();
+    await expect(page.getByText('selfie-identidade.png')).toBeVisible();
+
+    await page.getByRole('button', { name: /ENVIAR PARA ANÁLISE/i }).click();
+
+    await page.waitForURL('**/vendedor/dashboard', { timeout: 15000 });
+    console.log('🎉 Teste de Onboarding e Verificação KYC com múltiplos documentos concluído com sucesso!');
   });
 });

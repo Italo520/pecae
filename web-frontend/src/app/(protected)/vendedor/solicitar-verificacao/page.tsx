@@ -48,14 +48,24 @@ export default function SolicitarVerificacaoPage() {
     setErrorMsg('');
 
     try {
-      // 1. Solicita URLs assinadas
-      const slots = await sellerService.requestUploadSlots();
+      // 1. Solicita URLs assinadas passando a quantidade exata de arquivos
+      const slots = await sellerService.requestUploadSlots(files.length);
 
-      // 2. Upload paralelo para o Storage
+      // Validação defensiva: verificar se os slots de upload retornados são suficientes
+      if (!slots || slots.length < files.length) {
+        throw new Error('Não foi possível obter slots de upload suficientes.');
+      }
+
+      // 2. Upload paralelo para o Storage com checagem de cada slot
       const uploadResults = await Promise.all(
         files.map(async (doc, index) => {
           const slot = slots[index];
-          await sellerService.uploadFileToSlot(doc, slot.uploadUrl);
+          if (!slot) {
+            throw new Error(`Slot de upload não encontrado para o arquivo: ${doc.name}`);
+          }
+          if (slot.uploadUrl) {
+            await sellerService.uploadFileToSlot(doc, slot.uploadUrl);
+          }
           return slot.path;
         })
       );

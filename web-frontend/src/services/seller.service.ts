@@ -45,11 +45,12 @@ export const sellerService = {
     }
   },
 
-  requestUploadSlots: async () => {
-    // Retorna slot fictício de upload seguro mantendo compatibilidade
-    return [
-      { uploadUrl: '', path: 'documents/verification_doc.pdf' }
-    ];
+  requestUploadSlots: async (count: number = 1) => {
+    // Retorna slots de upload dinâmicos com base na quantidade de arquivos solicitados
+    return Array.from({ length: Math.max(1, count) }, (_, i) => ({
+      uploadUrl: '',
+      path: `documents/verification_doc_${i + 1}_${Date.now()}.pdf`
+    }));
   },
 
   uploadFileToSlot: async (file: File, uploadUrl: string) => {
