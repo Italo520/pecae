@@ -5,6 +5,8 @@ import type { VehicleCreateInput } from '@pecae/shared';
 import { useCatalogBrands, useCatalogModels, useCatalogYears } from '@/hooks/useCatalog';
 
 
+import { useEffect } from 'react';
+
 export default function Step2Fipe() {
   const { register, setValue, watch, formState: { errors } } = useFormContext<VehicleCreateInput>();
 
@@ -15,6 +17,30 @@ export default function Step2Fipe() {
   const { data: brands, isLoading: loadBrands } = useCatalogBrands();
   const { data: models, isLoading: loadModels } = useCatalogModels(brandCode);
   const { data: years, isLoading: loadYears } = useCatalogYears(brandCode, modelCode);
+
+  useEffect(() => {
+    if (brandCode && brands && brands.length > 0) {
+      const found = brands.find(b => b.id === brandCode);
+      if (found?.name) setValue('marcaNome', found.name, { shouldValidate: true });
+    }
+  }, [brandCode, brands, setValue]);
+
+  useEffect(() => {
+    if (modelCode && models && models.length > 0) {
+      const found = models.find(m => m.id === modelCode);
+      if (found?.name) setValue('modeloNome', found.name, { shouldValidate: true });
+    }
+  }, [modelCode, models, setValue]);
+
+  useEffect(() => {
+    if (yearCode && years && years.length > 0) {
+      const found = years.find(y => y.id === yearCode);
+      if (found?.name) {
+        setValue('anoNome', found.name, { shouldValidate: true });
+        setValue('versaoNome', found.name);
+      }
+    }
+  }, [yearCode, years, setValue]);
 
   const selectClass = "w-full bg-[var(--surface-hover)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:border-[var(--brand)] focus:ring-1 focus:ring-[var(--brand)] transition-all appearance-none";
   const labelClass = "block text-sm font-medium text-[var(--muted)] mb-1.5";

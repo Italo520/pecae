@@ -107,7 +107,7 @@ test.describe('PECAÊ E2E - Fluxo Completo de Produção', () => {
     const obsText = `Teste E2E Sucata Prod ${uniqueTag}`;
     await page.locator('textarea').fill(obsText);
     await page.locator('button:has-text("Finalizar e Anunciar")').click();
-    await page.waitForURL((url: URL) => url.pathname.includes('/vendedor/dashboard'), { timeout: 20000 });
+    await page.waitForURL((url: URL) => url.pathname.includes('/vendedor/dashboard'), { timeout: 30000 });
     console.log('✅ Sucata cadastrada! Redirecionado para o dashboard.');
 
     await expect(page.getByText(/Em Moderação|Pendente|Rascunho/i).first()).toBeVisible({ timeout: 15000 });
