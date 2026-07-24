@@ -23,6 +23,7 @@ function runSqlQuery(sql: string): string {
 }
 
 test.describe('PECAÊ E2E - Onboarding de Vendedor', () => {
+  test.use({ baseURL: 'https://pecae.italohub.cloud' });
 
   const testEmail = 'onboarding-e2e@pecae.com.br';
 
@@ -40,19 +41,20 @@ test.describe('PECAÊ E2E - Onboarding de Vendedor', () => {
     console.log('▶️ Iniciando Teste de Onboarding de Vendedor...');
 
     // 1. Criar o usuário via API (Simulando registro básico)
-    const registerResponse = await page.request.post('http://localhost:3333/api/v1/auth/register', {
+    let registerResponse = await page.request.post('https://api-pecae.italohub.cloud/api/v1/auth/register', {
       data: {
         name: 'Vendedor Onboarding E2E',
         email: testEmail,
         password: 'Pecae@E2e123',
         type: 'SELLER',
         termsAccepted: true,
-      }
+      },
+      failOnStatusCode: false
     });
     
-    // Fallback if the local backend is running on 8080 instead of 3333
+    // Fallback if production register returns non-2xx
     if (!registerResponse.ok()) {
-      await page.request.post('http://localhost:8080/api/v1/auth/register', {
+      await page.request.post('http://localhost:3333/api/v1/auth/register', {
         data: {
           name: 'Vendedor Onboarding E2E',
           email: testEmail,
