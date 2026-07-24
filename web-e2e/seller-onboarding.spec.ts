@@ -51,20 +51,7 @@ test.describe('PECAÊ E2E - Onboarding de Vendedor', () => {
       },
       failOnStatusCode: false
     });
-    
-    // Fallback if production register returns non-2xx
-    if (!registerResponse.ok()) {
-      await page.request.post('http://localhost:3333/api/v1/auth/register', {
-        data: {
-          name: 'Vendedor Onboarding E2E',
-          email: testEmail,
-          password: 'Pecae@E2e123',
-          type: 'SELLER',
-          termsAccepted: true,
-        },
-        failOnStatusCode: false
-      });
-    }
+    console.log(`ℹ️ User registration API response status: ${registerResponse.status()}`);
 
     // 2. Bypass de e-mail e redefinição de senha no banco remoto
     runSqlQuery(`
