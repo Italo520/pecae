@@ -69,7 +69,7 @@ export default function VendedorLayout({ children }: { children: ReactNode }) {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+      <main className="flex-1 flex flex-col h-screen overflow-y-auto">
         {children}
       </main>
 

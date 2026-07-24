@@ -25,12 +25,19 @@ public class VendedorController {
 
     private final VendedorService vendedorService;
 
+    private void validarUsuario(PrincipalUsuario usuario) {
+        if (usuario == null || usuario.getId() == null) {
+            throw new org.springframework.security.access.AccessDeniedException("Usuário não autenticado ou token inválido.");
+        }
+    }
+
     @PostMapping("/me")
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Criar perfil de vendedor", description = "Cria um perfil de vendedor para o usuário autenticado.")
     public ResponseEntity<RespostaPerfilVendedor> criarPerfil(
             @UsuarioAtual PrincipalUsuario usuario,
             @Valid @RequestBody CriarVendedorRequest request) {
+        validarUsuario(usuario);
         RespostaPerfilVendedor resposta = vendedorService.criarPerfil(usuario.getId(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
     }
@@ -39,6 +46,7 @@ public class VendedorController {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Obter perfil de vendedor logado", description = "Retorna os detalhes do perfil de vendedor do usuário autenticado.")
     public ResponseEntity<RespostaPerfilVendedor> obterMeuPerfil(@UsuarioAtual PrincipalUsuario usuario) {
+        validarUsuario(usuario);
         RespostaPerfilVendedor resposta = vendedorService.obterPerfilPorUsuarioId(usuario.getId());
         return ResponseEntity.ok(resposta);
     }
@@ -49,6 +57,7 @@ public class VendedorController {
     public ResponseEntity<RespostaPerfilVendedor> atualizarPerfil(
             @UsuarioAtual PrincipalUsuario usuario,
             @Valid @RequestBody AtualizarVendedorRequest request) {
+        validarUsuario(usuario);
         RespostaPerfilVendedor resposta = vendedorService.atualizarPerfil(usuario.getId(), request);
         return ResponseEntity.ok(resposta);
     }
@@ -64,6 +73,7 @@ public class VendedorController {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Excluir perfil de vendedor", description = "Inativa logicamente o perfil de vendedor do usuário autenticado.")
     public ResponseEntity<Void> excluirPerfil(@UsuarioAtual PrincipalUsuario usuario) {
+        validarUsuario(usuario);
         vendedorService.excluirPerfil(usuario.getId());
         return ResponseEntity.noContent().build();
     }
