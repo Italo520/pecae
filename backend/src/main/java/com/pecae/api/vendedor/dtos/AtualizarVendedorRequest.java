@@ -10,6 +10,9 @@ public record AtualizarVendedorRequest(
         String telefone,
 
         @JsonProperty("bio")
-        String biografia
+        String biografia,
+
+        @JsonProperty("address")
+        String endereco
 ) {
 }

@@ -44,6 +44,7 @@ public interface IVendedorMapper {
     @Mapping(target = "tipoVendedor", source = "entity.tipoVendedor")
     @Mapping(target = "criadoEm", source = "entity.criadoEm")
     @Mapping(target = "atualizadoEm", source = "entity.atualizadoEm")
+    @Mapping(target = "endereco", source = "entity.endereco")
     @Mapping(target = "estatisticas", source = "stats")
     @Mapping(target = "verificacao", source = "verification")
     RespostaPerfilVendedor toResponseWithDetails(PerfilVendedor entity, RespostaEstatisticasVendedor stats, RespostaVerificacaoVendedor verification);

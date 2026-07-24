@@ -75,7 +75,7 @@ class VendedorControllerTest {
     @Test
     @DisplayName("POST /sellers/me - Deve criar perfil de vendedor com sucesso")
     void deveCriarPerfil() throws Exception {
-        CriarVendedorRequest request = new CriarVendedorRequest("Seller Name", "12345678901", "11999999999", TipoVendedor.CONCESSIONARIA);
+        CriarVendedorRequest request = new CriarVendedorRequest("Seller Name", "12345678901", "11999999999", TipoVendedor.CONCESSIONARIA, "Endereço Teste");
         RespostaPerfilVendedor resposta = new RespostaPerfilVendedor(
                 UUID.randomUUID(), usuarioId, "Seller Name", "12345678901", "11999999999",
                 null, null, null, TipoVendedor.CONCESSIONARIA, null, null, null, null

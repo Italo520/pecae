@@ -64,7 +64,7 @@ class VendedorServiceTest {
         @DisplayName("Deve criar perfil com sucesso")
         void deveCriarPerfilComSucesso() {
             UUID usuarioId = UUID.randomUUID();
-            CriarVendedorRequest request = new CriarVendedorRequest("Seller Name", "12345678901", "11999999999", TipoVendedor.CONCESSIONARIA);
+            CriarVendedorRequest request = new CriarVendedorRequest("Seller Name", "12345678901", "11999999999", TipoVendedor.CONCESSIONARIA, "Endereço Teste");
             Usuario usuario = Usuario.builder().id(usuarioId).email("seller@test.com").build();
             PerfilVendedor perfil = PerfilVendedor.builder().nome("Seller Name").documento("12345678901").telefone("11999999999").tipoVendedor(TipoVendedor.CONCESSIONARIA).build();
             PerfilVendedor perfilSalvo = PerfilVendedor.builder().id(UUID.randomUUID()).usuario(usuario).nome("Seller Name").documento("12345678901").telefone("11999999999").tipoVendedor(TipoVendedor.CONCESSIONARIA).build();
@@ -93,7 +93,7 @@ class VendedorServiceTest {
         @DisplayName("Deve lançar ExcecaoNegocio se perfil de vendedor já existir")
         void deveLancarExcecaoQuandoPerfilJaExistir() {
             UUID usuarioId = UUID.randomUUID();
-            CriarVendedorRequest request = new CriarVendedorRequest("Seller Name", "12345678901", "11999999999", TipoVendedor.CONCESSIONARIA);
+            CriarVendedorRequest request = new CriarVendedorRequest("Seller Name", "12345678901", "11999999999", TipoVendedor.CONCESSIONARIA, "Endereço Teste");
 
             when(perfilVendedorRepository.existsByUsuarioId(usuarioId)).thenReturn(true);
 

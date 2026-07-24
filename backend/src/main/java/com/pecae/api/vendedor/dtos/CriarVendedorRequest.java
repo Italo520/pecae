@@ -20,6 +20,10 @@ public record CriarVendedorRequest(
 
         @NotNull(message = "O tipo de vendedor é obrigatório")
         @JsonProperty("sellerType")
-        TipoVendedor tipoVendedor
+        TipoVendedor tipoVendedor,
+
+        @NotBlank(message = "O endereço é obrigatório")
+        @JsonProperty("address")
+        String endereco
 ) {
 }

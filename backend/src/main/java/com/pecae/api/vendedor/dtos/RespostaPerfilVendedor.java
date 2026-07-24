@@ -44,6 +44,9 @@ public record RespostaPerfilVendedor(
         RespostaEstatisticasVendedor estatisticas,
 
         @JsonProperty("verification")
-        RespostaVerificacaoVendedor verificacao
+        RespostaVerificacaoVendedor verificacao,
+
+        @JsonProperty("address")
+        String endereco
 ) {
 }

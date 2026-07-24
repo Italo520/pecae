@@ -59,6 +59,9 @@ public class PerfilVendedor {
     @Convert(converter = ConversorTipoVendedor.class)
     private TipoVendedor tipoVendedor;
 
+    @Column(name = "address", nullable = false)
+    private String endereco;
+
     @OneToOne(mappedBy = "perfilVendedor", cascade = CascadeType.ALL, orphanRemoval = true)
     private EstatisticasVendedor estatisticas;
 

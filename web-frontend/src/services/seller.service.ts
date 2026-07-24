@@ -25,7 +25,8 @@ export const sellerService = {
       name: data.storeName,
       document: data.cnpj.replace(/\D/g, ''),
       phone: data.phone.replace(/\D/g, ''),
-      sellerType: data.type
+      sellerType: data.type,
+      address: `${data.address}, ${data.city} - ${data.state}`
     };
 
     const response = await apiClient.post('/sellers/me', payload);
