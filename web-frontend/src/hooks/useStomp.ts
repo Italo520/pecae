@@ -6,8 +6,8 @@ import { useAuthStore } from '@/store/auth-store';
 // Assuming NEXT_PUBLIC_API_URL is like 'https://api-pecae.italohub.cloud/api/v1'
 // We replace the suffix to point to the websocket root
 const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL 
-  ? process.env.NEXT_PUBLIC_API_URL.replace('/api/v1', '/ws') 
-  : 'http://localhost:8080/ws';
+  ? `${process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')}/ws` 
+  : 'http://localhost:8080/api/v1/ws';
 
 export function useStomp() {
   const { accessToken } = useAuthStore();
