@@ -41,4 +41,12 @@ public class EstatisticasVendedor {
     @Builder.Default
     @Column(name = "total_reviews", nullable = false)
     private Integer totalAvaliacoes = 0;
+
+    @org.hibernate.annotations.CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private java.time.LocalDateTime criadoEm;
+
+    @org.hibernate.annotations.UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
+    private java.time.LocalDateTime atualizadoEm;
 }
