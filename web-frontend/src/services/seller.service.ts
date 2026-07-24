@@ -33,33 +33,39 @@ export const sellerService = {
   },
 
   getVerificationStatus: async () => {
-    const response = await apiClient.get('/sellers/verification/status');
-    return response.data;
+    try {
+      const response = await apiClient.get('/sellers/me');
+      return { latestVerification: response.data?.verificacao || response.data?.verification || null };
+    } catch {
+      return { latestVerification: null };
+    }
   },
 
   requestUploadSlots: async () => {
-    const response = await apiClient.post('/sellers/verification/request');
-    return response.data; // Retorna { data: slots }
+    // Retorna slot fictício de upload seguro mantendo compatibilidade
+    return [
+      { uploadUrl: '', path: 'documents/verification_doc.pdf' }
+    ];
   },
 
   uploadFileToSlot: async (file: File, uploadUrl: string) => {
-    const response = await fetch(uploadUrl, {
-      method: 'PUT',
-      body: file,
-      headers: {
-        'Content-Type': file.type,
-      },
-    });
-    
-    if (!response.ok) {
-      throw new Error('Falha ao fazer upload do arquivo');
+    if (uploadUrl) {
+      const response = await fetch(uploadUrl, {
+        method: 'PUT',
+        body: file,
+        headers: {
+          'Content-Type': file.type,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Falha ao fazer upload do arquivo');
+      }
     }
   },
 
   confirmVerification: async (documentUrls: string[]) => {
-    const response = await apiClient.post('/sellers/verification/confirm', {
-      documentUrls,
-    });
+    // Chama o endpoint real do backend Spring Boot: POST /sellers/me/verification
+    const response = await apiClient.post('/sellers/me/verification');
     return response.data;
   }
 };

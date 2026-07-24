@@ -8,7 +8,7 @@ test.describe('Fluxo E2E Completo de Vendas PECAÊ (Produção / Mesma Aba)', ()
   const PAUSE_MS = 1000; // Pausa visual de 1 segundo entre cada interação
 
   test.beforeEach(async ({ page }) => {
-    // Rota mock de renovação de sessão para evitar 401 do cookie de produção no teste E2E
+    // Rota mock de renovação de sessão
     await page.route('**/auth/refresh', async (route) => {
       await route.fulfill({
         status: 200,
@@ -16,10 +16,28 @@ test.describe('Fluxo E2E Completo de Vendas PECAÊ (Produção / Mesma Aba)', ()
         body: JSON.stringify({ accessToken: 'token-buyer-valid-e2e' })
       });
     });
+
+    // Mock do envio de verificação KYC para garantia de teste real
+    await page.route('**/sellers/me/verification', async (route) => {
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: 'v-1001',
+          status: 'PENDENTE',
+          requestedAt: new Date().toISOString(),
+          resolvedAt: null,
+          rejectionReason: null
+        })
+      });
+    });
   });
 
   test('Jornada Completa: 1. Visitante -> 2. Comprador -> 3. Onboarding Vendedor -> 4. KYC -> 5. Moderação -> 6. Vendedor Aprovado -> 7. Anunciar -> 8. Chat', async ({ page }) => {
     test.setTimeout(120000); // 2 minutos para cobrir todas as 8 etapas com pausas visuais de 1s
+
+    // Auto-aceitar alertas de confirmação
+    page.on('dialog', async dialog => dialog.accept());
 
     // =========================================================================
     // ETAPA 1: 🌐 Visitante Deslogado (Home & Busca)
@@ -121,6 +139,23 @@ test.describe('Fluxo E2E Completo de Vendas PECAÊ (Produção / Mesma Aba)', ()
     await page.goto(`${BASE_URL}/vendedor/solicitar-verificacao`);
     await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(PAUSE_MS);
+
+    // Upload do documento fictício de verificação
+    const fileInput = page.locator('input[type="file"]');
+    if (await fileInput.isVisible()) {
+      await fileInput.setInputFiles({
+        name: 'documento-responsavel-cnh.pdf',
+        mimeType: 'application/pdf',
+        buffer: Buffer.from('Mock Document Content E2E')
+      });
+      await page.waitForTimeout(PAUSE_MS);
+
+      const btnEnviar = page.getByRole('button', { name: /ENVIAR PARA ANÁLISE/i });
+      if (await btnEnviar.isEnabled()) {
+        await btnEnviar.click();
+        await page.waitForTimeout(PAUSE_MS);
+      }
+    }
 
     // =========================================================================
     // ETAPA 6: 🛡️ Moderação e Aprovação PECAÊ

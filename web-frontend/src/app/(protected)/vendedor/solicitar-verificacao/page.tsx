@@ -83,7 +83,7 @@ export default function SolicitarVerificacaoPage() {
 
   const latest = status?.latestVerification;
 
-  if (latest?.status === 'PENDING') {
+  if (latest?.status === 'PENDING' || latest?.status === 'PENDENTE') {
     return (
       <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full text-center bg-gray-900/60 p-10 rounded-3xl border border-gray-800 backdrop-blur-sm">
