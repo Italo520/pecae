@@ -32,8 +32,8 @@ export function ContactCTA({ listingId, sellerId, whatsapp, sellerName }: Contac
     }
 
     try {
-      console.log('Initiating chat...', { sellerId, listingId });
-      const room = await createChat({ vendedorId: sellerId, anuncioId: listingId });
+      console.log('Initiating chat...', { listingId });
+      const room = await createChat({ anuncioId: listingId });
       console.log('Chat created:', room);
       router.push(`/comprador/negociacoes/${room.id}`);
     } catch (error) {

@@ -60,7 +60,7 @@ export type EnviarMensagemRequisicao = z.infer<typeof enviarMensagemRequisicaoSc
 export const criarSalaRequisicaoSchema = z.object({
   anuncioId: z.string().uuid().optional(),
   veiculoId: z.string().uuid().optional(),
-  vendedorId: z.string().uuid(),
+  vendedorId: z.string().uuid().optional(),
 });
 
 export type CriarSalaRequisicao = z.infer<typeof criarSalaRequisicaoSchema>;
