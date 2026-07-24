@@ -28,9 +28,8 @@ public class VerificacaoVendedor {
     @JoinColumn(name = "seller_profile_id", nullable = false, unique = true)
     private PerfilVendedor perfilVendedor;
 
-    @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "status", nullable = false, columnDefinition = "VerificationStatus")
+    @Convert(converter = com.pecae.api.vendedor.entities.enums.ConversorStatusVerificacao.class)
+    @Column(name = "status", nullable = false)
     private StatusVerificacao status;
 
     @Column(name = "requested_at", nullable = false)
