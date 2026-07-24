@@ -62,6 +62,15 @@ public class PerfilVendedor {
     @Column(name = "address", nullable = false)
     private String endereco;
 
+    @Column(name = "city", nullable = false)
+    private String cidade;
+
+    @Column(name = "state", nullable = false)
+    private String estado;
+
+    @Column(name = "whatsapp", nullable = false)
+    private String whatsapp;
+
     @OneToOne(mappedBy = "perfilVendedor", cascade = CascadeType.ALL, orphanRemoval = true)
     private EstatisticasVendedor estatisticas;
 

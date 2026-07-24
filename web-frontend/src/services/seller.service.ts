@@ -26,7 +26,10 @@ export const sellerService = {
       document: data.cnpj.replace(/\D/g, ''),
       phone: data.phone.replace(/\D/g, ''),
       sellerType: data.type,
-      address: `${data.address}, ${data.city} - ${data.state}`
+      address: data.address,
+      city: data.city,
+      state: data.state,
+      whatsapp: finalWhatsapp
     };
 
     const response = await apiClient.post('/sellers/me', payload);

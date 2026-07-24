@@ -49,6 +49,16 @@ public class VendedorServiceImpl implements VendedorService {
         PerfilVendedor perfil = vendedorMapper.toEntity(request);
         perfil.setUsuario(usuario);
 
+        if (perfil.getCidade() == null || perfil.getCidade().isBlank()) {
+            perfil.setCidade("Não informada");
+        }
+        if (perfil.getEstado() == null || perfil.getEstado().isBlank()) {
+            perfil.setEstado("SP");
+        }
+        if (perfil.getWhatsapp() == null || perfil.getWhatsapp().isBlank()) {
+            perfil.setWhatsapp(perfil.getTelefone() != null && !perfil.getTelefone().isBlank() ? perfil.getTelefone() : "Não informado");
+        }
+
         PerfilVendedor perfilSalvo = perfilVendedorRepository.save(perfil);
 
         estatisticasVendedorService.inicializarEstatisticas(perfilSalvo);

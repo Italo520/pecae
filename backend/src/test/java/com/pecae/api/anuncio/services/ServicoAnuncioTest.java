@@ -97,7 +97,7 @@ class ServicoAnuncioTest {
             Anuncio anuncio = Anuncio.builder().id(UUID.randomUUID()).build();
             Page<Anuncio> page = new PageImpl<>(Collections.singletonList(anuncio));
             RespostaAnuncio respostaDto = new RespostaAnuncio(
-                anuncio.getId(), "Título", "PUBLICADO", 10, "Marca", "Modelo", "Versão", 2020, "Preto", "São Paulo", "SP", null, UUID.randomUUID(), "Vendedor", true, LocalDateTime.now(), false
+                anuncio.getId(), "Título", "PUBLICADO", 10, "Marca", "Modelo", "Versão", 2020, "Preto", "São Paulo", "SP", null, UUID.randomUUID(), "Vendedor", true, LocalDateTime.now(), false, Collections.emptyList()
             );
 
             when(repositorioAnuncio.buscarPublicados(null, null, "São Paulo", "SP", null, null, null, null, pageable)).thenReturn(page);

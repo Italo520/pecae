@@ -64,7 +64,7 @@ class VendedorServiceTest {
         @DisplayName("Deve criar perfil com sucesso")
         void deveCriarPerfilComSucesso() {
             UUID usuarioId = UUID.randomUUID();
-            CriarVendedorRequest request = new CriarVendedorRequest("Seller Name", "12345678901", "11999999999", TipoVendedor.CONCESSIONARIA, "Endereço Teste");
+            CriarVendedorRequest request = new CriarVendedorRequest("Seller Name", "12345678901", "11999999999", TipoVendedor.CONCESSIONARIA, "Endereço Teste", "São Paulo", "SP", "+5511999999999");
             Usuario usuario = Usuario.builder().id(usuarioId).email("seller@test.com").build();
             PerfilVendedor perfil = PerfilVendedor.builder().nome("Seller Name").documento("12345678901").telefone("11999999999").tipoVendedor(TipoVendedor.CONCESSIONARIA).build();
             PerfilVendedor perfilSalvo = PerfilVendedor.builder().id(UUID.randomUUID()).usuario(usuario).nome("Seller Name").documento("12345678901").telefone("11999999999").tipoVendedor(TipoVendedor.CONCESSIONARIA).build();
@@ -76,7 +76,8 @@ class VendedorServiceTest {
 
             RespostaPerfilVendedor respostaEsperada = new RespostaPerfilVendedor(
                     perfilSalvo.getId(), usuarioId, "Seller Name", "12345678901", "11999999999",
-                    null, null, null, TipoVendedor.CONCESSIONARIA, null, null, null, null
+                    null, null, null, TipoVendedor.CONCESSIONARIA, null, null, null, null,
+                    "Endereço Teste", "São Paulo", "SP", "+5511999999999"
             );
 
             when(vendedorMapper.toResponseWithDetails(eq(perfilSalvo), any(), any())).thenReturn(respostaEsperada);
@@ -93,7 +94,7 @@ class VendedorServiceTest {
         @DisplayName("Deve lançar ExcecaoNegocio se perfil de vendedor já existir")
         void deveLancarExcecaoQuandoPerfilJaExistir() {
             UUID usuarioId = UUID.randomUUID();
-            CriarVendedorRequest request = new CriarVendedorRequest("Seller Name", "12345678901", "11999999999", TipoVendedor.CONCESSIONARIA, "Endereço Teste");
+            CriarVendedorRequest request = new CriarVendedorRequest("Seller Name", "12345678901", "11999999999", TipoVendedor.CONCESSIONARIA, "Endereço Teste", "São Paulo", "SP", "+5511999999999");
 
             when(perfilVendedorRepository.existsByUsuarioId(usuarioId)).thenReturn(true);
 
@@ -111,7 +112,7 @@ class VendedorServiceTest {
         @DisplayName("Deve atualizar perfil com sucesso")
         void deveAtualizarPerfilComSucesso() {
             UUID usuarioId = UUID.randomUUID();
-            AtualizarVendedorRequest request = new AtualizarVendedorRequest("New Name", "11988888888", "New bio");
+            AtualizarVendedorRequest request = new AtualizarVendedorRequest("New Name", "11988888888", "New bio", "Endereço Teste", "São Paulo", "SP", "+5511988888888");
             PerfilVendedor perfil = PerfilVendedor.builder().id(UUID.randomUUID()).nome("Old Name").build();
 
             when(perfilVendedorRepository.findByUsuarioId(usuarioId)).thenReturn(Optional.of(perfil));
@@ -119,7 +120,8 @@ class VendedorServiceTest {
 
             RespostaPerfilVendedor respostaEsperada = new RespostaPerfilVendedor(
                     perfil.getId(), usuarioId, "New Name", "12345678901", "11988888888",
-                    "New bio", null, null, TipoVendedor.CONCESSIONARIA, null, null, null, null
+                    "New bio", null, null, TipoVendedor.CONCESSIONARIA, null, null, null, null,
+                    "Endereço Teste", "São Paulo", "SP", "+5511988888888"
             );
             when(vendedorMapper.toResponseWithDetails(eq(perfil), any(), any())).thenReturn(respostaEsperada);
 
@@ -191,7 +193,8 @@ class VendedorServiceTest {
 
             RespostaPerfilVendedor respostaEsperada = new RespostaPerfilVendedor(
                     perfil.getId(), usuarioId, "Seller Name", "12345678901", "11999999999",
-                    null, urlLogo, null, TipoVendedor.CONCESSIONARIA, null, null, null, null
+                    null, urlLogo, null, TipoVendedor.CONCESSIONARIA, null, null, null, null,
+                    "Endereço Teste", "São Paulo", "SP", "+5511999999999"
             );
             when(vendedorMapper.toResponseWithDetails(eq(perfil), any(), any())).thenReturn(respostaEsperada);
 

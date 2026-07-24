@@ -24,6 +24,15 @@ public record CriarVendedorRequest(
 
         @NotBlank(message = "O endereço é obrigatório")
         @JsonProperty("address")
-        String endereco
+        String endereco,
+
+        @JsonProperty("city")
+        String cidade,
+
+        @JsonProperty("state")
+        String estado,
+
+        @JsonProperty("whatsapp")
+        String whatsapp
 ) {
 }

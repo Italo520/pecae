@@ -45,6 +45,9 @@ public interface IVendedorMapper {
     @Mapping(target = "criadoEm", source = "entity.criadoEm")
     @Mapping(target = "atualizadoEm", source = "entity.atualizadoEm")
     @Mapping(target = "endereco", source = "entity.endereco")
+    @Mapping(target = "cidade", source = "entity.cidade")
+    @Mapping(target = "estado", source = "entity.estado")
+    @Mapping(target = "whatsapp", source = "entity.whatsapp")
     @Mapping(target = "estatisticas", source = "stats")
     @Mapping(target = "verificacao", source = "verification")
     RespostaPerfilVendedor toResponseWithDetails(PerfilVendedor entity, RespostaEstatisticasVendedor stats, RespostaVerificacaoVendedor verification);

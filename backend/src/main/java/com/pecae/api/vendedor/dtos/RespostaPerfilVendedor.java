@@ -47,6 +47,15 @@ public record RespostaPerfilVendedor(
         RespostaVerificacaoVendedor verificacao,
 
         @JsonProperty("address")
-        String endereco
+        String endereco,
+
+        @JsonProperty("city")
+        String cidade,
+
+        @JsonProperty("state")
+        String estado,
+
+        @JsonProperty("whatsapp")
+        String whatsapp
 ) {
 }

@@ -83,7 +83,7 @@ class ControladorVeiculoTest {
         UUID anoId = UUID.randomUUID();
 
         CriarVeiculoRequest request = new CriarVeiculoRequest(
-                versaoId, anoId, "ABC1234", "Preto", "São Paulo", "SP",
+                "Fiat", "Uno", "2020", "1.0", "Preto", "São Paulo", "SP",
                 -23.55, -46.63, "Sem observações", null, 10000, new ArrayList<>()
         );
 

@@ -75,10 +75,11 @@ class VendedorControllerTest {
     @Test
     @DisplayName("POST /sellers/me - Deve criar perfil de vendedor com sucesso")
     void deveCriarPerfil() throws Exception {
-        CriarVendedorRequest request = new CriarVendedorRequest("Seller Name", "12345678901", "11999999999", TipoVendedor.CONCESSIONARIA, "Endereço Teste");
+        CriarVendedorRequest request = new CriarVendedorRequest("Seller Name", "12345678901", "11999999999", TipoVendedor.CONCESSIONARIA, "Endereço Teste", "São Paulo", "SP", "+5511999999999");
         RespostaPerfilVendedor resposta = new RespostaPerfilVendedor(
                 UUID.randomUUID(), usuarioId, "Seller Name", "12345678901", "11999999999",
-                null, null, null, TipoVendedor.CONCESSIONARIA, null, null, null, null
+                null, null, null, TipoVendedor.CONCESSIONARIA, null, null, null, null,
+                "Endereço Teste", "São Paulo", "SP", "+5511999999999"
         );
 
         when(vendedorService.criarPerfil(eq(usuarioId), any(CriarVendedorRequest.class))).thenReturn(resposta);
@@ -101,7 +102,8 @@ class VendedorControllerTest {
     void deveRetornarMeuPerfil() throws Exception {
         RespostaPerfilVendedor resposta = new RespostaPerfilVendedor(
                 UUID.randomUUID(), usuarioId, "Seller Name", "12345678901", "11999999999",
-                "Bio text", null, null, TipoVendedor.CONCESSIONARIA, null, null, null, null
+                "Bio text", null, null, TipoVendedor.CONCESSIONARIA, null, null, null, null,
+                "Endereço Teste", "São Paulo", "SP", "+5511999999999"
         );
 
         when(vendedorService.obterPerfilPorUsuarioId(usuarioId)).thenReturn(resposta);
@@ -119,10 +121,11 @@ class VendedorControllerTest {
     @Test
     @DisplayName("PATCH /sellers/me - Deve atualizar perfil do vendedor logado")
     void deveAtualizarMeuPerfil() throws Exception {
-        AtualizarVendedorRequest request = new AtualizarVendedorRequest("New Seller Name", "11988888888", "New bio");
+        AtualizarVendedorRequest request = new AtualizarVendedorRequest("New Seller Name", "11988888888", "New bio", "Endereço Teste", "São Paulo", "SP", "+5511988888888");
         RespostaPerfilVendedor resposta = new RespostaPerfilVendedor(
                 UUID.randomUUID(), usuarioId, "New Seller Name", "12345678901", "11988888888",
-                "New bio", null, null, TipoVendedor.CONCESSIONARIA, null, null, null, null
+                "New bio", null, null, TipoVendedor.CONCESSIONARIA, null, null, null, null,
+                "Endereço Teste", "São Paulo", "SP", "+5511988888888"
         );
 
         when(vendedorService.atualizarPerfil(eq(usuarioId), any(AtualizarVendedorRequest.class))).thenReturn(resposta);
@@ -146,7 +149,8 @@ class VendedorControllerTest {
         UUID perfilId = UUID.randomUUID();
         RespostaPerfilVendedor resposta = new RespostaPerfilVendedor(
                 perfilId, usuarioId, "Seller Name", "12345678901", "11999999999",
-                "Bio text", null, null, TipoVendedor.CONCESSIONARIA, null, null, null, null
+                "Bio text", null, null, TipoVendedor.CONCESSIONARIA, null, null, null, null,
+                "Endereço Teste", "São Paulo", "SP", "+5511999999999"
         );
 
         when(vendedorService.obterPerfilPorId(perfilId)).thenReturn(resposta);
@@ -200,7 +204,8 @@ class VendedorControllerTest {
         MockMultipartFile arquivo = new MockMultipartFile("file", "logo.png", "image/png", "some-image-data".getBytes());
         RespostaPerfilVendedor resposta = new RespostaPerfilVendedor(
                 UUID.randomUUID(), usuarioId, "Seller Name", "12345678901", "11999999999",
-                null, "http://fake-logo-url.png", null, TipoVendedor.CONCESSIONARIA, null, null, null, null
+                null, "http://fake-logo-url.png", null, TipoVendedor.CONCESSIONARIA, null, null, null, null,
+                "Endereço Teste", "São Paulo", "SP", "+5511999999999"
         );
 
         when(vendedorService.atualizarLogo(eq(usuarioId), anyString())).thenReturn(resposta);
@@ -221,7 +226,8 @@ class VendedorControllerTest {
         MockMultipartFile arquivo = new MockMultipartFile("file", "banner.png", "image/png", "some-image-data".getBytes());
         RespostaPerfilVendedor resposta = new RespostaPerfilVendedor(
                 UUID.randomUUID(), usuarioId, "Seller Name", "12345678901", "11999999999",
-                null, null, "http://fake-banner-url.png", TipoVendedor.CONCESSIONARIA, null, null, null, null
+                null, null, "http://fake-banner-url.png", TipoVendedor.CONCESSIONARIA, null, null, null, null,
+                "Endereço Teste", "São Paulo", "SP", "+5511999999999"
         );
 
         when(vendedorService.atualizarBanner(eq(usuarioId), anyString())).thenReturn(resposta);

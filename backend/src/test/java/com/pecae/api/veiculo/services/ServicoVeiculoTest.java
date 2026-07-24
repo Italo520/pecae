@@ -73,20 +73,15 @@ class ServicoVeiculoTest {
             UUID anoId = UUID.randomUUID();
 
             CriarVeiculoRequest request = new CriarVeiculoRequest(
-                    versaoId, anoId, "ABC1234", "Preto", "São Paulo", "SP",
+                    "Fiat", "Uno", "2020", "1.0", "Preto", "São Paulo", "SP",
                     -23.55, -46.63, "Sem observações", null, 10000, new ArrayList<>()
             );
 
             PerfilVendedor perfil = PerfilVendedor.builder().id(UUID.randomUUID()).build();
-            VersaoVeiculo versao = VersaoVeiculo.builder().id(versaoId).build();
-            AnoVeiculo ano = AnoVeiculo.builder().id(anoId).ano(2020).build();
-            Veiculo veiculo = Veiculo.builder().placa("ABC1234").cor("Preto").build();
-            Veiculo veiculoSalvo = Veiculo.builder().id(UUID.randomUUID()).placa("ABC1234").cor("Preto").status(StatusVeiculo.RASCUNHO).build();
+            Veiculo veiculo = Veiculo.builder().cor("Preto").build();
+            Veiculo veiculoSalvo = Veiculo.builder().id(UUID.randomUUID()).cor("Preto").status(StatusVeiculo.RASCUNHO).build();
 
             when(perfilVendedorRepository.findByUsuarioId(usuarioId)).thenReturn(Optional.of(perfil));
-            when(repositorioVeiculo.existsByPlaca(request.placa())).thenReturn(false);
-            when(versaoVeiculoRepository.findById(versaoId)).thenReturn(Optional.of(versao));
-            when(anoVeiculoRepository.findById(anoId)).thenReturn(Optional.of(ano));
             when(mapperVeiculo.paraEntidade(request)).thenReturn(veiculo);
             when(repositorioVeiculo.save(veiculo)).thenReturn(veiculoSalvo);
 
@@ -100,26 +95,22 @@ class ServicoVeiculoTest {
             RespostaDetalheVeiculo resultado = servicoVeiculo.criar(usuarioId, request);
 
             assertThat(resultado).isNotNull();
-            assertThat(resultado.placa()).isEqualTo("ABC1234");
             verify(repositorioVeiculo, times(1)).save(veiculo);
         }
 
         @Test
-        @DisplayName("Deve lançar ExcecaoNegocio se placa for duplicada")
-        void deveLancarExcecaoSePlacaDuplicada() {
+        @DisplayName("Deve lançar ExcecaoNegocio se perfil do vendedor não for encontrado")
+        void deveLancarExcecaoSePerfilNaoEncontrado() {
             UUID usuarioId = UUID.randomUUID();
             CriarVeiculoRequest request = new CriarVeiculoRequest(
-                    UUID.randomUUID(), UUID.randomUUID(), "ABC1234", "Preto", "São Paulo", "SP",
+                    "Fiat", "Uno", "2020", "1.0", "Preto", "São Paulo", "SP",
                     null, null, null, null, null, null
             );
 
-            PerfilVendedor perfil = PerfilVendedor.builder().id(UUID.randomUUID()).build();
-            when(perfilVendedorRepository.findByUsuarioId(usuarioId)).thenReturn(Optional.of(perfil));
-            when(repositorioVeiculo.existsByPlaca("ABC1234")).thenReturn(true);
+            when(perfilVendedorRepository.findByUsuarioId(usuarioId)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> servicoVeiculo.criar(usuarioId, request))
-                    .isInstanceOf(ExcecaoNegocio.class)
-                    .hasMessageContaining("Já existe um veículo cadastrado com a placa informada");
+                    .isInstanceOf(ExcecaoRecursoNaoEncontrado.class);
         }
     }
 
@@ -133,7 +124,7 @@ class ServicoVeiculoTest {
             UUID usuarioId = UUID.randomUUID();
             UUID veiculoId = UUID.randomUUID();
             AtualizarVeiculoRequest request = new AtualizarVeiculoRequest(
-                    "XYZ9999", "Branco", "Campinas", "SP", null, null, null, null, 12000, null
+                    "Branco", "Campinas", "SP", null, null, null, null, 12000, null
             );
 
             PerfilVendedor perfil = PerfilVendedor.builder().id(UUID.randomUUID()).build();

@@ -13,6 +13,15 @@ public record AtualizarVendedorRequest(
         String biografia,
 
         @JsonProperty("address")
-        String endereco
+        String endereco,
+
+        @JsonProperty("city")
+        String cidade,
+
+        @JsonProperty("state")
+        String estado,
+
+        @JsonProperty("whatsapp")
+        String whatsapp
 ) {
 }
