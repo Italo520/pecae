@@ -48,6 +48,7 @@ test.describe('PECAÊ E2E - Onboarding de Vendedor', () => {
         password: 'Pecae@E2e123',
         type: 'SELLER',
         termsAccepted: true,
+        privacyAccepted: true,
       },
       failOnStatusCode: false
     });
