@@ -61,5 +61,6 @@ public interface IVendedorMapper {
     @Mapping(target = "solicitadoEm", source = "solicitadoEm")
     @Mapping(target = "resolvidoEm", source = "resolvidoEm")
     @Mapping(target = "motivoRejeicao", source = "motivoRejeicao")
+    @Mapping(target = "documentUrls", source = "documentosUrls")
     RespostaVerificacaoVendedor toVerificationResponse(VerificacaoVendedor entity);
 }

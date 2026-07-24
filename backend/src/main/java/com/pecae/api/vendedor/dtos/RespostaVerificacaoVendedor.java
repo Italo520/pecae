@@ -19,6 +19,9 @@ public record RespostaVerificacaoVendedor(
         LocalDateTime resolvidoEm,
 
         @JsonProperty("rejectionReason")
-        String motivoRejeicao
+        String motivoRejeicao,
+        
+        @JsonProperty("documentUrls")
+        java.util.List<String> documentUrls
 ) {
 }
