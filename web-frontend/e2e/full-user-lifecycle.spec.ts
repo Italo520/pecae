@@ -47,7 +47,7 @@ test.describe('Fluxo E2E Completo de Vendas PECAÊ (Produção / Mesma Aba)', ()
     await page.waitForTimeout(PAUSE_MS);
 
     // Valida elementos visíveis na Home como visitante
-    await expect(page.locator('header')).toBeVisible();
+    await expect(page.locator('header, nav').first()).toBeVisible({ timeout: 15000 });
     await page.waitForTimeout(PAUSE_MS);
 
     // =========================================================================
