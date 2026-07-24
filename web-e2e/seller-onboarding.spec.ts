@@ -119,9 +119,6 @@ test.describe('PECAÊ E2E - Onboarding de Vendedor', () => {
 
     // 8. Testar o envio de múltiplos documentos no formulário KYC (Evitando o TypeError de slots ausentes)
     console.log('📄 Anexando múltiplos documentos (RG, CNPJ, Selfie) na verificação KYC...');
-    page.once('dialog', async (dialog) => {
-      await dialog.accept();
-    });
 
     const file1 = { name: 'documento-rg.pdf', mimeType: 'application/pdf', buffer: Buffer.from('mock rg content') };
     const file2 = { name: 'comprovante-cnpj.pdf', mimeType: 'application/pdf', buffer: Buffer.from('mock cnpj content') };
@@ -134,6 +131,10 @@ test.describe('PECAÊ E2E - Onboarding de Vendedor', () => {
     await expect(page.getByText('selfie-identidade.png')).toBeVisible();
 
     await page.getByRole('button', { name: /ENVIAR PARA ANÁLISE/i }).click();
+
+    // Aguardar o modal de sucesso e clicar para ir ao dashboard
+    await expect(page.getByText('Solicitação Enviada!')).toBeVisible({ timeout: 15000 });
+    await page.getByRole('button', { name: /Ir para o Dashboard/i }).click();
 
     await page.waitForURL('**/vendedor/dashboard', { timeout: 15000 });
     console.log('🎉 Teste de Onboarding e Verificação KYC com múltiplos documentos concluído com sucesso!');

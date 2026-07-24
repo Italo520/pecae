@@ -40,4 +40,8 @@ public class VerificacaoVendedor {
 
     @Column(name = "rejection_reason", columnDefinition = "TEXT")
     private String motivoRejeicao;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "document_urls", columnDefinition = "jsonb")
+    private java.util.List<String> documentosUrls;
 }

@@ -98,7 +98,7 @@ public class VendedorServiceImpl implements VendedorService {
 
     @Override
     @Transactional
-    public RespostaVerificacaoVendedor solicitarVerificacao(UUID usuarioId) {
+    public RespostaVerificacaoVendedor solicitarVerificacao(UUID usuarioId, java.util.List<String> documentosUrls) {
         log.info("Solicitando verificação do perfil de vendedor para o usuário: {}", usuarioId);
 
         PerfilVendedor perfil = perfilVendedorRepository.findByUsuarioId(usuarioId)
@@ -119,6 +119,7 @@ public class VendedorServiceImpl implements VendedorService {
         verificacao.setSolicitadoEm(LocalDateTime.now());
         verificacao.setResolvidoEm(null);
         verificacao.setMotivoRejeicao(null);
+        verificacao.setDocumentosUrls(documentosUrls);
 
         VerificacaoVendedor verificacaoSalva = verificacaoVendedorRepository.save(verificacao);
 

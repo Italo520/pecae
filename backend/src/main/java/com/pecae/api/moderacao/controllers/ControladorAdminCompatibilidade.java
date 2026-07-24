@@ -137,6 +137,19 @@ public class ControladorAdminCompatibilidade {
                         userMap.put("name", "Vendedor");
                     }
                     map.put("user", userMap);
+                    
+                    if (v.getDocumentosUrls() != null) {
+                        map.put("documentUrls", v.getDocumentosUrls());
+                    } else {
+                        map.put("documentUrls", new java.util.ArrayList<>());
+                    }
+                    
+                    if (v.getPerfilVendedor() != null) {
+                        Map<String, Object> businessData = new java.util.HashMap<>();
+                        businessData.put("cnpj", v.getPerfilVendedor().getDocumento());
+                        map.put("businessData", businessData);
+                    }
+                    
                     return map;
                 })
                 .toList();

@@ -12,7 +12,7 @@ public interface VendedorService {
     RespostaPerfilVendedor atualizarPerfil(UUID usuarioId, AtualizarVendedorRequest request);
     RespostaPerfilVendedor obterPerfilPorUsuarioId(UUID usuarioId);
     RespostaPerfilVendedor obterPerfilPorId(UUID id);
-    RespostaVerificacaoVendedor solicitarVerificacao(UUID usuarioId);
+    RespostaVerificacaoVendedor solicitarVerificacao(UUID usuarioId, java.util.List<String> documentosUrls);
     RespostaPerfilVendedor atualizarLogo(UUID usuarioId, String urlLogo);
     RespostaPerfilVendedor atualizarBanner(UUID usuarioId, String urlBanner);
     void excluirPerfil(UUID usuarioId);

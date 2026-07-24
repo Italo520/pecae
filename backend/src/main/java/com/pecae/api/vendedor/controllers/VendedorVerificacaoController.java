@@ -25,8 +25,9 @@ public class VendedorVerificacaoController {
 
     @PostMapping("/me/verification")
     @Operation(summary = "Solicitar verificação de conta", description = "Envia uma solicitação de auditoria/verificação para a conta do vendedor autenticado.")
-    public ResponseEntity<RespostaVerificacaoVendedor> solicitarVerificacao(@UsuarioAtual PrincipalUsuario usuario) {
-        RespostaVerificacaoVendedor resposta = vendedorService.solicitarVerificacao(usuario.getId());
+    public ResponseEntity<RespostaVerificacaoVendedor> solicitarVerificacao(@UsuarioAtual PrincipalUsuario usuario, @org.springframework.web.bind.annotation.RequestBody(required = false) com.pecae.api.vendedor.dtos.RequisicaoVerificacaoVendedor requisicao) {
+        java.util.List<String> urls = requisicao != null && requisicao.documentosUrls() != null ? requisicao.documentosUrls() : new java.util.ArrayList<>();
+        RespostaVerificacaoVendedor resposta = vendedorService.solicitarVerificacao(usuario.getId(), urls);
         return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
     }
 }

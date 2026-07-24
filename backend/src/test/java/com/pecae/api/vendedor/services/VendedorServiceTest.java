@@ -154,10 +154,13 @@ class VendedorServiceTest {
             );
             when(vendedorMapper.toVerificationResponse(verificacao)).thenReturn(respostaEsperada);
 
-            RespostaVerificacaoVendedor resultado = vendedorService.solicitarVerificacao(usuarioId);
+            RespostaVerificacaoVendedor resultado = vendedorService.solicitarVerificacao(usuarioId, new java.util.ArrayList<>());
 
             assertThat(resultado).isNotNull();
             assertThat(resultado.status()).isEqualTo(StatusVerificacao.PENDENTE);
+
+            verify(perfilVendedorRepository, times(1)).findByUsuarioId(usuarioId);
+            verify(verificacaoVendedorRepository, times(2)).findByPerfilVendedorId(perfil.getId());
             verify(verificacaoVendedorRepository, times(1)).save(any(VerificacaoVendedor.class));
         }
 
@@ -171,9 +174,11 @@ class VendedorServiceTest {
             when(perfilVendedorRepository.findByUsuarioId(usuarioId)).thenReturn(Optional.of(perfil));
             when(verificacaoVendedorRepository.findByPerfilVendedorId(perfil.getId())).thenReturn(Optional.of(existente));
 
-            assertThatThrownBy(() -> vendedorService.solicitarVerificacao(usuarioId))
+            assertThatThrownBy(() -> vendedorService.solicitarVerificacao(usuarioId, new java.util.ArrayList<>()))
                     .isInstanceOf(ExcecaoNegocio.class)
                     .hasMessageContaining("já está pendente ou já foi aprovada");
+
+            verify(verificacaoVendedorRepository, never()).save(any(VerificacaoVendedor.class));
         }
     }
 

@@ -186,16 +186,17 @@ class VendedorControllerTest {
                 UUID.randomUUID(), StatusVerificacao.PENDENTE, java.time.LocalDateTime.now(), null, null
         );
 
-        when(vendedorService.solicitarVerificacao(usuarioId)).thenReturn(resposta);
+        when(vendedorService.solicitarVerificacao(org.mockito.ArgumentMatchers.eq(usuarioId), org.mockito.ArgumentMatchers.anyList())).thenReturn(resposta);
 
         mockMvc.perform(post("/sellers/me/verification")
                         .with(authentication(auth))
                         .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"documentosUrls\":[]}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value("PENDENTE"));
 
-        verify(vendedorService, times(1)).solicitarVerificacao(usuarioId);
+        verify(vendedorService, times(1)).solicitarVerificacao(org.mockito.ArgumentMatchers.eq(usuarioId), org.mockito.ArgumentMatchers.anyList());
     }
 
     @Test

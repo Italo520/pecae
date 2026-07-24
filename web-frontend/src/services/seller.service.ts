@@ -70,7 +70,9 @@ export const sellerService = {
 
   confirmVerification: async (documentUrls: string[]) => {
     // Chama o endpoint real do backend Spring Boot: POST /sellers/me/verification
-    const response = await apiClient.post('/sellers/me/verification');
+    const response = await apiClient.post('/sellers/me/verification', {
+      documentosUrls: documentUrls
+    });
     return response.data;
   }
 };

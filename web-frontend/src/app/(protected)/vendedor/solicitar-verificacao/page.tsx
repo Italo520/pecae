@@ -18,6 +18,7 @@ export default function SolicitarVerificacaoPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [status, setStatus] = useState<any>(null);
   const [isLoadingStatus, setIsLoadingStatus] = useState(true);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     // Revogar object URLs para evitar memory leaks
@@ -73,8 +74,7 @@ export default function SolicitarVerificacaoPage() {
       // 3. Confirma a solicitação na API
       await sellerService.confirmVerification(uploadResults);
 
-      alert('Sua solicitação foi enviada e será analisada em até 48h.');
-      router.push('/vendedor/dashboard'); // Redireciona para o painel principal
+      setShowSuccessModal(true);
     } catch (err: any) {
       console.error(err);
       setErrorMsg(err.message || 'Ocorreu um problema ao enviar seus documentos.');
@@ -163,6 +163,27 @@ export default function SolicitarVerificacaoPage() {
           </button>
         </div>
       </div>
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+          <div className="bg-gray-900 border border-gray-800 rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl animate-in zoom-in-95 duration-300">
+            <div className="w-16 h-16 bg-[#3FFF8B]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 className="w-8 h-8 text-[#3FFF8B]" />
+            </div>
+            <h2 className="text-xl font-bold text-white mb-2">Solicitação Enviada!</h2>
+            <p className="text-gray-400 text-sm mb-8">
+              Seus documentos foram recebidos e serão analisados em até 48 horas. Você será notificado sobre o resultado.
+            </p>
+            <button
+              onClick={() => router.push('/vendedor/dashboard')}
+              className="w-full bg-[#3FFF8B] hover:bg-[#32e078] text-black font-bold py-3 rounded-xl transition-colors"
+            >
+              Ir para o Dashboard
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
