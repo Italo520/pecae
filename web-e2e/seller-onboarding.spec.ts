@@ -40,19 +40,24 @@ test.describe('PECAÊ E2E - Onboarding de Vendedor', () => {
     test.setTimeout(120000);
     console.log('▶️ Iniciando Teste de Onboarding de Vendedor...');
 
-    // 1. Criar o usuário via API (Simulando registro básico)
-    let registerResponse = await page.request.post('https://api-pecae.italohub.cloud/api/v1/auth/register', {
-      data: {
-        name: 'Vendedor Onboarding E2E',
-        email: testEmail,
-        password: 'Pecae@E2e123',
-        type: 'SELLER',
-        termsAccepted: true,
-        privacyAccepted: true,
-      },
-      failOnStatusCode: false
-    });
-    console.log(`ℹ️ User registration API response status: ${registerResponse.status()}`);
+    // 1. Criar o usuário via API (Simulando registro básico) com retry em caso de 502/deploy
+    let registerResponse: any = null;
+    for (let i = 0; i < 5; i++) {
+      registerResponse = await page.request.post('https://api-pecae.italohub.cloud/api/v1/auth/register', {
+        data: {
+          name: 'Vendedor Onboarding E2E',
+          email: testEmail,
+          password: 'Pecae@E2e123',
+          type: 'SELLER',
+          termsAccepted: true,
+          privacyAccepted: true,
+        },
+        failOnStatusCode: false
+      });
+      console.log(`ℹ️ Tentativa ${i + 1} de registro API: status=${registerResponse.status()}`);
+      if (registerResponse.status() !== 502 && registerResponse.status() !== 503) break;
+      await page.waitForTimeout(5000);
+    }
 
     // 2. Bypass de e-mail e redefinição de senha no banco remoto
     runSqlQuery(`
