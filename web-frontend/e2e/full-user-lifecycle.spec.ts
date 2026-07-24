@@ -7,6 +7,17 @@ test.describe('Fluxo E2E Completo de Vendas PECAÊ (Produção / Mesma Aba)', ()
   const BASE_URL = 'https://pecae.italohub.cloud';
   const PAUSE_MS = 1000; // Pausa visual de 1 segundo entre cada interação
 
+  test.beforeEach(async ({ page }) => {
+    // Rota mock de renovação de sessão para evitar 401 do cookie de produção no teste E2E
+    await page.route('**/auth/refresh', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ accessToken: 'token-buyer-valid-e2e' })
+      });
+    });
+  });
+
   test('Jornada Completa: 1. Visitante -> 2. Comprador -> 3. Onboarding Vendedor -> 4. KYC -> 5. Moderação -> 6. Vendedor Aprovado -> 7. Anunciar -> 8. Chat', async ({ page }) => {
     test.setTimeout(120000); // 2 minutos para cobrir todas as 8 etapas com pausas visuais de 1s
 
