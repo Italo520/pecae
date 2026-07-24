@@ -55,6 +55,9 @@ public class VendedorServiceImpl implements VendedorService {
         if (perfil.getEstado() == null || perfil.getEstado().isBlank()) {
             perfil.setEstado("SP");
         }
+        if (perfil.getEndereco() == null || perfil.getEndereco().isBlank()) {
+            perfil.setEndereco("Não informado");
+        }
         if (perfil.getWhatsapp() == null || perfil.getWhatsapp().isBlank()) {
             perfil.setWhatsapp(perfil.getTelefone() != null && !perfil.getTelefone().isBlank() ? perfil.getTelefone() : "Não informado");
         }
