@@ -73,10 +73,11 @@ test.describe('PECAÊ E2E - Onboarding de Vendedor', () => {
     await page.locator('input[type="email"]').fill(testEmail);
     await page.locator('input[type="password"]').fill('Pecae@E2e123');
     await page.getByRole('button', { name: /Entrar/i }).click();
+    
+    // Aguardar o login ser concluído e o cookie/token ser salvo
+    await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 });
 
-    // 4. Se o usuário for vendedor e não tiver perfil, a aplicação normalmente deve redirecionar 
-    //    ou permitir acesso a /vendedor/onboarding
-    await page.waitForTimeout(3000);
+    // 4. Ir para onboarding
     await page.goto('/vendedor/onboarding');
     await page.waitForLoadState('networkidle');
 
