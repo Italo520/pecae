@@ -74,9 +74,7 @@ export function useCreateVehicle() {
           const formData = new FormData();
           formData.append('file', photo);
           try {
-            await api.post(`/vehicles/me/${vehicle.id}/photos`, formData, {
-              headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            await api.post(`/vehicles/me/${vehicle.id}/photos`, formData);
           } catch(e: any) {
             console.error(`Failed to upload photo ${i + 1}:`, e?.response?.data || e?.message || e);
           }
