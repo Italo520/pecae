@@ -54,7 +54,8 @@ public class PerfilVendedor {
     private String urlBanner;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "seller_type", nullable = false)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "seller_type", nullable = false, columnDefinition = "SellerType")
     private TipoVendedor tipoVendedor;
 
     @OneToOne(mappedBy = "perfilVendedor", cascade = CascadeType.ALL, orphanRemoval = true)
