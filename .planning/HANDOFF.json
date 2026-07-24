@@ -1,0 +1,27 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-07-24T17:29:05.5053210-03:00",
+  "phase": "default",
+  "phase_name": "Bug fixes & Moderator Dashboard",
+  "phase_dir": "",
+  "plan": 0,
+  "task": 0,
+  "total_tasks": 0,
+  "status": "paused",
+  "completed_tasks": [
+    {"id": 1, "name": "Fix null constraint on seller_profiles.address", "status": "done", "commit": "895bd91"},
+    {"id": 2, "name": "Fix frontend payload for confirmVerification sending documentosUrls instead of documentUrls", "status": "done", "commit": "138ddfb"},
+    {"id": 3, "name": "Fix backend to map documentUrls in RespostaVerificacaoVendedor", "status": "done", "commit": "7c2750e"},
+    {"id": 4, "name": "Replace alert with Modal in seller verification success", "status": "done", "commit": "unknown (prior to handoff)"},
+    {"id": 5, "name": "E2E testing of seller-onboarding.spec.ts", "status": "done", "commit": "untracked"}
+  ],
+  "remaining_tasks": [],
+  "blockers": [],
+  "human_actions_pending": [],
+  "decisions": [
+    {"decision": "Added fallback for address in VendedorServiceImpl", "rationale": "To prevent 500 error when frontend does not send address during onboarding.", "phase": "default"}
+  ],
+  "uncommitted_files": [],
+  "next_action": "Await user instructions for next feature or phase.",
+  "context_notes": "Completed bug fixes for Seller Onboarding and Moderator Dashboard. All changes deployed to Coolify and validated by Playwright E2E."
+}
