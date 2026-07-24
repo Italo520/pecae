@@ -53,6 +53,7 @@ public class PerfilVendedor {
     @Column(name = "banner_url")
     private String urlBanner;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "seller_type", nullable = false)
     private TipoVendedor tipoVendedor;
 

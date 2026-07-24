@@ -48,40 +48,44 @@ export default function OnboardingPage() {
       // Sucesso: vai para a próxima etapa do wizard
       router.push('/vendedor/solicitar-verificacao');
     } catch (error: any) {
-      setErrorMsg(error.response?.data?.message || 'Erro ao criar perfil comercial.');
+      setErrorMsg(error.response?.data?.mensagem || error.response?.data?.message || 'Erro ao criar perfil comercial.');
     }
   };
 
+  const inputBaseClasses = "block w-full bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl py-3 text-gray-900 dark:text-white focus:ring-[#32e078] dark:focus:ring-[#3FFF8B] focus:border-[#32e078] dark:focus:border-[#3FFF8B] transition-colors";
+  const labelClasses = "block text-xs text-gray-700 dark:text-gray-400 font-semibold mb-1";
+  const iconClasses = "h-5 w-5 text-gray-400 dark:text-gray-500";
+
   return (
-    <div className="min-h-screen bg-gray-950 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
       <div className="w-full max-w-3xl">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 bg-[#3FFF8B]/10 px-3 py-1 rounded text-[#3FFF8B] text-xs tracking-widest font-mono mb-4">
-            <span className="w-1.5 h-1.5 bg-[#3FFF8B] rounded-full"></span>
+          <div className="inline-flex items-center gap-2 bg-[#3FFF8B]/10 px-3 py-1 rounded text-[#059669] dark:text-[#3FFF8B] text-xs tracking-widest font-mono mb-4 font-bold border border-[#3FFF8B]/20">
+            <span className="w-1.5 h-1.5 bg-[#059669] dark:bg-[#3FFF8B] rounded-full"></span>
             SELLER_ONBOARDING
           </div>
-          <h1 className="text-4xl font-extrabold text-white mb-2">PERFIL COMERCIAL</h1>
-          <p className="text-gray-400">Configure os detalhes da sua loja para começar a anunciar no ecossistema PECAÊ.</p>
+          <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-2 transition-colors">PERFIL COMERCIAL</h1>
+          <p className="text-gray-600 dark:text-gray-400 transition-colors">Configure os detalhes da sua loja para começar a anunciar no ecossistema PECAÊ.</p>
         </div>
 
         <WizardStepper currentStep={1} steps={['Dados da Loja', 'Verificação KYC', 'Concluído']} />
 
-        <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-6 sm:p-8 backdrop-blur-sm shadow-2xl">
+        <div className="bg-white dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 sm:p-8 backdrop-blur-sm shadow-xl dark:shadow-2xl transition-colors">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {errorMsg && (
-              <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-3 rounded-lg text-sm text-center">
+              <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/50 text-red-600 dark:text-red-500 p-3 rounded-lg text-sm text-center">
                 {errorMsg}
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-mono text-gray-400 mb-3 tracking-wider">TIPO DE OPERAÇÃO (PJ)</label>
-              <div className="flex bg-black/20 p-1 rounded-xl">
+              <label className="block text-xs font-mono text-gray-700 dark:text-gray-400 mb-3 tracking-wider">TIPO DE OPERAÇÃO (PJ)</label>
+              <div className="flex bg-gray-100 dark:bg-black/20 p-1 rounded-xl">
                 <button
                   type="button"
                   onClick={() => setValue('type', 'CONCESSIONARIA')}
                   className={`flex-1 py-3 text-sm font-bold tracking-wider rounded-lg transition-all duration-300 ${
-                    selectedType === 'CONCESSIONARIA' ? 'bg-gray-800 text-[#3FFF8B] shadow-lg border border-gray-700' : 'text-gray-500 hover:text-gray-300'
+                    selectedType === 'CONCESSIONARIA' ? 'bg-white dark:bg-gray-800 text-[#059669] dark:text-[#3FFF8B] shadow border border-gray-200 dark:border-gray-700' : 'text-gray-500 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-300'
                   }`}
                 >
                   CONCESSIONÁRIA
@@ -90,7 +94,7 @@ export default function OnboardingPage() {
                   type="button"
                   onClick={() => setValue('type', 'DESMANCHE')}
                   className={`flex-1 py-3 text-sm font-bold tracking-wider rounded-lg transition-all duration-300 ${
-                    selectedType === 'DESMANCHE' ? 'bg-gray-800 text-[#3FFF8B] shadow-lg border border-gray-700' : 'text-gray-500 hover:text-gray-300'
+                    selectedType === 'DESMANCHE' ? 'bg-white dark:bg-gray-800 text-[#059669] dark:text-[#3FFF8B] shadow border border-gray-200 dark:border-gray-700' : 'text-gray-500 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-300'
                   }`}
                 >
                   DESMANCHE
@@ -103,14 +107,14 @@ export default function OnboardingPage() {
               name="cnpj"
               render={({ field }) => (
                 <div>
-                  <label className="block text-xs text-gray-400 font-semibold mb-1">CNPJ DA OPERAÇÃO</label>
+                  <label className={labelClasses}>CNPJ DA OPERAÇÃO</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FileText className="h-5 w-5 text-gray-500" />
+                      <FileText className={iconClasses} />
                     </div>
                     <input
                       {...field}
-                      className="block w-full pl-10 bg-gray-950 border border-gray-800 rounded-xl py-3 text-white focus:ring-[#3FFF8B] focus:border-[#3FFF8B] transition-colors"
+                      className={`${inputBaseClasses} pl-10`}
                       placeholder="00.000.000/0000-00"
                     />
                   </div>
@@ -124,14 +128,14 @@ export default function OnboardingPage() {
               name="storeName"
               render={({ field }) => (
                 <div>
-                  <label className="block text-xs text-gray-400 font-semibold mb-1">NOME DA LOJA / DESMONTE</label>
+                  <label className={labelClasses}>NOME DA LOJA / DESMONTE</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Building2 className="h-5 w-5 text-gray-500" />
+                      <Building2 className={iconClasses} />
                     </div>
                     <input
                       {...field}
-                      className="block w-full pl-10 bg-gray-950 border border-gray-800 rounded-xl py-3 text-white focus:ring-[#3FFF8B] focus:border-[#3FFF8B]"
+                      className={`${inputBaseClasses} pl-10`}
                       placeholder="Ex: Ferro Velho do Juca"
                     />
                   </div>
@@ -145,11 +149,11 @@ export default function OnboardingPage() {
               name="description"
               render={({ field }) => (
                 <div>
-                  <label className="block text-xs text-gray-400 font-semibold mb-1">DESCRIÇÃO DA OPERAÇÃO</label>
+                  <label className={labelClasses}>DESCRIÇÃO DA OPERAÇÃO</label>
                   <textarea
                     {...field}
                     rows={3}
-                    className="block w-full p-3 bg-gray-950 border border-gray-800 rounded-xl text-white focus:ring-[#3FFF8B] focus:border-[#3FFF8B] resize-none"
+                    className={`${inputBaseClasses} p-3 resize-none`}
                     placeholder="Conte sobre suas especialidades..."
                   />
                   {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
@@ -163,15 +167,15 @@ export default function OnboardingPage() {
                 name="phone"
                 render={({ field }) => (
                   <div>
-                    <label className="block text-xs text-gray-400 font-semibold mb-1">TELEFONE</label>
+                    <label className={labelClasses}>TELEFONE</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Phone className="h-5 w-5 text-gray-500" />
+                        <Phone className={iconClasses} />
                       </div>
                       <input
                         {...field}
                         type="tel"
-                        className="block w-full pl-10 bg-gray-950 border border-gray-800 rounded-xl py-3 text-white focus:ring-[#3FFF8B] focus:border-[#3FFF8B]"
+                        className={`${inputBaseClasses} pl-10`}
                         placeholder="(00) 0000-0000"
                       />
                     </div>
@@ -184,15 +188,15 @@ export default function OnboardingPage() {
                 name="whatsapp"
                 render={({ field }) => (
                   <div>
-                    <label className="block text-xs text-gray-400 font-semibold mb-1">WHATSAPP</label>
+                    <label className={labelClasses}>WHATSAPP</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Phone className="h-5 w-5 text-gray-500" />
+                        <Phone className={iconClasses} />
                       </div>
                       <input
                         {...field}
                         type="tel"
-                        className="block w-full pl-10 bg-gray-950 border border-gray-800 rounded-xl py-3 text-white focus:ring-[#3FFF8B] focus:border-[#3FFF8B]"
+                        className={`${inputBaseClasses} pl-10`}
                         placeholder="(00) 90000-0000"
                       />
                     </div>
@@ -207,14 +211,14 @@ export default function OnboardingPage() {
               name="address"
               render={({ field }) => (
                 <div>
-                  <label className="block text-xs text-gray-400 font-semibold mb-1">ENDEREÇO COMPLETO</label>
+                  <label className={labelClasses}>ENDEREÇO COMPLETO</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <MapPin className="h-5 w-5 text-gray-500" />
+                      <MapPin className={iconClasses} />
                     </div>
                     <input
                       {...field}
-                      className="block w-full pl-10 bg-gray-950 border border-gray-800 rounded-xl py-3 text-white focus:ring-[#3FFF8B] focus:border-[#3FFF8B]"
+                      className={`${inputBaseClasses} pl-10`}
                       placeholder="Rua, número, bairro..."
                     />
                   </div>
@@ -230,10 +234,10 @@ export default function OnboardingPage() {
                   name="city"
                   render={({ field }) => (
                     <div>
-                      <label className="block text-xs text-gray-400 font-semibold mb-1">CIDADE</label>
+                      <label className={labelClasses}>CIDADE</label>
                       <input
                         {...field}
-                        className="block w-full px-3 bg-gray-950 border border-gray-800 rounded-xl py-3 text-white focus:ring-[#3FFF8B] focus:border-[#3FFF8B]"
+                        className={`${inputBaseClasses} px-3`}
                         placeholder="Ex: São Paulo"
                       />
                       {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city.message}</p>}
@@ -247,11 +251,11 @@ export default function OnboardingPage() {
                   name="state"
                   render={({ field }) => (
                     <div>
-                      <label className="block text-xs text-gray-400 font-semibold mb-1">UF</label>
+                      <label className={labelClasses}>UF</label>
                       <input
                         {...field}
                         maxLength={2}
-                        className="block w-full px-3 bg-gray-950 border border-gray-800 rounded-xl py-3 text-white focus:ring-[#3FFF8B] focus:border-[#3FFF8B] uppercase"
+                        className={`${inputBaseClasses} px-3 uppercase`}
                         placeholder="SP"
                       />
                       {errors.state && <p className="text-red-500 text-xs mt-1">{errors.state.message}</p>}
@@ -266,14 +270,14 @@ export default function OnboardingPage() {
               name="openHours"
               render={({ field }) => (
                 <div>
-                  <label className="block text-xs text-gray-400 font-semibold mb-1">HORÁRIO DE ATENDIMENTO (OPCIONAL)</label>
+                  <label className={labelClasses}>HORÁRIO DE ATENDIMENTO (OPCIONAL)</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Clock className="h-5 w-5 text-gray-500" />
+                      <Clock className={iconClasses} />
                     </div>
                     <input
                       {...field}
-                      className="block w-full pl-10 bg-gray-950 border border-gray-800 rounded-xl py-3 text-white focus:ring-[#3FFF8B] focus:border-[#3FFF8B]"
+                      className={`${inputBaseClasses} pl-10`}
                       placeholder="Ex: Seg-Sex: 08:00 - 18:00"
                     />
                   </div>
@@ -285,7 +289,7 @@ export default function OnboardingPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full mt-6 bg-[#3FFF8B] hover:bg-[#32e078] text-black font-extrabold tracking-wide py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(63,255,139,0.3)] disabled:opacity-50 flex items-center justify-center"
+              className="w-full mt-6 bg-[#32e078] dark:bg-[#3FFF8B] hover:bg-[#25c465] dark:hover:bg-[#32e078] text-white dark:text-black font-extrabold tracking-wide py-4 rounded-xl transition-all shadow-lg dark:shadow-[0_0_20px_rgba(63,255,139,0.3)] disabled:opacity-50 flex items-center justify-center"
             >
               {isSubmitting ? 'SALVANDO...' : 'PRÓXIMO: VERIFICAÇÃO'}
             </button>
