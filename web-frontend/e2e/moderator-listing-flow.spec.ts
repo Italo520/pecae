@@ -99,20 +99,33 @@ test.describe('Moderator Listing Flow', () => {
       });
     });
 
-    // Mock das listagens pendentes
-    await page.route('**/moderation/listings?status=PENDING', async (route) => {
+    // Intercept API /moderacao/anuncios/pendentes
+    await page.route('**/moderacao/anuncios/pendentes', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ content: mockListings })
+      });
+    });
+
+    // Intercept bulk approve (POST /moderacao/anuncios/lote/aprovar)
+    // Se a API for lote, a rota deve ser ajustada
+    await page.route('**/moderacao/anuncios/lote/aprovar', async (route) => {
+      await route.fulfill({ status: 200 });
+    });
+
+    // Intercept approve / reject unitário (PUT /moderacao/anuncios/*/decisao)
+    await page.route('**/moderacao/anuncios/*/decisao', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({
-          content: mockListings,
-          total: mockListings.length,
+          content: mockListings.length,
           page: 1,
           size: 10
         })
       });
     });
-
     // Mock das actions
     await page.route('**/moderation/listings/*/approve', async (route) => {
       await route.fulfill({

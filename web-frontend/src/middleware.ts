@@ -7,10 +7,11 @@ export function middleware(request: NextRequest) {
   const isProtected = PROTECTED_PATHS.some((path) => pathname.startsWith(path));
 
   if (isProtected) {
-    // 1. Check if the user is authenticated (has refresh_token)
+    // 1. Check if the user is authenticated (has refresh_token or pecae_token)
     const refreshToken = request.cookies.get('refresh_token')?.value;
+    const pecaeToken = request.cookies.get('pecae_token')?.value;
     
-    if (!refreshToken) {
+    if (!refreshToken && !pecaeToken) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('next', pathname);
       return NextResponse.redirect(loginUrl);

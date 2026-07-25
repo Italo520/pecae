@@ -28,7 +28,7 @@ test.describe('Seller Listing Flow', () => {
                     id: '1',
                     name: 'Seller Test',
                     email: 'seller@test.com',
-                    role: 'SELLER',
+                    role: 'VENDEDOR',
                     hasProfile: true
                   },
                   token: 'mock-valid-token',

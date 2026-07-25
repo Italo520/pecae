@@ -54,48 +54,34 @@ test.describe('Seller Onboarding and KYC Flows', () => {
       });
     });
 
-    // Intercept API /sellers (criação de perfil)
-    await page.route(url => url.pathname.endsWith('/sellers'), async (route) => {
-      if (route.request().method() === 'POST') {
+    // Intercept API /sellers/me (criação de perfil)
+    await page.route(url => url.pathname.includes('/sellers/me'), async (route) => {
+      if (route.request().method() === 'POST' || route.request().method() === 'PUT') {
         await route.fulfill({
           status: 201,
           contentType: 'application/json',
           body: JSON.stringify({ id: '1', storeName: 'Test Store' })
+        });
+      } else if (route.request().method() === 'GET') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ verificacao: null })
         });
       } else {
         await route.continue();
       }
     });
 
-    // Intercept API /sellers/verification/status (status atual)
-    await page.route('**/sellers/verification/status', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ latestVerification: null })
-      });
-    });
-
-    // Intercept API /sellers/verification/request (signed URLs)
-    await page.route('**/sellers/verification/request', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([
-          { uploadUrl: 'http://localhost:3005/mock-upload', path: 'documents/1.pdf' }
-        ])
-      });
-    });
-
-    // Mock upload URL (fake S3/Supabase upload)
+    // Mock upload URL
     await page.route('http://localhost:3005/mock-upload', async (route) => {
       if (route.request().method() === 'PUT') {
         await route.fulfill({ status: 200 });
       }
     });
 
-    // Intercept API /sellers/verification/confirm
-    await page.route('**/sellers/verification/confirm', async (route) => {
+    // Intercept API /sellers/kyc (confirm verification)
+    await page.route('**/sellers/kyc', async (route) => {
       await route.fulfill({ status: 200 });
     });
   });
@@ -108,8 +94,8 @@ test.describe('Seller Onboarding and KYC Flows', () => {
     // Etapa 1: Preencher formulário da loja
     await expect(page.getByText('PERFIL COMERCIAL')).toBeVisible();
 
-    // Seleciona PJ
-    await page.getByRole('button', { name: 'PJ' }).click();
+    // Seleciona tipo
+    await page.getByRole('button', { name: /CONCESSIONÁRIA/i }).click();
 
     // Preenche campos
     await page.getByPlaceholder('00.000.000/0000-00').fill('12.345.678/0001-90');
