@@ -30,6 +30,10 @@ export default function SolicitarVerificacaoPage() {
     const fetchStatus = async () => {
       try {
         const data = await sellerService.getVerificationStatus();
+        if (!data || !data.profile) {
+          router.replace('/vendedor/onboarding');
+          return;
+        }
         setStatus(data);
       } catch (error) {
         console.error('Erro ao buscar status', error);
@@ -38,7 +42,7 @@ export default function SolicitarVerificacaoPage() {
       }
     };
     fetchStatus();
-  }, []);
+  }, [router]);
 
   const handleSubmit = async () => {
     if (files.length === 0) {

@@ -33,8 +33,8 @@ export default function OnboardingPage() {
   React.useEffect(() => {
     const checkExistingProfile = async () => {
       try {
-        const profile = await sellerService.getVerificationStatus();
-        if (profile) {
+        const res = await sellerService.getVerificationStatus();
+        if (res?.profile) {
           router.replace('/vendedor/solicitar-verificacao');
           return;
         }

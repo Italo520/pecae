@@ -39,9 +39,13 @@ export const sellerService = {
   getVerificationStatus: async () => {
     try {
       const response = await apiClient.get('/sellers/me');
-      return { latestVerification: response.data?.verificacao || response.data?.verification || null };
+      if (!response.data) return null;
+      return {
+        profile: response.data,
+        latestVerification: response.data?.verificacao || response.data?.verification || null
+      };
     } catch {
-      return { latestVerification: null };
+      return null;
     }
   },
 
