@@ -17,11 +17,21 @@ export default function CompradorLayout({ children }: { children: ReactNode }) {
     
     if (!isAuthenticated) {
       router.replace('/login');
+      return;
     }
-  }, [isInitialized, isAuthenticated, router]);
 
-  if (!isInitialized || !isAuthenticated) {
-    return null; // Return null while redirecting
+    // Moderadores e Admins não devem ver o painel do comprador
+    const userType = (user?.type as string) || ((user as any)?.role as string) || '';
+    if (userType === 'MODERATOR' || userType === 'MODERADOR' || userType === 'ADMIN') {
+      router.replace('/moderador/dashboard');
+    }
+  }, [isInitialized, isAuthenticated, user, router]);
+
+  const userType = (user?.type as string) || ((user as any)?.role as string) || '';
+  const isModeratorOrAdmin = userType === 'MODERATOR' || userType === 'MODERADOR' || userType === 'ADMIN';
+
+  if (!isInitialized || !isAuthenticated || isModeratorOrAdmin) {
+    return null; // Redireciona enquanto aguarda
   }
 
   const navItems = [

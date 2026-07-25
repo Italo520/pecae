@@ -32,14 +32,15 @@ export function Header() {
 
   const isLoggedIn = mounted && isAuthenticated;
 
-  const userType = (user?.type as string) || ((user as any)?.role as string);
+  const userType = (user?.type as string) || ((user as any)?.role as string) || '';
   const isApprovedSeller = userType === 'SELLER' || userType === 'VENDEDOR' || userType === 'BOTH' || userType === 'AMBOS' || verificationStatus === 'APROVADO' || verificationStatus === 'APPROVED';
   const isPendingSeller = hasSellerProfile && !isApprovedSeller;
+  const isModeratorOrAdmin = userType === 'MODERATOR' || userType === 'MODERADOR' || userType === 'ADMIN';
 
-  // O botão Anunciar DEVE aparecer SE for um vendedor aprovado (para postar anúncio)
-  // OU SE for um usuário que ainda não tem perfil nenhum.
-  // E DEVE FICAR OCULTO se o usuário está em processo de onboarding/verificação (pending)
-  const showAnnounceButton = (!isLoggedIn) || (isLoggedIn && !isLoadingProfile && (isApprovedSeller || !isPendingSeller));
+  // Moderadores e Admins nunca veem o botão "Anunciar"
+  // Botão visível para: não-logados, vendedores aprovados, compradores sem perfil de loja
+  // Oculto para: usuários em onboarding/pendentes, moderadores e admins
+  const showAnnounceButton = !isModeratorOrAdmin && ((!isLoggedIn) || (isLoggedIn && !isLoadingProfile && (isApprovedSeller || !isPendingSeller)));
 
   const getFavoritesUrl = () => {
     if (!isLoggedIn) return '/login?next=/comprador/favoritos';

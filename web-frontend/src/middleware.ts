@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const PROTECTED_PATHS = ['/perfil', '/meus-anuncios', '/favoritos', '/admin', '/vendedor', '/moderador'];
+const PROTECTED_PATHS = ['/perfil', '/meus-anuncios', '/favoritos', '/admin', '/vendedor', '/moderador', '/comprador'];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isProtected = PROTECTED_PATHS.some((path) => pathname.startsWith(path));
 
   if (isProtected) {
-    // 1. Check if the user is authenticated (has refresh_token or pecae_token)
+    // 1. Verificar autenticação via cookie
     const refreshToken = request.cookies.get('refresh_token')?.value;
     const pecaeToken = request.cookies.get('pecae_token')?.value;
     
@@ -17,28 +17,36 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    // 2. Role-Based Access Control (RBAC) via user_role cookie
-    const userRole = request.cookies.get('user_role')?.value;
+    // 2. RBAC via cookie user_role
+    const userRole = request.cookies.get('user_role')?.value || '';
 
-    // RBAC: Seller only routes
+    // RBAC: Moderadores e Admins são redirecionados para o painel correto
+    // Não devem acessar área de comprador ou vendedor
+    if (pathname.startsWith('/comprador') || pathname.startsWith('/vendedor')) {
+      const isOnboardingPath = pathname.startsWith('/vendedor/onboarding') || pathname.startsWith('/vendedor/solicitar-verificacao');
+      if (!isOnboardingPath && (userRole === 'MODERADOR' || userRole === 'MODERATOR' || userRole === 'ADMIN')) {
+        return NextResponse.redirect(new URL('/moderador/dashboard', request.url));
+      }
+    }
+
+    // RBAC: Somente vendedores podem acessar área restrita do vendedor
     if (pathname.startsWith('/vendedor')) {
       const isAllowedForBuyer = pathname.startsWith('/vendedor/onboarding') || pathname.startsWith('/vendedor/solicitar-verificacao');
-      if (!isAllowedForBuyer && userRole !== 'VENDEDOR' && userRole !== 'AMBOS' && userRole !== 'ADMIN') {
+      if (!isAllowedForBuyer && userRole !== 'VENDEDOR' && userRole !== 'SELLER' && userRole !== 'AMBOS' && userRole !== 'BOTH' && userRole !== 'ADMIN') {
         return NextResponse.redirect(new URL('/comprador/dashboard', request.url));
       }
     }
 
     if (pathname.startsWith('/meus-anuncios')) {
-      if (userRole !== 'VENDEDOR' && userRole !== 'AMBOS' && userRole !== 'ADMIN') {
-        // Redirecionar para perfil (acesso negado)
+      if (userRole !== 'VENDEDOR' && userRole !== 'SELLER' && userRole !== 'AMBOS' && userRole !== 'BOTH' && userRole !== 'ADMIN') {
         return NextResponse.redirect(new URL('/perfil', request.url));
       }
     }
 
-    // RBAC: Admin and Moderador only routes
+    // RBAC: Somente Admins e Moderadores podem acessar painel de moderação
     if (pathname.startsWith('/admin') || pathname.startsWith('/moderador')) {
-      if (userRole !== 'ADMIN' && userRole !== 'MODERADOR') {
-        return NextResponse.redirect(new URL('/perfil', request.url));
+      if (userRole !== 'ADMIN' && userRole !== 'MODERADOR' && userRole !== 'MODERATOR') {
+        return NextResponse.redirect(new URL('/acesso-negado', request.url));
       }
     }
   }
@@ -53,8 +61,7 @@ export const config = {
     '/favoritos/:path*',
     '/admin/:path*',
     '/vendedor/:path*',
-    '/moderador/:path*'
+    '/moderador/:path*',
+    '/comprador/:path*',
   ],
 };
-
-

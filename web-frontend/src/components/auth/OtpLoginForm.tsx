@@ -48,9 +48,10 @@ export function OtpLoginForm() {
       
       let next = searchParams.get('next');
       if (!next || next === '/') {
-        if ((res.user.type as string) === 'SELLER' || (res.user.type as string) === 'VENDEDOR') {
+        const userType = res.user.type as string;
+        if (userType === 'SELLER' || userType === 'VENDEDOR' || userType === 'BOTH' || userType === 'AMBOS') {
           next = '/vendedor/dashboard';
-        } else if ((res.user.type as string) === 'MODERATOR' || (res.user.type as string) === 'ADMIN') {
+        } else if (userType === 'MODERATOR' || userType === 'MODERADOR' || userType === 'ADMIN') {
           next = '/moderador/dashboard';
         } else {
           next = '/comprador/dashboard';

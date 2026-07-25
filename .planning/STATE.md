@@ -4,8 +4,8 @@ milestone: v11.0
 milestone_name: milestone
 status: MVP Completed & Verified
 stopped_at: Milestone 11 completed (Ondas 1, 2 e 3 resolvidas com 100% de cobertura do PRD)
-last_updated: "2026-07-19T02:35:00-03:00"
-last_activity: 2026-07-19 — Milestone v11.0 completed and documented
+last_updated: "2026-07-25T18:34:00-03:00"
+last_activity: 2026-07-25 — Learnings extraídos da fase 10.2 (Buyer & Moderator Web Experience)
 progress:
   total_phases: 3
   completed_phases: 3

@@ -19,13 +19,20 @@ export default function ModeradorLayout({ children }: { children: ReactNode }) {
     if (!isAuthenticated) {
       console.log('ModeradorLayout Redirecting to /login because !isAuthenticated');
       router.replace('/login');
-    } else if (user?.type !== 'MODERATOR' && user?.type !== 'ADMIN') {
-      console.log('ModeradorLayout Redirecting to /acesso-negado because type is not MODERATOR/ADMIN');
-      router.replace('/acesso-negado');
+    } else {
+      const type = (user?.type as string) || ((user as any)?.role as string) || '';
+      const isModerator = type === 'MODERATOR' || type === 'MODERADOR' || type === 'ADMIN';
+      if (!isModerator) {
+        console.log('ModeradorLayout Redirecting to /acesso-negado because type is not MODERATOR/MODERADOR/ADMIN, got:', type);
+        router.replace('/acesso-negado');
+      }
     }
   }, [isInitialized, isAuthenticated, user, router]);
 
-  if (!isInitialized || !isAuthenticated || (user?.type !== 'MODERATOR' && user?.type !== 'ADMIN')) {
+  const type = (user?.type as string) || ((user as any)?.role as string) || '';
+  const isModerator = type === 'MODERATOR' || type === 'MODERADOR' || type === 'ADMIN';
+
+  if (!isInitialized || !isAuthenticated || !isModerator) {
     return null;
   }
 

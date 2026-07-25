@@ -18,7 +18,11 @@ export interface SellerProfile {
 
 export const useSeller = () => {
   const queryClient = useQueryClient();
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const { accessToken, user } = useAuthStore();
+
+  // Moderadores e Admins nunca têm perfil de vendedor — evita chamadas 404
+  const userType = (user?.type as string) || ((user as any)?.role as string) || '';
+  const isModeratorOrAdmin = userType === 'MODERATOR' || userType === 'MODERADOR' || userType === 'ADMIN';
 
   const getSellerProfile = useQuery({
     queryKey: ['seller', 'me'],
@@ -33,7 +37,7 @@ export const useSeller = () => {
         throw err;
       }
     },
-    enabled: !!accessToken,
+    enabled: !!accessToken && !isModeratorOrAdmin,
     retry: (failureCount, error: any) => {
       if (error?.response?.status === 404) return false;
       return failureCount < 2;
