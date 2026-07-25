@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth-store';
 import { ChevronDown, ShoppingBag, Store } from 'lucide-react';
+import { Spinner } from '@/components/ui/Spinner';
 
 interface WorkspaceSwitcherProps {
   currentWorkspace: 'comprador' | 'vendedor';
@@ -13,6 +14,7 @@ interface WorkspaceSwitcherProps {
 export function WorkspaceSwitcher({ currentWorkspace }: WorkspaceSwitcherProps) {
   const { user } = useAuthStore();
   const [isOpen, setIsOpen] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -92,22 +94,34 @@ export function WorkspaceSwitcher({ currentWorkspace }: WorkspaceSwitcherProps) 
               return (
                 <button
                   key={workspace.id}
+                  disabled={isNavigating}
                   onClick={() => {
-                    setIsOpen(false);
-                    if (!isActive) router.push(workspace.href);
+                    if (!isActive) {
+                      setIsNavigating(true);
+                      router.push(workspace.href);
+                      // Fallback: remove o loading após alguns segundos caso a navegação trave
+                      setTimeout(() => setIsNavigating(false), 3000);
+                    } else {
+                      setIsOpen(false);
+                    }
                   }}
-                  className={`w-full flex items-center gap-3 p-2 rounded-lg transition-colors text-left ${
+                  className={`w-full flex items-center justify-between p-2 rounded-lg transition-colors text-left ${
                     isActive 
                       ? 'bg-[var(--foreground)]/5 cursor-default' 
-                      : 'hover:bg-[var(--foreground)]/5 cursor-pointer'
+                      : 'hover:bg-[var(--foreground)]/5 cursor-pointer disabled:opacity-50'
                   }`}
                 >
-                  <div className={`p-1.5 rounded-md ${workspace.id === 'vendedor' ? 'bg-[var(--brand)]/10 text-[var(--brand)]' : 'bg-blue-500/10 text-blue-500'}`}>
-                    <workspace.icon className="w-4 h-4" />
+                  <div className="flex items-center gap-3">
+                    <div className={`p-1.5 rounded-md ${workspace.id === 'vendedor' ? 'bg-[var(--brand)]/10 text-[var(--brand)]' : 'bg-blue-500/10 text-blue-500'}`}>
+                      <workspace.icon className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-[var(--foreground)]">{workspace.name}</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-sm font-medium text-[var(--foreground)]">{workspace.name}</div>
-                  </div>
+                  {isNavigating && !isActive && (
+                    <Spinner className="w-4 h-4 text-[var(--muted)]" />
+                  )}
                 </button>
               );
             })}

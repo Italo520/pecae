@@ -9,6 +9,7 @@ import { sellerService, SellerOnboardingData } from '@/services/seller.service';
 import { authService } from '@/services/auth.service';
 import { useAuthStore } from '@/store/auth-store';
 import { WizardStepper } from '@/components/ui/WizardStepper';
+import { Spinner } from '@/components/ui/Spinner';
 import { Building2, MapPin, Phone, Clock, FileText } from 'lucide-react';
 
 const sellerSchema = z.object({
@@ -47,14 +48,6 @@ export default function OnboardingPage() {
     try {
       setErrorMsg('');
       await sellerService.createSellerProfile(data);
-      
-      // Atualizar o perfil no store para refletir a nova role 'AMBOS'
-      const updatedProfile = await authService.getProfile();
-      const currentToken = useAuthStore.getState().accessToken;
-      if (currentToken) {
-        useAuthStore.getState().setAuth(updatedProfile, currentToken);
-      }
-
       // Sucesso: vai para a próxima etapa do wizard
       router.push('/vendedor/solicitar-verificacao');
     } catch (error: any) {
@@ -299,9 +292,16 @@ export default function OnboardingPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full mt-6 bg-[#32e078] dark:bg-[#3FFF8B] hover:bg-[#25c465] dark:hover:bg-[#32e078] text-white dark:text-black font-extrabold tracking-wide py-4 rounded-xl transition-all shadow-lg dark:shadow-[0_0_20px_rgba(63,255,139,0.3)] disabled:opacity-50 flex items-center justify-center"
+              className="w-full mt-6 bg-[#32e078] dark:bg-[#3FFF8B] hover:bg-[#25c465] dark:hover:bg-[#32e078] text-white dark:text-black font-extrabold tracking-wide py-4 rounded-xl transition-all shadow-lg dark:shadow-[0_0_20px_rgba(63,255,139,0.3)] disabled:opacity-50 flex items-center justify-center space-x-2"
             >
-              {isSubmitting ? 'SALVANDO...' : 'PRÓXIMO: VERIFICAÇÃO'}
+              {isSubmitting ? (
+                <>
+                  <Spinner className="h-5 w-5 text-white dark:text-black" />
+                  <span>SALVANDO...</span>
+                </>
+              ) : (
+                'PRÓXIMO: VERIFICAÇÃO'
+              )}
             </button>
           </form>
         </div>

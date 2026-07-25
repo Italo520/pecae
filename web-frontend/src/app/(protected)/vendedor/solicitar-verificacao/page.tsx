@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { sellerService } from '@/services/seller.service';
 import { WizardStepper } from '@/components/ui/WizardStepper';
+import { Spinner } from '@/components/ui/Spinner';
 import { DocumentUpload } from '@/components/vendedor/DocumentUpload';
 import { AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 
@@ -85,8 +86,8 @@ export default function SolicitarVerificacaoPage() {
 
   if (isLoadingStatus) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-[#3FFF8B] border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+        <Spinner className="h-8 w-8 text-[#3FFF8B]" />
       </div>
     );
   }
@@ -157,9 +158,16 @@ export default function SolicitarVerificacaoPage() {
           <button
             onClick={handleSubmit}
             disabled={isUploading || files.length === 0}
-            className="w-full bg-[#3FFF8B] hover:bg-[#32e078] text-black font-extrabold tracking-wide py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(63,255,139,0.3)] disabled:opacity-50 flex items-center justify-center"
+            className="w-full bg-[#3FFF8B] hover:bg-[#32e078] text-black font-extrabold tracking-wide py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(63,255,139,0.3)] disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            {isUploading ? 'ENVIANDO...' : 'ENVIAR PARA ANÁLISE'}
+            {isUploading ? (
+              <>
+                <Spinner className="h-5 w-5 text-black" />
+                <span>ENVIANDO...</span>
+              </>
+            ) : (
+              'ENVIAR PARA ANÁLISE'
+            )}
           </button>
         </div>
       </div>

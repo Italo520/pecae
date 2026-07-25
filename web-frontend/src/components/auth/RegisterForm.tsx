@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { z } from 'zod';
 import { authService } from '@/services/auth.service';
 import { toast } from 'sonner';
+import { Spinner } from '@/components/ui/Spinner';
 
 const registerSchema = z.object({
   name: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
@@ -208,9 +209,16 @@ export function RegisterForm() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-2/3 bg-brand text-brand-foreground font-bold py-3 rounded-xl hover:opacity-90 focus:ring-4 focus:ring-brand/30 transition-all disabled:opacity-70"
+                className="w-2/3 bg-brand text-brand-foreground font-bold py-3 rounded-xl hover:opacity-90 focus:ring-4 focus:ring-brand/30 transition-all disabled:opacity-70 flex items-center justify-center gap-2"
               >
-                {isSubmitting ? 'Criando...' : 'Criar Conta'}
+                {isSubmitting ? (
+                  <>
+                    <Spinner className="h-5 w-5" />
+                    <span>Criando...</span>
+                  </>
+                ) : (
+                  'Criar Conta'
+                )}
               </button>
             </div>
           </div>

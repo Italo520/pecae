@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { z } from 'zod';
 import { authService } from '@/services/auth.service';
+import { Spinner } from '@/components/ui/Spinner';
 
 // Temporarily declaring schema here in case it's not exported properly from @pecae/shared yet
 const loginSchema = z.object({
@@ -102,9 +103,16 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-brand text-brand-foreground font-bold py-3 rounded-xl hover:opacity-90 focus:ring-4 focus:ring-brand/30 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+          className="w-full bg-brand text-brand-foreground font-bold py-3 rounded-xl hover:opacity-90 focus:ring-4 focus:ring-brand/30 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          {isSubmitting ? 'Entrando...' : 'Entrar'}
+          {isSubmitting ? (
+            <>
+              <Spinner className="h-5 w-5" />
+              <span>Entrando...</span>
+            </>
+          ) : (
+            'Entrar'
+          )}
         </button>
       </form>
 
