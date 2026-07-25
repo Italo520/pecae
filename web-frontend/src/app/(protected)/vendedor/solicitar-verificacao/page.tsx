@@ -104,10 +104,10 @@ export default function SolicitarVerificacaoPage() {
             Nossa equipe está revisando seus documentos. Você será notificado assim que o processo for concluído.
           </p>
           <button
-            onClick={() => router.push('/vendedor/dashboard')}
+            onClick={() => router.push('/comprador/dashboard')}
             className="w-full bg-transparent border-2 border-gray-700 hover:border-gray-500 text-white font-bold py-3 rounded-xl transition-colors"
           >
-            VOLTAR AO PAINEL
+            VOLTAR AO MEU PAINEL
           </button>
         </div>
       </div>
@@ -184,10 +184,10 @@ export default function SolicitarVerificacaoPage() {
               Seus documentos foram recebidos e serão analisados em até 48 horas. Você será notificado sobre o resultado.
             </p>
             <button
-              onClick={() => router.push('/vendedor/dashboard')}
+              onClick={() => router.push('/comprador/dashboard')}
               className="w-full bg-[#3FFF8B] hover:bg-[#32e078] text-black font-bold py-3 rounded-xl transition-colors"
             >
-              Ir para o Dashboard
+              Ir para Meu Painel
             </button>
           </div>
         </div>

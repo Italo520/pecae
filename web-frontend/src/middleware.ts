@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const PROTECTED_PATHS = ['/perfil', '/meus-anuncios', '/favoritos', '/admin'];
+const PROTECTED_PATHS = ['/perfil', '/meus-anuncios', '/favoritos', '/admin', '/vendedor'];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -20,6 +20,13 @@ export function middleware(request: NextRequest) {
     const userRole = request.cookies.get('user_role')?.value;
 
     // RBAC: Seller only routes
+    if (pathname.startsWith('/vendedor')) {
+      const isAllowedForBuyer = pathname.startsWith('/vendedor/onboarding') || pathname.startsWith('/vendedor/solicitar-verificacao');
+      if (!isAllowedForBuyer && userRole !== 'VENDEDOR' && userRole !== 'AMBOS' && userRole !== 'ADMIN') {
+        return NextResponse.redirect(new URL('/comprador/dashboard', request.url));
+      }
+    }
+
     if (pathname.startsWith('/meus-anuncios')) {
       if (userRole !== 'VENDEDOR' && userRole !== 'AMBOS' && userRole !== 'ADMIN') {
         // Redirecionar para perfil (acesso negado)
@@ -43,6 +50,7 @@ export const config = {
     '/perfil/:path*', 
     '/meus-anuncios/:path*', 
     '/favoritos/:path*',
-    '/admin/:path*'
+    '/admin/:path*',
+    '/vendedor/:path*'
   ],
 };

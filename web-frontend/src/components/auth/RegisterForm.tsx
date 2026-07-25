@@ -32,6 +32,7 @@ export function RegisterForm() {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const { register, handleSubmit, trigger, formState: { errors, isSubmitting } } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -62,7 +63,10 @@ export function RegisterForm() {
         privacyAccepted: data.privacyAccepted
       });
       toast.success('Conta criada com sucesso!');
+      setIsSuccess(true);
       window.location.href = '/';
+      // Mantenha a promise pendente para que o isSubmitting não volte a false
+      await new Promise(() => {});
     } catch (err: any) {
       if (err.response?.status === 409) {
         toast.info('Este e-mail já possui cadastro. Redirecionando para o login...');
@@ -208,10 +212,10 @@ export function RegisterForm() {
               </button>
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isSuccess}
                 className="w-2/3 bg-brand text-brand-foreground font-bold py-3 rounded-xl hover:opacity-90 focus:ring-4 focus:ring-brand/30 transition-all disabled:opacity-70 flex items-center justify-center gap-2"
               >
-                {isSubmitting ? (
+                {isSubmitting || isSuccess ? (
                   <>
                     <Spinner className="h-5 w-5" />
                     <span>Criando...</span>
