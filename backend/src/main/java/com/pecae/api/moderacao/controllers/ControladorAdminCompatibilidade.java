@@ -121,10 +121,21 @@ public class ControladorAdminCompatibilidade {
 
     @GetMapping("/kyc/pending")
     @Operation(summary = "Listar documentos KYC pendentes")
-    public ResponseEntity<List<Map<String, Object>>> getPendingKyc(@RequestParam(defaultValue = "5") int limit) {
-        List<Map<String, Object>> response = verificacaoVendedorRepository.findAll().stream()
+    public ResponseEntity<List<Map<String, Object>>> getPendingKyc(@RequestParam(required = false) Integer limit) {
+        var list = verificacaoVendedorRepository.findAll().stream()
                 .filter(v -> v.getStatus() == com.pecae.api.vendedor.entities.enums.StatusVerificacao.PENDENTE)
-                .limit(limit)
+                .sorted((a, b) -> {
+                    if (a.getSolicitadoEm() == null) return 1;
+                    if (b.getSolicitadoEm() == null) return -1;
+                    return b.getSolicitadoEm().compareTo(a.getSolicitadoEm());
+                })
+                .toList();
+
+        if (limit != null && limit > 0 && limit < list.size()) {
+            list = list.subList(0, limit);
+        }
+
+        List<Map<String, Object>> response = list.stream()
                 .map(v -> {
                     Map<String, Object> map = new HashMap<>();
                     map.put("id", v.getId());
@@ -133,6 +144,9 @@ public class ControladorAdminCompatibilidade {
                     Map<String, Object> userMap = new HashMap<>();
                     if (v.getPerfilVendedor() != null && v.getPerfilVendedor().getUsuario() != null) {
                         userMap.put("name", v.getPerfilVendedor().getUsuario().getNome());
+                        userMap.put("email", v.getPerfilVendedor().getUsuario().getEmail());
+                    } else if (v.getPerfilVendedor() != null) {
+                        userMap.put("name", v.getPerfilVendedor().getNome());
                     } else {
                         userMap.put("name", "Vendedor");
                     }
@@ -147,6 +161,7 @@ public class ControladorAdminCompatibilidade {
                     if (v.getPerfilVendedor() != null) {
                         Map<String, Object> businessData = new java.util.HashMap<>();
                         businessData.put("cnpj", v.getPerfilVendedor().getDocumento());
+                        businessData.put("storeName", v.getPerfilVendedor().getNome());
                         map.put("businessData", businessData);
                     }
                     

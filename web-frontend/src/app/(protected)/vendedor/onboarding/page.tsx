@@ -28,6 +28,24 @@ const sellerSchema = z.object({
 export default function OnboardingPage() {
   const router = useRouter();
   const [errorMsg, setErrorMsg] = useState('');
+  const [checkingExisting, setCheckingExisting] = useState(true);
+
+  React.useEffect(() => {
+    const checkExistingProfile = async () => {
+      try {
+        const profile = await sellerService.getVerificationStatus();
+        if (profile) {
+          router.replace('/vendedor/solicitar-verificacao');
+          return;
+        }
+      } catch (err) {
+        // Sem perfil ainda
+      } finally {
+        setCheckingExisting(false);
+      }
+    };
+    checkExistingProfile();
+  }, [router]);
 
   const {
     control,
@@ -51,13 +69,26 @@ export default function OnboardingPage() {
       // Sucesso: vai para a próxima etapa do wizard
       router.push('/vendedor/solicitar-verificacao');
     } catch (error: any) {
-      setErrorMsg(error.response?.data?.mensagem || error.response?.data?.message || 'Erro ao criar perfil comercial.');
+      const msg = error.response?.data?.mensagem || error.response?.data?.message || 'Erro ao criar perfil comercial.';
+      if (msg.includes('já possui') || msg.includes('cadastrado')) {
+        router.push('/vendedor/solicitar-verificacao');
+      } else {
+        setErrorMsg(msg);
+      }
     }
   };
 
   const inputBaseClasses = "block w-full bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl py-3 text-gray-900 dark:text-white focus:ring-[#32e078] dark:focus:ring-[#3FFF8B] focus:border-[#32e078] dark:focus:border-[#3FFF8B] transition-colors";
   const labelClasses = "block text-xs text-gray-700 dark:text-gray-400 font-semibold mb-1";
   const iconClasses = "h-5 w-5 text-gray-400 dark:text-gray-500";
+
+  if (checkingExisting) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
+        <Spinner className="h-8 w-8 text-[#3FFF8B]" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">

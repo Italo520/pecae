@@ -11,19 +11,33 @@ import { useNotifications } from '@/hooks/useNotifications';
 import { useFavorites } from '@/hooks/useFavorites';
 import { ThemeToggle } from '../ui/ThemeToggle';
 
+import { useSeller } from '@/hooks/useSeller';
+
 export function Header() {
   const { isAuthenticated, user } = useAuthStore();
   const [mounted, setMounted] = useState(false);
   const { getUnreadCount } = useNotifications();
   const { getFavorites } = useFavorites();
+  const { getSellerProfile } = useSeller();
 
   const favoritesCount = Array.isArray(getFavorites.data) ? getFavorites.data.length : 0;
+  const sellerProfile = getSellerProfile.data as any;
+  const hasSellerProfile = !!sellerProfile;
+  const verificationStatus = sellerProfile?.verificacao?.status || sellerProfile?.verification?.status;
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const isLoggedIn = mounted && isAuthenticated;
+
+  const userType = (user?.type as string) || ((user as any)?.role as string);
+  const isApprovedSeller = userType === 'SELLER' || userType === 'VENDEDOR' || userType === 'BOTH' || userType === 'AMBOS' || verificationStatus === 'APROVADO' || verificationStatus === 'APPROVED';
+  const isPendingSeller = hasSellerProfile || verificationStatus === 'PENDENTE' || verificationStatus === 'PENDING';
+
+  // Botão Anunciar deve ser exibido se vendedor aprovado (vai p/ anunciar) ou comprador comum (vai p/ onboarding)
+  // Oculto se já tiver perfil ou estiver aguardando aprovação
+  const showAnnounceButton = isLoggedIn && (isApprovedSeller || !isPendingSeller);
 
   const getFavoritesUrl = () => {
     if (!isLoggedIn) return '/login?next=/comprador/favoritos';
@@ -32,8 +46,7 @@ export function Header() {
 
   const getNotificationsUrl = () => {
     if (!isLoggedIn) return '/login?next=/comprador/notificacoes';
-    const userRole = (user?.type as string) || ((user as any)?.role as string);
-    if (userRole === 'SELLER' || userRole === 'VENDEDOR') {
+    if (isApprovedSeller) {
       return '/vendedor/notificacoes';
     }
     return '/comprador/notificacoes';
@@ -42,13 +55,9 @@ export function Header() {
   const handleAnnounceClick = () => {
     if (!isLoggedIn) return;
 
-    const userType = (user?.type as string) || ((user as any)?.role as string);
-    const isSeller = userType === 'SELLER' || userType === 'VENDEDOR' || userType === 'BOTH' || userType === 'AMBOS';
-
-    if (isSeller) {
+    if (isApprovedSeller) {
       window.location.href = '/vendedor/anunciar';
-    } else {
-      // Comprador logado clicando em Anunciar -> vai para onboarding de vendedor
+    } else if (!isPendingSeller) {
       window.location.href = '/vendedor/onboarding';
     }
   };
@@ -137,8 +146,8 @@ export function Header() {
               )}
             </div>
 
-            {/* CTA Announce - visível apenas para usuários logados */}
-            {isLoggedIn && (
+            {/* CTA Announce - visível apenas para vendedores aprovados ou compradores sem perfil cadastrado */}
+            {showAnnounceButton && (
               <Button variant="primary" size="sm" className="hidden sm:flex" onClick={handleAnnounceClick}>
                 Anunciar
               </Button>
