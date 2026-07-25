@@ -150,7 +150,7 @@ class VendedorServiceTest {
             when(verificacaoVendedorRepository.save(any(VerificacaoVendedor.class))).thenReturn(verificacao);
 
             RespostaVerificacaoVendedor respostaEsperada = new RespostaVerificacaoVendedor(
-                    UUID.randomUUID(), StatusVerificacao.PENDENTE, java.time.LocalDateTime.now(), null, null
+                    UUID.randomUUID(), StatusVerificacao.PENDENTE, java.time.LocalDateTime.now(), null, null, java.util.List.of()
             );
             when(vendedorMapper.toVerificationResponse(verificacao)).thenReturn(respostaEsperada);
 

@@ -183,7 +183,7 @@ class VendedorControllerTest {
     @DisplayName("POST /sellers/me/verification - Deve solicitar verificação")
     void deveSolicitarVerificacao() throws Exception {
         RespostaVerificacaoVendedor resposta = new RespostaVerificacaoVendedor(
-                UUID.randomUUID(), StatusVerificacao.PENDENTE, java.time.LocalDateTime.now(), null, null
+                UUID.randomUUID(), StatusVerificacao.PENDENTE, java.time.LocalDateTime.now(), null, null, java.util.List.of()
         );
 
         when(vendedorService.solicitarVerificacao(org.mockito.ArgumentMatchers.eq(usuarioId), org.mockito.ArgumentMatchers.anyList())).thenReturn(resposta);

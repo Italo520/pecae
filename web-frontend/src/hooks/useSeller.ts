@@ -23,10 +23,21 @@ export const useSeller = () => {
   const getSellerProfile = useQuery({
     queryKey: ['seller', 'me'],
     queryFn: async () => {
-      const { data } = await api.get<SellerProfile>('/sellers/me');
-      return data;
+      try {
+        const { data } = await api.get<SellerProfile>('/sellers/me');
+        return data;
+      } catch (err: any) {
+        if (err.response?.status === 404) {
+          return null;
+        }
+        throw err;
+      }
     },
     enabled: !!accessToken,
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 404) return false;
+      return failureCount < 2;
+    }
   });
 
   const updateSellerProfile = useMutation({
