@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const PROTECTED_PATHS = ['/perfil', '/meus-anuncios', '/favoritos', '/admin', '/vendedor'];
+const PROTECTED_PATHS = ['/perfil', '/meus-anuncios', '/favoritos', '/admin', '/vendedor', '/moderador'];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -35,8 +35,8 @@ export function middleware(request: NextRequest) {
       }
     }
 
-    // RBAC: Admin only routes
-    if (pathname.startsWith('/admin')) {
+    // RBAC: Admin and Moderador only routes
+    if (pathname.startsWith('/admin') || pathname.startsWith('/moderador')) {
       if (userRole !== 'ADMIN' && userRole !== 'MODERADOR') {
         return NextResponse.redirect(new URL('/perfil', request.url));
       }
@@ -52,6 +52,9 @@ export const config = {
     '/meus-anuncios/:path*', 
     '/favoritos/:path*',
     '/admin/:path*',
-    '/vendedor/:path*'
+    '/vendedor/:path*',
+    '/moderador/:path*'
   ],
 };
+
+

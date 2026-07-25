@@ -34,11 +34,12 @@ export function Header() {
 
   const userType = (user?.type as string) || ((user as any)?.role as string);
   const isApprovedSeller = userType === 'SELLER' || userType === 'VENDEDOR' || userType === 'BOTH' || userType === 'AMBOS' || verificationStatus === 'APROVADO' || verificationStatus === 'APPROVED';
-  const isPendingSeller = hasSellerProfile || verificationStatus === 'PENDENTE' || verificationStatus === 'PENDING';
+  const isPendingSeller = hasSellerProfile && !isApprovedSeller;
 
-  // Botão Anunciar deve ser exibido se vendedor aprovado (vai p/ anunciar) ou comprador comum (vai p/ onboarding)
-  // Oculto se já tiver perfil ou estiver aguardando aprovação ou estiver carregando
-  const showAnnounceButton = isLoggedIn && !isLoadingProfile && (isApprovedSeller || !isPendingSeller);
+  // O botão Anunciar DEVE aparecer SE for um vendedor aprovado (para postar anúncio)
+  // OU SE for um usuário que ainda não tem perfil nenhum.
+  // E DEVE FICAR OCULTO se o usuário está em processo de onboarding/verificação (pending)
+  const showAnnounceButton = (!isLoggedIn) || (isLoggedIn && !isLoadingProfile && (isApprovedSeller || !isPendingSeller));
 
   const getFavoritesUrl = () => {
     if (!isLoggedIn) return '/login?next=/comprador/favoritos';
@@ -54,11 +55,14 @@ export function Header() {
   };
 
   const handleAnnounceClick = () => {
-    if (!isLoggedIn) return;
-
-    if (isApprovedSeller) {
+    if (!isLoggedIn) {
+      window.location.href = '/login?next=/vendedor/onboarding';
+    } else if (isApprovedSeller) {
       window.location.href = '/vendedor/anunciar';
-    } else if (!isPendingSeller) {
+    } else if (hasSellerProfile && !isApprovedSeller) {
+      // Caso clique enquanto estiver pendente, força o direcionamento
+      window.location.href = '/vendedor/solicitar-verificacao';
+    } else {
       window.location.href = '/vendedor/onboarding';
     }
   };
