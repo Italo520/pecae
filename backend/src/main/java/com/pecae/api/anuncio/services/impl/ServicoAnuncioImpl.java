@@ -199,19 +199,7 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
     @Transactional
     public RespostaDetalheAnuncio criar(UUID usuarioId, CriarAnuncioRequest request) {
         PerfilVendedor perfilVendedor = perfilVendedorRepository.findByUsuarioId(usuarioId)
-            .orElseGet(() -> {
-                com.pecae.api.usuario.entities.Usuario usuario = repositorioAnuncio.findById(usuarioId)
-                    .map(a -> a.getPerfilVendedor().getUsuario())
-                    .orElse(null);
-                PerfilVendedor novoPerfil = PerfilVendedor.builder()
-                    .usuario(usuario)
-                    .nome("Vendedor Inicial")
-                    .documento("PENDENTE_" + usuarioId.toString().substring(0, 8))
-                    .telefone("0000000000")
-                    .tipoVendedor(com.pecae.api.vendedor.entities.enums.TipoVendedor.INDIVIDUAL)
-                    .build();
-                return perfilVendedorRepository.save(novoPerfil);
-            });
+            .orElseThrow(() -> new ExcecaoRecursoNaoEncontrado("É necessário concluir o cadastro de vendedor antes de criar um anúncio."));
 
         Veiculo veiculo = repositorioVeiculo.findById(request.veiculoId())
             .orElseThrow(() -> new ExcecaoRecursoNaoEncontrado("Veículo não encontrado."));

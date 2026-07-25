@@ -21,6 +21,7 @@ export function Header() {
   const { getSellerProfile } = useSeller();
 
   const favoritesCount = Array.isArray(getFavorites.data) ? getFavorites.data.length : 0;
+  const isLoadingProfile = getSellerProfile.isLoading;
   const sellerProfile = getSellerProfile.data as any;
   const hasSellerProfile = !!sellerProfile;
   const verificationStatus = sellerProfile?.verificacao?.status || sellerProfile?.verification?.status;
@@ -36,8 +37,8 @@ export function Header() {
   const isPendingSeller = hasSellerProfile || verificationStatus === 'PENDENTE' || verificationStatus === 'PENDING';
 
   // Botão Anunciar deve ser exibido se vendedor aprovado (vai p/ anunciar) ou comprador comum (vai p/ onboarding)
-  // Oculto se já tiver perfil ou estiver aguardando aprovação
-  const showAnnounceButton = isLoggedIn && (isApprovedSeller || !isPendingSeller);
+  // Oculto se já tiver perfil ou estiver aguardando aprovação ou estiver carregando
+  const showAnnounceButton = isLoggedIn && !isLoadingProfile && (isApprovedSeller || !isPendingSeller);
 
   const getFavoritesUrl = () => {
     if (!isLoggedIn) return '/login?next=/comprador/favoritos';
