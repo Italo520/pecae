@@ -6,6 +6,8 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { sellerService, SellerOnboardingData } from '@/services/seller.service';
+import { authService } from '@/services/auth.service';
+import { useAuthStore } from '@/store/auth-store';
 import { WizardStepper } from '@/components/ui/WizardStepper';
 import { Building2, MapPin, Phone, Clock, FileText } from 'lucide-react';
 
@@ -45,6 +47,14 @@ export default function OnboardingPage() {
     try {
       setErrorMsg('');
       await sellerService.createSellerProfile(data);
+      
+      // Atualizar o perfil no store para refletir a nova role 'AMBOS'
+      const updatedProfile = await authService.getProfile();
+      const currentToken = useAuthStore.getState().accessToken;
+      if (currentToken) {
+        useAuthStore.getState().setAuth(updatedProfile, currentToken);
+      }
+
       // Sucesso: vai para a próxima etapa do wizard
       router.push('/vendedor/solicitar-verificacao');
     } catch (error: any) {

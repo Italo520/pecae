@@ -46,6 +46,11 @@ public class VendedorServiceImpl implements VendedorService {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new ExcecaoRecursoNaoEncontrado("Usuário não encontrado."));
 
+        if (usuario.getTipo() == com.pecae.api.usuario.entities.enums.TipoUsuario.COMPRADOR) {
+            usuario.setTipo(com.pecae.api.usuario.entities.enums.TipoUsuario.AMBOS);
+            usuarioRepository.save(usuario);
+        }
+
         PerfilVendedor perfil = vendedorMapper.toEntity(request);
         perfil.setUsuario(usuario);
 
