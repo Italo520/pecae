@@ -78,7 +78,12 @@ export default function SolicitarVerificacaoPage() {
       setShowSuccessModal(true);
     } catch (err: any) {
       console.error(err);
-      setErrorMsg(err.message || 'Ocorreu um problema ao enviar seus documentos.');
+      const apiMsg = err.response?.data?.mensagem;
+      if (apiMsg && (apiMsg.includes('já está pendente') || apiMsg.includes('já foi aprovada'))) {
+        setStatus({ latestVerification: { status: 'PENDING' } });
+      } else {
+        setErrorMsg(apiMsg || err.message || 'Ocorreu um problema ao enviar seus documentos.');
+      }
     } finally {
       setIsUploading(false);
     }
