@@ -155,23 +155,7 @@ test.describe('PECAÊ E2E - Core do Marketplace (Web)', () => {
     await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 15000 });
     console.log('✅ Login do Comprador realizado para validação da RN14.');
 
-    // 6. Validar visualização do anúncio no marketplace
-    await page.goto(`/veiculo/${pendingListingId}`, { waitUntil: 'domcontentloaded' });
-    await page.waitForLoadState('domcontentloaded');
-    
-    // Validar que o anúncio está acessível via URL direta pelo ID
-    const titleText = page.getByText(/Sucata|Veículo|Gol|Volkswagen|Placa|Detalhes/i).first();
-    await expect(titleText).toBeVisible({ timeout: 15000 });
-    console.log('✅ Validação do anúncio: Anúncio de veículo acessível com sucesso.');
-
-    // 6.5 Limpar storage do Comprador (logout)
-    await page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-    });
-    console.log('✅ Logout do Comprador realizado.');
-
-    // 8. Obter token de moderador via API
+    // 8. Obter token de moderador via API e aprovar anúncio
     console.log('ℹ️ Efetuando login do Moderador via API...');
     const loginModRes = await page.request.post('https://api-pecae.italohub.cloud/api/v1/auth/login', {
       data: {
@@ -183,7 +167,6 @@ test.describe('PECAÊ E2E - Core do Marketplace (Web)', () => {
     const loginModData = await loginModRes.json();
     const modToken = loginModData.tokens?.accessToken || '';
 
-    // 10. Aprovar anúncio via API de Moderação do Spring Boot
     console.log('ℹ️ Aprovando anúncio via API...');
     const approveResponse = await page.request.post(`https://api-pecae.italohub.cloud/api/v1/moderacao/anuncios/${pendingListingId}/decisao`, {
       headers: {
@@ -200,6 +183,22 @@ test.describe('PECAÊ E2E - Core do Marketplace (Web)', () => {
     }
     expect(approveResponse.status()).toBe(204);
     console.log('✅ Anúncio aprovado com sucesso.');
+
+    // 6. Validar visualização do anúncio aprovado no marketplace
+    await page.goto(`/veiculo/${pendingListingId}`, { waitUntil: 'domcontentloaded' });
+    await page.waitForLoadState('domcontentloaded');
+    
+    // Validar que o anúncio está acessível via URL direta pelo ID
+    const titleText = page.getByText(/Sucata|Veículo|Gol|Volkswagen|Placa|Detalhes/i).first();
+    await expect(titleText).toBeVisible({ timeout: 15000 });
+    console.log('✅ Validação do anúncio: Anúncio de veículo acessível com sucesso.');
+
+    // 6.5 Limpar storage do Comprador (logout)
+    await page.evaluate(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+    });
+    console.log('✅ Logout do Comprador realizado.');
 
     // 12. Login do Comprador para verificar Notificação de Match (M11)
     await page.goto('/login');
