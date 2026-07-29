@@ -7,6 +7,7 @@ import { Camera, MapPin, Loader2 } from 'lucide-react';
 import { ListingCard as ListingCardType } from '@/types/listing.types';
 import { Badge } from '@/components/ui/Badge';
 import { FavoriteButton } from './FavoriteButton';
+import { ClientOnly } from '@/components/shared/ClientOnly';
 
 export interface ListingCardProps {
   listing: ListingCardType;
@@ -50,7 +51,9 @@ export function ListingCard({ listing }: ListingCardProps) {
       
       <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
         {listing.sponsored && <Badge variant="warning">Patrocinado</Badge>}
-        {isNew && <Badge variant="brand">Novo</Badge>}
+        <ClientOnly>
+          {isNew && <Badge variant="brand">Novo</Badge>}
+        </ClientOnly>
         {listing.verifiedSeller && <Badge variant="success">Verificado</Badge>}
       </div>
 
@@ -91,7 +94,9 @@ export function ListingCard({ listing }: ListingCardProps) {
               <MapPin size={12} />
               {listing.city}, {listing.state}
             </span>
-            <span>{timeAgo(listing.createdAt)}</span>
+            <ClientOnly fallback={<span className="invisible">carregando...</span>}>
+              <span>{timeAgo(listing.createdAt)}</span>
+            </ClientOnly>
           </div>
         </div>
       </div>
