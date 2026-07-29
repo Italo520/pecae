@@ -38,8 +38,7 @@ export function useVehicles() {
         mainImage: v.urlFotoPrincipal || v.imagemPrincipal || v.mainImage || (v.fotos && v.fotos.length > 0 ? v.fotos[0].url : null),
       })) as Vehicle[];
     },
-    staleTime: 5000,
-    refetchInterval: 5000,
+    staleTime: 60000,
     refetchOnWindowFocus: true,
   });
 }

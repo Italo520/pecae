@@ -84,7 +84,7 @@ export default function FavoritosPage() {
                   {/* Content */}
                   <div className="p-5 flex-1 flex flex-col">
                     {savedDate && (
-                      <div className="flex items-center gap-2 text-xs text-[var(--muted)] mb-2">
+                      <div className="flex items-center gap-2 text-xs text-[var(--muted)] mb-2" suppressHydrationWarning>
                         <Calendar className="w-3 h-3" />
                         Salvo em {savedDate}
                       </div>

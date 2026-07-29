@@ -56,7 +56,7 @@ export function Footer() {
         </div>
         
         <div className="pt-8 border-t border-[var(--border)] flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-[var(--muted)] text-center md:text-left">
+          <p className="text-sm text-[var(--muted)] text-center md:text-left" suppressHydrationWarning>
             &copy; {currentYear} PECAÊ. Todos os direitos reservados.
           </p>
         </div>

@@ -29,6 +29,7 @@ export function ListingCard({ listing }: ListingCardProps) {
   return (
     <Link 
       href={`/veiculo/${listing.id}`}
+      prefetch={false}
       onClick={() => setIsNavigating(true)}
       className="group flex flex-col bg-surface border border-border rounded-3xl overflow-hidden hover:shadow-md transition-all relative cursor-pointer"
     >

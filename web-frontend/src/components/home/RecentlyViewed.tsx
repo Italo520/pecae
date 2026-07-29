@@ -6,9 +6,11 @@ import Image from 'next/image';
 import { ListingCard } from '@/types/listing.types';
 
 export function RecentlyViewed() {
+  const [isMounted, setIsMounted] = useState(false);
   const [recentListings, setRecentListings] = useState<ListingCard[]>([]);
 
   useEffect(() => {
+    setIsMounted(true);
     try {
       const stored = localStorage.getItem('pecae-recently-viewed');
       if (stored) {
@@ -22,8 +24,8 @@ export function RecentlyViewed() {
     }
   }, []);
 
-  if (recentListings.length === 0) {
-    return null; // Don't render anything if empty
+  if (!isMounted || recentListings.length === 0) {
+    return null; // Don't render anything if empty or not mounted yet
   }
 
   return (

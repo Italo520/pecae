@@ -61,7 +61,7 @@ export default function DenunciasPage() {
                       RISCO {report.severity || 'MEDIA'}
                     </span>
                     <span className="text-xs text-[var(--muted)]">Ticket #{report.id.slice(-6)}</span>
-                    <span className="text-xs text-[var(--muted)]">
+                    <span className="text-xs text-[var(--muted)]" suppressHydrationWarning>
                       • {report.createdAt ? new Date(report.createdAt).toLocaleString('pt-BR') : 'Recente'}
                     </span>
                   </div>

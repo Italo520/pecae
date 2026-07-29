@@ -140,7 +140,7 @@ export default function NotificacoesPage() {
                     }`}>
                       {notif.titulo}
                     </h3>
-                    <span className="text-[10px] text-[var(--muted)] font-mono flex-shrink-0 mt-0.5">
+                    <span className="text-[10px] text-[var(--muted)] font-mono flex-shrink-0 mt-0.5" suppressHydrationWarning>
                       {formatTime(notif.criadaEm)}
                     </span>
                   </div>

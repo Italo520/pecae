@@ -41,7 +41,7 @@ export function VehicleCategoryBar({ categories }: VehicleCategoryBarProps) {
                       {cat.name}
                     </span>
                     {cat.count > 0 && (
-                      <span className="text-xs text-muted font-medium">
+                      <span className="text-xs text-muted font-medium" suppressHydrationWarning>
                         {cat.count.toLocaleString('pt-BR')}
                       </span>
                     )}

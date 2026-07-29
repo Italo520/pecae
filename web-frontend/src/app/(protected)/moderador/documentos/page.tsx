@@ -75,7 +75,7 @@ export default function DocumentosModeracaoPage() {
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-[var(--muted)]">Enviado em</span>
-                      <span className="text-xs text-[var(--foreground)]">
+                      <span className="text-xs text-[var(--foreground)]" suppressHydrationWarning>
                         {doc.createdAt ? new Date(doc.createdAt).toLocaleString('pt-BR') : 'Recente'}
                       </span>
                     </div>

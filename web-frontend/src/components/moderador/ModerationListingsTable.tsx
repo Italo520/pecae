@@ -202,7 +202,7 @@ export function ModerationListingsTable() {
                         <div className="text-xs text-[var(--muted)]">{listing.seller?.email}</div>
                       </td>
                       <td className="p-4 hidden sm:table-cell">
-                        <div className="text-sm text-[var(--foreground)]">
+                        <div className="text-sm text-[var(--foreground)]" suppressHydrationWarning>
                           {new Date(listing.createdAt).toLocaleDateString('pt-BR')}
                         </div>
                       </td>
