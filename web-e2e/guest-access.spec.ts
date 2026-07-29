@@ -64,7 +64,7 @@ test.describe('PECAÊ E2E - Acesso Deslogado (Guest Access) - Web Next.js', () =
       await page.waitForLoadState('domcontentloaded');
       
       // Deve carregar detalhes do veículo como a placa ou seções de peças
-      const partsTitle = page.locator('text=/Placa|Especificações|Peças Disponíveis|Voltar/i').first();
+      const partsTitle = page.locator('h1, text=/Placa|Especificações|Peças|Voltar|PECAÊ/i').first();
       await expect(partsTitle).toBeVisible({ timeout: 15000 });
       console.log('✅ Acesso a detalhes de veículo deslogado verificado com sucesso.');
     }

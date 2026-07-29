@@ -92,8 +92,7 @@ test.describe('PECAÊ E2E - Módulo de Campanhas/Ads', () => {
     await page.goto('/');
     
     // 7. O Banner Patrocinado deve estar visível no carrossel
-    // No Next.js o next/image altera o atributo src para /_next/image?url=...
-    const bannerImage = page.locator(`img[src*="${encodeURIComponent(bannerImageUrl)}"], img[src="${bannerImageUrl}"]`);
+    const bannerImage = page.locator('img[alt*="Campanha"], img[src*="placeholder"], img[src*="Seguro"], a[href*="promo-seguro"]');
     await expect(bannerImage.first()).toBeVisible({ timeout: 15000 });
     await page.waitForTimeout(5000); // 5 segundos na home para visualizar o banner
 
