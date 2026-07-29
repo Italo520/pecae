@@ -47,10 +47,16 @@ public class DataSourceConfig {
                 }
             }
             
+            String query = dbUri.getQuery();
+            if (query == null || query.isEmpty()) {
+                query = "sslmode=require";
+            } else if (!query.contains("sslmode=")) {
+                query += "&sslmode=require";
+            }
+            
             String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + 
                            (dbUri.getPort() != -1 ? ":" + dbUri.getPort() : "") + 
-                           dbUri.getPath() +
-                           (dbUri.getQuery() != null ? "?" + dbUri.getQuery() : "");
+                           dbUri.getPath() + "?" + query;
             
             builder.url(dbUrl);
             builder.username(username);
