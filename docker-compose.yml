@@ -44,7 +44,7 @@ services:
     environment:
       - SERVER_PORT=${PORT:-3000}
       - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATASOURCE_URL=${DATABASE_URL:-jdbc:postgresql://pecae-postgres:5432/pecae}
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL:-jdbc:postgresql://pecae-postgres:5432/pecae}
       - SPRING_DATASOURCE_USERNAME=${DB_USERNAME:-postgres}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - SPRING_DATA_REDIS_HOST=pecae-redis
