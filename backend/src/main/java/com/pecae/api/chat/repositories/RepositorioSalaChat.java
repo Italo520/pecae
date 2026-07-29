@@ -23,6 +23,41 @@ public interface RepositorioSalaChat extends JpaRepository<SalaChat, UUID> {
         """)
     List<SalaChat> buscarSalasAtivasDoUsuario(@Param("usuarioId") UUID usuarioId);
 
+    @Query(value = """
+        SELECT
+            CAST(s.id AS varchar) AS s_id,
+            CAST(s.buyer_id AS varchar) AS s_buyer_id,
+            CAST(s.seller_id AS varchar) AS s_seller_id,
+            CAST(s.listing_id AS varchar) AS s_listing_id,
+            CAST(s.vehicle_id AS varchar) AS s_vehicle_id,
+            s.updated_at AS s_updated_at,
+            lm.conteudo       AS ultima_msg_conteudo,
+            lm.sender_id      AS ultima_msg_remetente_id,
+            lm.created_at     AS ultima_msg_criada_em,
+            COALESCE((
+                SELECT COUNT(*)
+                FROM chat_messages cm
+                WHERE cm.chat_room_id = s.id
+                  AND cm.sender_id <> :usuarioId
+                  AND cm.created_at > COALESCE(lr.leu_em, '1970-01-01 00:00:00')
+                  AND cm.deleted = false
+            ), 0) AS nao_lidos
+        FROM chat_rooms s
+        LEFT JOIN LATERAL (
+            SELECT conteudo, sender_id, created_at
+            FROM chat_messages
+            WHERE chat_room_id = s.id AND deleted = false
+            ORDER BY created_at DESC, id DESC
+            LIMIT 1
+        ) lm ON true
+        LEFT JOIN chat_room_reads lr
+            ON lr.chat_room_id = s.id AND lr.user_id = :usuarioId
+        WHERE (s.buyer_id = :usuarioId OR s.seller_id = :usuarioId)
+          AND s.ativa = true
+        ORDER BY s.updated_at DESC
+        """, nativeQuery = true)
+    List<Object[]> buscarSalasComResumo(@Param("usuarioId") UUID usuarioId);
+
     Optional<SalaChat> findByCompradorIdAndAnuncioId(UUID compradorId, UUID anuncioId);
 
     Optional<SalaChat> findByCompradorIdAndVeiculoId(UUID compradorId, UUID veiculoId);

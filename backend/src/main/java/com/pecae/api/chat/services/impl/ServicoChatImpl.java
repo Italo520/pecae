@@ -116,10 +116,81 @@ public class ServicoChatImpl implements IServicoChat {
     @Override
     @Transactional(readOnly = true)
     public List<RespostaSalaChat> listarMinhasSalas(UUID usuarioId) {
-        List<SalaChat> salas = repositorioSalaChat.buscarSalasAtivasDoUsuario(usuarioId);
+        List<Object[]> salas = repositorioSalaChat.buscarSalasComResumo(usuarioId);
         return salas.stream()
-                .map(sala -> mapearParaRespostaSala(sala, usuarioId))
+                .map(row -> mapearLinhaResumida(row, usuarioId))
                 .toList();
+    }
+
+    private RespostaSalaChat mapearLinhaResumida(Object[] row, UUID usuarioLogadoId) {
+        UUID salaId = UUID.fromString((String) row[0]);
+        UUID buyerId = UUID.fromString((String) row[1]);
+        UUID sellerId = UUID.fromString((String) row[2]);
+        UUID listingId = row[3] != null ? UUID.fromString((String) row[3]) : null;
+        UUID vehicleId = row[4] != null ? UUID.fromString((String) row[4]) : null;
+        
+        java.sql.Timestamp updatedAtTs = (java.sql.Timestamp) row[5];
+        LocalDateTime updatedAt = updatedAtTs != null ? updatedAtTs.toLocalDateTime() : null;
+        
+        String ultimaMsgConteudo = (String) row[6];
+        String remetenteStr = (String) row[7];
+        UUID ultimaMsgRemetenteId = remetenteStr != null ? UUID.fromString(remetenteStr) : null;
+        
+        java.sql.Timestamp msgCriadaTs = (java.sql.Timestamp) row[8];
+        LocalDateTime ultimaMsgCriadaEm = msgCriadaTs != null ? msgCriadaTs.toLocalDateTime() : null;
+        
+        long naoLidos = ((Number) row[9]).longValue();
+
+        UUID interlocutorId = buyerId.equals(usuarioLogadoId) ? sellerId : buyerId;
+        Usuario interlocutor = usuarioRepository.findById(interlocutorId).orElse(null);
+        RespostaInterlocutor interlocutorDto = interlocutor != null 
+                ? new RespostaInterlocutor(interlocutor.getId(), interlocutor.getNome(), interlocutor.getAvatar())
+                : null;
+
+        RespostaUltimaMensagem ultimaMensagemDto = null;
+        if (ultimaMsgConteudo != null) {
+            ultimaMensagemDto = new RespostaUltimaMensagem(ultimaMsgConteudo, ultimaMsgRemetenteId, ultimaMsgCriadaEm);
+        }
+
+        String titulo = "Conversa";
+        String miniatura = null;
+        String anuncioStatus = null;
+        LocalDateTime anuncioVendidoEm = null;
+
+        if (listingId != null) {
+            Anuncio anuncio = repositorioAnuncio.findById(listingId).orElse(null);
+            if (anuncio != null) {
+                titulo = anuncio.getTitulo();
+                anuncioStatus = anuncio.getStatus().name();
+                anuncioVendidoEm = (anuncio.getStatus() == StatusAnuncio.VENDIDO) ? anuncio.getVendidoEm() : anuncio.getAtualizadoEm();
+                if (anuncio.getVeiculo() != null && !anuncio.getVeiculo().getFotos().isEmpty()) {
+                    miniatura = anuncio.getVeiculo().getFotos().get(0).getUrlFoto();
+                }
+            }
+        } else if (vehicleId != null) {
+            Veiculo veiculo = repositorioVeiculo.findById(vehicleId).orElse(null);
+            if (veiculo != null) {
+                titulo = veiculo.getMarcaNome() + " " + veiculo.getModeloNome() + " " + (veiculo.getVersaoNome() != null ? veiculo.getVersaoNome() : "");
+                if (!veiculo.getFotos().isEmpty()) {
+                    miniatura = veiculo.getFotos().get(0).getUrlFoto();
+                }
+            }
+        }
+
+        return new RespostaSalaChat(
+                salaId,
+                listingId,
+                vehicleId,
+                titulo,
+                miniatura,
+                sellerId,
+                interlocutorDto,
+                ultimaMensagemDto,
+                naoLidos,
+                updatedAt,
+                anuncioStatus,
+                anuncioVendidoEm
+        );
     }
 
     @Override

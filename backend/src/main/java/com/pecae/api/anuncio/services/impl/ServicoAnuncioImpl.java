@@ -135,8 +135,7 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
         List<RespostaSugestaoAutocomplete> sugestoes = new java.util.ArrayList<>();
 
         // Buscar Marcas
-        marcaVeiculoRepository.findByNomeContainingIgnoreCaseAndAtivoTrue(query).stream()
-            .limit(5)
+        marcaVeiculoRepository.findTop5ByNomeContainingIgnoreCaseAndAtivoTrue(query)
             .forEach(m -> sugestoes.add(new RespostaSugestaoAutocomplete(
                 m.getId().toString(),
                 m.getNome(),
@@ -144,8 +143,7 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
             )));
 
         // Buscar Modelos
-        modeloVeiculoRepository.findByNomeContainingIgnoreCaseAndAtivoTrue(query).stream()
-            .limit(5)
+        modeloVeiculoRepository.findTop5ByNomeContainingIgnoreCaseAndAtivoTrue(query)
             .forEach(m -> sugestoes.add(new RespostaSugestaoAutocomplete(
                 m.getId().toString(),
                 m.getNome() + " (" + m.getMarca().getNome() + ")",
@@ -460,7 +458,9 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
 
             // Disparar alertas de matching para buscas salvas ativas
             try {
-                List<BuscaSalva> buscas = repositorioBuscaSalva.findByAtivaTrue();
+                String estadoVeiculo = anuncio.getVeiculo() != null ? anuncio.getVeiculo().getEstado() : null;
+                String cidadeVeiculo = anuncio.getVeiculo() != null ? anuncio.getVeiculo().getCidade() : null;
+                List<BuscaSalva> buscas = repositorioBuscaSalva.findAtivasByEstadoOuCidade(estadoVeiculo, cidadeVeiculo);
                 for (BuscaSalva busca : buscas) {
                     if (verificarMatchingBusca(anuncio, busca)) {
                         servicoNotificacao.despacharNotificacao(

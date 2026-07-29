@@ -46,26 +46,24 @@ public interface RepositorioAnuncio extends JpaRepository<Anuncio, UUID> {
         countQuery = """
         SELECT count(*) FROM listings a
         JOIN vehicles v ON a.vehicle_id = v.id
-        JOIN seller_profiles sp ON a.seller_profile_id = sp.id
-        JOIN users u ON sp.user_id = u.id
-        CROSS JOIN LATERAL (
-            SELECT CASE 
-                WHEN CAST(:lat AS double precision) IS NOT NULL 
-                 AND CAST(:lng AS double precision) IS NOT NULL 
-                 AND v.lat IS NOT NULL 
-                 AND v.lng IS NOT NULL 
-                THEN (6371 * acos(least(1.0, greatest(-1.0, cos(radians(CAST(:lat AS double precision))) * cos(radians(v.lat)) * cos(radians(v.lng) - radians(CAST(:lng AS double precision))) + sin(radians(CAST(:lat AS double precision))) * sin(radians(v.lat))))))
-                ELSE 0 END AS distancia
-        ) d
+        JOIN seller_profiles sp ON a.seller_profile_id = sp.id AND sp.deleted_at IS NULL
+        JOIN users u ON sp.user_id = u.id AND u.status = 'ACTIVE'
         WHERE a.status = 'PUBLISHED'
           AND a.deleted_at IS NULL
-          AND sp.deleted_at IS NULL AND u.status = 'ACTIVE'
           AND (:marcaId IS NULL OR :marcaId = '' OR v.marca_nome = :marcaId)
           AND (:modeloId IS NULL OR :modeloId = '' OR v.modelo_nome = :modeloId)
           AND (:cidade IS NULL OR :cidade = '' OR LOWER(v.city) = LOWER(:cidade))
           AND (:estado IS NULL OR :estado = '' OR LOWER(v.state) = LOWER(:estado))
           AND (:search IS NULL OR :search = '' OR a.search_vector @@ to_tsquery('portuguese', :search))
-          AND (CAST(:lat AS double precision) IS NULL OR CAST(:lng AS double precision) IS NULL OR v.lat IS NULL OR v.lng IS NULL OR :maxDistancia IS NULL OR d.distancia <= :maxDistancia)
+          AND (
+              CAST(:lat AS double precision) IS NULL OR CAST(:lng AS double precision) IS NULL
+              OR v.lat IS NULL OR v.lng IS NULL OR :maxDistancia IS NULL
+              OR (6371 * acos(least(1.0, greatest(-1.0,
+                  cos(radians(CAST(:lat AS double precision))) * cos(radians(v.lat))
+                  * cos(radians(v.lng) - radians(CAST(:lng AS double precision)))
+                  + sin(radians(CAST(:lat AS double precision))) * sin(radians(v.lat))
+              )))) <= :maxDistancia
+          )
         """,
         nativeQuery = true)
     Page<Anuncio> buscarPublicados(

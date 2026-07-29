@@ -13,4 +13,18 @@ public interface RepositorioBuscaSalva extends JpaRepository<BuscaSalva, UUID> {
     Page<BuscaSalva> findByUsuarioIdOrderByCriadaEmDesc(UUID usuarioId, Pageable pageable);
 
     List<BuscaSalva> findByAtivaTrue();
+
+    @org.springframework.data.jpa.repository.Query(value = """
+        SELECT * FROM saved_searches
+        WHERE ativa = true
+          AND (
+              filtros->>'estado' = :estado
+              OR filtros->>'cidade' = :cidade
+              OR (filtros->>'estado' IS NULL AND filtros->>'cidade' IS NULL)
+          )
+        """, nativeQuery = true)
+    List<BuscaSalva> findAtivasByEstadoOuCidade(
+        @org.springframework.data.repository.query.Param("estado") String estado,
+        @org.springframework.data.repository.query.Param("cidade") String cidade
+    );
 }
