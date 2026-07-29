@@ -42,8 +42,8 @@ services:
     # ports:
     #   - "3000:3000"
     environment:
-      - PORT=8080
-      - SERVER_PORT=8080
+      - PORT=3000
+      - SERVER_PORT=3000
       - SPRING_PROFILES_ACTIVE=prod
       - DATABASE_URL=${DATABASE_URL}
       - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL:-jdbc:postgresql://pecae-postgres:5432/pecae}
@@ -61,13 +61,13 @@ services:
       - ADMIN_SEED_PASSWORD=${ADMIN_SEED_PASSWORD}
     labels:
       - traefik.enable=true
-      - traefik.http.routers.pecae-api.rule=Host(`${SERVICE_FQDN_API:-api-pecae.italohub.cloud}`)
+      - 'traefik.http.routers.pecae-api.rule=Host(`${SERVICE_FQDN_API:-api-pecae.italohub.cloud}`)'
       - traefik.http.routers.pecae-api.entrypoints=https
       - traefik.http.routers.pecae-api.tls=true
       - traefik.http.routers.pecae-api.tls.certresolver=letsencrypt
       - traefik.http.routers.pecae-api.service=pecae-api
-      - traefik.http.services.pecae-api.loadbalancer.server.port=8080
-      - traefik.http.services.https-0-jn38h7vp5ne48tb4668p5mgh-api.loadbalancer.server.port=8080
+      - traefik.http.services.pecae-api.loadbalancer.server.port=3000
+      - traefik.http.services.https-0-jn38h7vp5ne48tb4668p5mgh-api.loadbalancer.server.port=3000
       - traefik.http.routers.https-0-jn38h7vp5ne48tb4668p5mgh-api.service=pecae-api
       - traefik.docker.network=coolify
     depends_on:
@@ -88,12 +88,12 @@ services:
       - NODE_ENV=production
       - HOSTNAME=0.0.0.0
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-https://api-pecae.italohub.cloud/api/v1}
-      - 'API_URL=${API_URL:-http://api:8080/api/v1}'
+      - 'API_URL=${API_URL:-http://api:3000/api/v1}'
       - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
       - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
     labels:
       - traefik.enable=true
-      - traefik.http.routers.pecae-web.rule=Host(`${SERVICE_FQDN_WEB:-web.pecae.italohub.cloud}`)
+      - 'traefik.http.routers.pecae-web.rule=Host(`${SERVICE_FQDN_WEB:-web.pecae.italohub.cloud}`)'
       - traefik.http.routers.pecae-web.entrypoints=https
       - traefik.http.routers.pecae-web.tls=true
       - traefik.http.routers.pecae-web.tls.certresolver=letsencrypt

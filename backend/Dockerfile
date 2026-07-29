@@ -26,7 +26,7 @@ WORKDIR /app
 # Copia o jar gerado do Stage 1
 COPY --from=builder /app/build/libs/api-0.0.1-SNAPSHOT.jar app.jar
 
-EXPOSE 8080
+EXPOSE 3000
 
 # Comando para iniciar
 ENTRYPOINT ["java", "-jar", "app.jar"]
