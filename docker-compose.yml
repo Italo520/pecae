@@ -64,9 +64,8 @@ services:
       - traefik.http.routers.pecae-api.tls=true
       - traefik.http.routers.pecae-api.tls.certresolver=letsencrypt
       - traefik.http.routers.pecae-api.priority=1000
+      - traefik.http.routers.pecae-api.service=pecae-api
       - traefik.http.services.pecae-api.loadbalancer.server.port=3000
-      - traefik.http.routers.https-0-jn38h7vp5ne48tb4668p5mgh-api.service=pecae-api
-      - traefik.http.services.https-0-jn38h7vp5ne48tb4668p5mgh-api.loadbalancer.server.port=3000
       - traefik.docker.network=coolify
     depends_on:
       pecae-redis:
@@ -96,9 +95,8 @@ services:
       - traefik.http.routers.pecae-web.tls=true
       - traefik.http.routers.pecae-web.tls.certresolver=letsencrypt
       - traefik.http.routers.pecae-web.priority=1000
+      - traefik.http.routers.pecae-web.service=pecae-web
       - traefik.http.services.pecae-web.loadbalancer.server.port=3000
-      - traefik.http.routers.https-0-jn38h7vp5ne48tb4668p5mgh-web-frontend.service=pecae-web
-      - traefik.http.services.https-0-jn38h7vp5ne48tb4668p5mgh-web-frontend.loadbalancer.server.port=3000
       - traefik.docker.network=coolify
     depends_on:
       - api
