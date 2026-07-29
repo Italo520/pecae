@@ -278,7 +278,6 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
             EstatisticasVendedor statsVendedor = perfilVendedor.getEstatisticas();
             if (statsVendedor != null) {
                 statsVendedor.setAnunciosAtivos(Math.max(0, statsVendedor.getAnunciosAtivos() - 1));
-                perfilVendedorRepository.save(perfilVendedor);
             }
         }
 
@@ -293,10 +292,9 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
             anuncio.setDescricao(request.descricao());
         }
 
-        Anuncio anuncioAtualizado = repositorioAnuncio.save(anuncio);
         log.info("Anúncio {} atualizado pelo vendedor: {}", anuncioId, perfilVendedor.getId());
 
-        return mapperAnuncio.paraRespostaDetalhe(anuncioAtualizado);
+        return mapperAnuncio.paraRespostaDetalhe(anuncio);
     }
 
     @Override
@@ -334,13 +332,11 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
         // Atualizar status do anúncio
         anuncio.setStatus(StatusAnuncio.VENDIDO);
         anuncio.setVendidoEm(LocalDateTime.now());
-        repositorioAnuncio.save(anuncio);
 
         // Atualizar status do veículo para VENDIDO
         Veiculo veiculo = anuncio.getVeiculo();
         if (veiculo != null) {
             veiculo.setStatus(StatusVeiculo.VENDIDO);
-            repositorioVeiculo.save(veiculo);
         }
 
         // Atualizar EstatisticasVendedor
@@ -349,7 +345,6 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
             if (statusAnterior == StatusAnuncio.PUBLICADO) {
                 statsVendedor.setAnunciosAtivos(Math.max(0, statsVendedor.getAnunciosAtivos() - 1));
             }
-            perfilVendedorRepository.save(perfilVendedor);
         }
 
         log.info("Anúncio {} marcado como VENDIDO. Veículo {} atualizado para VENDIDO.", anuncio.getId(), veiculo != null ? veiculo.getId() : null);
@@ -368,7 +363,6 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
         StatusAnuncio statusAnterior = anuncio.getStatus();
 
         anuncio.setStatus(StatusAnuncio.EXPIRADO);
-        repositorioAnuncio.save(anuncio);
 
         repositorioAnuncio.delete(anuncio); // Soft delete via @SQLDelete
 
@@ -379,7 +373,6 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
                 statsVendedor.setAnunciosAtivos(Math.max(0, statsVendedor.getAnunciosAtivos() - 1));
             }
             statsVendedor.setTotalAnuncios(Math.max(0, statsVendedor.getTotalAnuncios() - 1));
-            perfilVendedorRepository.save(perfilVendedor);
         }
 
         log.info("Anúncio {} removido (soft-delete) pelo vendedor: {}", anuncio.getId(), perfilVendedor.getId());
@@ -397,13 +390,11 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
 
         StatusAnuncio statusAnterior = anuncio.getStatus();
         anuncio.setStatus(StatusAnuncio.PAUSADO);
-        repositorioAnuncio.save(anuncio);
 
         // Atualizar status do veículo para INATIVO
         Veiculo veiculo = anuncio.getVeiculo();
         if (veiculo != null) {
             veiculo.setStatus(StatusVeiculo.INATIVO);
-            repositorioVeiculo.save(veiculo);
         }
 
         // Atualizar EstatisticasVendedor
@@ -412,7 +403,6 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
             if (statusAnterior == StatusAnuncio.PUBLICADO) {
                 statsVendedor.setAnunciosAtivos(Math.max(0, statsVendedor.getAnunciosAtivos() - 1));
             }
-            perfilVendedorRepository.save(perfilVendedor);
         }
 
         log.info("Anúncio {} pausado pelo vendedor: {}", anuncio.getId(), perfilVendedor.getId());
@@ -430,13 +420,11 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
 
         anuncio.setStatus(StatusAnuncio.PENDENTE);
         anuncio.setPublicadoEm(null);
-        repositorioAnuncio.save(anuncio);
 
         // Atualizar status do veículo para PENDENTE
         Veiculo veiculo = anuncio.getVeiculo();
         if (veiculo != null) {
             veiculo.setStatus(StatusVeiculo.PENDENTE);
-            repositorioVeiculo.save(veiculo);
         }
 
         log.info("Anúncio {} republicado e aguardando moderação. Vendedor: {}", anuncio.getId(), perfilVendedor.getId());
@@ -461,7 +449,6 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
             Veiculo veiculo = anuncio.getVeiculo();
             if (veiculo != null) {
                 veiculo.setStatus(StatusVeiculo.ATIVO);
-                repositorioVeiculo.save(veiculo);
             }
 
             // Incrementar anúncios ativos do vendedor
@@ -469,7 +456,6 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
             EstatisticasVendedor statsVendedor = perfilVendedor.getEstatisticas();
             if (statsVendedor != null) {
                 statsVendedor.setAnunciosAtivos(statsVendedor.getAnunciosAtivos() + 1);
-                perfilVendedorRepository.save(perfilVendedor);
             }
 
             // Disparar alertas de matching para buscas salvas ativas
@@ -495,7 +481,6 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
             Veiculo veiculo = anuncio.getVeiculo();
             if (veiculo != null) {
                 veiculo.setStatus(StatusVeiculo.INATIVO);
-                repositorioVeiculo.save(veiculo);
             }
 
             // Caso seja rejeitado, se antes estava publicado
@@ -504,12 +489,10 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
                 EstatisticasVendedor statsVendedor = perfilVendedor.getEstatisticas();
                 if (statsVendedor != null) {
                     statsVendedor.setAnunciosAtivos(Math.max(0, statsVendedor.getAnunciosAtivos() - 1));
-                    perfilVendedorRepository.save(perfilVendedor);
                 }
             }
         }
 
-        repositorioAnuncio.save(anuncio);
         log.info("Anúncio {} moderado com sucesso. Status alterado de {} para {}.", anuncioId, statusAnterior, novoStatus);
     }
 
@@ -592,13 +575,11 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
 
         StatusAnuncio statusAnterior = anuncio.getStatus();
         anuncio.setStatus(StatusAnuncio.ENCERRADO);
-        repositorioAnuncio.save(anuncio);
 
         // Atualizar status do veículo para INATIVO
         Veiculo veiculo = anuncio.getVeiculo();
         if (veiculo != null) {
             veiculo.setStatus(StatusVeiculo.INATIVO);
-            repositorioVeiculo.save(veiculo);
         }
 
         // Atualizar EstatisticasVendedor
@@ -607,7 +588,6 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
             if (statusAnterior == StatusAnuncio.PUBLICADO) {
                 statsVendedor.setAnunciosAtivos(Math.max(0, statsVendedor.getAnunciosAtivos() - 1));
             }
-            perfilVendedorRepository.save(perfilVendedor);
         }
 
         log.info("Anúncio {} encerrado pelo vendedor: {}", anuncio.getId(), perfilVendedor.getId());
@@ -628,29 +608,12 @@ public class ServicoAnuncioImpl implements IServicoAnuncio {
     }
 
     private void verificarDuplicado(UUID perfilVendedorId, UUID veiculoId, String titulo, String descricao) {
-        try {
-            Page<Anuncio> anunciosVendedor = repositorioAnuncio.findAllByPerfilVendedorId(perfilVendedorId, Pageable.unpaged());
-            for (Anuncio a : anunciosVendedor.getContent()) {
-                if (a.getStatus() == StatusAnuncio.PUBLICADO || a.getStatus() == StatusAnuncio.PENDENTE) {
-                    try {
-                        Veiculo v = a.getVeiculo();
-                        if (v != null && v.getId() != null && v.getId().equals(veiculoId)) {
-                            throw new ExcecaoNegocio("Você já possui um anúncio ativo para este veículo.");
-                        }
-                    } catch (ExcecaoNegocio e) {
-                        throw e;
-                    } catch (Exception ignored) {}
+        boolean isDuplicado = repositorioAnuncio.existsByPerfilVendedorIdAndAtivoAndVeiculoOuTituloEDescricao(
+            perfilVendedorId, veiculoId, titulo, descricao
+        );
 
-                    if (a.getTitulo() != null && a.getTitulo().equalsIgnoreCase(titulo) && 
-                        a.getDescricao() != null && a.getDescricao().equalsIgnoreCase(descricao)) {
-                        throw new ExcecaoNegocio("Você já possui um anúncio ativo com exatamente o mesmo título e descrição.");
-                    }
-                }
-            }
-        } catch (ExcecaoNegocio e) {
-            throw e;
-        } catch (Exception e) {
-            log.warn("Erro genérico ao verificar duplicidade de anúncio: {}", e.getMessage());
+        if (isDuplicado) {
+            throw new ExcecaoNegocio("Você já possui um anúncio ativo para este veículo ou com o mesmo título e descrição.");
         }
     }
 }

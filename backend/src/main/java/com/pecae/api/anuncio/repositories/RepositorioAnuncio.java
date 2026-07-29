@@ -18,37 +18,54 @@ public interface RepositorioAnuncio extends JpaRepository<Anuncio, UUID> {
     @Query(value = """
         SELECT a.* FROM listings a
         JOIN vehicles v ON a.vehicle_id = v.id
+        JOIN seller_profiles sp ON a.seller_profile_id = sp.id
+        JOIN users u ON sp.user_id = u.id
+        CROSS JOIN LATERAL (
+            SELECT CASE 
+                WHEN CAST(:lat AS double precision) IS NOT NULL 
+                 AND CAST(:lng AS double precision) IS NOT NULL 
+                 AND v.lat IS NOT NULL 
+                 AND v.lng IS NOT NULL 
+                THEN (6371 * acos(least(1.0, greatest(-1.0, cos(radians(CAST(:lat AS double precision))) * cos(radians(v.lat)) * cos(radians(v.lng) - radians(CAST(:lng AS double precision))) + sin(radians(CAST(:lat AS double precision))) * sin(radians(v.lat))))))
+                ELSE 0 END AS distancia
+        ) d
         WHERE a.status = 'PUBLISHED'
           AND a.deleted_at IS NULL
-          AND a.seller_profile_id IN (SELECT sp.id FROM seller_profiles sp JOIN users u ON sp.user_id = u.id WHERE sp.deleted_at IS NULL AND u.status = 'ACTIVE')
-          AND (:marcaId IS NULL OR :marcaId = '')
-          AND (:modeloId IS NULL OR :modeloId = '')
+          AND sp.deleted_at IS NULL AND u.status = 'ACTIVE'
+          AND (:marcaId IS NULL OR :marcaId = '' OR v.marca_nome = :marcaId)
+          AND (:modeloId IS NULL OR :modeloId = '' OR v.modelo_nome = :modeloId)
           AND (:cidade IS NULL OR :cidade = '' OR LOWER(v.city) = LOWER(:cidade))
           AND (:estado IS NULL OR :estado = '' OR LOWER(v.state) = LOWER(:estado))
           AND (:search IS NULL OR :search = '' OR a.search_vector @@ to_tsquery('portuguese', :search))
-          AND (CAST(:lat AS double precision) IS NULL OR CAST(:lng AS double precision) IS NULL OR v.lat IS NULL OR v.lng IS NULL OR :maxDistancia IS NULL OR 
-               (6371 * acos(least(1.0, greatest(-1.0, cos(radians(CAST(:lat AS double precision))) * cos(radians(v.lat)) * cos(radians(v.lng) - radians(CAST(:lng AS double precision))) + sin(radians(CAST(:lat AS double precision))) * sin(radians(v.lat)))))) <= :maxDistancia)
+          AND (CAST(:lat AS double precision) IS NULL OR CAST(:lng AS double precision) IS NULL OR v.lat IS NULL OR v.lng IS NULL OR :maxDistancia IS NULL OR d.distancia <= :maxDistancia)
         ORDER BY 
           CASE WHEN CAST(:lat AS double precision) IS NULL OR CAST(:lng AS double precision) IS NULL OR v.lat IS NULL OR v.lng IS NULL THEN 1 ELSE 0 END ASC,
-          CASE WHEN CAST(:lat AS double precision) IS NOT NULL AND CAST(:lng AS double precision) IS NOT NULL AND v.lat IS NOT NULL AND v.lng IS NOT NULL 
-               THEN (6371 * acos(least(1.0, greatest(-1.0, cos(radians(CAST(:lat AS double precision))) * cos(radians(v.lat)) * cos(radians(v.lng) - radians(CAST(:lng AS double precision))) + sin(radians(CAST(:lat AS double precision))) * sin(radians(v.lat))))))
-               ELSE 0 
-          END ASC,
+          d.distancia ASC,
           a.published_at DESC
         """,
         countQuery = """
         SELECT count(*) FROM listings a
         JOIN vehicles v ON a.vehicle_id = v.id
+        JOIN seller_profiles sp ON a.seller_profile_id = sp.id
+        JOIN users u ON sp.user_id = u.id
+        CROSS JOIN LATERAL (
+            SELECT CASE 
+                WHEN CAST(:lat AS double precision) IS NOT NULL 
+                 AND CAST(:lng AS double precision) IS NOT NULL 
+                 AND v.lat IS NOT NULL 
+                 AND v.lng IS NOT NULL 
+                THEN (6371 * acos(least(1.0, greatest(-1.0, cos(radians(CAST(:lat AS double precision))) * cos(radians(v.lat)) * cos(radians(v.lng) - radians(CAST(:lng AS double precision))) + sin(radians(CAST(:lat AS double precision))) * sin(radians(v.lat))))))
+                ELSE 0 END AS distancia
+        ) d
         WHERE a.status = 'PUBLISHED'
           AND a.deleted_at IS NULL
-          AND a.seller_profile_id IN (SELECT sp.id FROM seller_profiles sp JOIN users u ON sp.user_id = u.id WHERE sp.deleted_at IS NULL AND u.status = 'ACTIVE')
-          AND (:marcaId IS NULL OR :marcaId = '')
-          AND (:modeloId IS NULL OR :modeloId = '')
+          AND sp.deleted_at IS NULL AND u.status = 'ACTIVE'
+          AND (:marcaId IS NULL OR :marcaId = '' OR v.marca_nome = :marcaId)
+          AND (:modeloId IS NULL OR :modeloId = '' OR v.modelo_nome = :modeloId)
           AND (:cidade IS NULL OR :cidade = '' OR LOWER(v.city) = LOWER(:cidade))
           AND (:estado IS NULL OR :estado = '' OR LOWER(v.state) = LOWER(:estado))
           AND (:search IS NULL OR :search = '' OR a.search_vector @@ to_tsquery('portuguese', :search))
-          AND (CAST(:lat AS double precision) IS NULL OR CAST(:lng AS double precision) IS NULL OR v.lat IS NULL OR v.lng IS NULL OR :maxDistancia IS NULL OR 
-               (6371 * acos(least(1.0, greatest(-1.0, cos(radians(CAST(:lat AS double precision))) * cos(radians(v.lat)) * cos(radians(v.lng) - radians(CAST(:lng AS double precision))) + sin(radians(CAST(:lat AS double precision))) * sin(radians(v.lat)))))) <= :maxDistancia)
+          AND (CAST(:lat AS double precision) IS NULL OR CAST(:lng AS double precision) IS NULL OR v.lat IS NULL OR v.lng IS NULL OR :maxDistancia IS NULL OR d.distancia <= :maxDistancia)
         """,
         nativeQuery = true)
     Page<Anuncio> buscarPublicados(
@@ -61,6 +78,14 @@ public interface RepositorioAnuncio extends JpaRepository<Anuncio, UUID> {
         @Param("lng") Double lng,
         @Param("maxDistancia") Integer maxDistancia,
         Pageable pageable
+    );
+
+    @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END FROM Anuncio a WHERE a.perfilVendedor.id = :perfilVendedorId AND a.status IN ('PUBLICADO', 'PENDENTE') AND (a.veiculo.id = :veiculoId OR (LOWER(a.titulo) = LOWER(:titulo) AND LOWER(a.descricao) = LOWER(:descricao)))")
+    boolean existsByPerfilVendedorIdAndAtivoAndVeiculoOuTituloEDescricao(
+        @Param("perfilVendedorId") UUID perfilVendedorId, 
+        @Param("veiculoId") UUID veiculoId, 
+        @Param("titulo") String titulo, 
+        @Param("descricao") String descricao
     );
 
     // Métodos para buscar por ID do Veículo

@@ -143,7 +143,7 @@ class ServicoAnuncioTest {
 
             assertThatThrownBy(() -> servicoAnuncio.buscarDetalhe(anuncioId, "127.0.0.1"))
                 .isInstanceOf(ExcecaoRecursoNaoEncontrado.class)
-                .hasMessageContaining("Anúncio publicado não encontrado.");
+                .hasMessageContaining("Anúncio não encontrado.");
         }
     }
 
@@ -167,7 +167,7 @@ class ServicoAnuncioTest {
 
             when(perfilVendedorRepository.findByUsuarioId(usuarioId)).thenReturn(Optional.of(vendedor));
             when(repositorioVeiculo.findById(veiculoId)).thenReturn(Optional.of(veiculo));
-            when(repositorioAnuncio.findAllByPerfilVendedorId(any(), any())).thenReturn(Page.empty());
+            when(repositorioAnuncio.existsByPerfilVendedorIdAndAtivoAndVeiculoOuTituloEDescricao(any(), any(), any(), any())).thenReturn(false);
             when(repositorioAnuncio.save(any(Anuncio.class))).thenReturn(anuncio);
 
             RespostaDetalheAnuncio respostaDetalhe = new RespostaDetalheAnuncio(
@@ -228,7 +228,6 @@ class ServicoAnuncioTest {
 
             when(perfilVendedorRepository.findByUsuarioId(usuarioId)).thenReturn(Optional.of(vendedor));
             when(repositorioAnuncio.findByIdAndPerfilVendedorId(anuncioId, vendedor.getId())).thenReturn(Optional.of(anuncio));
-            when(repositorioAnuncio.save(anuncio)).thenReturn(anuncio);
 
             servicoAnuncio.atualizar(usuarioId, anuncioId, request);
 
@@ -270,8 +269,6 @@ class ServicoAnuncioTest {
             assertThat(veiculo.getStatus()).isEqualTo(StatusVeiculo.VENDIDO);
             assertThat(vendedor.getEstatisticas().getAnunciosAtivos()).isEqualTo(1);
             verify(maquinaEstado, times(1)).validarTransicao(StatusAnuncio.PUBLICADO, StatusAnuncio.VENDIDO);
-            verify(repositorioAnuncio, times(1)).save(anuncio);
-            verify(repositorioVeiculo, times(1)).save(veiculo);
         }
 
         @Test
