@@ -137,7 +137,7 @@ test.describe('PECAÊ E2E - Fluxo de Cadastro e Moderação de Veículo', () => 
 
     // 4. Aprovação via API com autenticação de Moderador
     const modToken = await page.evaluate(async () => {
-      const loginRes = await fetch('http://localhost:3333/api/v1/auth/login', {
+      const loginRes = await fetch('https://api-pecae.italohub.cloud/api/v1/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: 'moderator-e2e@pecae.com.br', password: 'Pecae@E2e123' })
@@ -147,7 +147,7 @@ test.describe('PECAÊ E2E - Fluxo de Cadastro e Moderação de Veículo', () => 
     });
 
     const approveStatus = await page.evaluate(async ({ id, token }) => {
-      const res = await fetch(`http://localhost:3333/api/v1/moderacao/anuncios/${id}/decisao`, {
+      const res = await fetch(`https://api-pecae.italohub.cloud/api/v1/moderacao/anuncios/${id}/decisao`, {
         method: 'POST',
         headers: { 
           'Authorization': `Bearer ${token}`,

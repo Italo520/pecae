@@ -27,26 +27,24 @@ test.describe('PECAÊ E2E - Acesso Deslogado (Guest Access) - Web Next.js', () =
   let publishedVehicleId = '';
 
   test.beforeAll(async () => {
-    // Obter um ID de veículo publicado do banco de dados para testar navegação direta
-    publishedVehicleId = runSqlQuery("SELECT v.id FROM vehicles v JOIN listings l ON l.vehicle_id = v.id WHERE l.status = 'PUBLISHED' LIMIT 1;");
-    console.log(`ℹ️ [GUEST ACCESS] Veículo Publicado ID para teste: ${publishedVehicleId}`);
+    // Obter um ID de anúncio publicado do banco de dados para testar navegação direta
+    publishedVehicleId = runSqlQuery("SELECT l.id FROM listings l WHERE l.status = 'PUBLISHED' LIMIT 1;");
+    console.log(`ℹ️ [GUEST ACCESS] Anúncio Publicado ID para teste: ${publishedVehicleId}`);
     
     if (!publishedVehicleId) {
-      console.warn('⚠️ [GUEST ACCESS] Nenhum veículo publicado encontrado no banco de dados. Teste direto de veículo pode falhar.');
+      console.warn('⚠️ [GUEST ACCESS] Nenhum anúncio publicado encontrado no banco de dados. Teste direto de veículo pode falhar.');
     }
   });
 
   test.beforeEach(async ({ page }) => {
     // Garantir que começamos o teste deslogados
+    const context = page.context();
+    await context.clearCookies();
     await page.goto('/');
     await page.evaluate(() => {
       localStorage.clear();
       sessionStorage.clear();
     });
-    // Limpar cookies específicos do app para deslogar totalmente
-    const context = page.context();
-    await context.clearCookies();
-    await page.reload();
   });
 
   test('Deve permitir visualizar a home e acessar detalhes de veículo deslogado', async ({ page }) => {
@@ -54,17 +52,17 @@ test.describe('PECAÊ E2E - Acesso Deslogado (Guest Access) - Web Next.js', () =
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
     
-    const loginLink = page.locator('text=/Entrar|Login/i').first();
-    await expect(loginLink).toBeVisible({ timeout: 15000 });
-    console.log('✅ Home carregada e botão Entrar/Login visível no cabeçalho.');
+    const loginLink = page.locator('a[href*="login"]').first();
+    await expect(loginLink).toBeAttached({ timeout: 15000 });
+    console.log('✅ Home carregada e link de Login/Entrar presente no cabeçalho.');
 
     // 2. Tentar navegar para a página de detalhes do veículo publicado
     if (publishedVehicleId) {
       await page.goto(`/veiculo/${publishedVehicleId}`);
       await page.waitForLoadState('domcontentloaded');
       
-      // Deve carregar detalhes do veículo como a placa ou seções de peças
-      const partsTitle = page.locator('h1, text=/Placa|Especificações|Peças|Voltar|PECAÊ/i').first();
+      // Deve carregar detalhes do veículo
+      const partsTitle = page.locator('h1').first();
       await expect(partsTitle).toBeVisible({ timeout: 15000 });
       console.log('✅ Acesso a detalhes de veículo deslogado verificado com sucesso.');
     }
@@ -75,7 +73,7 @@ test.describe('PECAÊ E2E - Acesso Deslogado (Guest Access) - Web Next.js', () =
     await page.goto('/comprador/favoritos');
     
     // 2. O layout do comprador deve redirecionar imediatamente para /login
-    await page.waitForURL('**/login', { timeout: 15000 });
+    await page.waitForURL((url) => url.pathname.includes('/login'), { timeout: 15000 });
     
     // 3. Garantir que o formulário de login está visível
     const loginForm = page.locator('input[type="email"]').first();

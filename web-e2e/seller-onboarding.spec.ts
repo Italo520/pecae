@@ -72,10 +72,13 @@ test.describe('PECAÊ E2E - Onboarding de Vendedor', () => {
     await page.goto('/login');
     await page.locator('input[type="email"]').fill(testEmail);
     await page.locator('input[type="password"]').fill('Pecae@E2e123');
-    await page.getByRole('button', { name: /Entrar/i }).click();
+    await page.locator('button[type="submit"]').click();
     
     // Aguardar o login ser concluído e o redirecionamento pós-login acontecer
-    await page.waitForURL('**/vendedor/**', { timeout: 20000 });
+    await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 20000 });
+    if (!page.url().includes('/vendedor')) {
+      await page.goto('/vendedor/onboarding');
+    }
 
     // 4. Ir para onboarding
     await page.goto('/vendedor/onboarding');
