@@ -42,6 +42,7 @@ services:
     # ports:
     #   - "3000:3000"
     environment:
+      - PORT=${PORT:-3000}
       - SERVER_PORT=${PORT:-3000}
       - SPRING_PROFILES_ACTIVE=prod
       - DATABASE_URL=${DATABASE_URL}
