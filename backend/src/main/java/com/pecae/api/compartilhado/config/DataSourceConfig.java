@@ -49,9 +49,14 @@ public class DataSourceConfig {
             
             String query = dbUri.getQuery();
             if (query == null || query.isEmpty()) {
-                query = "sslmode=require";
-            } else if (!query.contains("sslmode=")) {
-                query += "&sslmode=require";
+                query = "sslmode=require&prepareThreshold=0";
+            } else {
+                if (!query.contains("sslmode=")) {
+                    query += "&sslmode=require";
+                }
+                if (!query.contains("prepareThreshold=")) {
+                    query += "&prepareThreshold=0";
+                }
             }
             
             String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + 

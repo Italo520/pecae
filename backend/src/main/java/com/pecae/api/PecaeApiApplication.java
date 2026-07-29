@@ -29,9 +29,14 @@ public class PecaeApiApplication {
 				String query = uri.getQuery();
 
 				if (query == null || query.isEmpty()) {
-					query = "sslmode=require";
-				} else if (!query.contains("sslmode=")) {
-					query += "&sslmode=require";
+					query = "sslmode=require&prepareThreshold=0";
+				} else {
+					if (!query.contains("sslmode=")) {
+						query += "&sslmode=require";
+					}
+					if (!query.contains("prepareThreshold=")) {
+						query += "&prepareThreshold=0";
+					}
 				}
 
 				String jdbcUrl = "jdbc:postgresql://" + host + (port != -1 ? ":" + port : "") + path + "?" + query;
