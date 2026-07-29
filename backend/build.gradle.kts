@@ -14,6 +14,10 @@ java {
 	}
 }
 
+springBoot {
+	mainClass.set("com.pecae.api.PecaeApiApplication")
+}
+
 configurations {
 	compileOnly {
 		extendsFrom(configurations.annotationProcessor.get())
