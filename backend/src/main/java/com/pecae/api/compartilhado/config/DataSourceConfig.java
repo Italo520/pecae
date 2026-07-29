@@ -49,7 +49,8 @@ public class DataSourceConfig {
             
             String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + 
                            (dbUri.getPort() != -1 ? ":" + dbUri.getPort() : "") + 
-                           dbUri.getPath();
+                           dbUri.getPath() +
+                           (dbUri.getQuery() != null ? "?" + dbUri.getQuery() : "");
             
             builder.url(dbUrl);
             builder.username(username);
