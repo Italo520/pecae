@@ -1,24 +1,5 @@
 services:
 
-  pecae-postgres:
-    image: postgres:16-alpine
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: pecae
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    networks:
-      - pecae-network
-
   pecae-redis:
     image: public.ecr.aws/docker/library/redis:7-alpine
     restart: always
@@ -62,10 +43,7 @@ services:
       - traefik.http.services.api.loadbalancer.server.port=3000
       - traefik.docker.network=coolify
     depends_on:
-      pecae-redis:
-        condition: service_healthy
-      pecae-postgres:
-        condition: service_healthy
+      - pecae-redis
     networks:
       - pecae-network
       - coolify
