@@ -59,13 +59,7 @@ services:
       - ADMIN_SEED_PASSWORD=${ADMIN_SEED_PASSWORD}
     labels:
       - traefik.enable=true
-      - 'traefik.http.routers.pecae-api.rule=Host(`api-pecae.italohub.cloud`)'
-      - traefik.http.routers.pecae-api.entrypoints=https
-      - traefik.http.routers.pecae-api.tls=true
-      - traefik.http.routers.pecae-api.tls.certresolver=letsencrypt
-      - traefik.http.routers.pecae-api.priority=1000
-      - traefik.http.routers.pecae-api.service=pecae-api
-      - traefik.http.services.pecae-api.loadbalancer.server.port=3000
+      - traefik.http.services.api.loadbalancer.server.port=3000
       - traefik.docker.network=coolify
     depends_on:
       pecae-redis:
@@ -90,13 +84,7 @@ services:
       - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
     labels:
       - traefik.enable=true
-      - 'traefik.http.routers.pecae-web.rule=Host(`pecae.italohub.cloud`) || Host(`web.pecae.italohub.cloud`)'
-      - traefik.http.routers.pecae-web.entrypoints=https
-      - traefik.http.routers.pecae-web.tls=true
-      - traefik.http.routers.pecae-web.tls.certresolver=letsencrypt
-      - traefik.http.routers.pecae-web.priority=1000
-      - traefik.http.routers.pecae-web.service=pecae-web
-      - traefik.http.services.pecae-web.loadbalancer.server.port=3000
+      - traefik.http.services.web-frontend.loadbalancer.server.port=3000
       - traefik.docker.network=coolify
     depends_on:
       - api
