@@ -228,4 +228,147 @@ class ServicoAdImplTest {
             assertThat(resultado.ctr()).isEqualTo(0.0);
         }
     }
+
+    @Nested
+    @DisplayName("Testes de Criativos (Banners)")
+    class TestesCriativos {
+
+        @Test
+        @DisplayName("Deve criar criativo com sucesso quando campanha existe")
+        void deveCriarCriativoComSucesso() {
+            UUID campanhaId = UUID.randomUUID();
+            RequisicaoCriarCriativo req = new RequisicaoCriarCriativo(
+                    campanhaId, "Banner Peças", "https://img.pecae.com/banner.png",
+                    "https://pecae.com/busca", "Compre Agora", PlacementAd.HOME_HERO, 10
+            );
+            CampanhaAd campanha = CampanhaAd.builder().id(campanhaId).nome("Campanha 1").build();
+            CriativoAd criativo = CriativoAd.builder().id(UUID.randomUUID()).campanha(campanha).build();
+            RespostaCriativoAd resposta = new RespostaCriativoAd(
+                    criativo.getId(), campanhaId, "Banner Peças", "https://img.pecae.com/banner.png",
+                    "https://pecae.com/busca", "Compre Agora", PlacementAd.HOME_HERO, 10, true, null
+            );
+
+            when(repositorioCampanhaAd.findById(campanhaId)).thenReturn(Optional.of(campanha));
+            when(repositorioCriativoAd.save(any(CriativoAd.class))).thenReturn(criativo);
+            when(mapperAd.paraResposta(criativo)).thenReturn(resposta);
+
+            RespostaCriativoAd resultado = servicoAd.criarCriativo(req);
+
+            assertThat(resultado).isNotNull();
+            assertThat(resultado.tituloAlt()).isEqualTo("Banner Peças");
+            verify(repositorioCriativoAd, times(1)).save(any(CriativoAd.class));
+        }
+
+        @Test
+        @DisplayName("Deve lançar ExcecaoRecursoNaoEncontrado ao criar criativo com campanha inexistente")
+        void deveLancarExcecaoSeCriativoCampanhaNaoExiste() {
+            UUID campanhaInexistente = UUID.randomUUID();
+            RequisicaoCriarCriativo req = new RequisicaoCriarCriativo(
+                    campanhaInexistente, "Banner", "url", "dest", "cta", PlacementAd.HOME_HERO, 0
+            );
+
+            when(repositorioCampanhaAd.findById(campanhaInexistente)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> servicoAd.criarCriativo(req))
+                    .isInstanceOf(ExcecaoRecursoNaoEncontrado.class);
+        }
+
+        @Test
+        @DisplayName("Deve listar criativos de uma campanha existente")
+        void deveListarCriativosDaCampanhaExistente() {
+            UUID campanhaId = UUID.randomUUID();
+            List<CriativoAd> criativos = List.of(
+                    CriativoAd.builder().id(UUID.randomUUID()).build(),
+                    CriativoAd.builder().id(UUID.randomUUID()).build()
+            );
+
+            when(repositorioCampanhaAd.existsById(campanhaId)).thenReturn(true);
+            when(repositorioCriativoAd.findByCampanhaId(campanhaId)).thenReturn(criativos);
+            when(mapperAd.paraListaCriativos(criativos)).thenReturn(List.of());
+
+            servicoAd.listarCriativosDaCampanha(campanhaId);
+
+            verify(repositorioCriativoAd, times(1)).findByCampanhaId(campanhaId);
+        }
+
+        @Test
+        @DisplayName("Deve lançar ExcecaoRecursoNaoEncontrado ao listar criativos de campanha inexistente")
+        void deveLancarExcecaoSeListarCriativosDeCampanhaInexistente() {
+            UUID campanhaInexistente = UUID.randomUUID();
+            when(repositorioCampanhaAd.existsById(campanhaInexistente)).thenReturn(false);
+
+            assertThatThrownBy(() -> servicoAd.listarCriativosDaCampanha(campanhaInexistente))
+                    .isInstanceOf(ExcecaoRecursoNaoEncontrado.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("Testes de Toggle Ativo/Desativo")
+    class TestesToggle {
+
+        @Test
+        @DisplayName("Deve ativar/desativar anunciante com sucesso")
+        void deveAtivarDesativarAnunciante() {
+            UUID anuncianteId = UUID.randomUUID();
+            Anunciante anunciante = Anunciante.builder().id(anuncianteId).ativo(true).build();
+            RespostaAnunciante resposta = new RespostaAnunciante(
+                    anuncianteId, "Empresa", "Contato", "email@test.com", "119999", false, null
+            );
+
+            when(repositorioAnunciante.findById(anuncianteId)).thenReturn(Optional.of(anunciante));
+            when(repositorioAnunciante.save(any(Anunciante.class))).thenReturn(anunciante);
+            when(mapperAd.paraResposta(anunciante)).thenReturn(resposta);
+
+            RespostaAnunciante resultado = servicoAd.ativarDesativarAnunciante(anuncianteId, false);
+
+            assertThat(resultado).isNotNull();
+            verify(repositorioAnunciante, times(1)).save(any(Anunciante.class));
+        }
+
+        @Test
+        @DisplayName("Deve ativar/desativar criativo com sucesso")
+        void deveAtivarDesativarCriativo() {
+            UUID criativoId = UUID.randomUUID();
+            CriativoAd criativo = CriativoAd.builder().id(criativoId).ativo(true).build();
+            RespostaCriativoAd resposta = new RespostaCriativoAd(
+                    criativoId, UUID.randomUUID(), "Alt", "url", "dest", "cta", PlacementAd.HOME_HERO, 0, false, null
+            );
+
+            when(repositorioCriativoAd.findById(criativoId)).thenReturn(Optional.of(criativo));
+            when(repositorioCriativoAd.save(any(CriativoAd.class))).thenReturn(criativo);
+            when(mapperAd.paraResposta(criativo)).thenReturn(resposta);
+
+            RespostaCriativoAd resultado = servicoAd.ativarDesativarCriativo(criativoId, false);
+
+            assertThat(resultado).isNotNull();
+            verify(repositorioCriativoAd, times(1)).save(any(CriativoAd.class));
+        }
+    }
+
+    @Nested
+    @DisplayName("Testes de Listagem e Filtros")
+    class TestesListagemFiltros {
+
+        @Test
+        @DisplayName("Deve listar campanhas filtrando por status ATIVA")
+        void deveListarCampanhasComFiltroDeStatus() {
+            StatusCampanha filtro = StatusCampanha.ATIVA;
+            Pageable pageable = PageRequest.of(0, 10);
+            CampanhaAd campanha = CampanhaAd.builder().nome("Campanha Ativa").status(StatusCampanha.ATIVA).build();
+            Page<CampanhaAd> page = new PageImpl<>(List.of(campanha));
+            RespostaCampanhaAd resposta = new RespostaCampanhaAd(
+                    UUID.randomUUID(), "Campanha Ativa", null, StatusCampanha.ATIVA,
+                    LocalDate.now(), LocalDate.now().plusDays(30), null, null, null
+            );
+
+            when(repositorioCampanhaAd.findByStatus(filtro, pageable)).thenReturn(page);
+            when(mapperAd.paraResposta(campanha)).thenReturn(resposta);
+
+            Page<RespostaCampanhaAd> resultado = servicoAd.listarCampanhas(filtro, pageable);
+
+            assertThat(resultado.getContent()).hasSize(1);
+            verify(repositorioCampanhaAd, times(1)).findByStatus(filtro, pageable);
+            verify(repositorioCampanhaAd, never()).findAll(pageable);
+        }
+    }
 }
