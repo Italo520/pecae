@@ -65,7 +65,9 @@ services:
       - traefik.http.routers.pecae-api.entrypoints=https
       - traefik.http.routers.pecae-api.tls=true
       - traefik.http.routers.pecae-api.tls.certresolver=letsencrypt
+      - traefik.http.routers.pecae-api.service=pecae-api
       - traefik.http.services.pecae-api.loadbalancer.server.port=8080
+      - traefik.http.services.https-0-jn38h7vp5ne48tb4668p5mgh-api.loadbalancer.server.port=8080
       - traefik.docker.network=coolify
     depends_on:
       pecae-redis:
