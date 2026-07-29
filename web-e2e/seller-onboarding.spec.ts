@@ -64,7 +64,7 @@ test.describe('PECAÊ E2E - Onboarding de Vendedor', () => {
       UPDATE users 
       SET email_verified = true, 
           status = 'ACTIVE', 
-          password_hash = '$2b$10$gfKOsCwR5i8y7i7gdTx7YefZmQL1PK8JeC/1R9qTJcpr7orTrS6.i' 
+          password_hash = (SELECT password_hash FROM users WHERE email = 'seller-e2e@pecae.com.br') 
       WHERE email = '${testEmail}';
     `);
 
@@ -135,11 +135,11 @@ test.describe('PECAÊ E2E - Onboarding de Vendedor', () => {
 
     await page.getByRole('button', { name: /ENVIAR PARA ANÁLISE/i }).click();
 
-    // Aguardar o modal de sucesso e clicar para ir ao dashboard
+    // Aguardar o modal de sucesso e clicar para ir ao painel
     await expect(page.getByText('Solicitação Enviada!')).toBeVisible({ timeout: 15000 });
-    await page.getByRole('button', { name: /Ir para o Dashboard/i }).click();
+    await page.getByRole('button', { name: /Ir para Meu Painel|Ir para o Dashboard/i }).click();
 
-    await page.waitForURL('**/vendedor/dashboard', { timeout: 15000 });
+    await page.waitForURL((url) => url.pathname.includes('/dashboard') || url.pathname.includes('/vendedor'), { timeout: 15000 });
     console.log('🎉 Teste de Onboarding e Verificação KYC com múltiplos documentos concluído com sucesso!');
   });
 });

@@ -36,7 +36,8 @@ export const useNotifications = () => {
       });
       return data;
     },
-    enabled: !!accessToken,
+    enabled: Boolean(accessToken),
+    retry: false,
   });
 
   const getUnreadCount = useQuery({
@@ -48,8 +49,9 @@ export const useNotifications = () => {
       const unread = data.content.filter((n) => !n.lida).length;
       return unread;
     },
-    refetchInterval: 30000, // Poll every 30s
-    enabled: !!accessToken,
+    refetchInterval: accessToken ? 30000 : false,
+    enabled: Boolean(accessToken),
+    retry: false,
   });
 
   const markAsRead = useMutation({

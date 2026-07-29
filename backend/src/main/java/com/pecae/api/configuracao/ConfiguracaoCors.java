@@ -22,7 +22,10 @@ public class ConfiguracaoCors {
     public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
         var config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(List.of(origensPermitidas.split(",")));
+        config.setAllowedOriginPatterns(java.util.Arrays.stream(origensPermitidas.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList());
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization", "X-Total-Count"));

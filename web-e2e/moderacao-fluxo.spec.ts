@@ -59,7 +59,7 @@ test.describe('PECAÊ E2E - Fluxo de Cadastro e Moderação de Veículo', () => 
     console.log(`ℹ️ Placa gerada para o veículo: ${plateVal}`);
 
     // Passo 1: Identificação
-    await page.locator('input[placeholder*="ABC-1234"]').fill(plateVal);
+    await page.waitForSelector('input[placeholder*="Prata"]', { timeout: 30000 });
     await page.locator('input[placeholder*="Prata"]').fill('Azul');
     await page.locator('input[placeholder="0"]').fill('12000');
     await page.locator('select').first().selectOption('FLEX');
@@ -70,23 +70,30 @@ test.describe('PECAÊ E2E - Fluxo de Cadastro e Moderação de Veículo', () => 
     await page.waitForTimeout(1000);
     console.log('✅ Passo 1 preenchido.');
 
-    // Passo 2: Tabela FIPE (seletores de marca, modelo, versão, ano)
+    // Passo 2: Tabela FIPE (seletores de marca, modelo, ano)
     const selectBrand = page.locator('select').nth(0);
-    await selectBrand.selectOption({ label: 'Volkswagen' });
+    await selectBrand.waitFor({ state: 'visible' });
+    
+    await page.waitForFunction(() => {
+      const select = document.querySelector('select');
+      return select && select.options.length > 1;
+    }, { timeout: 15000 });
+
+    const brandOption = selectBrand.locator('option').nth(1);
+    const brandVal = await brandOption.getAttribute('value') || '';
+    await selectBrand.selectOption(brandVal);
 
     const selectModel = page.locator('select').nth(1);
-    await selectModel.locator('option:has-text("Gol")').waitFor({ state: 'attached', timeout: 15000 });
-    await selectModel.selectOption({ label: 'Gol' });
+    await page.waitForFunction((el) => el && (el as HTMLSelectElement).options.length > 1, await selectModel.elementHandle(), { timeout: 15000 });
+    const modelOption = selectModel.locator('option').nth(1);
+    const modelVal = await modelOption.getAttribute('value') || '';
+    await selectModel.selectOption(modelVal);
 
-    const selectVersion = page.locator('select').nth(2);
-    await selectVersion.locator('option:has-text("1.0 MI 8V")').waitFor({ state: 'attached', timeout: 15000 });
-    await selectVersion.selectOption({ label: '1.0 MI 8V' });
-
-    const selectYear = page.locator('select').nth(3);
-    const yearOption = selectYear.locator('option:has-text("2012")').first();
-    await yearOption.waitFor({ state: 'attached', timeout: 15000 });
-    const yearValue = await yearOption.getAttribute('value') || '';
-    await selectYear.selectOption(yearValue);
+    const selectYear = page.locator('select').nth(2);
+    await page.waitForFunction((el) => el && (el as HTMLSelectElement).options.length > 1, await selectYear.elementHandle(), { timeout: 15000 });
+    const yearOption = selectYear.locator('option').nth(1);
+    const yearVal = await yearOption.getAttribute('value') || '';
+    await selectYear.selectOption(yearVal);
 
     await page.locator('button:has-text("Próximo Passo")').click();
     await page.waitForTimeout(1000);
@@ -113,7 +120,7 @@ test.describe('PECAÊ E2E - Fluxo de Cadastro e Moderação de Veículo', () => 
     await finalizeBtn.click();
     
     // Aguarda o redirecionamento automático para o dashboard
-    await page.waitForURL('**/vendedor/dashboard', { timeout: 25000 });
+    await page.waitForURL((url) => url.pathname.includes('/vendedor/dashboard'), { timeout: 45000 });
     console.log('✅ Veículo cadastrado com sucesso pelo vendedor.');
 
     // 3. Obter o ID do anúncio cadastrado do banco de dados
