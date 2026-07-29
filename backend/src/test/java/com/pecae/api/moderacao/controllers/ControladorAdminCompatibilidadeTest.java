@@ -92,4 +92,35 @@ class ControladorAdminCompatibilidadeTest {
         assertThat(response.getBody()).hasSize(1);
         assertThat(response.getBody().get(0).get("id")).isEqualTo(v1.getId());
     }
+
+    @Test
+    @DisplayName("POST /admin/kyc/{id}/approve - Deve aprovar KYC e atualizar usuário para AMBOS")
+    void deveAprovarKycComSucesso() {
+        UUID id = UUID.randomUUID();
+        com.pecae.api.usuario.entities.Usuario usuario = com.pecae.api.usuario.entities.Usuario.builder()
+                .id(UUID.randomUUID())
+                .nome("Vendedor Teste")
+                .tipo(com.pecae.api.usuario.entities.enums.TipoUsuario.COMPRADOR)
+                .build();
+
+        PerfilVendedor perfil = PerfilVendedor.builder()
+                .id(UUID.randomUUID())
+                .usuario(usuario)
+                .build();
+
+        VerificacaoVendedor verification = VerificacaoVendedor.builder()
+                .id(id)
+                .perfilVendedor(perfil)
+                .status(StatusVerificacao.PENDENTE)
+                .build();
+
+        when(verificacaoVendedorRepository.findById(id)).thenReturn(java.util.Optional.of(verification));
+
+        ResponseEntity<Map<String, Object>> response = controlador.approveKyc(id);
+
+        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
+        assertThat(response.getBody()).containsEntry("status", "APPROVED");
+        assertThat(verification.getStatus()).isEqualTo(StatusVerificacao.APROVADO);
+        assertThat(usuario.getTipo()).isEqualTo(com.pecae.api.usuario.entities.enums.TipoUsuario.AMBOS);
+    }
 }

@@ -24,9 +24,9 @@ export function ContactCTA({ listingId, sellerId, whatsapp, sellerName }: Contac
       return;
     }
 
-    // Apenas compradores podem iniciar chats de compra neste fluxo.
+    // Apenas contas ativas de comprador (incluindo AMBOS/BOTH) podem iniciar chats de compra.
     const userRole = String((user as any)?.type || (user as any)?.tipo || (user as any)?.role || '').toUpperCase();
-    if (userRole && userRole !== 'BUYER' && userRole !== 'COMPRADOR') {
+    if (userRole && userRole !== 'BUYER' && userRole !== 'COMPRADOR' && userRole !== 'AMBOS' && userRole !== 'BOTH') {
       alert('Apenas contas de Comprador podem iniciar uma negociação.');
       return;
     }

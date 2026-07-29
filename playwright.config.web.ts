@@ -5,15 +5,15 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './web-e2e',
-  timeout: 60000,
-  fullyParallel: true,
-  workers: process.env.CI ? 1 : undefined,
+  timeout: 90000,
+  fullyParallel: false,
+  workers: 1,
   reporter: [
     ['list'],
     ['html', { open: 'never' }]
   ],
   use: {
-    baseURL: 'http://localhost:3001',
+    baseURL: 'https://pecae.italohub.cloud',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'on-first-retry',

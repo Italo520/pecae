@@ -35,7 +35,7 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
           const newToken = res.data.accessToken;
           updateToken(newToken);
         } catch (error) {
-          console.error('Falha ao restaurar sessão silenciosamente no reload:', error);
+          console.warn('Sessão expirada ou não autenticada no reload');
           logout(); // Limpa estado obsoleto do localStorage
         }
       } else {

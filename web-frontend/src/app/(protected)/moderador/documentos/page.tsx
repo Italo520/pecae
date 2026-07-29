@@ -150,20 +150,27 @@ export default function DocumentosModeracaoPage() {
                 <h3 className="text-sm font-medium text-[var(--muted)] mb-3">Imagens Enviadas</h3>
                 {selectedDoc.documentUrls?.length ? (
                   <div className="space-y-4">
-                    {selectedDoc.documentUrls.map((url: string, i: number) => (
-                      <div key={i} className="aspect-[4/3] rounded-xl bg-[var(--background)] overflow-hidden border border-[var(--border)] flex items-center justify-center relative group">
-                        {url.endsWith('.pdf') ? (
-                          <div className="text-center">
-                            <FileText className="w-12 h-12 text-[var(--muted)] mx-auto mb-2" />
-                            <a href={url} target="_blank" rel="noreferrer" className="text-sm text-[var(--brand)] hover:underline">
-                              Abrir PDF Externo
-                            </a>
-                          </div>
-                        ) : (
-                          <img src={url} alt={`Doc ${i+1}`} className="w-full h-full object-contain" />
-                        )}
-                      </div>
-                    ))}
+                    {selectedDoc.documentUrls.map((url: string, i: number) => {
+                      const formattedUrl = url?.startsWith('http://') || url?.startsWith('https://') || url?.startsWith('data:')
+                        ? url
+                        : `${(process.env.NEXT_PUBLIC_API_URL || 'https://api-pecae.italohub.cloud/api/v1').replace(/\/api\/v1\/?$/, '')}${url?.startsWith('/') ? url : `/${url}`}`;
+                      const isPdf = url?.toLowerCase().includes('.pdf');
+
+                      return (
+                        <div key={i} className="aspect-[4/3] rounded-xl bg-[var(--background)] overflow-hidden border border-[var(--border)] flex items-center justify-center relative group">
+                          {isPdf ? (
+                            <div className="text-center">
+                              <FileText className="w-12 h-12 text-[var(--muted)] mx-auto mb-2" />
+                              <a href={formattedUrl} target="_blank" rel="noreferrer" className="text-sm text-[var(--brand)] hover:underline">
+                                Abrir PDF Externo
+                              </a>
+                            </div>
+                          ) : (
+                            <img src={formattedUrl} alt={`Doc ${i+1}`} className="w-full h-full object-contain" />
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="p-8 border border-dashed border-[var(--border)] rounded-xl text-center text-[var(--muted)] text-sm">
