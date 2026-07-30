@@ -28,6 +28,8 @@ services:
       - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL:-jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0&preferQueryMode=simple&stringtype=unspecified}
       - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME:-postgres.hsxeulvcfrbyvxehhhaj}
       - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD:-db_coolify_pecae}
+      - REDIS_HOST=pecae-redis
+      - REDIS_PORT=6379
       - SPRING_DATA_REDIS_HOST=pecae-redis
       - SPRING_DATA_REDIS_PORT=6379
       - JWT_SECRET=${JWT_SECRET}
