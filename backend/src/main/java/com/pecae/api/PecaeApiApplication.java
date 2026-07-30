@@ -24,18 +24,24 @@ public class PecaeApiApplication {
 			try {
 				URI uri = new URI(dbUrl);
 				String host = uri.getHost();
-				int port = uri.getPort();
-				String path = uri.getPath();
-				String query = uri.getQuery();
+				if (host != null && host.contains("pooler.supabase.com") && port == 5432) {
+					port = 6543;
+				}
 
 				if (query == null || query.isEmpty()) {
-					query = "sslmode=require&prepareThreshold=0";
+					query = "sslmode=require&prepareThreshold=0&preferQueryMode=simple&stringtype=unspecified";
 				} else {
 					if (!query.contains("sslmode=")) {
 						query += "&sslmode=require";
 					}
 					if (!query.contains("prepareThreshold=")) {
 						query += "&prepareThreshold=0";
+					}
+					if (!query.contains("preferQueryMode=")) {
+						query += "&preferQueryMode=simple";
+					}
+					if (!query.contains("stringtype=")) {
+						query += "&stringtype=unspecified";
 					}
 				}
 
