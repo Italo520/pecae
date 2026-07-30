@@ -24,7 +24,11 @@ public class PecaeApiApplication {
 			try {
 				URI uri = new URI(dbUrl);
 				String host = uri.getHost();
-				if (host != null && host.contains("pooler.supabase.com") && port == 5432) {
+				int port = uri.getPort();
+				String path = uri.getPath() != null ? uri.getPath() : "";
+				String query = uri.getQuery();
+
+				if (host != null && host.contains("pooler.supabase.com") && (port == 5432 || port == -1)) {
 					port = 6543;
 				}
 
