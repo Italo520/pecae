@@ -79,14 +79,12 @@ public class Veiculo {
     @Column(name = "observations", columnDefinition = "TEXT")
     private String observacoes;
 
-    @Column(name = "status", columnDefinition = "VehicleStatus")
-    @ColumnTransformer(write = "?::\"VehicleStatus\"")
+    @Column(name = "status")
     @Convert(converter = ConversorStatusVeiculo.class)
     @Builder.Default
     private StatusVeiculo status = StatusVeiculo.RASCUNHO;
 
-    @Column(name = "fuel_type", columnDefinition = "FuelType")
-    @ColumnTransformer(write = "?::\"FuelType\"")
+    @Column(name = "fuel_type")
     @Convert(converter = ConversorTipoCombustivel.class)
     private TipoCombustivel tipoCombustivel;
 

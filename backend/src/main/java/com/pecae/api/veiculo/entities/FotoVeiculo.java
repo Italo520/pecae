@@ -40,8 +40,7 @@ public class FotoVeiculo {
     @Builder.Default
     private Integer ordem = 0;
 
-    @Column(name = "type", nullable = false, columnDefinition = "PhotoType")
-    @org.hibernate.annotations.ColumnTransformer(write = "?::\"PhotoType\"")
+    @Column(name = "type", nullable = false)
     @Convert(converter = ConversorTipoFoto.class)
     @Builder.Default
     private TipoFoto tipo = TipoFoto.EXTERIOR;

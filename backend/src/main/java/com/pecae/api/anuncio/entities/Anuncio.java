@@ -51,8 +51,7 @@ public class Anuncio {
     @Column(name = "description", columnDefinition = "TEXT")
     private String descricao;
 
-    @Column(name = "status", nullable = false, columnDefinition = "ListingStatus")
-    @org.hibernate.annotations.ColumnTransformer(write = "?::\"ListingStatus\"")
+    @Column(name = "status", nullable = false)
     @Convert(converter = ConversorStatusAnuncio.class)
     @Builder.Default
     private StatusAnuncio status = StatusAnuncio.PENDENTE;

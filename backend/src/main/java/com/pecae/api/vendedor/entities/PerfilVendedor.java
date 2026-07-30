@@ -54,8 +54,7 @@ public class PerfilVendedor {
     @Column(name = "banner_url")
     private String urlBanner;
 
-    @Column(name = "seller_type", nullable = false, columnDefinition = "SellerType")
-    @org.hibernate.annotations.ColumnTransformer(write = "?::\"SellerType\"")
+    @Column(name = "seller_type", nullable = false)
     @Convert(converter = ConversorTipoVendedor.class)
     private TipoVendedor tipoVendedor;
 

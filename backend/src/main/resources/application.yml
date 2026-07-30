@@ -25,25 +25,30 @@ spring:
           time_zone: America/Sao_Paulo
     show-sql: false
 
-  # ── Datasource ──
+  # ── Datasource (Supabase Pooler — PgBouncer) ──
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0&preferQueryMode=simple&stringtype=unspecified}
     username: ${SPRING_DATASOURCE_USERNAME:${DB_USERNAME:postgres.hsxeulvcfrbyvxehhhaj}}
     password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASSWORD:db_coolify_pecae}}
     hikari:
       maximum-pool-size: 10
-      minimum-idle: 5
+      minimum-idle: 2
       connection-timeout: 30000
       idle-timeout: 600000
       max-lifetime: 1800000
+      data-source-properties:
+        prepareThreshold: 0
+        preferQueryMode: simple
+        stringtype: unspecified
 
-  # ── Flyway ──
+  # ── Flyway (DDL via conexão direta — sem pooler) ──
   flyway:
     enabled: true
     baseline-on-migrate: true
     baseline-version: "0"
     locations: classpath:db/migration
-    validate-on-migrate: false
+    validate-on-migrate: true
+    url: ${SPRING_FLYWAY_URL:${SPRING_DATASOURCE_URL:jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0&preferQueryMode=simple&stringtype=unspecified}}
     postgresql:
       transactional-lock: false
 
@@ -146,6 +151,9 @@ management:
   endpoint:
     health:
       show-details: always
+  health:
+    db:
+      enabled: true
 
 # ── Logging ──
 logging:
