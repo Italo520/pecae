@@ -13,19 +13,6 @@ build
 # === EDITORS ===
 .vscode/*
 !.vscode/extensions.json
-!.vscode/settings.json
-.idea
-*.swp
-*.swo
-
-# === OS ===
-.DS_Store
-Thumbs.db
-
-# === LOGS ===
-*.log
-npm-debug.log*
-yarn-debug.log*
 yarn-error.log*
 
 # === PRISMA GENERATED ===
@@ -72,3 +59,5 @@ playwright/.cache/
 .eslintcache
 .stylelintcache
 docker-compose.override.yml
+
+testsprite_tests\tmp\config.json

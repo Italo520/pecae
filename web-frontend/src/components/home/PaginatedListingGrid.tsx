@@ -28,6 +28,34 @@ export function PaginatedListingGrid({ initialListings, title = 'Veículos em De
     setListings(deduped);
     setPage(0);
     setHasMore(deduped.length >= 20);
+
+    if (deduped.length === 0) {
+      // Fallback: se a lista inicial vier vazia, busca os anúncios recentes em tempo de execução
+      api.get('/listings?pagina=0&tamanho=20&page=0&size=20')
+        .then(response => {
+          const content = response.data?.content || [];
+          const adapted: ListingCardType[] = content.map((item: any, index: number) => ({
+            id: item.id ? String(item.id) : `fallback-0-${index}`,
+            title: item.titulo || 'Veículo',
+            brand: item.marcaNome || 'Marca',
+            model: item.modeloNome || 'Modelo',
+            year: item.anoFabricacao || new Date().getFullYear(),
+            city: item.cidade || 'Cidade',
+            state: item.estado || 'Estado',
+            partsAvailable: Array.isArray(item.pecasDisponiveis) ? item.pecasDisponiveis.length : (item.totalPecas || 0),
+            createdAt: item.publicadoEm || new Date().toISOString(),
+            imageUrl: item.urlFotoPrincipal || 'https://images.pexels.com/photos/1164778/pexels-photo-1164778.jpeg?auto=compress&cs=tinysrgb&w=800',
+            imageCount: 1,
+            sponsored: item.patrocinadoAtivo || false,
+            verifiedSeller: item.vendedorVerificado || false,
+          }));
+          if (adapted.length > 0) {
+            setListings(adapted);
+            setHasMore(adapted.length >= 20);
+          }
+        })
+        .catch(err => console.error('Erro no fallback de listagem:', err));
+    }
   }, [initialListings]);
 
   const handleLoadMore = async () => {

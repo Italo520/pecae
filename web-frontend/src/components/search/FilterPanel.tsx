@@ -21,6 +21,7 @@ export function FilterPanel({ initialBrands, searchParams, onFilterChange, onCle
   const { data: versions = [], isFetching: isFetchingVersions } = useVersions(searchParams.modelId, searchParams.year);
 
   const [queryLocal, setQueryLocal] = useState(searchParams.query || '');
+  const [cityLocal, setCityLocal] = useState(searchParams.city || '');
 
   // Debounce query
   useEffect(() => {
@@ -31,6 +32,16 @@ export function FilterPanel({ initialBrands, searchParams, onFilterChange, onCle
     }, 300);
     return () => clearTimeout(handler);
   }, [queryLocal, onFilterChange, searchParams.query]);
+
+  // Debounce city
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (cityLocal !== searchParams.city) {
+        onFilterChange('city', cityLocal || undefined);
+      }
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [cityLocal, onFilterChange, searchParams.city]);
 
   // Handle cascaded changes safely
   const handleBrandChange = (brandId: string) => {
@@ -169,9 +180,9 @@ export function FilterPanel({ initialBrands, searchParams, onFilterChange, onCle
         <label className="text-sm font-semibold">Cidade</label>
         <input 
           type="text"
-          placeholder="Ex: São Bernardo"
-          value={searchParams.city || ''}
-          onChange={(e) => onFilterChange('city', e.target.value || undefined)}
+          placeholder="Ex: São Paulo"
+          value={cityLocal}
+          onChange={(e) => setCityLocal(e.target.value)}
           className="w-full px-4 py-3 bg-background/50 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand"
         />
       </div>

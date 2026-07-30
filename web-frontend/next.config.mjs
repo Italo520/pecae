@@ -8,6 +8,15 @@ const nextConfig = {
     ],
   },
   output: 'standalone',
+  async redirects() {
+    return [
+      {
+        source: '/cadastro',
+        destination: '/register',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
