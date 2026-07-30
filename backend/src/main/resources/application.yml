@@ -49,6 +49,8 @@ spring:
     locations: classpath:db/migration
     validate-on-migrate: true
     url: ${SPRING_FLYWAY_URL:${SPRING_DATASOURCE_URL:jdbc:postgresql://aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0&preferQueryMode=simple&stringtype=unspecified}}
+    user: ${SPRING_FLYWAY_USER:${SPRING_DATASOURCE_USERNAME:${DB_USERNAME:postgres.hsxeulvcfrbyvxehhhaj}}}
+    password: ${SPRING_FLYWAY_PASSWORD:${SPRING_DATASOURCE_PASSWORD:${DB_PASSWORD:db_coolify_pecae}}}
     postgresql:
       transactional-lock: false
 
