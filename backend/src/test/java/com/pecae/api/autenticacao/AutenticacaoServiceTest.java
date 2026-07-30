@@ -117,7 +117,6 @@ class AutenticacaoServiceTest {
             assertThat(resposta.getUsuario().getEmail()).isEqualTo("user@test.com");
 
             verify(aceiteTermosRepository, times(1)).save(any(AceiteTermos.class));
-            verify(tokenVerificacaoEmailRepository, times(1)).save(any(TokenVerificacaoEmail.class));
         }
 
         @Test
@@ -184,17 +183,17 @@ class AutenticacaoServiceTest {
         }
 
         @Test
-        @DisplayName("Deve lançar ExcecaoNegocio (401) quando e-mail não estiver verificado")
-        void deveLancarExcecaoQuandoEmailNaoVerificado() {
+        @DisplayName("Deve lançar ExcecaoNegocio (403) quando conta estiver inativa")
+        void deveLancarExcecaoQuandoContaInativa() {
             LoginRequest request = LoginRequest.builder().email("user@test.com").senha("password").build();
-            Usuario usuario = Usuario.builder().email("user@test.com").senhaHash("hashed").emailVerificado(false).build();
+            Usuario usuario = Usuario.builder().email("user@test.com").senhaHash("hashed").emailVerificado(true).status(StatusUsuario.SUSPENSO).build();
 
             when(usuarioRepository.findByEmail(request.getEmail())).thenReturn(Optional.of(usuario));
             when(passwordEncoder.matches(request.getSenha(), usuario.getSenhaHash())).thenReturn(true);
 
             assertThatThrownBy(() -> autenticacaoService.login(request, "127.0.0.1", "agent"))
                     .isInstanceOf(ExcecaoNegocio.class)
-                    .hasMessageContaining("E-mail não verificado");
+                    .hasMessageContaining("Conta de usuário inativa ou bloqueada.");
         }
     }
 

@@ -125,7 +125,7 @@ class ServicoAnuncioTest {
                 anuncioId, "Título", "Descrição", "PUBLICADO", 10, 5, UUID.randomUUID(), "Marca", "Modelo", "Versão", 2020, "Preto", "obs", 10000, Collections.emptyList(), Collections.emptyList(), "São Paulo", "SP", -23.55, -46.63, vendedor.getId(), "Vendedor", "1199999999", "logo", true, 4.5, 10, LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now().plusDays(30), null
             );
 
-            when(repositorioAnuncio.findByIdAndStatus(anuncioId, StatusAnuncio.PUBLICADO)).thenReturn(Optional.of(anuncio));
+            when(repositorioAnuncio.findById(anuncioId)).thenReturn(Optional.of(anuncio));
             when(mapperAnuncio.paraRespostaDetalhe(anuncio)).thenReturn(respostaDetalhe);
 
             RespostaDetalheAnuncio resultado = servicoAnuncio.buscarDetalhe(anuncioId, ip);
@@ -139,7 +139,8 @@ class ServicoAnuncioTest {
         @DisplayName("Deve lançar ExcecaoRecursoNaoEncontrado quando anúncio não está publicado")
         void deveLancarExcecaoQuandoNaoPublicado() {
             UUID anuncioId = UUID.randomUUID();
-            when(repositorioAnuncio.findByIdAndStatus(anuncioId, StatusAnuncio.PUBLICADO)).thenReturn(Optional.empty());
+            when(repositorioAnuncio.findById(anuncioId)).thenReturn(Optional.empty());
+            when(repositorioAnuncio.findByVeiculoId(anuncioId)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> servicoAnuncio.buscarDetalhe(anuncioId, "127.0.0.1"))
                 .isInstanceOf(ExcecaoRecursoNaoEncontrado.class)

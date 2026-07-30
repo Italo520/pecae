@@ -99,7 +99,7 @@ class ServicoVeiculoTest {
         }
 
         @Test
-        @DisplayName("Deve lançar ExcecaoNegocio se perfil do vendedor não for encontrado")
+        @DisplayName("Deve lançar ExcecaoRecursoNaoEncontrado se perfil do vendedor não for encontrado")
         void deveLancarExcecaoSePerfilNaoEncontrado() {
             UUID usuarioId = UUID.randomUUID();
             CriarVeiculoRequest request = new CriarVeiculoRequest(
@@ -132,7 +132,6 @@ class ServicoVeiculoTest {
 
             when(perfilVendedorRepository.findByUsuarioId(usuarioId)).thenReturn(Optional.of(perfil));
             when(repositorioVeiculo.findByIdAndPerfilVendedorId(veiculoId, perfil.getId())).thenReturn(Optional.of(veiculo));
-            when(repositorioVeiculo.existsByPlacaAndIdNot("XYZ9999", veiculoId)).thenReturn(false);
             when(repositorioVeiculo.save(veiculo)).thenReturn(veiculo);
 
             RespostaDetalheVeiculo respostaEsperada = new RespostaDetalheVeiculo(

@@ -148,9 +148,20 @@ class ServicoChatImplTest {
     @Test
     @DisplayName("Deve listar minhas salas com sucesso")
     void deveListarMinhasSalasComSucesso() {
-        when(repositorioSalaChat.buscarSalasAtivasDoUsuario(compradorId)).thenReturn(List.of(sala));
-        when(repositorioLeituraSala.findBySalaIdAndUsuarioId(sala.getId(), compradorId)).thenReturn(Optional.empty());
-        when(repositorioSalaChat.contarNaoLidos(eq(sala.getId()), eq(compradorId), any(LocalDateTime.class))).thenReturn(5L);
+        Object[] row = new Object[]{
+            sala.getId().toString(),
+            compradorId.toString(),
+            vendedorId.toString(),
+            null,
+            null,
+            java.sql.Timestamp.valueOf(LocalDateTime.now()),
+            "Oi",
+            vendedorId.toString(),
+            java.sql.Timestamp.valueOf(LocalDateTime.now()),
+            5L
+        };
+        when(repositorioSalaChat.buscarSalasComResumo(compradorId)).thenReturn(java.util.Collections.singletonList(row));
+        when(usuarioRepository.findById(vendedorId)).thenReturn(Optional.of(vendedor));
 
         List<RespostaSalaChat> resposta = servicoChat.listarMinhasSalas(compradorId);
 
@@ -176,7 +187,7 @@ class ServicoChatImplTest {
         RespostaMensagemChat m1Dto = new RespostaMensagemChat(m1.getId(), sala.getId(), vendedorId, "Oi", m1.getCriadaEm());
 
         when(repositorioSalaChat.findById(sala.getId())).thenReturn(Optional.of(sala));
-        when(repositorioMensagemChat.buscarMensagensPorCursor(eq(sala.getId()), any(), any(), any(Pageable.class)))
+        when(repositorioMensagemChat.buscarMensagensIniciais(eq(sala.getId()), any(Pageable.class)))
                 .thenReturn(List.of(m1));
         when(mapperChat.paraRespostaMensagem(m1)).thenReturn(m1Dto);
 
