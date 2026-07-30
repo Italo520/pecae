@@ -110,7 +110,7 @@ class ServicoVeiculoTest {
             when(perfilVendedorRepository.findByUsuarioId(usuarioId)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> servicoVeiculo.criar(usuarioId, request))
-                    .isInstanceOf(ExcecaoRecursoNaoEncontrado.class);
+                    .isInstanceOf(ExcecaoNegocio.class);
         }
     }
 

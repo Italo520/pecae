@@ -31,29 +31,29 @@ public interface RepositorioSalaChat extends JpaRepository<SalaChat, UUID> {
             CAST(s.listing_id AS varchar) AS s_listing_id,
             CAST(s.vehicle_id AS varchar) AS s_vehicle_id,
             s.updated_at AS s_updated_at,
-            lm.conteudo       AS ultima_msg_conteudo,
+            lm.content        AS ultima_msg_conteudo,
             lm.sender_id      AS ultima_msg_remetente_id,
             lm.created_at     AS ultima_msg_criada_em,
             COALESCE((
                 SELECT COUNT(*)
                 FROM chat_messages cm
-                WHERE cm.chat_room_id = s.id
+                WHERE cm.room_id = s.id
                   AND cm.sender_id <> :usuarioId
-                  AND cm.created_at > COALESCE(lr.leu_em, '1970-01-01 00:00:00')
-                  AND cm.deleted = false
+                  AND cm.created_at > COALESCE(lr.last_read_at, '1970-01-01 00:00:00')
+                  AND cm.is_deleted = false
             ), 0) AS nao_lidos
         FROM chat_rooms s
         LEFT JOIN LATERAL (
-            SELECT conteudo, sender_id, created_at
+            SELECT content, sender_id, created_at
             FROM chat_messages
-            WHERE chat_room_id = s.id AND deleted = false
+            WHERE room_id = s.id AND is_deleted = false
             ORDER BY created_at DESC, id DESC
             LIMIT 1
         ) lm ON true
-        LEFT JOIN chat_room_reads lr
-            ON lr.chat_room_id = s.id AND lr.user_id = :usuarioId
+        LEFT JOIN chat_reads lr
+            ON lr.room_id = s.id AND lr.user_id = :usuarioId
         WHERE (s.buyer_id = :usuarioId OR s.seller_id = :usuarioId)
-          AND s.ativa = true
+          AND s.is_active = true
         ORDER BY s.updated_at DESC
         """, nativeQuery = true)
     List<Object[]> buscarSalasComResumo(@Param("usuarioId") UUID usuarioId);

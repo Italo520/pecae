@@ -16,11 +16,11 @@ public interface RepositorioBuscaSalva extends JpaRepository<BuscaSalva, UUID> {
 
     @org.springframework.data.jpa.repository.Query(value = """
         SELECT * FROM saved_searches
-        WHERE ativa = true
+        WHERE alert_active = true
           AND (
-              filtros->>'estado' = :estado
-              OR filtros->>'cidade' = :cidade
-              OR (filtros->>'estado' IS NULL AND filtros->>'cidade' IS NULL)
+              filters->>'estado' = :estado
+              OR filters->>'cidade' = :cidade
+              OR (filters->>'estado' IS NULL AND filters->>'cidade' IS NULL)
           )
         """, nativeQuery = true)
     List<BuscaSalva> findAtivasByEstadoOuCidade(
